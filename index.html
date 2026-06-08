@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel de RMs - Supply Flow</title>
+  
+  <link rel="icon" type="image/png" href="Logo Seel.png" />
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Arial', 'sans-serif']
+          },
+          colors: {
+            'company-blue': '#0a192f',
+            'company-blue-light': '#172a45',
+            'company-yellow': '#ffe61c',
+            'company-blue-accent': '#2563eb', 
+          },
+          boxShadow: {
+            soft: '0 4px 20px -2px rgba(15, 23, 42, 0.05)', 
+            card: '0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)',
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    :root { color-scheme: light; }
+    body { background-color: #f1f5f9; color: #1e293b; -webkit-tap-highlight-color: transparent; }
+    
+    /* Kanban Area */
+    .kanban-wrap { overflow-x: auto; padding-bottom: 2rem; -webkit-overflow-scrolling: touch; }
+    .kanban-grid { display: flex; gap: 1rem; padding: 0 1rem; }
+    .column-shell { background: #e2e8f0; border-radius: 0.75rem; flex: 0 0 88vw; max-width: 380px; display: flex; flex-direction: column; }
+    @media (min-width: 1280px) {
+      .kanban-wrap { padding: 0; }
+      .kanban-grid { display: grid; grid-template-columns: repeat(6, minmax(320px, 1fr)); padding: 0; gap: 1.25rem; }
+      .column-shell { flex: auto; width: 100%; max-width: none; }
+    }
+    
+    /* Tab Styling */
+    .tab-track { position: relative; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 4px; display: flex; }
+    .tab-indicator { position: absolute; top: 4px; left: 4px; height: calc(100% - 8px); border-radius: 0.375rem; background: #f8fafc; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom: 2px solid #2563eb; opacity: 0; pointer-events: none; transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+    .buyer-tab { position: relative; z-index: 1; height: 32px; border-radius: 0.375rem; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 0.8125rem; font-weight: 600; color: #64748b; transition: color 200ms ease; }
+    .buyer-tab.active { color: #0a192f; }
+
+    /* Drag & Drop e Cards */
+    .column-shell.drag-over { background: #dbeafe; outline: 2px dashed #3b82f6; outline-offset: -2px; }
+    .kanban-card { border-left-width: 4px; transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease; touch-action: pan-y; }
+    .kanban-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); border-color: #cbd5e1; }
+    .kanban-card.opacity-40 { opacity: 0.4; transform: scale(0.98); }
+
+    /* Scrollbars corporativos */
+    .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+    .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+    .scroll-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    .scroll-thin::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased font-sans border-t-[6px] border-company-blue">
+
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm shrink-0">
+    <div class="max-w-[1920px] mx-auto px-4 py-3 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex h-10 w-auto items-center justify-center bg-slate-50 rounded px-2 border border-slate-100">
+            <img src="Logo Seel.png" alt="Logo" class="max-h-8 w-auto object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span class="text-company-blue font-black tracking-widest text-xs hidden">LOGO</span>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-lg sm:text-xl font-black tracking-tight text-company-blue leading-none">SUPPLY <span class="text-company-blue-accent">FLOW</span></h1>
+          <p class="text-[0.65rem] font-semibold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1.5">
+            <span id="syncStatus" class="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+            Painel Logístico
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" class="hidden" />
+
+        <a href="orcamentos.html" class="inline-flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 shadow-sm">
+          Orçamentos
+        </a>
+        
+        <button id="contractsBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-indigo-100 bg-indigo-50 px-3.5 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 shadow-sm">
+          📑 <span class="hidden md:inline">Contratos</span>
+        </button>
+
+        <button id="supplierMapBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3.5 py-2 text-xs font-semibold text-company-blue-accent transition hover:bg-blue-100 shadow-sm">
+          🗺️ <span class="hidden xl:inline">Mapa Fornecedores</span>
+        </button>
+        
+        <button id="importBtn" class="inline-flex items-center gap-2 rounded-lg bg-company-blue px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-company-blue-light shadow-sm">
+          📥 <span class="hidden sm:inline">Upload Manual</span>
+        </button>
+        
+        <button id="exportBtn" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 shadow-sm">
+          📤 <span class="hidden xl:inline">Exportar Status</span>
+        </button>
+        
+        <button id="clearBtn" class="inline-flex items-center gap-2 rounded-lg bg-rose-50 px-3.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 border border-rose-200 shadow-sm ml-2">
+          🧹 <span class="hidden lg:inline">Limpar Tudo</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 relative">
+    
+    <section class="grid gap-6 xl:grid-cols-[1fr_auto]">
+      
+      <div class="bg-white rounded-xl p-5 shadow-soft border border-slate-200 flex flex-col justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Fila de Compradores</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Priorização por SLA e agrupamento automático de itens.</p>
+          </div>
+          
+          <label class="relative block w-full lg:max-w-xs">
+            <span class="absolute inset-y-0 left-3 flex items-center text-slate-400">🔎</span>
+            <input id="searchInput" type="search" placeholder="Buscar RM, Solicitante, Obra..." class="h-9 w-full rounded-md border border-slate-300 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition focus:border-company-blue-accent focus:bg-white focus:ring-1 focus:ring-company-blue-accent" />
+          </label>
+        </div>
+        
+        <div class="flex flex-col xl:flex-row xl:items-center gap-4 mt-6">
+          <div id="buyerTabs" class="tab-track overflow-x-auto scroll-thin xl:flex-1" role="tablist"></div>
+
+          <div id="buyerActionsContainer" class="hidden shrink-0 flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-md px-3 py-1.5 shadow-inner overflow-x-auto scroll-thin">
+            <span id="buyerActionsHint" class="text-[0.7rem] font-bold text-slate-600 whitespace-nowrap uppercase">0 PENDÊNCIAS</span>
+            <div class="h-3 w-px bg-slate-300 shrink-0 mx-1"></div>
+            <a id="btnReportWpp" target="_blank" rel="noopener noreferrer" aria-disabled="true" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition whitespace-nowrap">
+              💬 WhatsApp
+            </a>
+            <a id="btnReportEmail" target="_blank" rel="noopener noreferrer" aria-disabled="true" class="inline-flex items-center gap-1.5 text-xs font-bold text-company-blue-accent hover:text-blue-800 transition whitespace-nowrap ml-2">
+              ✉️ Outlook
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-3 items-end border-t border-slate-100 pt-5">
+          <label class="block col-span-1">
+            <span class="mb-1 block text-[0.65rem] font-bold uppercase text-slate-500">De (Inclusão)</span>
+            <input id="dateStartInput" type="date" class="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-800 outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent" />
+          </label>
+          <label class="block col-span-1">
+            <span class="mb-1 block text-[0.65rem] font-bold uppercase text-slate-500">Até</span>
+            <input id="dateEndInput" type="date" class="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-800 outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent" />
+          </label>
+          <label class="block col-span-2 sm:col-span-1">
+            <span class="mb-1 block text-[0.65rem] font-bold uppercase text-slate-500">Categoria</span>
+            <select id="categoryFilter" class="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-800 outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent truncate"></select>
+          </label>
+          <label class="block col-span-2 sm:col-span-1">
+            <span class="mb-1 block text-[0.65rem] font-bold uppercase text-slate-500">Centro de Custo</span>
+            <select id="costCenterFilter" class="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-800 outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent truncate"></select>
+          </label>
+          <button id="clearFiltersBtn" type="button" class="col-span-2 sm:col-span-1 h-8 w-full rounded-md border border-slate-200 bg-slate-50 text-xs font-bold text-slate-600 hover:bg-slate-100 transition shadow-sm">
+            Limpar
+          </button>
+        </div>
+      </div>
+
+      <aside class="bg-white rounded-xl p-5 shadow-soft border border-slate-200 xl:w-[420px] flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-slate-900">Termômetro SLA</h2>
+          <span id="autosaveBadge" class="rounded bg-emerald-50 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-700 uppercase tracking-wider border border-emerald-100">Atualizado</span>
+        </div>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-auto">
+          <div class="col-span-2 sm:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between">
+             <div>
+                <p class="text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider">Total em Aberto</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                   <span id="statTotal" class="text-2xl font-black text-slate-900">0</span>
+                   <span class="text-xs font-semibold text-slate-500">RMs</span>
+                </div>
+             </div>
+             <div class="text-right">
+                <span id="statTotalItems" class="block text-xs font-bold text-company-blue-accent">0 Itens</span>
+             </div>
+          </div>
+          
+          <div class="bg-rose-50 border border-rose-100 rounded-lg p-2.5 text-center">
+            <dt class="text-[0.55rem] font-bold text-rose-800 uppercase tracking-wide">Pendente</dt>
+            <dd id="statBlocked" class="text-lg font-black text-rose-700 mt-0.5">0</dd>
+          </div>
+          <div class="bg-red-50 border border-red-100 rounded-lg p-2.5 text-center">
+            <dt class="text-[0.55rem] font-bold text-red-800 uppercase tracking-wide">Atrasadas</dt>
+            <dd id="statRed" class="text-lg font-black text-red-700 mt-0.5">0</dd>
+          </div>
+          <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-center">
+            <dt class="text-[0.55rem] font-bold text-amber-800 uppercase tracking-wide">Alerta SLA</dt>
+            <dd id="statYellow" class="text-lg font-black text-amber-700 mt-0.5">0</dd>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-100 rounded-lg p-2.5 text-center">
+            <dt class="text-[0.55rem] font-bold text-emerald-800 uppercase tracking-wide">No Prazo</dt>
+            <dd id="statGreen" class="text-lg font-black text-emerald-700 mt-0.5">0</dd>
+          </div>
+        </div>
+        <p id="lastImport" class="mt-4 text-center text-[0.65rem] font-medium text-slate-400">Nenhuma importação realizada.</p>
+      </aside>
+    </section>
+
+    <section class="kanban-wrap scroll-thin mt-6">
+      <div id="kanban" class="kanban-grid"></div>
+    </section>
+
+  </main>
+
+  <footer class="w-full border-t border-slate-200 bg-white py-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] mt-auto shrink-0 relative z-30">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <p class="text-[0.7rem] font-medium text-slate-500 uppercase tracking-widest">
+        Supply Flow Panel • v1.9.0 • © 2026
+      </p>
+      <p class="text-xs font-semibold text-slate-600">
+        Desenvolvido por 
+        <span class="font-bold text-company-blue">
+          André Eduardo
+        </span>
+      </p>
+    </div>
+  </footer>
+
+  <div id="contractsBackdrop" class="fixed inset-0 z-[70] hidden bg-slate-950/60 p-3 sm:p-5 backdrop-blur-sm">
+    <section id="contractsPanel" class="mx-auto flex h-full max-w-[1920px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl opacity-0 scale-95 transition duration-200">
+      <div class="flex shrink-0 flex-col gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div>
+          <p class="text-[0.65rem] font-bold uppercase tracking-wider text-indigo-600">Gestão Jurídica</p>
+          <h2 class="text-lg font-black leading-tight text-company-blue">Módulo de Contratos</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="contratos.html" target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100">
+            Abrir em aba
+          </a>
+          <button id="contractsReloadBtn" type="button" class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100">
+            Recarregar
+          </button>
+          <button id="contractsCloseBtn" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-800" aria-label="Fechar módulo">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+      <iframe id="contractsFrame" title="Módulo de Contratos" src="about:blank" data-src="contratos.html" class="min-h-0 flex-1 border-0 bg-slate-100"></iframe>
+    </section>
+  </div>
+
+  <div id="supplierMapBackdrop" class="fixed inset-0 z-[70] hidden bg-slate-950/60 p-3 sm:p-5 backdrop-blur-sm">
+    <section id="supplierMapPanel" class="mx-auto flex h-full max-w-[1920px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl opacity-0 scale-95 transition duration-200">
+      <div class="flex shrink-0 flex-col gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div>
+          <p class="text-[0.65rem] font-bold uppercase tracking-wider text-company-blue-accent">Central de fornecedores</p>
+          <h2 class="text-lg font-black leading-tight text-company-blue">Mapa de Fornecedores</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="mapa-fornecedores.html" target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100">
+            Abrir em aba
+          </a>
+          <button id="supplierMapReloadBtn" type="button" class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100">
+            Recarregar
+          </button>
+          <button id="supplierMapCloseBtn" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-800" aria-label="Fechar mapa">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+      <iframe id="supplierMapFrame" title="Mapa de fornecedores" src="about:blank" data-src="mapa-fornecedores.html" class="min-h-0 flex-1 border-0 bg-slate-100"></iframe>
+    </section>
+  </div>
+
+  <div id="ocModalBackdrop" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm transition-opacity opacity-0">
+    <div id="ocModalPanel" class="bg-white rounded-xl shadow-2xl w-full max-w-md transform scale-95 transition-all overflow-hidden flex flex-col">
+      <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+        <h3 class="text-lg font-bold text-company-blue">Gerar Ordem de Compra</h3>
+        <button id="closeOcModalBtn" class="text-slate-400 hover:text-slate-600 transition">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <input type="hidden" id="ocItemId" />
+        <div>
+          <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider mb-1">Número da OC *</label>
+          <input type="text" id="ocNumInput" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent" placeholder="Ex: OC-2024-001" />
+        </div>
+        <div>
+          <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider mb-1">Fornecedor *</label>
+          <input type="text" id="ocSupplierInput" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent" placeholder="Nome da empresa" />
+        </div>
+        <div>
+          <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider mb-1">Prazo de Entrega (Previsão)</label>
+          <input type="date" id="ocDateInput" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent" />
+        </div>
+        <div>
+          <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider mb-1">Status da OC *</label>
+          <select id="ocStatusInput" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-company-blue-accent focus:ring-1 focus:ring-company-blue-accent">
+            <option value="Em aprovação">Em aprovação</option>
+            <option value="Aprovada">Aprovada</option>
+          </select>
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+        <button id="cancelOcModalBtn" class="px-4 py-2 text-sm font-semibold text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-100 transition">Cancelar</button>
+        <button id="saveOcModalBtn" class="px-4 py-2 text-sm font-bold text-white bg-company-blue-accent rounded-md hover:bg-blue-700 transition">Confirmar OC</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawerBackdrop" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="drawerOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0"></div>
+    <div class="fixed inset-0 overflow-hidden">
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
+          <div id="drawerPanel" class="pointer-events-auto w-screen max-w-3xl transform transition-transform ease-in-out duration-300 translate-x-full bg-white shadow-2xl flex flex-col h-full border-l border-slate-200">
+            <div class="px-5 py-4 sm:px-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+              <div>
+                <p class="text-[0.65rem] font-bold text-company-blue-accent uppercase tracking-wider mb-1">Ficha Completa da RM</p>
+                <h2 id="modalTitle" class="text-xl sm:text-2xl font-black text-slate-900 leading-none">...</h2>
+              </div>
+              <button id="modalCloseBtn" type="button" class="rounded-md bg-white border border-slate-300 p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-company-blue-accent shadow-sm transition">
+                <span class="sr-only">Fechar painel</span>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div id="modalContent" class="flex-1 overflow-y-auto p-5 sm:p-6 scroll-thin bg-slate-50"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 left-1/2 z-50 hidden w-[90%] max-w-sm -translate-x-1/2 rounded-lg bg-slate-800 px-4 py-3 text-sm font-semibold text-center text-white shadow-xl transition-all border border-slate-700"></div>
+
+  <script>
+    // =========================================================================
+    // 1. CONFIGURAÇÃO E DADOS GERAIS
+    // =========================================================================
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNJnpSFYYvs8mrjKAEEpDsv_x5TcnUSfs",
+      authDomain: "supply-flow-ad20b.firebaseapp.com",
+      databaseURL: "https://supply-flow-ad20b-default-rtdb.firebaseio.com",
+      projectId: "supply-flow-ad20b",
+      storageBucket: "supply-flow-ad20b.firebasestorage.app",
+      messagingSenderId: "54257499515",
+      appId: "1:54257499515:web:d9ab6f27b338b9d5eb91de"
+    };
+
+    if (typeof firebase !== 'undefined' && Object.keys(firebaseConfig).length > 0 && firebaseConfig.apiKey) {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const LOCAL_FILTERS_KEY = 'supply-filters:v12'; 
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    const SIGNATURE_ALERT = 'PENDENTE_ASSINATURA'; 
+    const PHASES = [
+      { key: SIGNATURE_ALERT, title: 'ATENÇÃO', label: 'PEND. ASSINATURA', subtitle: 'Aguardando liberação', icon: '✍️', bgHeader: 'bg-rose-600', textHeader: 'text-white' },
+      { key: 'RM', title: '1º PASSO', label: 'FASE DE SOLICITAÇÃO', subtitle: 'Em análise', icon: '📝', bgHeader: 'bg-slate-700', textHeader: 'text-white' },
+      { key: 'RC', title: '2º PASSO', label: 'FASE DE COTAÇÃO', subtitle: 'Buscando fornecedores', icon: '🔍', bgHeader: 'bg-slate-700', textHeader: 'text-white' },
+      { key: 'MC', title: '3º PASSO', label: 'MAPA COMPARATIVO', subtitle: 'Equalizando propostas', icon: '📊', bgHeader: 'bg-slate-700', textHeader: 'text-white' },
+      { key: 'OC', title: '4º PASSO', label: 'ORDEM DE COMPRA', subtitle: 'Aprovação e Emissão', icon: '✅', bgHeader: 'bg-company-blue', textHeader: 'text-white' },
+      { key: 'CANCELADA', title: 'ARQUIVO', label: 'CANCELADAS', subtitle: 'Não prosseguiram', icon: '🚫', bgHeader: 'bg-slate-300', textHeader: 'text-slate-700' }
+    ];
+
+    let state = {
+      demands: [], lastImport: '', activeBuyer: 'Todos', search: '', dateStart: '', dateEnd: '', categoryFilter: '', costCenterFilter: ''
+    };
+
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+    const elements = {
+      fileInput: document.getElementById('fileInput'), 
+      importBtn: document.getElementById('importBtn'), 
+      exportBtn: document.getElementById('exportBtn'),
+      
+      // Elementos do Módulo de Contratos
+      contractsBtn: document.getElementById('contractsBtn'), contractsBackdrop: document.getElementById('contractsBackdrop'),
+      contractsPanel: document.getElementById('contractsPanel'), contractsFrame: document.getElementById('contractsFrame'),
+      contractsCloseBtn: document.getElementById('contractsCloseBtn'), contractsReloadBtn: document.getElementById('contractsReloadBtn'),
+
+      // Elementos do Módulo Mapa de Fornecedores
+      supplierMapBtn: document.getElementById('supplierMapBtn'), supplierMapBackdrop: document.getElementById('supplierMapBackdrop'),
+      supplierMapPanel: document.getElementById('supplierMapPanel'), supplierMapFrame: document.getElementById('supplierMapFrame'),
+      supplierMapCloseBtn: document.getElementById('supplierMapCloseBtn'), supplierMapReloadBtn: document.getElementById('supplierMapReloadBtn'),
+      
+      clearBtn: document.getElementById('clearBtn'), buyerTabs: document.getElementById('buyerTabs'), buyerActionsContainer: document.getElementById('buyerActionsContainer'),
+      buyerActionsHint: document.getElementById('buyerActionsHint'), btnReportWpp: document.getElementById('btnReportWpp'), btnReportEmail: document.getElementById('btnReportEmail'),
+      searchInput: document.getElementById('searchInput'), dateStartInput: document.getElementById('dateStartInput'), dateEndInput: document.getElementById('dateEndInput'),
+      categoryFilter: document.getElementById('categoryFilter'), costCenterFilter: document.getElementById('costCenterFilter'), clearFiltersBtn: document.getElementById('clearFiltersBtn'),
+      kanban: document.getElementById('kanban'), toast: document.getElementById('toast'), statTotal: document.getElementById('statTotal'),
+      statTotalItems: document.getElementById('statTotalItems'), statBlocked: document.getElementById('statBlocked'), statRed: document.getElementById('statRed'),
+      statYellow: document.getElementById('statYellow'), statGreen: document.getElementById('statGreen'), lastImport: document.getElementById('lastImport'),
+      
+      drawerBackdrop: document.getElementById('drawerBackdrop'), drawerOverlay: document.getElementById('drawerOverlay'), 
+      drawerPanel: document.getElementById('drawerPanel'), modalCloseBtn: document.getElementById('modalCloseBtn'), 
+      modalTitle: document.getElementById('modalTitle'), modalContent: document.getElementById('modalContent'), 
+      autosaveBadge: document.getElementById('autosaveBadge'), syncStatus: document.getElementById('syncStatus'),
+
+      ocModalBackdrop: document.getElementById('ocModalBackdrop'), ocModalPanel: document.getElementById('ocModalPanel'),
+      closeOcModalBtn: document.getElementById('closeOcModalBtn'), cancelOcModalBtn: document.getElementById('cancelOcModalBtn'),
+      saveOcModalBtn: document.getElementById('saveOcModalBtn'), ocItemId: document.getElementById('ocItemId'),
+      ocNumInput: document.getElementById('ocNumInput'), ocSupplierInput: document.getElementById('ocSupplierInput'),
+      ocDateInput: document.getElementById('ocDateInput'), ocStatusInput: document.getElementById('ocStatusInput')
+    };
+
+    // =========================================================================
+    // 2. FUNÇÕES BASE DE LIMPEZA E FORMATAÇÃO
+    // =========================================================================
+
+    function generateId() { return 'rm-' + Date.now() + '-' + Math.floor(Math.random() * 100000); }
+    
+    function cleanText(value) {
+      if (value === null || value === undefined) return '';
+      if (value instanceof Date) return formatDateBR(dateToISO(value));
+      if (typeof value === 'number') return String(value);
+      return String(value).trim().replace(/^["']+|["']+$/g, '');
+    }
+    
+    function formatDateBR(dateStr) {
+       if (!dateStr || dateStr === 'S/D' || dateStr === 'N/D') return dateStr;
+       const str = String(dateStr).trim();
+       
+       const match = str.match(/^(\d{4})[\-\/](\d{2})[\-\/](\d{2})/);
+       if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+       
+       const matchISO = str.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+       if (matchISO) return `${matchISO[3]}/${matchISO[2]}/${matchISO[1]}`;
+       
+       const match2 = str.match(/^(\d{2})[\-\/](\d{2})[\-\/](\d{4})/);
+       if (match2) return `${match2[1]}/${match2[2]}/${match2[3]}`;
+       
+       return str;
+    }
+
+    function normalizeString(value) { return cleanText(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+    function normalizeHeader(value) { return normalizeString(value).replace(/[^a-z0-9]/g, ''); }
+    function escapeHtml(value) { return cleanText(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
+    function formatExtraText(value) { return escapeHtml(value).replace(/\r?\n/g, '<br>'); }
+    function isFirebaseReady() { return typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length; }
+    
+    function normalizePhase(value) {
+      const raw = normalizeString(value).toUpperCase().replace(/[^A-Z]/g, '');
+      if (raw.includes('CANCEL')) return 'CANCELADA';
+      if (raw.includes('RC')) return 'RC';
+      if (raw.includes('MC')) return 'MC';
+      if (raw.includes('OC')) return 'OC';
+      return 'RM'; 
+    }
+    
+    function normalizeUrgency(value) {
+      const raw = normalizeString(value);
+      return ['sim', 's', 'yes', 'y', '1', 'true', 'urgente', 'alta', 'alto'].includes(raw) || raw.includes('urg');
+    }
+
+    function parseDateInfo(value) {
+      if (!value) return { raw: '', iso: '', ts: Number.POSITIVE_INFINITY };
+      
+      let raw = cleanText(value);
+      
+      if (/^\d{4}[\-\/]\d{2}[\-\/]\d{2}/.test(raw.substring(0, 10))) {
+         const iso = raw.substring(0, 10).replace(/\//g, '-');
+         const parts = iso.split('-');
+         const ts = new Date(parts[0], parts[1]-1, parts[2]).getTime();
+         return { raw: formatDateBR(iso), iso, ts };
+      }
+
+      const ddmmyyyy = raw.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+      if (ddmmyyyy) {
+          let year = Number(ddmmyyyy[3]); if (year < 100) year += 2000;
+          const month = String(ddmmyyyy[2]).padStart(2, '0');
+          const day = String(ddmmyyyy[1]).padStart(2, '0');
+          const iso = `${year}-${month}-${day}`;
+          const ts = new Date(year, Number(ddmmyyyy[2]) - 1, Number(ddmmyyyy[1])).getTime();
+          return { raw: formatDateBR(iso), iso, ts };
+      }
+      
+      if (!isNaN(raw) && Number(raw) > 20000) {
+          const date = new Date(Math.floor(Number(raw) - 25569) * DAY_MS); 
+          const iso = dateToISO(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+          return { raw: formatDateBR(iso), iso, ts: startOfDay(new Date(`${iso}T00:00:00`)).getTime() };
+      }
+
+      const parsed = new Date(raw);
+      if (!Number.isNaN(parsed.getTime())) {
+          const localParsed = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
+          const iso = dateToISO(localParsed); 
+          return { raw: formatDateBR(iso), iso, ts: startOfDay(localParsed).getTime() };
+      }
+
+      return { raw, iso: '', ts: Number.POSITIVE_INFINITY };
+    }
+    
+    function dateToISO(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+    function startOfDay(date) { return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
+    function todayStart() { return startOfDay(new Date()); }
+
+    function addId(row) {
+      const creation = parseDateInfo(row.creationDate || row.creationDateRaw);
+      const delivery = parseDateInfo(row.deliveryDate || row.deliveryDateRaw);
+      const signature = parseDateInfo(row.signatureDate || row.signatureDateRaw);
+      
+      let initialPhase = normalizePhase(row.phase);
+      if (initialPhase === 'RM' && !signature.raw) {
+          initialPhase = SIGNATURE_ALERT;
+      }
+
+      return {
+        id: row.id || generateId(),
+        rm: cleanText(row.rm),
+        creationDateRaw: creation.raw, creationDateISO: creation.iso,
+        signatureDateRaw: signature.raw, signatureDateISO: signature.iso,
+        deliveryDateRaw: delivery.raw, deliveryDateISO: delivery.iso,
+        requester: cleanText(row.requester),
+        buyer: cleanText(row.buyer) || 'Sem comprador',
+        costCenter: cleanText(row.costCenter),
+        pmrObra: cleanText(row.pmrObra || row.project),
+        urgent: normalizeUrgency(row.typeRM || row.urgent || row.urgencyRaw),
+        situation: cleanText(row.situation),
+        phase: initialPhase,
+        daysOpenRaw: cleanText(row.daysOpenRaw || row.daysOpen),
+        phone: cleanText(row.phone), email: cleanText(row.email),
+        description: cleanText(row.description),
+        ocDetails: row.ocDetails || null 
+      };
+    }
+
+    function hydrateDemand(row) {
+      const hydrated = addId(row);
+      hydrated.itemsList = row.itemsList || [{ description: row.description, category: row.category, value: row.value, extras: row.originalRow || {} }];
+      return hydrated;
+    }
+
+    function daysOpen(item) {
+      const match = cleanText(item.daysOpenRaw).replace(',', '.').match(/-?\d+(\.\d+)?/);
+      if (match) return Math.max(0, Math.floor(Number(match[0])));
+      const created = parseDateInfo(item.creationDateISO || item.creationDateRaw);
+      if (!Number.isFinite(created.ts)) return null;
+      return Math.max(0, Math.floor((todayStart().getTime() - created.ts) / DAY_MS));
+    }
+    
+    function hasSignature(item) { return Boolean(item.signatureDateISO || item.signatureDateRaw); }
+    function getDisplayPhase(item) { return item.phase; }
+    
+    function getSlaInfo(item) {
+      if (item.phase === 'CANCELADA' || item.phase === 'OC') return { limit: 0, elapsed: null, status: 'gray', label: item.phase === 'OC' ? 'Concluída' : 'Cancelada', bg: 'bg-slate-200 text-slate-700 border-slate-300' };
+      const limit = item.urgent ? 3 : 5;
+      const elapsed = daysOpen(item);
+      const remaining = elapsed === null ? null : limit - elapsed;
+      if (elapsed !== null && elapsed > limit) return { limit, elapsed, status: 'red', label: 'Atrasada', bg: 'bg-red-100 text-red-800 border-red-200' };
+      if (elapsed !== null && remaining <= 1) return { limit, elapsed, status: 'yellow', label: 'Alerta', bg: 'bg-amber-100 text-amber-800 border-amber-200' };
+      return { limit, elapsed, status: 'green', label: 'No Prazo', bg: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+    }
+
+    function comparePriority(a, b) {
+      const sa = getSlaInfo(a), sb = getSlaInfo(b);
+      const rA = { red: 0, yellow: 1, green: 2, gray: 4 }[sa.status] ?? 3;
+      const rB = { red: 0, yellow: 1, green: 2, gray: 4 }[sb.status] ?? 3;
+      if (rA !== rB) return rA - rB;
+      const creA = parseDateInfo(a.creationDateISO || a.creationDateRaw).ts;
+      const creB = parseDateInfo(b.creationDateISO || b.creationDateRaw).ts;
+      if (creA !== creB) return creA - creB;
+      return cleanText(a.rm).localeCompare(cleanText(b.rm), 'pt-BR', { numeric: true });
+    }
+
+    // =========================================================================
+    // 3. RENDERIZAÇÃO DA TELA
+    // =========================================================================
+
+    function getBuyers() { return [...new Set(state.demands.map(i => i.buyer || 'Sem comprador'))].sort((a, b) => a.localeCompare(b, 'pt-BR')); }
+    
+    function getBuyerScopedDemands() { return state.demands.filter(i => state.activeBuyer === 'Todos' || i.buyer === state.activeBuyer); }
+
+    function renderTabs(buyers) {
+      const tabs = ['Todos', ...buyers];
+      elements.buyerTabs.innerHTML = `<div id="tabIndicator" class="tab-indicator"></div>` + tabs.map(buyer => {
+        const isActive = buyer === state.activeBuyer;
+        const count = state.demands.filter(i => (buyer === 'Todos' || i.buyer === buyer) && i.phase !== 'CANCELADA' && i.phase !== 'OC' && i.phase !== SIGNATURE_ALERT).length;
+        return `<button type="button" data-buyer="${escapeHtml(buyer)}" class="buyer-tab shrink-0 ${isActive ? 'active' : ''}">
+                  <span>${escapeHtml(buyer)}</span>
+                  <span class="rounded-full ${isActive ? 'bg-company-blue text-white' : 'bg-slate-200 text-slate-500'} px-1.5 py-0.5 text-[0.65rem] font-bold">${count}</span>
+                </button>`;
+      }).join('');
+      document.querySelectorAll('.buyer-tab').forEach(btn => btn.addEventListener('click', () => { state.activeBuyer = btn.dataset.buyer; saveLocalFilters(); render(); }));
+      requestAnimationFrame(updateTabIndicator);
+    }
+
+    function updateTabIndicator() {
+      const active = elements.buyerTabs.querySelector('.buyer-tab.active');
+      const ind = document.getElementById('tabIndicator');
+      if (active && ind) { 
+        ind.style.opacity = '1'; 
+        ind.style.transform = `translateX(${active.offsetLeft - 4}px)`; 
+        ind.style.width = `${active.offsetWidth}px`; 
+        
+        const container = elements.buyerTabs;
+        const scrollPos = active.offsetLeft - (container.offsetWidth / 2) + (active.offsetWidth / 2);
+        container.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
+      }
+    }
+
+    function renderFilters() {
+      const scoped = getBuyerScopedDemands();
+      const categories = [...new Set(scoped.flatMap(i => (i.itemsList || []).map(x => x.category)))].map(cleanText).filter(Boolean).sort();
+      const costCenters = [...new Set(scoped.map(i => i.costCenter))].map(cleanText).filter(Boolean).sort();
+      if (state.categoryFilter && !categories.includes(state.categoryFilter)) state.categoryFilter = '';
+      if (state.costCenterFilter && !costCenters.includes(state.costCenterFilter)) state.costCenterFilter = '';
+      const opt = (val, lab) => `<option value="${escapeHtml(val)}">${escapeHtml(lab||val||'Todos')}</option>`;
+      elements.categoryFilter.innerHTML = opt('','Todas') + categories.map(c => opt(c)).join('');
+      elements.costCenterFilter.innerHTML = opt('','Todos os centros de custo') + costCenters.map(c => opt(c)).join('');
+      elements.categoryFilter.value = state.categoryFilter;
+      elements.costCenterFilter.value = state.costCenterFilter;
+    }
+
+    function getVisibleDemands() {
+      const search = normalizeString(state.search);
+      return state.demands.filter(item => {
+        if(state.activeBuyer !== 'Todos' && item.buyer !== state.activeBuyer) return false;
+        
+        const getTs = v => { const i = parseDateInfo(v); return Number.isFinite(i.ts)?i.ts:null; };
+        const s = getTs(state.dateStart), e = getTs(state.dateEnd);
+        const c = parseDateInfo(item.creationDateISO || item.creationDateRaw).ts;
+        if(s !== null && Number.isFinite(c) && c < s) return false;
+        if(e !== null && Number.isFinite(c) && c > e) return false;
+        
+        if(state.costCenterFilter && item.costCenter !== state.costCenterFilter) return false;
+        if(state.categoryFilter && !(item.itemsList||[]).some(i => i.category === state.categoryFilter)) return false;
+        
+        if(search) {
+          const fields = [item.rm, item.creationDateRaw, item.requester, item.pmrObra, item.costCenter, item.buyer, item.description, ...(item.itemsList||[]).map(i=>i.description)];
+          if(!fields.some(f => normalizeString(f).includes(search))) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderStats() {
+      const visible = getVisibleDemands();
+      const active = visible.filter(i => i.phase !== 'CANCELADA' && i.phase !== 'OC' && i.phase !== SIGNATURE_ALERT);
+      
+      elements.statTotal.textContent = active.length;
+      elements.statTotalItems.textContent = `${active.reduce((a,i) => a + (i.itemsList?i.itemsList.length:1), 0)} itens no total`;
+      elements.statBlocked.textContent = visible.filter(i => i.phase === SIGNATURE_ALERT).length;
+      elements.statRed.textContent = active.filter(i => getSlaInfo(i).status === 'red').length;
+      elements.statYellow.textContent = active.filter(i => getSlaInfo(i).status === 'yellow').length;
+      elements.statGreen.textContent = active.filter(i => getSlaInfo(i).status === 'green').length;
+      elements.lastImport.textContent = state.lastImport || 'Nenhuma importação realizada.';
+    }
+
+    function renderBuyerActions() {
+      if (state.activeBuyer === 'Todos') { elements.buyerActionsContainer.classList.add('hidden'); return; }
+      
+      const items = getVisibleDemands().filter(i => i.phase !== 'CANCELADA' && i.phase !== 'OC' && i.phase !== SIGNATURE_ALERT).sort(comparePriority);
+      
+      elements.buyerActionsHint.textContent = `${items.length} PENDÊNCIAS`;
+      
+      const found = state.demands.find(i => i.buyer === state.activeBuyer && cleanText(i.phone));
+      const pRaw = found ? cleanText(found.phone).replace(/\D/g,'') : '';
+      const phone = (pRaw.length===10||pRaw.length===11) && !pRaw.startsWith('55') ? `55${pRaw}` : pRaw;
+      
+      const eFound = state.demands.find(i => i.buyer === state.activeBuyer && cleanText(i.email));
+      const email = eFound ? cleanText(eFound.email) : '';
+
+      const msg = items.map((i, idx) => {
+        const s = getSlaInfo(i);
+        const icon = s.status === 'red' ? '🔴' : s.status === 'yellow' ? '🟡' : '🟢';
+        const q = i.phase === SIGNATURE_ALERT ? 'SEM ASSINAT.' : i.phase;
+        return `${idx+1}. ${icon} RM ${i.rm||'S/N'} | ${s.label} | ${q}\n` + 
+               (i.itemsList||[]).map(x=>`   • ${x.description||'S/desc'} (${x.category||'S/cat'})`).join('\n');
+      }).join('\n\n');
+
+      const fullMsg = `*Visão Geral - ${state.activeBuyer}*\nRMs: ${items.length} | Itens: ${items.reduce((a,i)=>a+(i.itemsList?i.itemsList.length:1),0)}\n\n${msg}\n\nFavor verificar prioridades.`;
+
+      if(items.length===0 || !phone) { elements.btnReportWpp.classList.add('opacity-40','pointer-events-none'); elements.btnReportWpp.removeAttribute('href'); elements.btnReportWpp.setAttribute('aria-disabled', 'true'); }
+      else { elements.btnReportWpp.classList.remove('opacity-40','pointer-events-none'); elements.btnReportWpp.removeAttribute('aria-disabled'); elements.btnReportWpp.href=`https://wa.me/${phone}?text=${encodeURIComponent(fullMsg)}`; }
+
+      if(items.length===0 || !email) { elements.btnReportEmail.classList.add('opacity-40','pointer-events-none'); elements.btnReportEmail.removeAttribute('href'); elements.btnReportEmail.setAttribute('aria-disabled', 'true'); }
+      else { elements.btnReportEmail.classList.remove('opacity-40','pointer-events-none'); elements.btnReportEmail.removeAttribute('aria-disabled'); elements.btnReportEmail.href=`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent('RMs em Aberto - '+state.activeBuyer)}&body=${encodeURIComponent(fullMsg)}`; }
+
+      elements.buyerActionsContainer.classList.remove('hidden');
+    }
+
+    function buildWhatsAppUrl(item) {
+      let phone = cleanText(item.phone).replace(/\D/g, '');
+      if (!phone) return '';
+      if ((phone.length === 10 || phone.length === 11) && !phone.startsWith('55')) phone = `55${phone}`;
+      const sla = getSlaInfo(item);
+      const itemsListText = (item.itemsList || []).map(i => `• ${i.description || 'S/desc'}`).join('\n');
+      const phaseName = item.phase === SIGNATURE_ALERT ? 'PENDENTE DE ASSINATURA' : item.phase;
+      const message = `Olá, ${item.buyer || 'comprador(a)'}!\n\n*RM ${item.rm || 'S/N'}* - Status SLA: ${sla.label}\nFase: ${phaseName}\nDias em aberto: ${sla.elapsed === null ? 'N/D' : sla.elapsed + 'd'}\n\n*Itens da RM:*\n${itemsListText}\n\nFavor verificar o andamento.`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+
+    function buildOutlookUrl(item) {
+      const email = cleanText(item.email);
+      if (!email || !email.includes('@')) return '';
+      const sla = getSlaInfo(item);
+      const itemsListText = (item.itemsList || []).map(i => `• ${i.description || 'S/desc'}`).join('\n');
+      const phaseName = item.phase === SIGNATURE_ALERT ? 'PENDENTE DE ASSINATURA' : item.phase;
+      const subject = `RM ${item.rm || ''} - ${sla.label} - ${phaseName}`;
+      const body = `Olá, ${item.buyer || 'comprador(a)'}.\n\nSegue alerta da RM ${item.rm || 'S/N'}.\n\nStatus SLA: ${sla.label}\nFase atual: ${phaseName}\nDias em aberto: ${sla.elapsed === null ? 'N/D' : sla.elapsed}\n\nItens:\n${itemsListText}\n\nFavor verificar o andamento.`;
+      return `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function renderKanban() {
+      const visible = getVisibleDemands();
+      
+      elements.kanban.innerHTML = PHASES.map(phase => {
+        const cards = visible.filter(i => i.phase === phase.key).sort(comparePriority);
+        const red = cards.filter(i => getSlaInfo(i).status === 'red').length;
+        
+        return `
+          <article class="column-shell p-2 shadow-sm" data-drop-phase="${phase.key}">
+            <header class="p-3 mb-2 rounded-lg ${phase.bgHeader} ${phase.textHeader} shadow-sm flex flex-col justify-between shrink-0 relative overflow-hidden">
+              <div class="flex items-center gap-2 mb-2 z-10">
+                <span class="text-sm">${phase.icon}</span>
+                <h2 class="text-[0.65rem] font-bold tracking-widest opacity-80">${phase.title}</h2>
+              </div>
+              <div class="z-10">
+                <p class="text-[0.8rem] font-black tracking-tight leading-tight">${phase.label}</p>
+                <p class="text-[0.65rem] font-medium opacity-80 mt-0.5">${phase.subtitle}</p>
+              </div>
+              <div class="absolute right-2 top-2 bottom-2 flex flex-col justify-center items-end">
+                <span class="text-2xl font-black opacity-20 leading-none">${cards.length}</span>
+                ${red > 0 && phase.key !== 'CANCELADA' && phase.key !== 'OC' ? `<span class="mt-1 text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded font-bold">🔴 ${red} atr.</span>` : ''}
+              </div>
+            </header>
+            
+            <div class="space-y-2.5 overflow-y-auto px-1 pb-1 scroll-thin flex-1 min-h-[16rem]" style="max-height: 65vh;">
+              ${cards.length ? cards.map(renderCard).join('') : `
+                <div class="flex flex-col items-center justify-center h-24 rounded-lg border-2 border-dashed border-slate-300 text-slate-400">
+                  <span class="text-xs font-semibold">Vazio</span>
+                </div>
+              `}
+            </div>
+          </article>
+        `;
+      }).join('');
+      
+      bindKanbanEvents();
+    }
+
+    function renderCard(item) {
+      const dp = item.phase;
+      
+      const phasesSeq = [SIGNATURE_ALERT, 'RM', 'RC', 'MC', 'OC'];
+      const nxIdx = phasesSeq.indexOf(item.phase) + 1;
+      const nx = (nxIdx > 0 && nxIdx < phasesSeq.length) ? phasesSeq[nxIdx] : null;
+      const prIdx = phasesSeq.indexOf(item.phase) - 1;
+      const pr = (prIdx >= 0) ? phasesSeq[prIdx] : null;
+      
+      const sla = getSlaInfo(item);
+      const count = item.itemsList ? item.itemsList.length : 1;
+      
+      let desc = item.description;
+      if (!desc || desc === 'Sem descrição') {
+          if (item.itemsList && item.itemsList[0] && item.itemsList[0].description) {
+              desc = item.itemsList[0].description;
+          } else {
+              desc = 'Sem descrição';
+          }
+      }
+      
+      const delivery = formatDateBR(item.deliveryDateISO || item.deliveryDateRaw || 'S/D');
+      const requester = item.requester || 'S/D';
+      const pmrObra = item.pmrObra || 'S/D';
+
+      let borderColorClass = 'border-company-blue';
+      if (item.phase === 'CANCELADA' || item.phase === 'OC') borderColorClass = 'border-slate-300';
+      else if (item.phase === SIGNATURE_ALERT) borderColorClass = 'border-rose-500';
+      else if (sla.status === 'red') borderColorClass = 'border-red-500';
+      else if (sla.status === 'yellow') borderColorClass = 'border-amber-400';
+      else if (sla.status === 'green') borderColorClass = 'border-emerald-500';
+
+      const buyerName = item.buyer || 'S/C';
+      const initials = buyerName !== 'S/C' ? buyerName.substring(0,2).toUpperCase() : '?';
+      
+      const waUrl = buildWhatsAppUrl(item);
+      const outUrl = buildOutlookUrl(item);
+      
+      let ocHtml = '';
+      if (item.phase === 'OC' && item.ocDetails) {
+         ocHtml = `
+           <div class="mt-2.5 p-2 bg-blue-50 border border-blue-100 rounded-md">
+              <div class="flex items-center justify-between mb-1">
+                 <span class="text-[0.65rem] font-bold text-company-blue uppercase tracking-wider">OC: ${escapeHtml(item.ocDetails.numero)}</span>
+                 <div class="flex items-center gap-1">
+                     <span class="text-[0.55rem] font-bold px-1.5 py-0.5 rounded uppercase ${item.ocDetails.status === 'Aprovada' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${escapeHtml(item.ocDetails.status)}</span>
+                      ${item.ocDetails.status === 'Em aprovação' ? `<button type="button" data-approve-oc-id="${escapeHtml(item.id)}" data-stop class="text-[0.55rem] bg-emerald-500 text-white px-1.5 py-0.5 rounded hover:bg-emerald-600 transition shadow-sm" title="Marcar como Aprovada">✔</button>` : ''}
+                 </div>
+              </div>
+              <div class="text-xs text-slate-700 truncate font-medium">🏢 ${escapeHtml(item.ocDetails.fornecedor)}</div>
+              <div class="text-[0.65rem] text-slate-500 mt-0.5 font-medium">📦 Entrega: ${item.ocDetails.prazo ? formatDateBR(item.ocDetails.prazo) : 'S/D'}</div>
+           </div>
+         `;
+      }
+
+      const draggableAttr = 'draggable="true"';
+
+      const waBtn = waUrl 
+          ? `<a href="${waUrl}" target="_blank" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100 transition shadow-sm" title="WhatsApp">💬</a>`
+          : `<button type="button" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-emerald-50 border border-emerald-100 text-emerald-600 opacity-40 pointer-events-none shadow-sm" title="WhatsApp">💬</button>`;
+
+      const outBtn = outUrl 
+          ? `<a href="${outUrl}" target="_blank" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-sky-50 border border-sky-100 text-sky-600 hover:bg-sky-100 transition shadow-sm" title="Outlook">✉️</a>`
+          : `<button type="button" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-sky-50 border border-sky-100 text-sky-600 opacity-40 pointer-events-none shadow-sm" title="Outlook">✉️</button>`;
+
+      return `
+        <div class="kanban-card group flex flex-col bg-white rounded-lg border border-slate-200 shadow-sm relative cursor-pointer ${borderColorClass}" ${draggableAttr} data-card-id="${escapeHtml(item.id)}">
+          <div class="p-3 flex flex-col gap-2">
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                 <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="text-[0.6rem] font-bold tracking-wider text-slate-400 uppercase">RM</span>
+                    ${item.urgent ? `<span class="px-1 py-0 rounded bg-red-100 text-red-700 text-[0.5rem] font-bold border border-red-200 uppercase">Urgente</span>` : ''}
+                 </div>
+                 <h3 class="text-base font-black text-company-blue leading-none truncate">${escapeHtml(item.rm || 'S/N')}</h3>
+              </div>
+              <div class="shrink-0 flex flex-col items-end gap-1">
+                 <span class="px-1.5 py-0.5 text-[0.55rem] font-bold rounded uppercase border shadow-sm ${item.phase === 'CANCELADA' || item.phase === 'OC' ? 'bg-slate-100 text-slate-500 border-slate-200' : item.phase === SIGNATURE_ALERT ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-slate-50 text-slate-600 border-slate-200'}">
+                    ${dp === SIGNATURE_ALERT ? 'S/ ASSIN.' : item.phase}
+                 </span>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-600 font-medium leading-snug line-clamp-2" title="${escapeHtml(desc)}">
+               ${escapeHtml(desc)} ${count > 1 ? `<span class="text-company-blue-accent font-bold">(+${count-1})</span>` : ''}
+            </p>
+
+            <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 mt-1 pt-2 border-t border-slate-100">
+               <div class="min-w-0">
+                  <span class="block text-[0.5rem] text-slate-400 font-bold uppercase tracking-wider">Obra / PMR</span>
+                  <span class="block text-[0.7rem] text-slate-800 font-semibold truncate" title="${escapeHtml(pmrObra)}">${escapeHtml(pmrObra)}</span>
+               </div>
+               <div class="min-w-0">
+                  <span class="block text-[0.5rem] text-slate-400 font-bold uppercase tracking-wider">Solicitante</span>
+                  <span class="block text-[0.7rem] text-slate-800 font-semibold truncate" title="${escapeHtml(requester)}">${escapeHtml(requester)}</span>
+               </div>
+               <div class="min-w-0">
+                  <span class="block text-[0.5rem] text-slate-400 font-bold uppercase tracking-wider">Prazo Entrega</span>
+                  <span class="block text-[0.7rem] text-slate-800 font-semibold truncate">${escapeHtml(delivery)}</span>
+               </div>
+               <div class="min-w-0">
+                  <span class="block text-[0.5rem] text-slate-400 font-bold uppercase tracking-wider">Aberto Há</span>
+                  <span class="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-slate-800 truncate">
+                    ${item.phase !== 'CANCELADA' && item.phase !== 'OC' ? `<span class="w-1.5 h-1.5 rounded-full ${sla.status==='red'?'bg-red-500':sla.status==='yellow'?'bg-amber-400':'bg-emerald-500'}"></span>` : ''}
+                    ${sla.elapsed===null?'S/D':sla.elapsed+' dias'}
+                  </span>
+               </div>
+            </div>
+
+            ${ocHtml}
+
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+               <div class="flex items-center gap-1.5 min-w-0 flex-1 mr-2">
+                   <div class="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center text-[0.55rem] font-bold shrink-0">${initials}</div>
+                   <span class="text-[0.65rem] text-slate-600 font-semibold truncate uppercase">${escapeHtml(buyerName)}</span>
+               </div>
+               
+               <div class="flex items-center gap-1 shrink-0">
+                   <button type="button" data-cancel-id="${escapeHtml(item.id)}" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-slate-50 border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shadow-sm ${item.phase === 'CANCELADA' ? 'hidden' : ''}" title="Cancelar RM">🚫</button>
+                   ${waBtn}
+                   <button type="button" data-prev-id="${escapeHtml(item.id)}" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-slate-50 border border-slate-200 text-slate-500 hover:text-company-blue hover:bg-blue-50 transition shadow-sm disabled:opacity-30" ${pr&&item.phase!=='CANCELADA'?'':'disabled'} title="Voltar fase">◀</button>
+                   <button type="button" data-next-id="${escapeHtml(item.id)}" data-stop class="h-6 w-6 inline-flex items-center justify-center rounded bg-slate-50 border border-slate-200 text-company-blue-accent font-bold hover:bg-blue-50 transition shadow-sm disabled:opacity-30" ${nx&&item.phase!=='CANCELADA'?'':'disabled'} title="Avançar fase">▶</button>
+               </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    window.changeBuyer = function(id, newBuyer) {
+        const item = state.demands.find(d => d.id === id);
+        if (item && item.buyer !== newBuyer) {
+            item.buyer = newBuyer;
+            saveDemandsToFirebase();
+            showToast(`Comprador alterado para ${newBuyer}.`);
+            render(); 
+        }
+    };
+
+    window.approveOC = function(id) {
+        const item = state.demands.find(d => d.id === id);
+        if (item && item.ocDetails) {
+            if(confirm(`Confirmar a aprovação da OC ${item.ocDetails.numero}?`)){
+                item.ocDetails.status = 'Aprovada';
+                saveDemandsToFirebase();
+                showToast('OC Aprovada com sucesso!');
+                closeDrawer();
+            }
+        }
+    };
+
+    function openOCModal(id) {
+        elements.ocItemId.value = id;
+        const item = state.demands.find(d => d.id === id);
+        
+        elements.ocNumInput.value = item.ocDetails?.numero || '';
+        elements.ocSupplierInput.value = item.ocDetails?.fornecedor || '';
+        elements.ocDateInput.value = item.ocDetails?.prazo || '';
+        elements.ocStatusInput.value = item.ocDetails?.status || 'Em aprovação';
+        
+        elements.ocModalBackdrop.classList.remove('hidden');
+        elements.ocModalBackdrop.classList.add('flex');
+        setTimeout(() => {
+            elements.ocModalBackdrop.classList.remove('opacity-0');
+            elements.ocModalPanel.classList.remove('scale-95');
+        }, 10);
+    }
+
+    function closeOCModal() {
+        elements.ocModalBackdrop.classList.add('opacity-0');
+        elements.ocModalPanel.classList.add('scale-95');
+        setTimeout(() => {
+            elements.ocModalBackdrop.classList.remove('flex');
+            elements.ocModalBackdrop.classList.add('hidden');
+        }, 200);
+    }
+
+    elements.closeOcModalBtn.addEventListener('click', closeOCModal);
+    elements.cancelOcModalBtn.addEventListener('click', closeOCModal);
+    
+    elements.saveOcModalBtn.addEventListener('click', () => {
+        const id = elements.ocItemId.value;
+        const item = state.demands.find(d => d.id === id);
+        if(!item) return;
+
+        const num = elements.ocNumInput.value.trim();
+        const fornecedor = elements.ocSupplierInput.value.trim();
+        const prazo = elements.ocDateInput.value;
+        const status = elements.ocStatusInput.value;
+
+        if(!num || !fornecedor || !status) {
+            return showToast('Preencha os dados obrigatórios da OC.');
+        }
+
+        item.ocDetails = { numero: num, fornecedor, prazo, status };
+        item.phase = 'OC';
+        
+        saveDemandsToFirebase();
+        closeOCModal();
+        showToast('RM convertida em OC com sucesso!');
+    });
+
+    function bindKanbanEvents() {
+      elements.kanban.onclick = e => {
+        const card = e.target.closest('.kanban-card');
+        if (!card) return;
+        
+        if (e.target.closest('[data-stop]')) {
+           const btn = e.target.closest('[data-stop]');
+           
+           if (btn.hasAttribute('data-approve-oc-id')) {
+              const i = state.demands.find(d=>d.id===btn.dataset.approveOcId);
+              if (i && i.ocDetails) {
+                 if (confirm(`Confirmar a aprovação da OC ${i.ocDetails.numero}?`)) {
+                     i.ocDetails.status = 'Aprovada';
+                     saveDemandsToFirebase();
+                     showToast('OC Aprovada com sucesso!');
+                 }
+              }
+              return;
+           }
+
+           if (btn.hasAttribute('data-cancel-id')) {
+              const i = state.demands.find(d=>d.id===btn.dataset.cancelId);
+              if (confirm(`Tem certeza que deseja marcar a RM ${i.rm || 'selecionada'} como CANCELADA?`)) updatePhase(i.id, 'CANCELADA');
+           }
+           else if (btn.hasAttribute('data-prev-id')) {
+              const i = state.demands.find(d=>d.id===btn.dataset.prevId);
+              const phasesSeq = [SIGNATURE_ALERT, 'RM', 'RC', 'MC', 'OC'];
+              const p = phasesSeq[phasesSeq.indexOf(i.phase)-1];
+              if(p) updatePhase(i.id, p); 
+           }
+           else if (btn.hasAttribute('data-next-id')) {
+              const i = state.demands.find(d=>d.id===btn.dataset.nextId);
+              const phasesSeq = [SIGNATURE_ALERT, 'RM', 'RC', 'MC', 'OC'];
+              const p = phasesSeq[phasesSeq.indexOf(i.phase)+1];
+              if(p) updatePhase(i.id, p); 
+           }
+           return;
+        }
+
+        openDrawer(card.dataset.cardId);
+      };
+
+      document.querySelectorAll('.kanban-card').forEach(c => {
+        c.addEventListener('dragstart', e => { 
+            e.dataTransfer.setData('text/plain', c.dataset.cardId); 
+            setTimeout(()=>c.classList.add('opacity-40'),0); 
+        });
+        c.addEventListener('dragend', () => c.classList.remove('opacity-40'));
+      });
+
+      document.querySelectorAll('[data-drop-phase]').forEach(col => {
+        col.addEventListener('dragover', e => { 
+            e.preventDefault(); 
+            col.classList.add('drag-over'); 
+        });
+        col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+        col.addEventListener('drop', e => { 
+            e.preventDefault(); 
+            col.classList.remove('drag-over'); 
+            updatePhase(e.dataTransfer.getData('text/plain'), col.dataset.dropPhase); 
+        });
+      });
+    }
+
+    // =========================================================================
+    // 4. LÓGICA DO SLIDE-OVER E MODAIS SECUNDÁRIOS
+    // =========================================================================
+
+    function openDrawer(id) {
+      const item = state.demands.find((demand) => demand.id === id);
+      if (!item) return;
+
+      const sla = getSlaInfo(item);
+      const creation = formatDateBR(item.creationDateISO || item.creationDateRaw || 'N/D');
+      const signature = formatDateBR(item.signatureDateISO || item.signatureDateRaw || 'N/D');
+      const delivery = formatDateBR(item.deliveryDateISO || item.deliveryDateRaw || 'N/D');
+      
+      elements.modalTitle.textContent = item.rm || 'Sem Número';
+
+      const itemsHtml = (item.itemsList || []).map((i, idx) => {
+        return `
+        <div class="border border-slate-200 rounded-lg bg-white overflow-hidden mb-3 shadow-sm">
+          <div class="p-3 sm:p-4 flex flex-col sm:flex-row gap-2 sm:items-start justify-between bg-slate-50">
+            <div class="flex gap-3 items-start">
+               <span class="flex items-center justify-center w-6 h-6 rounded bg-company-blue text-white text-xs font-bold shrink-0">${idx + 1}</span>
+               <p class="text-sm font-semibold text-slate-800 leading-snug">${escapeHtml(i.description || item.description || 'Sem descrição')}</p>
+            </div>
+            <span class="px-2 py-1 text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider bg-white border border-slate-200 rounded shrink-0 self-start sm:self-auto">${escapeHtml(i.category || 'Geral')}</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      let ocHtmlDrawer = '';
+      if (item.phase === 'OC' && item.ocDetails) {
+          ocHtmlDrawer = `
+            <h3 class="text-sm font-bold text-company-blue mb-3 uppercase tracking-wider border-b border-slate-200 pb-2 mt-6">Detalhes da Ordem de Compra</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+              <div>
+                <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Número da OC</span>
+                <span class="text-sm font-black text-company-blue-accent">${escapeHtml(item.ocDetails.numero)}</span>
+              </div>
+              <div>
+                <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fornecedor</span>
+                <span class="text-sm font-bold text-slate-900">${escapeHtml(item.ocDetails.fornecedor)}</span>
+              </div>
+              <div>
+                <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Prazo Entrega OC</span>
+                <span class="text-sm font-bold text-slate-900">${item.ocDetails.prazo ? formatDateBR(item.ocDetails.prazo) : 'S/D'}</span>
+              </div>
+              <div>
+                <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Status OC</span>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${item.ocDetails.status === 'Aprovada' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${escapeHtml(item.ocDetails.status)}</span>
+                    ${item.ocDetails.status === 'Em aprovação' ? `<button type="button" onclick="approveOC('${escapeHtml(item.id)}')" class="text-[0.65rem] bg-emerald-500 text-white px-2 py-0.5 rounded hover:bg-emerald-600 transition shadow-sm font-bold">Aprovar ✔</button>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+      }
+      
+      const allBuyers = getBuyers();
+      const buyerOptions = ['Sem comprador', ...allBuyers.filter(b => b !== 'Sem comprador')]
+        .map(b => `<option value="${escapeHtml(b)}" ${b === (item.buyer || 'Sem comprador') ? 'selected' : ''}>${escapeHtml(b)}</option>`)
+        .join('');
+
+      elements.modalContent.innerHTML = `
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+          <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold border ${item.phase === 'CANCELADA' ? 'bg-slate-200 text-slate-700 border-slate-300' : item.phase === SIGNATURE_ALERT ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-company-blue text-white border-company-blue'}">
+             ${item.phase === 'CANCELADA' ? '🚫 Cancelada' : item.phase === SIGNATURE_ALERT ? '⚠️ Pendente Assinatura' : '🔹 Em Andamento'}
+          </span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold border ${item.urgent ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'}">
+             ${item.urgent ? '🚨 Urgente' : 'Rotina'}
+          </span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold border ${sla.bg}">
+             SLA: ${escapeHtml(sla.label)}
+          </span>
+        </div>
+
+        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider border-b border-slate-200 pb-2">Informações Gerais</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4 mb-8 items-end">
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Obra / PMR</span>
+            <span class="text-sm font-bold text-slate-900">${escapeHtml(item.pmrObra || 'N/D')}</span>
+          </div>
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Solicitante</span>
+            <span class="text-sm font-bold text-slate-900">${escapeHtml(item.requester || 'N/D')}</span>
+          </div>
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Prazo Entrega RM</span>
+            <span class="text-sm font-bold text-slate-900">${escapeHtml(delivery)}</span>
+          </div>
+          
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Centro Custo</span>
+            <span class="text-sm font-semibold text-slate-700">${escapeHtml(item.costCenter || 'N/D')}</span>
+          </div>
+          <div>
+            <span class="block text-[0.65rem] font-bold text-company-blue-accent uppercase tracking-wider mb-0.5">Comprador </span>
+            <select onchange="changeBuyer('${escapeHtml(item.id)}', this.value)" class="w-full sm:w-[110%] rounded border border-slate-300 bg-white px-2 py-1 text-sm font-bold text-company-blue focus:border-company-blue-accent focus:outline-none focus:ring-1 focus:ring-company-blue-accent shadow-sm transition">
+               ${buyerOptions}
+            </select>
+          </div>
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fila ERP</span>
+            <span class="text-sm font-semibold text-slate-700">${item.phase === SIGNATURE_ALERT ? 'PENDENTE ASSINATURA' : item.phase}</span>
+          </div>
+          
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Inclusão</span>
+            <span class="text-sm font-semibold text-slate-700">${escapeHtml(creation)}</span>
+          </div>
+          <div>
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Liberação SC</span>
+            <span class="text-sm font-semibold text-slate-700">${escapeHtml(signature)}</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Contato do Solicitante</span>
+            <span class="text-[0.75rem] font-medium text-slate-600 block truncate" title="${escapeHtml(item.email)}">📧 ${escapeHtml(item.email || 'S/ email')}</span>
+            <span class="text-[0.75rem] font-medium text-slate-600 block mt-0.5">📱 ${escapeHtml(item.phone || 'S/ número')}</span>
+          </div>
+        </div>
+
+        ${ocHtmlDrawer}
+
+        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider border-b border-slate-200 pb-2 mt-6">Composição da RM (${item.itemsList ? item.itemsList.length : 0})</h3>
+        <div class="space-y-3 pb-10">
+          ${itemsHtml}
+        </div>
+      `;
+
+      elements.drawerBackdrop.classList.remove('hidden');
+      void elements.drawerBackdrop.offsetWidth;
+      elements.drawerOverlay.classList.remove('opacity-0');
+      elements.drawerPanel.classList.remove('translate-x-full');
+    }
+
+    function closeDrawer() { 
+      elements.drawerOverlay.classList.add('opacity-0');
+      elements.drawerPanel.classList.add('translate-x-full');
+      setTimeout(() => elements.drawerBackdrop.classList.add('hidden'), 300);
+    }
+    
+    function showToast(m) { elements.toast.textContent = m; elements.toast.classList.remove('hidden'); clearTimeout(showToast.to); showToast.to = setTimeout(()=>elements.toast.classList.add('hidden'),3000); }
+
+    // Mapa de Fornecedores Modal
+    function openSupplierMapWindow() {
+      if (elements.supplierMapFrame.getAttribute('src') === 'about:blank') {
+        elements.supplierMapFrame.src = elements.supplierMapFrame.dataset.src;
+      }
+      elements.supplierMapBackdrop.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      requestAnimationFrame(() => elements.supplierMapPanel.classList.remove('opacity-0', 'scale-95'));
+    }
+
+    function closeSupplierMapWindow() {
+      elements.supplierMapPanel.classList.add('opacity-0', 'scale-95');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(() => elements.supplierMapBackdrop.classList.add('hidden'), 200);
+    }
+
+    function reloadSupplierMapWindow() {
+      if (elements.supplierMapFrame.getAttribute('src') === 'about:blank') {
+        elements.supplierMapFrame.src = elements.supplierMapFrame.dataset.src;
+        return;
+      }
+      try { elements.supplierMapFrame.contentWindow.location.reload(); }
+      catch (error) { elements.supplierMapFrame.src = elements.supplierMapFrame.dataset.src; }
+    }
+
+    // Contratos Modal
+    function openContractsWindow() {
+      if (elements.contractsFrame.getAttribute('src') === 'about:blank') {
+        elements.contractsFrame.src = elements.contractsFrame.dataset.src;
+      }
+      elements.contractsBackdrop.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      requestAnimationFrame(() => elements.contractsPanel.classList.remove('opacity-0', 'scale-95'));
+    }
+
+    function closeContractsWindow() {
+      elements.contractsPanel.classList.add('opacity-0', 'scale-95');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(() => elements.contractsBackdrop.classList.add('hidden'), 200);
+    }
+
+    function reloadContractsWindow() {
+      if (elements.contractsFrame.getAttribute('src') === 'about:blank') {
+        elements.contractsFrame.src = elements.contractsFrame.dataset.src;
+        return;
+      }
+      try { elements.contractsFrame.contentWindow.location.reload(); }
+      catch (error) { elements.contractsFrame.src = elements.contractsFrame.dataset.src; }
+    }
+
+
+    function updatePhase(id, phaseKey) {
+      const item = state.demands.find(d => d.id === id);
+      if (!item || item.phase === phaseKey) return;
+      
+      if (phaseKey === 'OC') {
+          openOCModal(id);
+          return; 
+      }
+
+      item.phase = phaseKey;
+      saveDemandsToFirebase();
+      showToast(`RM movida para ${phaseKey.replace('_', ' ')}.`);
+    }
+
+    // =========================================================================
+    // 5. BANCO DE DADOS E IMPORTAÇÃO DE PLANILHA
+    // =========================================================================
+
+    function saveLocalFilters() {
+      const filters = { activeBuyer: state.activeBuyer, search: state.search, dateStart: state.dateStart, dateEnd: state.dateEnd, categoryFilter: state.categoryFilter, costCenterFilter: state.costCenterFilter };
+      localStorage.setItem(LOCAL_FILTERS_KEY, JSON.stringify(filters));
+    }
+
+    function saveDemandsToFirebase() {
+      if (!isFirebaseReady()) {
+          localStorage.setItem('supply-demands-backup', JSON.stringify({ demands: state.demands, lastImport: state.lastImport })); render(); return;
+      }
+      elements.syncStatus.classList.remove('bg-emerald-500'); elements.syncStatus.classList.add('bg-amber-500', 'animate-pulse');
+      elements.autosaveBadge.textContent = 'Salvando...'; elements.autosaveBadge.className = 'rounded bg-amber-50 px-2 py-0.5 text-[0.6rem] font-bold text-amber-700 uppercase tracking-wider border border-amber-100';
+      
+      const safeDemands = JSON.parse(JSON.stringify(state.demands));
+      
+      firebase.database().ref('supplyData').set({ demands: safeDemands, lastImport: state.lastImport })
+      .then(() => {
+        elements.syncStatus.classList.remove('bg-amber-500', 'animate-pulse'); elements.syncStatus.classList.add('bg-emerald-500');
+        elements.autosaveBadge.textContent = 'Atualizado'; elements.autosaveBadge.className = 'rounded bg-emerald-50 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-700 uppercase tracking-wider border border-emerald-100';
+      }).catch(err => {
+        console.error(err);
+        localStorage.setItem('supply-demands-backup', JSON.stringify({ demands: state.demands, lastImport: state.lastImport }));
+        elements.syncStatus.classList.remove('bg-emerald-500'); elements.syncStatus.classList.add('bg-amber-500');
+        elements.autosaveBadge.textContent = 'Backup local'; elements.autosaveBadge.className = 'rounded bg-amber-50 px-2 py-0.5 text-[0.6rem] font-bold text-amber-700 uppercase tracking-wider border border-amber-100';
+        showToast("Erro ao conectar com a Nuvem. Backup local atualizado.");
+      });
+    }
+
+    function loadState() {
+      try { const rawF = localStorage.getItem(LOCAL_FILTERS_KEY); if (rawF) Object.assign(state, JSON.parse(rawF)); } catch (e) {}
+
+      if (isFirebaseReady()) {
+          firebase.database().ref('supplyData').on('value', (snapshot) => {
+              const data = snapshot.val();
+              if (data) {
+                  let parsedArray = Array.isArray(data.demands) ? data.demands : (data.demands ? Object.values(data.demands) : []);
+                  state.demands = parsedArray.map(hydrateDemand);
+                  state.lastImport = data.lastImport || '';
+              } else { state.demands = []; state.lastImport = ''; }
+              
+              elements.syncStatus.classList.remove('bg-amber-500', 'animate-pulse'); elements.syncStatus.classList.add('bg-emerald-500'); render(); 
+          }, (err) => {
+              console.error(err);
+              try { const backup = JSON.parse(localStorage.getItem('supply-demands-backup')); if(backup) { state.demands = backup.demands.map(hydrateDemand); state.lastImport = backup.lastImport; } } catch(e) {}
+              elements.autosaveBadge.textContent = 'Backup local'; elements.autosaveBadge.className = 'rounded bg-amber-50 px-2 py-0.5 text-[0.6rem] font-bold text-amber-700 uppercase tracking-wider border border-amber-100';
+              render();
+          });
+      } else {
+          try { const backup = JSON.parse(localStorage.getItem('supply-demands-backup')); if(backup) { state.demands = backup.demands.map(hydrateDemand); state.lastImport = backup.lastImport; } } catch(e) {}
+          render();
+      }
+    }
+
+    function mapExcelRow(row) {
+      const mapped = addId({
+        ...row, 
+        rm: pickFromRow(row, ['Num RM', 'RM', 'Requisicao', 'numero']),
+        creationDate: pickFromRow(row, ['Data RM', 'Data Inclusão Item', 'Emissão']),
+        signatureDate: pickFromRow(row, ['Data Assinatura RM', 'Data Liberação SC', 'Data Assin RM', 'Liberação SC']),
+        deliveryDate: pickFromRow(row, ['Data Entrega RM', 'Data Entrega', 'Prazo', 'Data Necessidade', 'Entrega']),
+        requester: pickFromRow(row, ['Solicitante RM', 'Solicitante', 'Nome Solicitante', 'Criador', 'Requisitante']),
+        category: pickFromRow(row, ['Categoria Item', 'Filial', 'Categoria']),
+        description: pickFromRow(row, ['Descrição Item', 'Descricao Item', 'Descrição', 'Produto', 'Descrio Item']),
+        buyer: pickFromRow(row, ['Comprador', 'Nome Comprador']),
+        costCenter: pickFromRow(row, ['Centro de Custo', 'Descrição Centro Custo', 'Centro Custo', 'CC']),
+        pmrObra: pickFromRow(row, ['PMR Obra', 'PMR SC', 'Obra', 'PMR']),
+        typeRM: pickFromRow(row, ['Tipo RM', 'Urgente', 'Prioridade']),
+        situation: pickFromRow(row, ['Situação RM', 'Situação Item', 'Situacao RM', 'Status']),
+        phase: pickFromRow(row, ['Fase RM', 'Última Fase', 'Fase']),
+        daysOpenRaw: pickFromRow(row, ['Dias RM em aberto', 'Dias Em Aberto', 'Atraso']),
+        phone: pickFromRow(row, ['Telefone', 'Celular', 'Contato', 'Wpp', 'WhatsApp']),
+        email: pickFromRow(row, ['Email', 'E-mail', 'Correio'])
+      });
+      
+      const cleanExtras = {};
+      for (const key in row) { if (row[key] !== '' && row[key] !== null && row[key] !== undefined) cleanExtras[key] = row[key]; }
+      mapped.originalRow = cleanExtras;
+      return mapped;
+    }
+
+    function pickFromRow(row, names) {
+      const normalizedNames = names.map(normalizeHeader);
+      const entry = Object.entries(row).find(([key]) => normalizedNames.includes(normalizeHeader(key)));
+      return entry ? entry[1] : '';
+    }
+
+    async function processSpreadsheetData(rows) {
+        if (!rows || !rows.length) return showToast('Planilha vazia ou cabeçalho inválido.');
+
+        const mappedDemands = rows.map(mapExcelRow).filter(r => r.rm || r.description || r.costCenter || r.buyer);
+        if (!mappedDemands.length) throw new Error("Nenhuma RM encontrada.");
+
+        const groupedMap = new Map();
+        mappedDemands.forEach(item => {
+          const key = item.rm || item.id; 
+          const itemData = { 
+              description: item.description || 'Sem descrição', 
+              category: item.category || '', 
+              value: item.value || 0, 
+              extras: item.originalRow || {} 
+          };
+          
+          if (!groupedMap.has(key)) {
+            const newItem = { ...item, itemsList: [itemData] };
+            delete newItem.originalRow;
+            
+            const oldItem = state.demands.find(d => d.rm === newItem.rm);
+            if (oldItem) {
+                newItem.id = oldItem.id || newItem.id;
+                newItem.phase = oldItem.phase || newItem.phase;
+                newItem.ocDetails = oldItem.ocDetails || newItem.ocDetails;
+                newItem.buyer = oldItem.buyer || newItem.buyer;
+            }
+            
+            groupedMap.set(key, newItem);
+          } else {
+            const ext = groupedMap.get(key);
+            ext.itemsList.push(itemData);
+            ext.value = (ext.value || 0) + (item.value || 0);
+          }
+        });
+
+        state.demands = Array.from(groupedMap.values());
+        state.activeBuyer = 'Todos'; state.search = ''; state.dateStart = ''; state.dateEnd = ''; state.categoryFilter = ''; state.costCenterFilter = '';
+        state.lastImport = `Importado: ${new Date().toLocaleString('pt-BR')} • ${state.demands.length} RM(s)`;
+        
+        saveLocalFilters(); saveDemandsToFirebase(); showToast(`${state.demands.length} RM(s) processadas!`);
+    }
+
+    async function importSpreadsheet(file) {
+      if (!file) return;
+      try {
+        elements.autosaveBadge.textContent = 'Processando...';
+        
+        let rawRows = [];
+        const isCSV = file.name.toLowerCase().endsWith('.csv');
+        let wb;
+        
+        if (isCSV) {
+            const text = await file.text();
+            const delimiter = text.substring(0, 1000).includes(';') ? ';' : ',';
+            wb = XLSX.read(text, { type: 'string', raw: true, FS: delimiter });
+        } else {
+            const arrayBuffer = await file.arrayBuffer();
+            wb = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
+        }
+
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+        let headerRowIndex = 0;
+        for (let i = 0; i < Math.min(20, rawRows.length); i++) {
+          const rowValues = rawRows[i].map(v => normalizeHeader(String(v)));
+          if (rowValues.includes('rm') || rowValues.includes('numrm') || rowValues.includes('numero') || rowValues.includes('requisicao')) { headerRowIndex = i; break; }
+        }
+        
+        const rows = XLSX.utils.sheet_to_json(sheet, { range: headerRowIndex, defval: '' });
+        await processSpreadsheetData(rows);
+        
+      } catch (error) { 
+        console.error(error); showToast(`Erro ao importar: ${error.message || 'Falha ao ler arquivo.'}`); 
+      } finally { elements.fileInput.value = ''; }
+    }
+
+
+    function exportStatus() {
+      if (!state.demands.length) return showToast('Não há dados para exportar.');
+      const rows = state.demands.map((item) => {
+        const sla = getSlaInfo(item);
+        return {
+          'RM': item.rm, 'Data RM': formatDateBR(item.creationDateISO||item.creationDateRaw), 'Data Assinatura RM': formatDateBR(item.signatureDateISO||item.signatureDateRaw),
+          'Nome Comprador': item.buyer, 'Descrição Centro Custo': item.costCenter, 'Situação RM': item.situation, 'Última Fase': item.phase,
+          'Fila Atual no Sistema': item.phase, 'Status SLA': sla.label,
+          'Número OC (Sistema)': item.ocDetails ? item.ocDetails.numero : '',
+          'Fornecedor (Sistema)': item.ocDetails ? item.ocDetails.fornecedor : '',
+          'Categoria': (item.itemsList || []).map(i => i.category).filter((v, i, a) => a.indexOf(v) === i).join(', '),
+          'Descrição Itens': (item.itemsList || []).map(i => i.description).join('; '),
+          'Qtd. Itens Agrupados': item.itemsList ? item.itemsList.length : 1
+        };
+      });
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Supply Flow Export');
+      XLSX.writeFile(wb, `SupplyFlow-${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    function initEvents() {
+      // Eventos do Mapa de Fornecedores
+      elements.supplierMapBtn.addEventListener('click', openSupplierMapWindow);
+      elements.supplierMapCloseBtn.addEventListener('click', closeSupplierMapWindow);
+      elements.supplierMapReloadBtn.addEventListener('click', reloadSupplierMapWindow);
+      elements.supplierMapBackdrop.addEventListener('click', e => { if (e.target === elements.supplierMapBackdrop) closeSupplierMapWindow(); });
+
+      // Eventos do Módulo de Contratos
+      elements.contractsBtn.addEventListener('click', openContractsWindow);
+      elements.contractsCloseBtn.addEventListener('click', closeContractsWindow);
+      elements.contractsReloadBtn.addEventListener('click', reloadContractsWindow);
+      elements.contractsBackdrop.addEventListener('click', e => { if (e.target === elements.contractsBackdrop) closeContractsWindow(); });
+
+      elements.exportBtn.addEventListener('click', exportStatus);
+      elements.importBtn.addEventListener('click', () => {
+        elements.fileInput.click();
+      });
+
+      elements.clearBtn.addEventListener('click', () => {
+        const confirmacao = window.prompt("Digite APAGAR para confirmar. Isso apagará a nuvem para TODOS:");
+        if (confirmacao === "APAGAR") {
+          state.demands = []; state.lastImport = ''; saveDemandsToFirebase();
+        } else if (confirmacao) showToast("Limpeza cancelada.");
+      });
+
+      elements.fileInput.addEventListener('change', e => importSpreadsheet(e.target.files[0]));
+      
+      const saveFilt = e => { const key = e.target.id.replace('Input', ''); state[key] = e.target.value; saveLocalFilters(); render(); };
+      elements.searchInput.addEventListener('input', e => { state.search = e.target.value; saveLocalFilters(); render(); });
+      elements.dateStartInput.addEventListener('change', saveFilt); elements.dateEndInput.addEventListener('change', saveFilt);
+      elements.categoryFilter.addEventListener('change', e => { state.categoryFilter = e.target.value; saveLocalFilters(); render(); });
+      elements.costCenterFilter.addEventListener('change', e => { state.costCenterFilter = e.target.value; saveLocalFilters(); render(); });
+      elements.clearFiltersBtn.addEventListener('click', () => { state.search = ''; state.dateStart = ''; state.dateEnd = ''; state.categoryFilter = ''; state.costCenterFilter = ''; saveLocalFilters(); render(); showToast('Filtros limpos.'); });
+
+      elements.modalCloseBtn.addEventListener('click', closeDrawer);
+      elements.drawerOverlay.addEventListener('click', closeDrawer);
+      elements.modalContent.addEventListener('click', e => {
+        const approveBtn = e.target.closest('[data-approve-oc-id]');
+        if (approveBtn) approveOC(approveBtn.dataset.approveOcId);
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        if (!elements.supplierMapBackdrop.classList.contains('hidden')) closeSupplierMapWindow();
+        else if (!elements.contractsBackdrop.classList.contains('hidden')) closeContractsWindow();
+        else closeDrawer();
+      });
+      
+      window.addEventListener('resize', updateTabIndicator);
+    }
+
+    function render() {
+      const buyers = getBuyers();
+      if (state.activeBuyer !== 'Todos' && !buyers.includes(state.activeBuyer)) state.activeBuyer = 'Todos';
+      elements.searchInput.value = state.search; elements.dateStartInput.value = state.dateStart; elements.dateEndInput.value = state.dateEnd;
+      renderTabs(buyers); renderFilters(); renderStats(); renderKanban(); renderBuyerActions(); 
+    }
+
+    loadState(); initEvents();
+  </script>
+</body>
+</html>
