@@ -21,9 +21,22 @@ const orderField: Record<EntityName | "importacoes", string> = {
 
 export async function listEntities<K extends EntityName>(table: K): Promise<EntityMap[K][]> {
   const client = requireSupabase();
-  const { data, error } = await client.from(table).select("*").order(orderField[table], { ascending: false });
-  if (error) throw error;
-  return (data || []) as EntityMap[K][];
+  const pageSize = 1000;
+  const rows: EntityMap[K][] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await client
+      .from(table)
+      .select("*")
+      .order(orderField[table], { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+    rows.push(...((data || []) as EntityMap[K][]));
+    if (!data || data.length < pageSize) break;
+  }
+
+  return rows;
 }
 
 export async function updateEntity<K extends EntityName>(table: K, id: string, patch: Partial<EntityMap[K]>) {

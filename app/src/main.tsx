@@ -5,9 +5,12 @@ import { App } from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
 import "./styles/global.css";
 
+const viteBase = import.meta.env.BASE_URL || "/";
+const routerBase = viteBase === "/" ? undefined : viteBase.replace(/\/$/, "");
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={routerBase}>
       <AuthProvider>
         <App />
       </AuthProvider>
@@ -17,6 +20,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    navigator.serviceWorker.register(`${viteBase}sw.js`, { scope: viteBase }).catch(() => undefined);
   });
 }

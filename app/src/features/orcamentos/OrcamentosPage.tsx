@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clock3, Download, Paperclip, Plus, Search, UploadCloud, X } from "lucide-react";
+import { Clock3, Download, Paperclip, Plus, Search, Trash2, UploadCloud, X } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { ImportWizard } from "../../components/ImportWizard";
 import { KanbanBoard } from "../../components/KanbanBoard";
@@ -11,7 +11,7 @@ import { formatCurrency, formatDateBr, normalizeText, parseMoney, slaColorByDueD
 import { canManage } from "../../lib/permissions";
 import { exportToXlsx } from "../../lib/spreadsheet";
 import { useAsyncData } from "../../hooks";
-import { insertEntity, listEntities, updateEntity } from "../../services/entities";
+import { deleteEntity, insertEntity, listEntities, updateEntity } from "../../services/entities";
 import { signedAttachmentUrl, uploadAttachments, type AttachmentMeta } from "../../services/storage";
 import type { Orcamento } from "../../types";
 
@@ -183,13 +183,22 @@ export function OrcamentosPage() {
         ]}
       />
 
-      {selected ? <OrcamentoDrawer item={selected} canEdit={canEdit} now={now} onClose={() => setSelectedId(null)} onSaved={refresh} /> : null}
+      {selected ? (
+        <OrcamentoDrawer
+          item={selected}
+          canDelete={canDeleteOrcamento(selected, profile?.id, profile?.email, canEdit)}
+          canEdit={canEdit}
+          now={now}
+          onClose={() => setSelectedId(null)}
+          onSaved={refresh}
+        />
+      ) : null}
     </div>
   );
 }
 
 function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [form, setForm] = useState({
     data_solicitacao: new Date().toISOString().slice(0, 10),
@@ -230,6 +239,7 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
       const proposal = form.numero_proposta || buildProposalNumber();
       const payload = { ...form, anexos: attachments, sla: createInitialSla("nao_iniciado") };
       await insertEntity("orcamentos", {
+        criado_por: session?.user.id || profile?.id || null,
         numero_proposta: proposal,
         nome_solicitante: form.nome_solicitante,
         email_solicitante: form.email_solicitante,
@@ -303,10 +313,26 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
   );
 }
 
-function OrcamentoDrawer({ item, canEdit, now, onClose, onSaved }: { item: Orcamento; canEdit: boolean; now: number; onClose: () => void; onSaved: () => void }) {
+function OrcamentoDrawer({
+  item,
+  canDelete,
+  canEdit,
+  now,
+  onClose,
+  onSaved,
+}: {
+  item: Orcamento;
+  canDelete: boolean;
+  canEdit: boolean;
+  now: number;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
   const [spend, setSpend] = useState(String(item.valor_final || ""));
   const [saving, setSaving] = useState(String(item.saving || ""));
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const sla = getOrcamentoSla(item, now);
 
   async function saveFinancials() {
@@ -316,6 +342,21 @@ function OrcamentoDrawer({ item, canEdit, now, onClose, onSaved }: { item: Orcam
       quantidade_req: Number(qtd || 0),
     });
     onSaved();
+  }
+
+  async function deleteRequest() {
+    if (!window.confirm("Excluir esta solicitação de orçamento? Esta ação não pode ser desfeita.")) return;
+    setDeleting(true);
+    setDeleteMessage("");
+    try {
+      await deleteEntity("orcamentos", item.id);
+      onSaved();
+      onClose();
+    } catch (err) {
+      setDeleteMessage(err instanceof Error ? err.message : "Falha ao excluir solicitação.");
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -378,6 +419,23 @@ function OrcamentoDrawer({ item, canEdit, now, onClose, onSaved }: { item: Orcam
           </div>
           <AttachmentList attachments={getAttachments(item)} />
         </section>
+
+        {canDelete ? (
+          <section className="panel panel--flat danger-zone">
+            <div>
+              <span className="eyebrow">Exclusão</span>
+              <h3>Excluir solicitação</h3>
+              <p>Disponível para administradores de orçamento e para quem criou esta solicitação.</p>
+            </div>
+            {deleteMessage ? <div className="form-error">{deleteMessage}</div> : null}
+            <div className="form-actions">
+              <button className="danger-button" type="button" onClick={deleteRequest} disabled={deleting}>
+                <Trash2 size={16} />
+                {deleting ? "Excluindo..." : "Excluir solicitação"}
+              </button>
+            </div>
+          </section>
+        ) : null}
       </aside>
     </div>
   );
@@ -449,6 +507,12 @@ function Info({ label, value }: { label: string; value: string }) {
       <strong>{value}</strong>
     </div>
   );
+}
+
+function canDeleteOrcamento(item: Orcamento, userId: string | undefined, email: string | undefined, canEdit: boolean) {
+  if (canEdit) return true;
+  if (userId && item.criado_por === userId) return true;
+  return Boolean(email && item.criado_por === null && item.email_solicitante?.toLowerCase() === email.toLowerCase());
 }
 
 type SlaState = {

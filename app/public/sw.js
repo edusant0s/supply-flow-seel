@@ -1,5 +1,10 @@
 const CACHE_NAME = "supply-flow-seel-static-v1";
-const STATIC_ASSETS = ["/", "/manifest.webmanifest", "/logo-seel.png"];
+const APP_SCOPE = new URL(self.registration.scope);
+const STATIC_ASSETS = [
+  APP_SCOPE.href,
+  new URL("manifest.webmanifest", APP_SCOPE).href,
+  new URL("logo-seel.png", APP_SCOPE).href,
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

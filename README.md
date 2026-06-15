@@ -35,6 +35,7 @@ npm run dev
    - `supabase/migrations/002_allow_contract_requests.sql`
    - `supabase/migrations/003_viewer_global_orcamentos_and_storage.sql`
    - `supabase/migrations/004_viewer_global_obras_select.sql`
+   - `supabase/migrations/005_orcamento_creator_delete.sql`
 4. Em Auth, crie manualmente o primeiro usuário administrador.
 5. Edite e execute `supabase/seed_first_super_admin.sql` com o e-mail desse usuário.
 6. Configure a Edge Function `create-user`:
@@ -93,6 +94,18 @@ Usuários ativos podem abrir Orçamentos e clicar em `Nova solicitação`.
 - Apenas `admin_orcamentos` e `super_admin` movem status, importam planilhas e atualizam spend/saving/REQ.
 
 ## Deploy Gratuito
+
+### GitHub Pages
+
+Este repositorio ja inclui `.github/workflows/deploy-pages.yml`.
+
+1. No GitHub, habilite Pages usando GitHub Actions como origem, se ainda nao estiver habilitado.
+2. Opcionalmente, cadastre os secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+3. A cada push na `main`, o workflow publica o build em:
+
+```text
+https://edusant0s.github.io/supply-flow-seel/
+```
 
 ### Vercel
 

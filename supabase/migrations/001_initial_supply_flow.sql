@@ -46,6 +46,7 @@ create table if not exists public.requisicoes (
 create table if not exists public.orcamentos (
   id uuid primary key default gen_random_uuid(),
   obra_id uuid references public.obras(id),
+  criado_por uuid references public.profiles(id) default auth.uid(),
   numero_proposta text,
   nome_solicitante text,
   email_solicitante text,
@@ -345,13 +346,32 @@ create policy orcamentos_select on public.orcamentos
 for select using (public.current_profile_is_active());
 drop policy if exists orcamentos_insert on public.orcamentos;
 create policy orcamentos_insert on public.orcamentos
-for insert with check (public.current_profile_is_active());
+for insert with check (
+  public.current_profile_is_active()
+  and (
+    criado_por is null
+    or criado_por = auth.uid()
+    or public.can_manage_orcamentos()
+  )
+);
 drop policy if exists orcamentos_update on public.orcamentos;
 create policy orcamentos_update on public.orcamentos
 for update using (public.can_manage_orcamentos()) with check (public.can_manage_orcamentos());
 drop policy if exists orcamentos_delete on public.orcamentos;
 create policy orcamentos_delete on public.orcamentos
-for delete using (public.can_manage_orcamentos());
+for delete using (
+  public.can_manage_orcamentos()
+  or criado_por = auth.uid()
+  or (
+    criado_por is null
+    and lower(coalesce(email_solicitante, '')) = lower(coalesce((
+      select p.email
+      from public.profiles p
+      where p.id = auth.uid()
+        and p.ativo = true
+    ), ''))
+  )
+);
 
 drop policy if exists contratos_select on public.contratos;
 create policy contratos_select on public.contratos

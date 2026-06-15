@@ -85,7 +85,7 @@ function boolFrom(value: unknown) {
 }
 
 function matchObra(row: RawRow, obras: Obra[]) {
-  const raw = text(pick(row, ["obra", "pmr obra", "pmr", "centro de custo", "centro custo", "cc", "local obra"]));
+  const raw = text(pick(row, ["obra", "nome da obra", "centro de custo", "descrição centro custo", "descricao centro custo", "centro custo", "cc", "local obra"]));
   if (!raw) return null;
   const normalized = headerKey(raw);
   return (

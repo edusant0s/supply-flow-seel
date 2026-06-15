@@ -55,6 +55,7 @@ export type Requisicao = {
 export type Orcamento = {
   id: string;
   obra_id: string | null;
+  criado_por: string | null;
   numero_proposta: string | null;
   nome_solicitante: string | null;
   email_solicitante: string | null;

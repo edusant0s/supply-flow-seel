@@ -25,12 +25,14 @@ const statuses = [
 ] as const;
 
 const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovação"];
+const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descrição Centro Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
 
 export function RequisicoesPage() {
   const { profile } = useAuth();
   const [query, setQuery] = useState("");
   const [buyer, setBuyer] = useState("Todos");
   const [obraFilter, setObraFilter] = useState("");
+  const [slaFilter, setSlaFilter] = useState("");
   const [showImport, setShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("requisicoes"), []);
@@ -41,12 +43,19 @@ export function RequisicoesPage() {
     return ["Todos", ...Array.from(new Set((data || []).map((item) => item.comprador || "Sem comprador"))).sort()];
   }, [data]);
 
+  const obraOptions = useMemo(() => {
+    return Array.from(new Set((data || []).map((item) => obraName(item, obras.data || [])).filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, "pt-BR", { numeric: true })
+    );
+  }, [data, obras.data]);
+
   const filtered = useMemo(() => {
     const q = normalizeText(query);
     return (data || []).filter((item) => {
       const matchesBuyer = buyer === "Todos" || (item.comprador || "Sem comprador") === buyer;
-      const matchesObra = !obraFilter || (obraFilter === "__sem_obra__" ? !item.obra_id : item.obra_id === obraFilter);
       const obra = obraName(item, obras.data || []);
+      const matchesObra = !obraFilter || obra === obraFilter;
+      const matchesSla = !slaFilter || getSlaInfo(item).tone === slaFilter;
       const rowsText = getPayloadRows(item.payload)
         .map((row) => Object.values(row).join(" "))
         .join(" ");
@@ -54,9 +63,9 @@ export function RequisicoesPage() {
         .join(" ")
         .toLowerCase()
         .includes(q);
-      return matchesBuyer && matchesObra && matchesQuery;
+      return matchesBuyer && matchesObra && matchesSla && matchesQuery;
     });
-  }, [buyer, data, obraFilter, obras.data, query]);
+  }, [buyer, data, obraFilter, obras.data, query, slaFilter]);
 
   const selected = useMemo(() => (data || []).find((item) => item.id === selectedId) || null, [data, selectedId]);
 
@@ -71,6 +80,7 @@ export function RequisicoesPage() {
   }));
   const activeItems = filtered.filter((item) => !["OC", "CANCELADA"].includes(getRequisicaoStatus(item)));
   const openItemCount = activeItems.reduce((sum, item) => sum + getPayloadRows(item.payload).length, 0);
+  const prioritySummary = buildPrioritySummary(activeItems);
   const buyerReport = buildBuyerReport(activeItems, buyer);
 
   return (
@@ -82,12 +92,18 @@ export function RequisicoesPage() {
         </label>
         <select value={obraFilter} onChange={(event) => setObraFilter(event.target.value)}>
           <option value="">Todas as obras</option>
-          {(obras.data || []).map((obra) => (
-            <option key={obra.id} value={obra.id}>
-              {obra.nome}
+          {obraOptions.map((obra) => (
+            <option key={obra} value={obra}>
+              {obra}
             </option>
           ))}
-          <option value="__sem_obra__">Sem obra vinculada</option>
+        </select>
+        <select value={slaFilter} onChange={(event) => setSlaFilter(event.target.value)}>
+          <option value="">Todos SLAs</option>
+          <option value="danger">Atrasadas</option>
+          <option value="warning">Alerta SLA</option>
+          <option value="success">No prazo</option>
+          <option value="neutral">Sem SLA</option>
         </select>
         <button
           className="secondary-button"
@@ -127,7 +143,6 @@ export function RequisicoesPage() {
           {buyers.map((item) => (
             <button key={item} className={item === buyer ? "active" : ""} type="button" onClick={() => setBuyer(item)}>
               {item}
-              <span>{(data || []).filter((row) => item === "Todos" || (row.comprador || "Sem comprador") === item).length}</span>
             </button>
           ))}
         </div>
@@ -154,6 +169,25 @@ export function RequisicoesPage() {
         <KpiCard title="Atrasadas" value={activeItems.filter((item) => getSlaInfo(item).tone === "danger").length} tone="danger" />
         <KpiCard title="Alerta SLA" value={activeItems.filter((item) => getSlaInfo(item).tone === "warning").length} tone="warning" />
         <KpiCard title="No prazo" value={activeItems.filter((item) => getSlaInfo(item).tone === "success").length} tone="success" />
+      </section>
+
+      <section className="priority-summary">
+        <div>
+          <span className="eyebrow">Perfil das RMs em aberto</span>
+          <h2>Normais x urgentes</h2>
+        </div>
+        <div className="priority-summary__grid">
+          <article>
+            <span>Normais</span>
+            <strong>{prioritySummary.normal.count}</strong>
+            <b>{prioritySummary.normal.percent}</b>
+          </article>
+          <article className="priority-summary__urgent">
+            <span>Urgentes</span>
+            <strong>{prioritySummary.urgent.count}</strong>
+            <b>{prioritySummary.urgent.percent}</b>
+          </article>
+        </div>
       </section>
 
       {showImport ? <ImportWizard kind="requisicoes" onComplete={refresh} /> : null}
@@ -373,14 +407,18 @@ function getFirstItemDescription(item: Requisicao) {
 }
 
 function obraName(item: Requisicao, obras: Obra[]) {
-  if (!item.obra_id) return "Sem obra vinculada";
-  return obras.find((obra) => obra.id === item.obra_id)?.nome || item.obra_id;
+  const linkedObra = item.obra_id ? obras.find((obra) => obra.id === item.obra_id)?.nome : "";
+  return linkedObra || getPayloadField(item.payload, obraAliases) || "Sem obra vinculada";
 }
 
 function getAny(row: RawRow, aliases: string[]) {
   const wanted = aliases.map(headerKey);
   const found = Object.entries(row).find(([key]) => wanted.includes(headerKey(key)));
   return found ? String(found[1] ?? "").trim() : "";
+}
+
+function isUrgent(item: Requisicao) {
+  return normalizeText(item.prioridade).includes("urgent") || normalizeText(getPayloadField(item.payload, ["Tipo RM", "Urgente", "Prioridade"])).includes("urg");
 }
 
 function getSlaInfo(item: Requisicao) {
@@ -393,14 +431,30 @@ function getSlaInfo(item: Requisicao) {
     : Number.isFinite(created)
       ? Math.max(0, Math.floor((Date.now() - created) / 86400000))
       : null;
-  const urgent = normalizeText(item.prioridade).includes("urgent");
-  const limit = urgent ? 3 : 5;
+  const urgent = isUrgent(item);
+  const isHugo = normalizeText(item.comprador) === "hugo";
+  const limit = isHugo ? (urgent ? 30 : 35) : urgent ? 3 : 5;
   if (status === "OC") return { tone: "success" as const, label: "Concluída" };
   if (status === "CANCELADA") return { tone: "neutral" as const, label: "Cancelada" };
   if (elapsed === null) return { tone: "neutral" as const, label: "SLA sem data" };
   if (elapsed > limit) return { tone: "danger" as const, label: `${elapsed}d · atrasada` };
   if (limit - elapsed <= 1) return { tone: "warning" as const, label: `${elapsed}d · alerta` };
   return { tone: "success" as const, label: `${elapsed}d · no prazo` };
+}
+
+function buildPrioritySummary(items: Requisicao[]) {
+  const total = items.length;
+  const urgent = items.filter(isUrgent).length;
+  const normal = Math.max(0, total - urgent);
+  return {
+    normal: { count: normal, percent: formatPercent(normal, total) },
+    urgent: { count: urgent, percent: formatPercent(urgent, total) },
+  };
+}
+
+function formatPercent(value: number, total: number) {
+  if (!total) return "0%";
+  return `${((value / total) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
 }
 
 function compareSla(a: Requisicao, b: Requisicao) {
