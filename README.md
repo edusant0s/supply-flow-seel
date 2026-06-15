@@ -99,7 +99,7 @@ Usuários ativos podem abrir Orçamentos e clicar em `Nova solicitação`.
 
 Este repositorio ja inclui `.github/workflows/deploy-pages.yml`.
 
-1. No GitHub, habilite Pages usando GitHub Actions como origem, se ainda nao estiver habilitado.
+1. No GitHub, habilite Pages usando a branch `gh-pages` e a pasta `/`, se ainda nao estiver habilitado.
 2. Opcionalmente, cadastre os secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
 3. A cada push na `main`, o workflow publica o build em:
 
