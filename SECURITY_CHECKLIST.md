@@ -9,6 +9,8 @@
 - [x] Workflow do GitHub Pages exige GitHub Secrets e nao usa `.env.example` como fallback de producao.
 - [x] Headers de seguranca configurados no Vercel: `nosniff`, `DENY` iframe, `Referrer-Policy` e `Permissions-Policy`.
 - [x] Edge Function `create-user` valida `role` no backend e restringe CORS por origem configuravel.
+- [x] GitHub Secret Scanning e Push Protection habilitados no repositorio.
+- [x] GitHub Vulnerability Alerts e Dependabot Security Updates habilitados.
 - [x] `service_role` restrita à Edge Function `create-user`.
 - [x] Tabelas sensíveis com RLS ativado.
 - [x] Funções auxiliares: `get_current_user_role`, `user_can_access_obra`, `is_admin`.
@@ -38,6 +40,5 @@ Validações manuais obrigatórias antes de produção:
 - [ ] Confirmar que `SUPABASE_SERVICE_ROLE_KEY` não existe em `.env` do frontend.
 - [ ] Revisar policies de Storage caso anexos passem a exigir escopo por obra no caminho do arquivo.
 - [ ] Rotacionar a anon key/credenciais do Supabase se a politica interna tratar anon key como credencial exposta, pois ela ja apareceu no historico Git antes desta limpeza.
-- [ ] Habilitar/confirmar Secret Scanning e Push Protection no GitHub.
 - [ ] Separar projetos/chaves Supabase de desenvolvimento e producao.
 - [ ] Revisar periodicamente plugins/conectores MCP usados no ambiente de desenvolvimento.

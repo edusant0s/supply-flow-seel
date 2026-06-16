@@ -10,6 +10,7 @@
 - GitHub Secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` configurados no repositorio.
 - `vercel.json` passou a aplicar headers basicos de hardening.
 - Edge Function `create-user` passou a validar `role` no backend e a restringir CORS por origem.
+- Secret Scanning, Push Protection, Vulnerability Alerts e Dependabot Security Updates habilitados no GitHub.
 
 ## Recomendacoes ja atendidas pela arquitetura
 
@@ -24,6 +25,5 @@
 - Rotacionar a anon key/chaves do Supabase se a regra interna considerar a anon key como credencial vazada, porque ela apareceu no historico Git antes desta correcao.
 - Confirmar no Vercel que as mesmas variaveis existem em Production, Preview e Development.
 - Configurar `ALLOWED_ORIGINS` na Edge Function se houver novo dominio alem de Vercel, GitHub Pages e localhost.
-- Habilitar Secret Scanning/Push Protection no GitHub.
 - Separar Supabase de desenvolvimento e producao quando o sistema for liberado para uso corporativo.
 - Rotacionar credenciais periodicamente e apos qualquer suspeita de exposicao.
