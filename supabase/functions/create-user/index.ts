@@ -1,13 +1,49 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
 type Role = "super_admin" | "admin_suprimentos" | "admin_orcamentos" | "admin_contratos" | "viewer_global" | "viewer";
+
+const allowedRoles: Role[] = [
+  "super_admin",
+  "admin_suprimentos",
+  "admin_orcamentos",
+  "admin_contratos",
+  "viewer_global",
+  "viewer",
+];
+
+const defaultAllowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://supply-flow-seel.vercel.app",
+  "https://edusant0s.github.io",
+];
+
+function getAllowedOrigins() {
+  return (Deno.env.get("ALLOWED_ORIGINS") || defaultAllowedOrigins.join(","))
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  const allowedOrigin = getAllowedOrigins().includes(origin) ? origin : defaultAllowedOrigins[0];
+
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
+
+function jsonResponse(req: Request, body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+  });
+}
 
 function randomPassword() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
@@ -15,18 +51,20 @@ function randomPassword() {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Método não permitido." }), { status: 405, headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: getCorsHeaders(req) });
+  if (req.method !== "POST") return jsonResponse(req, { error: "Metodo nao permitido." }, 405);
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const authHeader = req.headers.get("Authorization");
 
+  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+    return jsonResponse(req, { error: "Funcao sem variaveis de ambiente obrigatorias." }, 500);
+  }
+
   if (!authHeader) {
-    return new Response(JSON.stringify({ error: "Sem Authorization header." }), { status: 401, headers: corsHeaders });
+    return jsonResponse(req, { error: "Sem Authorization header." }, 401);
   }
 
   const userClient = createClient(supabaseUrl, anonKey, {
@@ -40,7 +78,7 @@ serve(async (req) => {
   } = await userClient.auth.getUser();
 
   if (callerError || !caller) {
-    return new Response(JSON.stringify({ error: "Sessão inválida." }), { status: 401, headers: corsHeaders });
+    return jsonResponse(req, { error: "Sessao invalida." }, 401);
   }
 
   const { data: callerProfile, error: profileError } = await adminClient
@@ -50,7 +88,7 @@ serve(async (req) => {
     .maybeSingle();
 
   if (profileError || !callerProfile?.ativo || callerProfile.role !== "super_admin") {
-    return new Response(JSON.stringify({ error: "Apenas super_admin pode criar usuários." }), { status: 403, headers: corsHeaders });
+    return jsonResponse(req, { error: "Apenas super_admin pode criar usuarios." }, 403);
   }
 
   const body = (await req.json()) as {
@@ -66,11 +104,19 @@ serve(async (req) => {
   const email = String(body.email || "").trim().toLowerCase();
   const role = body.role || "viewer";
   const ativo = body.ativo ?? true;
-  const obraIds = Array.isArray(body.obraIds) ? body.obraIds : [];
+  const obraIds = Array.isArray(body.obraIds) ? body.obraIds.filter((id) => typeof id === "string" && id.length <= 80) : [];
   const temporaryPassword = body.password?.trim() || randomPassword();
 
   if (!nome || !email) {
-    return new Response(JSON.stringify({ error: "Nome e e-mail são obrigatórios." }), { status: 400, headers: corsHeaders });
+    return jsonResponse(req, { error: "Nome e e-mail sao obrigatorios." }, 400);
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return jsonResponse(req, { error: "E-mail invalido." }, 400);
+  }
+
+  if (!allowedRoles.includes(role)) {
+    return jsonResponse(req, { error: "Perfil invalido." }, 400);
   }
 
   const { data: created, error: createError } = await adminClient.auth.admin.createUser({
@@ -81,7 +127,7 @@ serve(async (req) => {
   });
 
   if (createError || !created.user) {
-    return new Response(JSON.stringify({ error: createError?.message || "Falha ao criar usuário." }), { status: 400, headers: corsHeaders });
+    return jsonResponse(req, { error: createError?.message || "Falha ao criar usuario." }, 400);
   }
 
   const { error: profileUpsertError } = await adminClient.from("profiles").upsert({
@@ -93,7 +139,7 @@ serve(async (req) => {
   });
 
   if (profileUpsertError) {
-    return new Response(JSON.stringify({ error: profileUpsertError.message }), { status: 400, headers: corsHeaders });
+    return jsonResponse(req, { error: profileUpsertError.message }, 400);
   }
 
   await adminClient.from("user_obras").delete().eq("user_id", created.user.id);
@@ -103,11 +149,9 @@ serve(async (req) => {
       .insert(obraIds.map((obra_id) => ({ user_id: created.user.id, obra_id })));
 
     if (obraError) {
-      return new Response(JSON.stringify({ error: obraError.message }), { status: 400, headers: corsHeaders });
+      return jsonResponse(req, { error: obraError.message }, 400);
     }
   }
 
-  return new Response(JSON.stringify({ id: created.user.id, temporary_password: temporaryPassword }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return jsonResponse(req, { id: created.user.id, temporary_password: temporaryPassword });
 });

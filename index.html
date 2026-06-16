@@ -9,6 +9,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -344,15 +345,7 @@
     // 1. CONFIGURAÇÃO E DADOS GERAIS
     // =========================================================================
     
-    const firebaseConfig = {
-      apiKey: "AIzaSyBNJnpSFYYvs8mrjKAEEpDsv_x5TcnUSfs",
-      authDomain: "supply-flow-ad20b.firebaseapp.com",
-      databaseURL: "https://supply-flow-ad20b-default-rtdb.firebaseio.com",
-      projectId: "supply-flow-ad20b",
-      storageBucket: "supply-flow-ad20b.firebasestorage.app",
-      messagingSenderId: "54257499515",
-      appId: "1:54257499515:web:d9ab6f27b338b9d5eb91de"
-    };
+    const firebaseConfig = window.SUPPLY_FLOW_FIREBASE_CONFIG || {};
 
     if (typeof firebase !== 'undefined' && Object.keys(firebaseConfig).length > 0 && firebaseConfig.apiKey) {
       try {

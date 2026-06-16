@@ -12,7 +12,7 @@ O legado HTML foi preservado na raiz. A nova aplicação fica em `app/` e usa Vi
 npm install
 ```
 
-2. Crie `.env` a partir de `.env.example`:
+2. Crie `app/.env` a partir de `.env.example`:
 
 ```bash
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
@@ -42,6 +42,12 @@ npm run dev
 
 ```bash
 supabase functions deploy create-user
+```
+
+Configure tambem `ALLOWED_ORIGINS` na funcao se usar dominios diferentes dos padroes:
+
+```bash
+ALLOWED_ORIGINS=https://supply-flow-seel.vercel.app,https://edusant0s.github.io,http://localhost:5173
 ```
 
 No ambiente da função, mantenha `SUPABASE_SERVICE_ROLE_KEY` somente no Supabase. Nunca coloque essa chave no frontend.
@@ -100,8 +106,8 @@ Usuários ativos podem abrir Orçamentos e clicar em `Nova solicitação`.
 Este repositorio ja inclui `.github/workflows/deploy-pages.yml`.
 
 1. No GitHub, habilite Pages usando a branch `gh-pages` e a pasta `/`, se ainda nao estiver habilitado.
-2. Opcionalmente, cadastre os secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
-3. A cada push na `main`, o workflow publica o build em:
+2. Cadastre os secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+3. A cada push na `main`, o workflow executa `npm run security:scan` e publica o build em:
 
 ```text
 https://edusant0s.github.io/supply-flow-seel/
@@ -112,6 +118,7 @@ https://edusant0s.github.io/supply-flow-seel/
 - Framework: Vite.
 - Build command: `npm run build`.
 - Output directory: `app/dist`.
+- Headers de seguranca definidos em `vercel.json`.
 - Variáveis: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
 
 ### Netlify
@@ -124,6 +131,7 @@ https://edusant0s.github.io/supply-flow-seel/
 
 ```bash
 npm run dev
+npm run security:scan
 npm run typecheck
 npm run build
 npm run preview

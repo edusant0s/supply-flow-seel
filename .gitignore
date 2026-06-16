@@ -2,8 +2,19 @@ node_modules/
 app/dist/
 .env
 .env.*
+**/.env
+**/.env.*
 !.env.example
+!**/.env.example
 .DS_Store
 *.log
 
-.vercel
+.vercel/
+**/.temp/
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+firebase-config.js
