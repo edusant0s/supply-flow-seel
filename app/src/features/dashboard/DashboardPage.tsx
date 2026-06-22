@@ -27,33 +27,10 @@ export function DashboardPage() {
     <div className="page-stack">
       <section className="kpi-grid">
         <KpiCard title="RMs" value={data.requisicoes.length} icon={ClipboardList} tone="blue" />
-        <KpiCard title="Orçamentos" value={data.orcamentos.length} icon={FileSpreadsheet} />
+        <KpiCard title="Orcamentos" value={data.orcamentos.length} icon={FileSpreadsheet} />
         <KpiCard title="Contratos" value={data.contratos.length} icon={FileText} />
         <KpiCard title="Fornecedores" value={data.fornecedores.length} icon={MapPinned} />
         <KpiCard title="Alertas" value={atrasadas} icon={AlertTriangle} tone={atrasadas ? "warning" : "success"} />
-      </section>
-
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <span className="eyebrow">Visão consolidada</span>
-            <h2>Operação Supply Flow</h2>
-          </div>
-        </div>
-        <div className="dashboard-grid">
-          <article>
-            <strong>Próximos passos</strong>
-            <p>Importe as bases atuais, vincule usuários às obras e valide as policies RLS antes de liberar edição.</p>
-          </article>
-          <article>
-            <strong>Segurança</strong>
-            <p>As permissões reais ficam no Supabase. O frontend apenas reflete o que o backend já permite.</p>
-          </article>
-          <article>
-            <strong>PWA</strong>
-            <p>Assets estáticos são cacheados. Dados operacionais continuam exigindo conexão segura.</p>
-          </article>
-        </div>
       </section>
     </div>
   );

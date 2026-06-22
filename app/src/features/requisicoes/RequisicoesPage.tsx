@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Download, Mail, MessageCircle, Search, UploadCloud, X } from "lucide-react";
+import { Download, Mail, MessageCircle, Plus, Search, UploadCloud, X } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { ImportWizard } from "../../components/ImportWizard";
 import { KanbanBoard } from "../../components/KanbanBoard";
@@ -16,21 +16,23 @@ import { listEntities, updateEntity } from "../../services/entities";
 import type { Obra, Requisicao } from "../../types";
 
 const statuses = [
-  ["PENDENTE_ASSINATURA", "Pend. assinatura", "Aguardando liberação"],
-  ["RM", "Fase de solicitação", "Em análise"],
-  ["RC", "Fase de cotação", "Buscando fornecedores"],
-  ["MC", "Mapa comparativo", "Equalizando propostas"],
-  ["OC", "Ordem de compra", "Aprovação e emissão"],
-  ["CANCELADA", "Canceladas", "Não prosseguiram"],
+  ["RM", "RM", "Requisicao criada"],
+  ["RC", "RC", "Requisicao de compra"],
+  ["MC", "MC", "Mapa comparativo"],
+  ["OC", "OC", "Ordem de compra"],
+  ["CANCELADA", "CANCELADAS", "Encerradas"],
+  ["PENDENTE_ASSINATURA", "NAO ASSINADAS", "Sem assinatura da RM"],
 ] as const;
 
-const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovação"];
-const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descrição Centro Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
+const customBuyersKey = "supply-flow:custom-buyers";
+const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovacao RM"];
+const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
 
 export function RequisicoesPage() {
   const { profile } = useAuth();
   const [query, setQuery] = useState("");
   const [buyer, setBuyer] = useState("Todos");
+  const [customBuyers, setCustomBuyers] = useState<string[]>(() => loadCustomBuyers());
   const [obraFilter, setObraFilter] = useState("");
   const [slaFilter, setSlaFilter] = useState("");
   const [showImport, setShowImport] = useState(false);
@@ -40,8 +42,9 @@ export function RequisicoesPage() {
   const canEdit = canManage(profile?.role, "requisicoes");
 
   const buyers = useMemo(() => {
-    return ["Todos", ...Array.from(new Set((data || []).map((item) => item.comprador || "Sem comprador"))).sort()];
-  }, [data]);
+    const importedBuyers = (data || []).map((item) => item.comprador || "Sem comprador");
+    return ["Todos", ...Array.from(new Set([...importedBuyers, ...customBuyers])).sort((a, b) => a.localeCompare(b, "pt-BR"))];
+  }, [customBuyers, data]);
 
   const obraOptions = useMemo(() => {
     return Array.from(new Set((data || []).map((item) => obraName(item, obras.data || [])).filter(Boolean))).sort((a, b) =>
@@ -69,7 +72,16 @@ export function RequisicoesPage() {
 
   const selected = useMemo(() => (data || []).find((item) => item.id === selectedId) || null, [data, selectedId]);
 
-  if (loading) return <LoadingState label="Carregando requisições" />;
+  function addBuyer() {
+    const value = window.prompt("Nome do comprador")?.trim();
+    if (!value) return;
+    const next = Array.from(new Set([...customBuyers, value])).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    setCustomBuyers(next);
+    saveCustomBuyers(next);
+    setBuyer(value);
+  }
+
+  if (loading) return <LoadingState label="Carregando requisicoes" />;
   if (error) return <EmptyState title="Falha ao carregar RMs" description={error} />;
 
   const columns = statuses.map(([key, title, subtitle]) => ({
@@ -112,7 +124,7 @@ export function RequisicoesPage() {
             exportToXlsx(
               filtered.map((item) => ({
                 RM: item.numero_rm,
-                Status: getRequisicaoStatus(item),
+                Status: statusLabel(getRequisicaoStatus(item)),
                 OC: getOcNumber(item),
                 Comprador: item.comprador,
                 Categoria: item.categoria,
@@ -145,6 +157,11 @@ export function RequisicoesPage() {
               {item}
             </button>
           ))}
+          {canEdit ? (
+            <button className="buyer-add-button" type="button" onClick={addBuyer} aria-label="Adicionar comprador" title="Adicionar comprador">
+              <Plus size={17} />
+            </button>
+          ) : null}
         </div>
         <div className="buyer-actions">
           <span>{openItemCount} item(ns) em aberto</span>
@@ -163,8 +180,17 @@ export function RequisicoesPage() {
         </div>
       </section>
 
+      <section className="phase-strip">
+        {statuses.map(([key, title, subtitle]) => (
+          <article key={key}>
+            <strong>{title}</strong>
+            <span>{subtitle}</span>
+          </article>
+        ))}
+      </section>
+
       <section className="kpi-grid">
-        <KpiCard title="RMs visíveis" value={activeItems.length} />
+        <KpiCard title="RMs visiveis" value={activeItems.length} />
         <KpiCard title="Itens em aberto" value={openItemCount} />
         <KpiCard title="Atrasadas" value={activeItems.filter((item) => getSlaInfo(item).tone === "danger").length} tone="danger" />
         <KpiCard title="Alerta SLA" value={activeItems.filter((item) => getSlaInfo(item).tone === "warning").length} tone="warning" />
@@ -241,7 +267,7 @@ export function RequisicoesPage() {
         columns={[
           { key: "rm", label: "RM", render: (item) => item.numero_rm || "-" },
           { key: "oc", label: "OC", render: (item) => getOcNumber(item) || "-" },
-          { key: "status", label: "Status", render: (item) => getRequisicaoStatus(item) },
+          { key: "status", label: "Status", render: (item) => statusLabel(getRequisicaoStatus(item)) },
           { key: "comprador", label: "Comprador", render: (item) => item.comprador || "-" },
           { key: "categoria", label: "Categoria", render: (item) => item.categoria || "-" },
           { key: "itens", label: "Itens", render: (item) => getPayloadRows(item.payload).length },
@@ -301,13 +327,13 @@ function RequisicaoDrawer({
         </header>
 
         <div className="drawer-grid">
-          <Info label="Status" value={getRequisicaoStatus(item)} />
+          <Info label="Status" value={statusLabel(getRequisicaoStatus(item))} />
           <Info label="OC" value={getOcNumber(item) || "-"} />
           <Info label="Obra" value={obraName(item, obras)} />
           <Info label="SLA" value={sla.label} />
           <Info label="Solicitante" value={item.solicitante || "-"} />
           <Info label="Centro de custo" value={item.centro_custo || "-"} />
-          <Info label="Data inclusão" value={formatDateBr(item.data_inclusao)} />
+          <Info label="Data inclusao" value={formatDateBr(item.data_inclusao)} />
           <Info label="Necessidade" value={formatDateBr(item.data_necessidade)} />
           <Info label="Telefone comprador" value={getPayloadField(item.payload, ["Telefone", "Celular", "WhatsApp", "Wpp"]) || "-"} />
           <Info label="Email comprador" value={getPayloadField(item.payload, ["Email", "E-mail", "Correio"]) || "-"} />
@@ -339,9 +365,9 @@ function RequisicaoDrawer({
           <DataTable
             data={rows}
             columns={[
-              { key: "desc", label: "Descrição", render: (row) => getAny(row, ["Descrição Item", "Descricao Item", "Produto", "Descrição"]) || "-" },
+              { key: "desc", label: "Descricao", render: (row) => getAny(row, ["Descricao Item", "Produto", "Descricao"]) || "-" },
               { key: "cat", label: "Categoria", render: (row) => getAny(row, ["Categoria Item", "Categoria", "Filial"]) || "-" },
-              { key: "sit", label: "Situação", render: (row) => getAny(row, ["Situação RM", "Situacao RM", "Status"]) || "-" },
+              { key: "sit", label: "Situacao", render: (row) => getAny(row, ["Situacao RM", "Status"]) || "-" },
             ]}
           />
         </section>
@@ -379,11 +405,24 @@ function payloadHasField(payload: Record<string, unknown>, aliases: string[]) {
 }
 
 function getRequisicaoStatus(item: Requisicao) {
-  const status = item.status || "RM";
   if (payloadHasField(item.payload, assinaturaAliases) && !getPayloadField(item.payload, assinaturaAliases)) {
     return "PENDENTE_ASSINATURA";
   }
-  return status;
+  return normalizeRequisicaoStatus(item.status || "RM");
+}
+
+function normalizeRequisicaoStatus(value: string) {
+  const normalized = headerKey(value);
+  if (normalized.includes("naoassin") || normalized.includes("pendenteassin")) return "PENDENTE_ASSINATURA";
+  if (normalized.includes("cancel")) return "CANCELADA";
+  if (normalized.startsWith("oc") || normalized.includes("ordemdecompra")) return "OC";
+  if (normalized.startsWith("mc") || normalized.includes("mapacomparativo")) return "MC";
+  if (normalized.startsWith("rc") || normalized.includes("requisicaodecompra")) return "RC";
+  return "RM";
+}
+
+function statusLabel(status: string) {
+  return statuses.find(([key]) => key === status)?.[1] || status;
 }
 
 function getOcNumber(item: Requisicao) {
@@ -391,11 +430,8 @@ function getOcNumber(item: Requisicao) {
     "OC",
     "Num OC",
     "N OC",
-    "Nº OC",
     "Numero OC",
     "Numero da OC",
-    "Número OC",
-    "Número da OC",
     "Ordem de Compra",
     "Pedido de Compra",
   ]);
@@ -403,7 +439,7 @@ function getOcNumber(item: Requisicao) {
 
 function getFirstItemDescription(item: Requisicao) {
   const firstRow = getPayloadRows(item.payload)[0] || {};
-  return getAny(firstRow, ["Descrição Item", "Descricao Item", "Produto", "Item", "Descrição", "Descricao", "Material"]);
+  return getAny(firstRow, ["Descricao Item", "Produto", "Item", "Descricao", "Material"]);
 }
 
 function obraName(item: Requisicao, obras: Obra[]) {
@@ -434,12 +470,12 @@ function getSlaInfo(item: Requisicao) {
   const urgent = isUrgent(item);
   const isHugo = normalizeText(item.comprador) === "hugo";
   const limit = isHugo ? (urgent ? 30 : 35) : urgent ? 3 : 5;
-  if (status === "OC") return { tone: "success" as const, label: "Concluída" };
+  if (status === "OC") return { tone: "success" as const, label: "Concluida" };
   if (status === "CANCELADA") return { tone: "neutral" as const, label: "Cancelada" };
   if (elapsed === null) return { tone: "neutral" as const, label: "SLA sem data" };
-  if (elapsed > limit) return { tone: "danger" as const, label: `${elapsed}d · atrasada` };
-  if (limit - elapsed <= 1) return { tone: "warning" as const, label: `${elapsed}d · alerta` };
-  return { tone: "success" as const, label: `${elapsed}d · no prazo` };
+  if (elapsed > limit) return { tone: "danger" as const, label: `${elapsed}d atrasada` };
+  if (limit - elapsed <= 1) return { tone: "warning" as const, label: `${elapsed}d alerta` };
+  return { tone: "success" as const, label: `${elapsed}d no prazo` };
 }
 
 function buildPrioritySummary(items: Requisicao[]) {
@@ -468,8 +504,8 @@ function buildBuyerReport(items: Requisicao[], buyer: string) {
   if (buyer === "Todos") return { whatsapp: "", email: "" };
   const phone = normalizePhone(getPayloadField(items[0]?.payload || {}, ["Telefone", "Celular", "WhatsApp", "Wpp"]));
   const email = getPayloadField(items[0]?.payload || {}, ["Email", "E-mail", "Correio"]);
-  const message = `Visão Geral - ${buyer}\nRMs: ${items.length}\n\n${items
-    .map((item, index) => `${index + 1}. RM ${item.numero_rm || "S/N"} - ${getSlaInfo(item).label} - ${getRequisicaoStatus(item)}`)
+  const message = `Visao Geral - ${buyer}\nRMs: ${items.length}\n\n${items
+    .map((item, index) => `${index + 1}. RM ${item.numero_rm || "S/N"} - ${getSlaInfo(item).label} - ${statusLabel(getRequisicaoStatus(item))}`)
     .join("\n")}\n\nFavor verificar prioridades.`;
   return {
     whatsapp: phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : "",
@@ -485,9 +521,9 @@ function buildItemWhatsapp(item: Requisicao) {
   const phone = normalizePhone(getPayloadField(item.payload, ["Telefone", "Celular", "WhatsApp", "Wpp"]));
   if (!phone) return "";
   const rows = getPayloadRows(item.payload);
-  const message = `Olá, ${item.comprador || "comprador(a)"}!\n\nRM ${item.numero_rm || "S/N"}\nStatus: ${getRequisicaoStatus(item)}\nSLA: ${getSlaInfo(
+  const message = `Ola, ${item.comprador || "comprador(a)"}!\n\nRM ${item.numero_rm || "S/N"}\nStatus: ${statusLabel(getRequisicaoStatus(item))}\nSLA: ${getSlaInfo(
     item
-  ).label}\n\nItens:\n${rows.map((row) => `- ${getAny(row, ["Descrição Item", "Descricao Item", "Produto"]) || "S/desc"}`).join("\n")}`;
+  ).label}\n\nItens:\n${rows.map((row) => `- ${getAny(row, ["Descricao Item", "Produto"]) || "S/desc"}`).join("\n")}`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
@@ -496,4 +532,19 @@ function normalizePhone(value: string) {
   if (!digits) return "";
   if ((digits.length === 10 || digits.length === 11) && !digits.startsWith("55")) return `55${digits}`;
   return digits;
+}
+
+function loadCustomBuyers() {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(customBuyersKey) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string" && item.trim()).map((item) => item.trim()) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomBuyers(buyers: string[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(customBuyersKey, JSON.stringify(buyers));
 }

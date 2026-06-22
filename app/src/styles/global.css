@@ -384,6 +384,11 @@ textarea:focus {
   cursor: not-allowed;
 }
 
+.danger-button--compact {
+  min-height: 34px;
+  padding: 0 10px;
+}
+
 .secondary-button:hover,
 .table-action:hover {
   background: var(--soft);
@@ -428,6 +433,16 @@ textarea:focus {
   color: white;
   border-color: var(--blue-950);
   background: var(--blue-950);
+}
+
+.buyer-tabs .buyer-add-button {
+  width: 38px;
+  min-width: 38px;
+  justify-content: center;
+  padding: 0;
+  color: var(--blue-950);
+  background: #fffbe6;
+  border-color: #facc15;
 }
 
 .buyer-tabs button span {
@@ -584,6 +599,36 @@ textarea:focus {
 
 .priority-summary__urgent b {
   color: var(--red);
+}
+
+.phase-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.phase-strip article {
+  min-height: 68px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+
+.phase-strip strong {
+  color: var(--blue-950);
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.phase-strip span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 750;
 }
 
 .kanban-board {
@@ -801,6 +846,17 @@ th {
   color: var(--muted);
 }
 
+.state-panel--development {
+  min-height: 220px;
+  justify-content: center;
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.state-panel--development svg {
+  color: var(--amber);
+}
+
 .drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -998,6 +1054,28 @@ label {
   margin-top: 14px;
 }
 
+.toggle-row {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 0 12px;
+  text-transform: none;
+}
+
+.toggle-row input {
+  min-height: auto;
+}
+
+.access-panel {
+  border-color: #bfdbfe;
+}
+
 .form-error,
 .form-note,
 .muted-box {
@@ -1025,6 +1103,25 @@ label {
 .import-wizard {
   display: grid;
   gap: 14px;
+}
+
+.toolbar-panel--flat {
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.import-results {
+  max-height: 260px;
+  overflow: auto;
+  margin: 14px 0 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 12px;
+  font: 0.78rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
 }
 
 .import-steps {
@@ -1295,6 +1392,10 @@ label {
     grid-template-columns: 1fr;
   }
 
+  .phase-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .buyer-actions {
     justify-content: flex-start;
   }
@@ -1332,6 +1433,10 @@ label {
   .form-grid,
   .checkbox-grid {
     grid-template-columns: 1fr;
+  }
+
+  .phase-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .panel-heading {
