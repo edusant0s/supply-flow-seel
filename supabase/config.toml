@@ -1,0 +1,4 @@
+project_id = "supply-flow-seel"
+
+[functions.create-user]
+verify_jwt = false
