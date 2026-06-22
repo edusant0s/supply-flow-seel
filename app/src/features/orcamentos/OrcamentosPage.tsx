@@ -91,7 +91,6 @@ export function OrcamentosPage() {
                 LocalObra: item.local_obra,
                 Tipo: item.tipo_orcamento,
                 Fornecedor: item.fornecedor,
-                Spend: item.valor_final,
                 Saving: item.saving,
                 Entrega: formatDateBr(item.data_entrega_cotacoes),
               })),
@@ -117,7 +116,6 @@ export function OrcamentosPage() {
       <section className="kpi-grid">
         <KpiCard title="Solicitações" value={filtered.length} />
         <KpiCard title="Finalizados" value={filtered.filter((item) => item.status === "finalizado").length} tone="success" />
-        <KpiCard title="Spend" value={formatCurrency(filtered.reduce((sum, item) => sum + Number(item.valor_final || 0), 0))} />
         <KpiCard title="Saving" value={formatCurrency(filtered.reduce((sum, item) => sum + Number(item.saving || 0), 0))} tone="blue" />
         <KpiCard title="Anexos" value={filtered.reduce((sum, item) => sum + getAttachments(item).length, 0)} />
       </section>
@@ -177,7 +175,6 @@ export function OrcamentosPage() {
           { key: "status", label: "Status", render: (item) => item.status },
           { key: "cliente", label: "Cliente", render: (item) => item.cliente || "-" },
           { key: "sla", label: "SLA total", render: (item) => formatBusinessDuration(getOrcamentoSla(item, now).totalMs) },
-          { key: "spend", label: "Spend", render: (item) => formatCurrency(item.valor_final) },
           { key: "saving", label: "Saving", render: (item) => formatCurrency(item.saving) },
           { key: "anexos", label: "Anexos", render: (item) => getAttachments(item).length },
         ]}
@@ -237,7 +234,7 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
     try {
       const attachments = await uploadAttachments("orcamentos", files);
       const proposal = form.numero_proposta || buildProposalNumber();
-      const payload = { ...form, anexos: attachments, sla: createInitialSla("nao_iniciado") };
+      const payload = { ...form, anexos: attachments, sla: createInitialSla("nao_iniciado", form.data_solicitacao) };
       await insertEntity("orcamentos", {
         criado_por: session?.user.id || profile?.id || null,
         numero_proposta: proposal,
@@ -276,7 +273,7 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
         </div>
       </div>
       <div className="form-grid">
-        <Field label="Data da solicitacao" type="date" value={form.data_solicitacao} onChange={(value) => setForm((current) => ({ ...current, data_solicitacao: value }))} disabled />
+        <Field label="Data da solicitacao" type="date" value={form.data_solicitacao} onChange={(value) => setForm((current) => ({ ...current, data_solicitacao: value }))} />
         <Field label="Nome do solicitante" value={form.nome_solicitante} onChange={(value) => setForm((current) => ({ ...current, nome_solicitante: value }))} required />
         <Field label="E-mail do solicitante" type="email" value={form.email_solicitante} onChange={(value) => setForm((current) => ({ ...current, email_solicitante: value }))} required />
         <Field label="Numero da proposta" value={form.numero_proposta} onChange={(value) => setForm((current) => ({ ...current, numero_proposta: value }))} placeholder="Pp-001-26" required />
@@ -328,17 +325,17 @@ function OrcamentoDrawer({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const [spend, setSpend] = useState(String(item.valor_final || ""));
-  const [saving, setSaving] = useState(String(item.saving || ""));
+  const [requestDate, setRequestDate] = useState(item.data_solicitacao || "");
+  const [savingValue, setSavingValue] = useState(String(item.saving || ""));
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
   const [deleteMessage, setDeleteMessage] = useState("");
   const [deleting, setDeleting] = useState(false);
   const sla = getOrcamentoSla(item, now);
 
-  async function saveFinancials() {
+  async function saveAdminFields() {
     await updateEntity("orcamentos", item.id, {
-      valor_final: parseMoney(spend),
-      saving: parseMoney(saving),
+      ...buildRequestDatePatch(item, requestDate),
+      saving: parseMoney(savingValue),
       quantidade_req: Number(qtd || 0),
     });
     onSaved();
@@ -394,17 +391,17 @@ function OrcamentoDrawer({
             <div className="panel-heading">
               <div>
                 <span className="eyebrow">Administração</span>
-                <h3>Spend, saving e REQ</h3>
+                <h3>Data, saving e REQ</h3>
               </div>
             </div>
             <div className="form-grid">
-              <Field label="Spend" value={spend} onChange={setSpend} />
-              <Field label="Saving" value={saving} onChange={setSaving} />
+              <Field label="Data da solicitacao" type="date" value={requestDate} onChange={setRequestDate} />
+              <Field label="Saving" value={savingValue} onChange={setSavingValue} />
               <Field label="Quantidade REQ" value={qtd} onChange={setQtd} />
             </div>
             <div className="form-actions">
-              <button className="primary-button" type="button" onClick={saveFinancials}>
-                Salvar valores
+              <button className="primary-button" type="button" onClick={saveAdminFields}>
+                Salvar dados
               </button>
             </div>
           </section>
@@ -524,13 +521,37 @@ type SlaState = {
   history?: Record<string, unknown>[];
 };
 
-function createInitialSla(status: string): SlaState {
+function createInitialSla(status: string, requestDate?: string): SlaState {
   return {
     currentPhase: status,
-    phaseStartedAt: new Date().toISOString(),
+    phaseStartedAt: requestDate ? toBusinessStartIso(requestDate) : new Date().toISOString(),
     phaseDurations: {},
     history: [],
   };
+}
+
+function buildRequestDatePatch(item: Orcamento, requestDate: string): Partial<Orcamento> {
+  const dataSolicitacao = requestDate || null;
+  const payload: Record<string, unknown> = { ...item.payload, data_solicitacao: dataSolicitacao };
+  const sla = getSlaState(item);
+  const hasHistory = Array.isArray(sla.history) && sla.history.length > 0;
+  const hasDurations = Object.values(sla.phaseDurations || {}).some((value) => Number(value) > 0);
+
+  if ((item.status || "nao_iniciado") === "nao_iniciado" && dataSolicitacao && !hasHistory && !hasDurations) {
+    payload.sla = {
+      ...sla,
+      currentPhase: "nao_iniciado",
+      phaseStartedAt: toBusinessStartIso(dataSolicitacao),
+      phaseDurations: sla.phaseDurations || {},
+      history: sla.history || [],
+    };
+  }
+
+  return { data_solicitacao: dataSolicitacao, payload };
+}
+
+function toBusinessStartIso(date: string) {
+  return `${date.slice(0, 10)}T07:00:00`;
 }
 
 function buildStatusPatch(item: Orcamento, nextStatus: string): Partial<Orcamento> {

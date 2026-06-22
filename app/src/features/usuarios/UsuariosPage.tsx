@@ -153,13 +153,47 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
     allObras: false,
   });
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
+  const [saving, setSaving] = useState(false);
   const effectiveRole = getScopedRole(form.role, form.allObras);
 
   async function save() {
     setMessage("");
-    const result = await createUser({ ...form, role: effectiveRole, obraIds: form.allObras ? [] : form.obraIds });
-    setMessage(result.temporary_password ? `Usuario criado. Senha temporaria: ${result.temporary_password}` : "Usuario criado.");
-    onSaved();
+    const validationMessage = validateNewUser(form, effectiveRole);
+    if (validationMessage) {
+      setMessageType("error");
+      setMessage(validationMessage);
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const result = await createUser({
+        ...form,
+        nome: form.nome.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password.trim() || undefined,
+        role: effectiveRole,
+        obraIds: form.allObras ? [] : form.obraIds,
+      });
+      setMessageType("success");
+      setMessage(result.temporary_password ? `Usuario criado. Senha temporaria: ${result.temporary_password}` : "Usuario criado.");
+      setForm({
+        nome: "",
+        email: "",
+        role: "viewer",
+        ativo: true,
+        password: "",
+        obraIds: [],
+        allObras: false,
+      });
+      onSaved();
+    } catch (err) {
+      setMessageType("error");
+      setMessage(getErrorMessage(err, "Falha ao enviar usuario."));
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -219,14 +253,21 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
         Visualizar todas as obras
       </label>
       {!form.allObras ? <ObraCheckboxes obras={obras} selected={form.obraIds} onChange={(obraIds) => setForm((current) => ({ ...current, obraIds }))} /> : null}
-      {message ? <div className="form-note">{message}</div> : null}
+      {message ? <div className={messageType === "error" ? "form-error" : "form-note"}>{message}</div> : null}
       <div className="form-actions">
-        <button className="primary-button" type="button" onClick={save}>
-          Criar usuario
+        <button className="primary-button" type="button" onClick={save} disabled={saving}>
+          {saving ? "Enviando..." : "Enviar usuario"}
         </button>
       </div>
     </section>
   );
+}
+
+function validateNewUser(form: UserFormState, effectiveRole: UserRole) {
+  if (!form.nome.trim()) return "Informe o nome do usuario.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Informe um e-mail valido.";
+  if (!form.allObras && effectiveRole === "viewer" && !form.obraIds.length) return "Selecione ao menos uma obra ou marque visualizar todas as obras.";
+  return "";
 }
 
 function UserPermissionsEditor({
@@ -477,4 +518,13 @@ function getScopedRole(role: UserRole, allObras: boolean): UserRole {
   if (allObras && role === "viewer") return "viewer_global";
   if (!allObras && role === "viewer_global") return "viewer";
   return role;
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (message) return String(message);
+  }
+  return fallback;
 }

@@ -59,6 +59,29 @@ export async function createUser(input: {
 }) {
   const client = requireSupabase();
   const { data, error } = await client.functions.invoke("create-user", { body: input });
-  if (error) throw error;
+  if (error) throw new Error(await getFunctionErrorMessage(error));
   return data as { id: string; temporary_password?: string };
+}
+
+async function getFunctionErrorMessage(error: unknown) {
+  const fallback = error instanceof Error && error.message ? error.message : "Falha ao criar usuario.";
+  const context = (error as { context?: { clone?: () => Response } })?.context;
+  if (!context?.clone) return fallback;
+
+  try {
+    const body = await context.clone().json();
+    if (body && typeof body === "object") {
+      const payload = body as { error?: unknown; message?: unknown; details?: unknown };
+      return String(payload.error || payload.message || payload.details || fallback);
+    }
+  } catch {
+    // The Edge Function may return plain text instead of JSON.
+  }
+
+  try {
+    const text = await context.clone().text();
+    return text || fallback;
+  } catch {
+    return fallback;
+  }
 }
