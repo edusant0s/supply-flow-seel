@@ -1,7 +1,6 @@
-const CACHE_NAME = "supply-flow-seel-static-v1";
+const CACHE_NAME = "supply-flow-seel-static-v2";
 const APP_SCOPE = new URL(self.registration.scope);
 const STATIC_ASSETS = [
-  APP_SCOPE.href,
   new URL("manifest.webmanifest", APP_SCOPE).href,
   new URL("logo-seel.png", APP_SCOPE).href,
 ];
@@ -28,16 +27,22 @@ self.addEventListener("fetch", (event) => {
   if (requestUrl.hostname.includes("supabase.co")) return;
   if (requestUrl.pathname.includes("/auth/")) return;
 
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() =>
+        new Response(
+          "<!doctype html><html><body style=\"font-family:system-ui;padding:24px\"><h1>Sem conexao</h1><p>Os dados do Supply Flow exigem conexao segura.</p></body></html>",
+          { headers: { "Content-Type": "text/html;charset=UTF-8" } }
+        )
+      )
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).catch(() => {
-        if (event.request.mode === "navigate") {
-          return new Response(
-            "<!doctype html><html><body style=\"font-family:system-ui;padding:24px\"><h1>Sem conexão</h1><p>Os dados do Supply Flow exigem conexão segura.</p></body></html>",
-            { headers: { "Content-Type": "text/html;charset=UTF-8" } }
-          );
-        }
         throw new Error("Offline");
       });
     })

@@ -16,6 +16,7 @@ const defaultAllowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://supply-flow-seel.vercel.app",
+  "https://supply-flow-seel-py97vh9sl-edusant0s-projects.vercel.app",
   "https://edusant0s.github.io",
 ];
 
@@ -26,15 +27,32 @@ function getAllowedOrigins() {
     .filter(Boolean);
 }
 
+function isAllowedOrigin(origin: string) {
+  if (!origin) return false;
+  if (getAllowedOrigins().includes(origin)) return true;
+
+  try {
+    const url = new URL(origin);
+    const isLocalDev = url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname);
+    const isVercel = url.protocol === "https:" && url.hostname.endsWith(".vercel.app");
+    const isGithubPages = url.protocol === "https:" && url.hostname === "edusant0s.github.io";
+    return isLocalDev || isVercel || isGithubPages;
+  } catch {
+    return false;
+  }
+}
+
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get("Origin") || "";
-  const allowedOrigin = getAllowedOrigins().includes(origin) ? origin : defaultAllowedOrigins[0];
+  const requestedHeaders = req.headers.get("Access-Control-Request-Headers");
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : defaultAllowedOrigins[0];
 
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Vary": "Origin",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers": requestedHeaders || "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
   };
 }
 

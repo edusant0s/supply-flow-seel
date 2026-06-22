@@ -1,5 +1,5 @@
 import type { Obra, Profile, UserRole } from "../types";
-import { requireSupabase } from "./supabase";
+import { requireSupabase, supabaseAnonKey, supabaseUrl } from "./supabase";
 
 export async function listProfiles(): Promise<Profile[]> {
   const client = requireSupabase();
@@ -58,30 +58,51 @@ export async function createUser(input: {
   password?: string;
 }) {
   const client = requireSupabase();
-  const { data, error } = await client.functions.invoke("create-user", { body: input });
-  if (error) throw new Error(await getFunctionErrorMessage(error));
-  return data as { id: string; temporary_password?: string };
+  if (!supabaseUrl || !supabaseAnonKey) throw new Error("Supabase nao configurado.");
+
+  const {
+    data: { session },
+    error: sessionError,
+  } = await client.auth.getSession();
+
+  if (sessionError) throw sessionError;
+  if (!session?.access_token) throw new Error("Sessao expirada. Faca login novamente.");
+
+  try {
+    const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/functions/v1/create-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "x-client-info": "supply-flow-seel",
+      },
+      body: JSON.stringify(input),
+    });
+
+    const payload = await parseFunctionResponse(response);
+    if (!response.ok) throw new Error(getPayloadError(payload, "Falha ao criar usuario."));
+    return payload as { id: string; temporary_password?: string };
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error("Nao foi possivel conectar a Edge Function. Atualize a pagina e tente novamente.");
+    }
+    throw error;
+  }
 }
 
-async function getFunctionErrorMessage(error: unknown) {
-  const fallback = error instanceof Error && error.message ? error.message : "Falha ao criar usuario.";
-  const context = (error as { context?: { clone?: () => Response } })?.context;
-  if (!context?.clone) return fallback;
-
+async function parseFunctionResponse(response: Response) {
   try {
-    const body = await context.clone().json();
-    if (body && typeof body === "object") {
-      const payload = body as { error?: unknown; message?: unknown; details?: unknown };
-      return String(payload.error || payload.message || payload.details || fallback);
-    }
+    return await response.clone().json();
   } catch {
-    // The Edge Function may return plain text instead of JSON.
+    return { error: await response.text() };
   }
+}
 
-  try {
-    const text = await context.clone().text();
-    return text || fallback;
-  } catch {
-    return fallback;
+function getPayloadError(payload: unknown, fallback: string) {
+  if (payload && typeof payload === "object") {
+    const body = payload as { error?: unknown; message?: unknown; details?: unknown };
+    return String(body.error || body.message || body.details || fallback);
   }
+  return fallback;
 }
