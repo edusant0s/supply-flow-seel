@@ -953,6 +953,16 @@ th {
   font-size: 0.86rem;
 }
 
+.import-danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 14px;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -1445,8 +1455,14 @@ label {
   }
 
   .drawer-grid,
-  .drawer-edit-row {
+  .drawer-edit-row,
+  .import-danger-zone {
     grid-template-columns: 1fr;
+  }
+
+  .import-danger-zone {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .detail-drawer {

@@ -27,6 +27,7 @@ const statuses = [
 const customBuyersKey = "supply-flow:custom-buyers";
 const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovacao RM"];
 const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
+const closedOrSeparatedStatuses = ["OC", "CANCELADA", "PENDENTE_ASSINATURA"];
 
 export function RequisicoesPage() {
   const { profile } = useAuth();
@@ -90,7 +91,7 @@ export function RequisicoesPage() {
     subtitle,
     items: filtered.filter((item) => getRequisicaoStatus(item) === key).sort(compareSla),
   }));
-  const activeItems = filtered.filter((item) => !["OC", "CANCELADA"].includes(getRequisicaoStatus(item)));
+  const activeItems = filtered.filter((item) => !closedOrSeparatedStatuses.includes(getRequisicaoStatus(item)));
   const openItemCount = activeItems.reduce((sum, item) => sum + getPayloadRows(item.payload).length, 0);
   const prioritySummary = buildPrioritySummary(activeItems);
   const buyerReport = buildBuyerReport(activeItems, buyer);

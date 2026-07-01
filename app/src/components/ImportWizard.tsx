@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { CheckCircle2, FileUp, XCircle } from "lucide-react";
+import { CheckCircle2, FileUp, Trash2, XCircle } from "lucide-react";
 import type { ImportKind } from "../types";
 import { mapRowsForImport, readSpreadsheet, type RawRow } from "../lib/spreadsheet";
-import { upsertImportedRows } from "../services/entities";
+import { clearEntityTable, upsertImportedRows } from "../services/entities";
 import { useAuth } from "../contexts/AuthContext";
+import { canManage } from "../lib/permissions";
 
 const labels: Record<ImportKind, string> = {
   requisicoes: "Requisições",
@@ -13,15 +14,17 @@ const labels: Record<ImportKind, string> = {
 };
 
 export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplete: () => void }) {
-  const { obras } = useAuth();
+  const { obras, profile } = useAuth();
   const [fileName, setFileName] = useState("");
   const [rawRows, setRawRows] = useState<RawRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [message, setMessage] = useState("");
 
   const mapped = useMemo(() => mapRowsForImport(kind, rawRows, obras), [kind, obras, rawRows]);
   const preview = mapped.records.slice(0, 6);
   const headers = Object.keys(preview[0] || {}).filter((key) => key !== "payload").slice(0, 8);
+  const canClearPurchases = kind === "requisicoes" && canManage(profile?.role, "requisicoes");
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -50,6 +53,26 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
       setMessage(err instanceof Error ? err.message : "Falha ao gravar importação.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function clearPurchasesBase() {
+    const confirmation = window.prompt('Esta acao apaga todas as RMs/compras importadas. Digite "APAGAR COMPRAS" para confirmar.');
+    if (confirmation !== "APAGAR COMPRAS") {
+      setMessage("Limpeza cancelada. A base antiga foi preservada.");
+      return;
+    }
+
+    setClearing(true);
+    setMessage("");
+    try {
+      await clearEntityTable("requisicoes");
+      setMessage("Base antiga de compras apagada. Voce ja pode gravar a planilha nova.");
+      onComplete();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Falha ao apagar a base antiga.");
+    } finally {
+      setClearing(false);
     }
   }
 
@@ -134,8 +157,21 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
 
       {message ? <div className="form-note">{message}</div> : null}
 
+      {canClearPurchases ? (
+        <section className="danger-zone import-danger-zone">
+          <div>
+            <h3>Apagar base antiga de compras</h3>
+            <p>Remove todas as RMs importadas antes de gravar uma nova planilha. Esta acao nao apaga usuarios, obras, orcamentos, contratos ou fornecedores.</p>
+          </div>
+          <button className="danger-button" type="button" disabled={loading || clearing} onClick={clearPurchasesBase}>
+            <Trash2 size={18} />
+            {clearing ? "Apagando..." : "Apagar base antiga"}
+          </button>
+        </section>
+      ) : null}
+
       <div className="form-actions">
-        <button className="primary-button" type="button" disabled={!mapped.records.length || loading} onClick={confirmImport}>
+        <button className="primary-button" type="button" disabled={!mapped.records.length || loading || clearing} onClick={confirmImport}>
           {loading ? "Processando..." : "Confirmar e gravar"}
         </button>
       </div>

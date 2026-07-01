@@ -51,6 +51,12 @@ export async function deleteEntity(table: EntityName, id: string) {
   if (error) throw error;
 }
 
+export async function clearEntityTable(table: EntityName) {
+  const client = requireSupabase();
+  const { error } = await client.from(table).delete().not("id", "is", null);
+  if (error) throw error;
+}
+
 export async function insertEntity<K extends EntityName>(table: K, row: Partial<EntityMap[K]>) {
   const client = requireSupabase();
   const { error } = await client.from(table).insert(row as never);
