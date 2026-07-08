@@ -937,6 +937,24 @@ th {
   box-shadow: none;
 }
 
+.embedded-tool-page {
+  height: calc(100vh - 124px);
+  min-height: calc(100vh - 124px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.embedded-tool-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 124px);
+  border: 0;
+  background: transparent;
+}
+
 .danger-zone {
   border-color: #fecaca;
   background: #fff7f7;

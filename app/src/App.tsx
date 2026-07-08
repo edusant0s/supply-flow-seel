@@ -6,7 +6,11 @@ import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { RequisicoesPage } from "./features/requisicoes/RequisicoesPage";
 import { OrcamentosPage } from "./features/orcamentos/OrcamentosPage";
 import { ContratosPage } from "./features/contratos/ContratosPage";
+import { FretesPage } from "./features/fretes/FretesPage";
+import { EstoqueObrasPage } from "./features/estoqueObras/EstoqueObrasPage";
+import { FrotaPage } from "./features/frota/FrotaPage";
 import { FornecedoresPage } from "./features/fornecedores/FornecedoresPage";
+import { AvaliacaoFornecedoresPage } from "./features/avaliacaoFornecedores/AvaliacaoFornecedoresPage";
 import { ImportacoesPage } from "./features/importacoes/ImportacoesPage";
 import { UsuariosPage } from "./features/usuarios/UsuariosPage";
 import { SettingsPage } from "./features/settings/SettingsPage";
@@ -56,10 +60,42 @@ export function App() {
           }
         />
         <Route
+          path="fretes"
+          element={
+            <ProtectedRoute module="fretes">
+              <FretesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="estoque-obras"
+          element={
+            <ProtectedRoute module="estoque_obras">
+              <EstoqueObrasPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="frota"
+          element={
+            <ProtectedRoute module="frota">
+              <FrotaPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="fornecedores"
           element={
             <ProtectedRoute module="fornecedores">
               <FornecedoresPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="avaliacao-fornecedores"
+          element={
+            <ProtectedRoute module="avaliacao_fornecedores">
+              <AvaliacaoFornecedoresPage />
             </ProtectedRoute>
           }
         />

@@ -11,7 +11,11 @@ export type ModuleKey =
   | "requisicoes"
   | "orcamentos"
   | "contratos"
+  | "fretes"
+  | "estoque_obras"
+  | "frota"
   | "fornecedores"
+  | "avaliacao_fornecedores"
   | "importacoes"
   | "usuarios"
   | "settings";
