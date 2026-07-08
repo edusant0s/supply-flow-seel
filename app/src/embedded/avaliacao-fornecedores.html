@@ -2276,6 +2276,7 @@ textarea,
 <script>
 'use strict';
 const DB_KEY = 'seel_supplier_evaluation_db_v10';
+function supplyCanManageEvaluation(){ return !window.SUPPLY_FLOW_CONTEXT || window.SUPPLY_FLOW_CONTEXT.canManage !== false; }
 let progressChart = null;
 let criteriaChart = null;
 let statusChart = null;

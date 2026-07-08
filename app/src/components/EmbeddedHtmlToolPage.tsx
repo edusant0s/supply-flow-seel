@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { LoadingState } from "./States";
+import { useAuth } from "../contexts/AuthContext";
+import { canManage } from "../lib/permissions";
+import type { ModuleKey } from "../types";
 
 type EmbeddedHtmlToolPageProps = {
   title: string;
+  moduleKey: ModuleKey;
   loadHtml: () => Promise<string>;
 };
 
@@ -65,6 +69,30 @@ const embeddedChromeCss = `
     border-radius: 8px !important;
   }
 
+  body.supply-embedded {
+    font-size: 14px !important;
+  }
+
+  body.supply-embedded-frota > header.topbar,
+  body.supply-embedded-fretes > header,
+  body.supply-embedded-estoque_obras #loginPage {
+    display: none !important;
+  }
+
+  body.supply-embedded [data-supply-hidden="true"] {
+    display: none !important;
+  }
+
+  body.supply-embedded .supply-disabled-action {
+    opacity: .48 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+  }
+
+  body.supply-embedded-estoque_obras #appPage.hidden {
+    display: block !important;
+  }
+
   @media (max-width: 760px) {
     body > header,
     header.topbar,
@@ -74,17 +102,216 @@ const embeddedChromeCss = `
   }
 `;
 
-function withEmbeddedShell(html: string, baseHref: string) {
-  const injection = `<base href="${baseHref}"><style>${embeddedChromeCss}</style>`;
+type EmbeddedContext = {
+  module: ModuleKey;
+  role: string;
+  canManage: boolean;
+  user: {
+    nome: string;
+    email: string;
+  };
+  obras: Array<{
+    id: string;
+    nome: string;
+    codigo: string | null;
+    centro_custo: string | null;
+  }>;
+};
+
+function withEmbeddedShell(html: string, baseHref: string, context: EmbeddedContext) {
+  const injection = `<base href="${baseHref}"><style>${embeddedChromeCss}</style>${embeddedGovernanceScript(context)}`;
   if (/<head[^>]*>/i.test(html)) {
     return html.replace(/<head([^>]*)>/i, `<head$1>${injection}`);
   }
   return `<!doctype html><html lang="pt-BR"><head>${injection}</head><body>${html}</body></html>`;
 }
 
-export function EmbeddedHtmlToolPage({ title, loadHtml }: EmbeddedHtmlToolPageProps) {
+function embeddedGovernanceScript(context: EmbeddedContext) {
+  const safeContext = JSON.stringify(context).replace(/</g, "\\u003c");
+  return `<script>
+window.SUPPLY_FLOW_CONTEXT=${safeContext};
+(function(){
+  var ctx = window.SUPPLY_FLOW_CONTEXT || {};
+  var moduleKey = ctx.module || "";
+  var canManage = !!ctx.canManage;
+  var applying = false;
+  var stockLogged = false;
+
+  function ready(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
+  }
+
+  function hide(selector) {
+    document.querySelectorAll(selector).forEach(function(el) {
+      if (el.getAttribute("data-supply-hidden") === "true") return;
+      el.setAttribute("data-supply-hidden", "true");
+      el.style.display = "none";
+    });
+  }
+
+  function disable(selector) {
+    document.querySelectorAll(selector).forEach(function(el) {
+      el.disabled = true;
+      el.setAttribute("aria-disabled", "true");
+      el.classList.add("supply-disabled-action");
+    });
+  }
+
+  function guard(name, message) {
+    var current = window[name];
+    if (typeof current !== "function" || current.__supplyGuarded) return;
+    var blocked = function() {
+      alert(message);
+      return false;
+    };
+    blocked.__supplyGuarded = true;
+    window[name] = blocked;
+  }
+
+  function labelButtons() {
+    document.querySelectorAll(".booking-button, .reserve-btn").forEach(function(button) {
+      var text = (button.textContent || "").toUpperCase();
+      if (text.indexOf("RESERVAR") >= 0 || text.indexOf("LOCAR") >= 0) {
+        button.textContent = "CONSULTAR";
+      }
+    });
+    document.querySelectorAll(".booking-button").forEach(function(button) {
+      button.setAttribute("onclick", "openTabById('frotaTab')");
+    });
+  }
+
+  function consultFleetCard(id) {
+    var buttons = Array.prototype.slice.call(document.querySelectorAll(".vehicle-card .reserve-btn"));
+    var button = buttons.find(function(item) {
+      return (item.getAttribute("onclick") || "").indexOf(id) >= 0;
+    });
+    var card = button ? button.closest(".vehicle-card") : null;
+    if (!card) {
+      alert("Consulta disponivel apenas nos cards visiveis da frota.");
+      return false;
+    }
+    card.classList.add("compact-open");
+    var details = card.querySelector("button[onclick*='toggleCardDetails']");
+    if (details) details.textContent = "Ocultar detalhes";
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    return false;
+  }
+
+  function applyFrotaRules() {
+    labelButtons();
+    if (canManage) return;
+
+    hide("button[onclick*='cadastroTab'], button[onclick*='importacaoTab'], button[onclick*='medicoesTab'], button[onclick*='multasTab']");
+    hide("button[onclick*='editVehicle'], button[onclick*='makeAvailable'], #deleteSelectedVehicleButton, #cancelEdit, #saveApiSettingsButton");
+    hide("#importGrid, #fineForm, .api-actions, .quick-actions button[onclick*='cadastroTab']");
+    disable("#vehicleForm input, #vehicleForm select, #vehicleForm textarea, #fineForm input, #fineForm select, #fineForm textarea");
+
+    if (typeof window.quickReserve === "function" && !window.quickReserve.__supplyConsultOnly) {
+      window.quickReserve = function(id) { return consultFleetCard(id); };
+      window.quickReserve.__supplyConsultOnly = true;
+    }
+
+    guard("editVehicle", "Apenas super_admin pode editar a frota.");
+    guard("makeAvailable", "Apenas super_admin pode movimentar a frota.");
+    guard("deleteCurrentVehicle", "Apenas super_admin pode excluir veiculos.");
+    guard("deleteSelectedVehicle", "Apenas super_admin pode excluir veiculos.");
+    guard("importInitialSpreadsheet", "Apenas super_admin pode importar a planilha da frota.");
+    guard("syncMeasurements", "Apenas super_admin pode sincronizar medicoes.");
+    guard("syncArvalFines", "Apenas super_admin pode sincronizar multas.");
+    guard("saveApiSettings", "Apenas super_admin pode alterar integracoes.");
+  }
+
+  function applyFretesRules() {
+    if (canManage) return;
+
+    hide("button[onclick*='mapa'], button[onclick*='cotacao'], button[onclick*='dashboard']");
+    hide(".header-actions, button[onclick*='editBasic'], button[onclick*='deleteFreight'], button[onclick*='addQuote'], button[onclick*='selectBestQuote'], button[onclick*='deleteQuote']");
+    hide("#cotacao, #dashboard, #mapa, .quotation-actions, .quote-layout, .quotation-form-card");
+    disable(".phase-select, select[onchange*='changePhase']");
+
+    guard("changePhase", "Apenas super_admin pode mudar fases de frete.");
+    guard("editBasic", "Apenas super_admin pode editar fretes.");
+    guard("deleteFreight", "Apenas super_admin pode excluir fretes.");
+    guard("addQuoteToSelectedFreight", "Apenas super_admin pode gerenciar cotacoes.");
+    guard("selectBestQuote", "Apenas super_admin pode aprovar cotacoes.");
+    guard("deleteQuote", "Apenas super_admin pode excluir cotacoes.");
+    guard("clearAllData", "Apenas super_admin pode limpar dados.");
+    guard("loadDemoData", "Apenas super_admin pode carregar exemplos.");
+  }
+
+  function stockLogin() {
+    if (moduleKey !== "estoque_obras" || stockLogged || typeof window.login !== "function") return;
+    stockLogged = true;
+    window.login(canManage ? "admin" : "requester");
+  }
+
+  function applyEstoqueRules() {
+    stockLogin();
+    hide("#loginPage, button[onclick='logout()']");
+    if (canManage) return;
+    hide("button[onclick*='config'], button[onclick*='estoque'], button[onclick*='kanban'], button[onclick*='agenda']");
+    guard("quickQty", "Apenas super_admin ou almoxarife pode movimentar estoque.");
+    guard("openItem", "Apenas super_admin ou almoxarife pode editar itens.");
+    guard("changeStatus", "Apenas super_admin ou almoxarife pode alterar pedidos.");
+    guard("deliverOrder", "Apenas super_admin ou almoxarife pode baixar pedidos.");
+    guard("saveOrder", "Apenas super_admin ou almoxarife pode salvar pedidos.");
+  }
+
+  function applyAvaliacaoRules() {
+    if (canManage) return;
+    hide("button[data-page='admin'], button[data-page='dashboard'], button[data-page='historico'], #page-admin, #page-dashboard, #page-historico");
+    var active = document.querySelector(".page.active");
+    if (active && active.id !== "page-avaliacao") {
+      if (typeof window.showPage === "function") window.showPage("avaliacao");
+      else {
+        document.querySelectorAll(".page").forEach(function(page) { page.classList.remove("active"); });
+        var evaluation = document.getElementById("page-avaliacao");
+        if (evaluation) evaluation.classList.add("active");
+      }
+    }
+    guard("createCycle", "Apenas super_admin pode administrar ciclos.");
+    guard("setSelectedCycleStatus", "Apenas super_admin pode administrar ciclos.");
+    guard("deleteSelectedCycle", "Apenas super_admin pode excluir ciclos.");
+    guard("importSheet", "Apenas super_admin pode importar fornecedores.");
+    guard("importBothTables", "Apenas super_admin pode importar fornecedores.");
+    guard("importBackup", "Apenas super_admin pode restaurar backups.");
+    guard("clearAll", "Apenas super_admin pode apagar a base.");
+  }
+
+  function applyRules() {
+    if (applying || !document.body) return;
+    applying = true;
+    try {
+      document.body.classList.add("supply-embedded", "supply-embedded-" + moduleKey);
+      document.body.dataset.supplyRole = ctx.role || "viewer";
+      document.body.dataset.supplyCanManage = canManage ? "true" : "false";
+
+      if (moduleKey === "frota") applyFrotaRules();
+      if (moduleKey === "fretes") applyFretesRules();
+      if (moduleKey === "estoque_obras") applyEstoqueRules();
+      if (moduleKey === "avaliacao_fornecedores") applyAvaliacaoRules();
+    } finally {
+      applying = false;
+    }
+  }
+
+  ready(function() {
+    applyRules();
+    var observer = new MutationObserver(function() { applyRules(); });
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.setTimeout(applyRules, 250);
+    window.setTimeout(applyRules, 900);
+    window.setTimeout(applyRules, 1800);
+  });
+})();
+</script>`;
+}
+
+export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtmlToolPageProps) {
   const [html, setHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { profile, obras } = useAuth();
 
   useEffect(() => {
     let active = true;
@@ -107,8 +334,22 @@ export function EmbeddedHtmlToolPage({ title, loadHtml }: EmbeddedHtmlToolPagePr
   const srcDoc = useMemo(() => {
     if (!html) return undefined;
     const baseHref = new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString();
-    return withEmbeddedShell(html, baseHref);
-  }, [html]);
+    return withEmbeddedShell(html, baseHref, {
+      module: moduleKey,
+      role: profile?.role || "viewer",
+      canManage: canManage(profile?.role, moduleKey),
+      user: {
+        nome: profile?.nome || "",
+        email: profile?.email || "",
+      },
+      obras: obras.map((obra) => ({
+        id: obra.id,
+        nome: obra.nome,
+        codigo: obra.codigo,
+        centro_custo: obra.centro_custo,
+      })),
+    });
+  }, [html, moduleKey, obras, profile]);
 
   if (error) {
     return (

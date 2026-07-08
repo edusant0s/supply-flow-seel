@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Download, ExternalLink, Globe, Mail, MapPinned, Phone, Search, UploadCloud } from "lucide-react";
+import { Download, ExternalLink, Globe, Mail, Phone, Search, UploadCloud } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { ImportWizard } from "../../components/ImportWizard";
 import { KpiCard } from "../../components/KpiCard";
@@ -20,7 +20,6 @@ export function FornecedoresPage() {
   const [status, setStatus] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showImport, setShowImport] = useState(false);
-  const [routeIds, setRouteIds] = useState<string[]>([]);
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("fornecedores"), []);
 
   const ufs = useMemo(() => Array.from(new Set((data || []).map((item) => item.uf).filter(Boolean))).sort(), [data]);
@@ -28,6 +27,7 @@ export function FornecedoresPage() {
   const regions = useMemo(() => Array.from(new Set((data || []).map((item) => item.regiao).filter(Boolean))).sort(), [data]);
   const filtered = useMemo(() => {
     const q = normalizeText(query);
+    const searchingCartorio = q.includes("cartorio");
     return (data || [])
       .filter((item) => {
         const matchesQuery = [item.codigo, item.nome, item.categoria, item.produto_servico, item.cidade, item.uf, item.regiao, item.email, item.telefone, item.site, JSON.stringify(item.payload || {})]
@@ -43,12 +43,17 @@ export function FornecedoresPage() {
       })
       .sort((a, b) => {
         if (a.cadastro_ativo !== b.cadastro_ativo) return a.cadastro_ativo ? -1 : 1;
+        if (!searchingCartorio) {
+          const aCartorio = isCartorioSupplier(a);
+          const bCartorio = isCartorioSupplier(b);
+          if (aCartorio !== bCartorio) return aCartorio ? 1 : -1;
+        }
         return a.nome.localeCompare(b.nome, "pt-BR", { numeric: true });
       });
   }, [categoria, data, query, region, service, status, uf]);
 
   const selected = filtered.find((item) => item.id === selectedId) || filtered[0] || null;
-  const route = routeIds.map((id) => (data || []).find((item) => item.id === id)).filter(Boolean) as Fornecedor[];
+  const route: Fornecedor[] = [];
 
   if (loading) return <LoadingState label="Carregando fornecedores" />;
   if (error) return <EmptyState title="Falha ao carregar fornecedores" description={error} />;
@@ -154,14 +159,6 @@ export function FornecedoresPage() {
                   {item.regiao ? <span className="mini-badge">{item.regiao}</span> : null}
                 </div>
                 <div className="supplier-actions">
-                  <button
-                    type="button"
-                    className="secondary-button"
-                    onClick={() => setRouteIds((current) => (current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id].slice(0, 10)))}
-                  >
-                    <MapPinned size={16} />
-                    {routeIds.includes(item.id) ? "Remover" : "Rota"}
-                  </button>
                   {item.telefone ? (
                     <a className="secondary-button" href={`tel:${normalizePhoneLink(item.telefone)}`} onClick={(event) => event.stopPropagation()}>
                       <Phone size={16} />
@@ -186,18 +183,17 @@ export function FornecedoresPage() {
           </div>
         </div>
 
-        <div className="panel map-panel">
+        <div className="panel supplier-detail-panel">
           <div className="panel-heading">
             <div>
-              <span className="eyebrow">Mapa</span>
-              <h2>{selected?.nome || "Brasil"}</h2>
+              <span className="eyebrow">Detalhes</span>
+              <h2>{selected?.nome || "Fornecedor"}</h2>
             </div>
             <a className="secondary-button" href={mapsUrl(selected)} target="_blank" rel="noreferrer">
               <ExternalLink size={18} />
-              Abrir
+              Abrir no Maps
             </a>
           </div>
-          <iframe title="Mapa do fornecedor" src={mapsEmbedUrl(selected)} loading="lazy" />
           <div className="route-box">
             <strong>Rota selecionada</strong>
             <span>{route.length ? route.map((item) => item.nome).join(" → ") : "Nenhum ponto adicionado."}</span>
@@ -281,6 +277,12 @@ function supplierPayloadField(supplier: Fornecedor, aliases: string[]) {
   const wanted = aliases.map(headerKey);
   const found = Object.entries(supplier.payload || {}).find(([key]) => wanted.includes(headerKey(key)));
   return found ? String(found[1] ?? "").trim() || "-" : "-";
+}
+
+function isCartorioSupplier(supplier: Fornecedor) {
+  return normalizeText(
+    [supplier.nome, supplier.categoria, supplier.produto_servico, supplier.payload ? JSON.stringify(supplier.payload) : ""].join(" ")
+  ).includes("cartorio");
 }
 
 function normalizeSite(site: string) {

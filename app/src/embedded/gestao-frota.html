@@ -2521,7 +2521,7 @@
           <label>Início do contrato</label>
           <input id="heroInicioContrato" type="date" />
         </div>
-        <button class="booking-button" onclick="fillQuickReservation()">RESERVAR / LOCAR</button>
+        <button class="booking-button" onclick="openTabById('frotaTab')">CONSULTAR</button>
       </div>
     </div>
   </section>
@@ -3359,6 +3359,10 @@
     let vehicles = JSON.parse(localStorage.getItem(STORAGE_VEHICLES) || "[]");
     let fines = JSON.parse(localStorage.getItem(STORAGE_FINES) || "[]");
 
+    function supplyCanManageFleet() {
+      return !window.SUPPLY_FLOW_CONTEXT || window.SUPPLY_FLOW_CONTEXT.canManage !== false;
+    }
+
     const vehicleForm = document.getElementById("vehicleForm");
     const fineForm = document.getElementById("fineForm");
     const vehicleGrid = document.getElementById("vehicleGrid");
@@ -3579,7 +3583,7 @@
       }
 
       if (!window.XLSX) {
-        throw new Error("Para importar arquivos Excel (.xlsx/.xls), abra o aplicativo com internet ou salve a planilha como CSV e importe o CSV.");
+        throw new Error("Biblioteca XLSX nao carregou. Tente recarregar a pagina ou salve a planilha como CSV.");
       }
 
       const buffer = await file.arrayBuffer();
@@ -3589,6 +3593,11 @@
     }
 
     async function importInitialSpreadsheet() {
+      if (!supplyCanManageFleet()) {
+        alert("Apenas super_admin pode importar a planilha da frota.");
+        return;
+      }
+
       const file = document.getElementById("spreadsheetFile").files[0];
       if (!file) {
         alert("Selecione a planilha inicial antes de importar.");
@@ -4634,7 +4643,7 @@
           </div>
 
           <div class="card-actions">
-            <button class="reserve-btn" onclick="quickReserve('${v.id}')">${v.statusCarro === "Disponível" ? "RESERVAR / LOCAR" : "VER CONTRATO"}</button>
+            <button class="reserve-btn" onclick="quickReserve('${v.id}')">CONSULTAR</button>
             <button class="outline-btn" onclick="toggleCardDetails(this)">Ver detalhes</button>
             <button class="outline-btn" onclick="editVehicle('${v.id}')">Editar</button>
             <button class="secondary-btn" onclick="makeAvailable('${v.id}')">Disponível</button>
@@ -4786,6 +4795,19 @@
       const v = vehicles.find(vehicle => vehicle.id === id);
       if (!v) return;
 
+      if (!supplyCanManageFleet()) {
+        const buttons = Array.from(document.querySelectorAll(".vehicle-card .reserve-btn"));
+        const button = buttons.find(item => (item.getAttribute("onclick") || "").includes(id));
+        const card = button ? button.closest(".vehicle-card") : null;
+        if (card) {
+          card.classList.add("compact-open");
+          const details = card.querySelector("button[onclick*='toggleCardDetails']");
+          if (details) details.textContent = "Ocultar detalhes";
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
       editVehicle(id);
       if (v.statusCarro === "Disponível") {
         document.getElementById("statusCarro").value = "Em uso";
@@ -4794,6 +4816,10 @@
 
     vehicleForm.addEventListener("submit", async event => {
       event.preventDefault();
+      if (!supplyCanManageFleet()) {
+        alert("Apenas super_admin pode salvar alteracoes na frota.");
+        return;
+      }
 
       const placaInput = document.getElementById("placaVeiculo");
       const modeloInput = document.getElementById("modeloVeiculo");
@@ -4902,6 +4928,11 @@
     });
 
     function editVehicle(id) {
+      if (!supplyCanManageFleet()) {
+        alert("Apenas super_admin pode editar a frota.");
+        return;
+      }
+
       const v = vehicles.find(vehicle => vehicle.id === id);
       if (!v) return;
 
@@ -4945,6 +4976,11 @@
     }
 
     function makeAvailable(id) {
+      if (!supplyCanManageFleet()) {
+        alert("Apenas super_admin pode movimentar a frota.");
+        return;
+      }
+
       const v = vehicles.find(vehicle => vehicle.id === id);
       if (!v) return;
 

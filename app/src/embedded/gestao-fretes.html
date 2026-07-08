@@ -9286,6 +9286,10 @@
     let selectedMapFreightId = null;
     let selectedQuoteFreightId = null;
 
+    function supplyCanManageFreights() {
+      return !window.SUPPLY_FLOW_CONTEXT || window.SUPPLY_FLOW_CONTEXT.canManage !== false;
+    }
+
     /*
       GOOGLE MAPS:
       Para ativar o mapa real, substitua o texto abaixo pela sua chave da API Google Maps.
@@ -9806,6 +9810,11 @@
     }
 
     function changePhase(id, newPhase) {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode mudar fases de frete.");
+        return;
+      }
+
       const freight = freights.find(item => item.id === id);
       if (!freight || freight.status === newPhase) return;
 
@@ -9941,6 +9950,11 @@
     }
 
     function editBasic(id) {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode editar fretes.");
+        return;
+      }
+
       const freight = freights.find(item => item.id === id);
       if (!freight) return;
 
@@ -9966,6 +9980,11 @@
     }
 
     function deleteFreight(id) {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode excluir fretes.");
+        return;
+      }
+
       if (!confirm("Deseja excluir esta solicitação?")) return;
       freights = freights.filter(item => item.id !== id);
       saveFreights();
@@ -10676,6 +10695,11 @@
     }
 
     function addQuoteToSelectedFreight() {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode gerenciar cotacoes.");
+        return;
+      }
+
       const freight = freights.find(item => item.id === selectedQuoteFreightId);
 
       if (!freight) {
@@ -10800,6 +10824,11 @@
     }
 
     function selectBestQuote(freightId, quoteId) {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode aprovar cotacoes.");
+        return;
+      }
+
       const freight = freights.find(item => item.id === freightId);
       if (!freight) return;
 
@@ -10830,6 +10859,11 @@
     }
 
     function deleteQuote(freightId, quoteId) {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode excluir cotacoes.");
+        return;
+      }
+
       const freight = freights.find(item => item.id === freightId);
       if (!freight) return;
 
@@ -11162,6 +11196,11 @@
     }
 
     function clearAllData() {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode limpar dados.");
+        return;
+      }
+
       if (!confirm("Tem certeza que deseja apagar todas as solicitações salvas neste navegador?")) return;
       freights = [];
       saveFreights();
@@ -11169,6 +11208,11 @@
     }
 
     function loadDemoData() {
+      if (!supplyCanManageFreights()) {
+        alert("Apenas super_admin pode carregar exemplos.");
+        return;
+      }
+
       const now = new Date();
 
       const example = {

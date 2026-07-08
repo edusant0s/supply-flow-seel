@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, ShieldCheck, UploadCloud, UserPlus } from "lucide-react";
+import { Download, Search, ShieldCheck, UploadCloud, UserPlus } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { EmptyState, LoadingState } from "../../components/States";
 import { headerKey, normalizeText } from "../../lib/format";
@@ -76,6 +76,10 @@ export function UsuariosPage() {
           <UploadCloud size={18} />
           Importar usuarios
         </button>
+        <a className="secondary-button" href="/modelo-importacao-usuarios.xlsx" download>
+          <Download size={18} />
+          Baixar modelo
+        </a>
         <button className="primary-button" type="button" onClick={() => setShowForm((current) => !current)}>
           <UserPlus size={18} />
           Novo usuario
