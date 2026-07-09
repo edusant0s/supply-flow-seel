@@ -1,13 +1,7 @@
-import { Construction } from "lucide-react";
+import { EmbeddedHtmlToolPage } from "../../components/EmbeddedHtmlToolPage";
+
+const loadHtml = () => import("../../embedded/gestao-contratos.html?raw").then((module) => module.default);
 
 export function ContratosPage() {
-  return (
-    <section className="state-panel state-panel--development">
-      <Construction size={30} />
-      <div>
-        <h2>Modulo de contratos em desenvolvimento</h2>
-        <p>Esta area esta temporariamente bloqueada para ajustes de processo, permissao e backend.</p>
-      </div>
-    </section>
-  );
+  return <EmbeddedHtmlToolPage title="Gestao de contratos" moduleKey="contratos" loadHtml={loadHtml} />;
 }

@@ -7,7 +7,7 @@ import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
-import { formatCurrency, formatDateBr, normalizeText, parseMoney, slaColorByDueDate } from "../../lib/format";
+import { formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import { canManage } from "../../lib/permissions";
 import { exportToXlsx } from "../../lib/spreadsheet";
 import { useAsyncData } from "../../hooks";
@@ -66,6 +66,9 @@ export function OrcamentosPage() {
   }, [data, query]);
 
   const selected = useMemo(() => (data || []).find((item) => item.id === selectedId) || null, [data, selectedId]);
+  const openRequests = filtered.filter((item) => ["nao_iniciado", "em_cotacao"].includes(item.status || "nao_iniciado"));
+  const finishedRequests = filtered.filter((item) => item.status === "finalizado");
+  const averageSla = averageOrcamentoSla(filtered, now);
 
   if (loading) return <LoadingState label="Carregando orçamentos" />;
   if (error) return <EmptyState title="Falha ao carregar orçamentos" description={error} />;
@@ -91,7 +94,7 @@ export function OrcamentosPage() {
                 LocalObra: item.local_obra,
                 Tipo: item.tipo_orcamento,
                 Fornecedor: item.fornecedor,
-                Saving: item.saving,
+                SlaTotal: formatBusinessDuration(getOrcamentoSla(item, now).totalMs),
                 Entrega: formatDateBr(item.data_entrega_cotacoes),
               })),
               `orcamentos-${new Date().toISOString().slice(0, 10)}.xlsx`
@@ -115,9 +118,9 @@ export function OrcamentosPage() {
 
       <section className="kpi-grid">
         <KpiCard title="Solicitações" value={filtered.length} />
-        <KpiCard title="Finalizados" value={filtered.filter((item) => item.status === "finalizado").length} tone="success" />
-        <KpiCard title="Saving" value={formatCurrency(filtered.reduce((sum, item) => sum + Number(item.saving || 0), 0))} tone="blue" />
-        <KpiCard title="Anexos" value={filtered.reduce((sum, item) => sum + getAttachments(item).length, 0)} />
+        <KpiCard title="Em aberto" value={openRequests.length} tone={openRequests.length ? "warning" : "success"} />
+        <KpiCard title="Finalizados" value={finishedRequests.length} tone="success" />
+        <KpiCard title="SLA medio" value={averageSla} tone="blue" />
       </section>
 
       {showForm ? <OrcamentoForm onSaved={refresh} /> : null}
@@ -175,7 +178,6 @@ export function OrcamentosPage() {
           { key: "status", label: "Status", render: (item) => item.status },
           { key: "cliente", label: "Cliente", render: (item) => item.cliente || "-" },
           { key: "sla", label: "SLA total", render: (item) => formatBusinessDuration(getOrcamentoSla(item, now).totalMs) },
-          { key: "saving", label: "Saving", render: (item) => formatCurrency(item.saving) },
           { key: "anexos", label: "Anexos", render: (item) => getAttachments(item).length },
         ]}
       />
@@ -326,7 +328,6 @@ function OrcamentoDrawer({
   onSaved: () => void;
 }) {
   const [requestDate, setRequestDate] = useState(item.data_solicitacao || "");
-  const [savingValue, setSavingValue] = useState(String(item.saving || ""));
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
   const [deleteMessage, setDeleteMessage] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -335,7 +336,6 @@ function OrcamentoDrawer({
   async function saveAdminFields() {
     await updateEntity("orcamentos", item.id, {
       ...buildRequestDatePatch(item, requestDate),
-      saving: parseMoney(savingValue),
       quantidade_req: Number(qtd || 0),
     });
     onSaved();
@@ -391,12 +391,11 @@ function OrcamentoDrawer({
             <div className="panel-heading">
               <div>
                 <span className="eyebrow">Administração</span>
-                <h3>Data, saving e REQ</h3>
+                <h3>Data da solicitação e REQ</h3>
               </div>
             </div>
             <div className="form-grid">
               <Field label="Data da solicitacao" type="date" value={requestDate} onChange={setRequestDate} />
-              <Field label="Saving" value={savingValue} onChange={setSavingValue} />
               <Field label="Quantidade REQ" value={qtd} onChange={setQtd} />
             </div>
             <div className="form-actions">
@@ -666,6 +665,12 @@ function formatBusinessDuration(ms: number) {
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+function averageOrcamentoSla(items: Orcamento[], now: number) {
+  if (!items.length) return "0min";
+  const total = items.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0);
+  return formatBusinessDuration(total / items.length);
 }
 
 function phaseLabel(status: string) {

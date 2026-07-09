@@ -73,10 +73,75 @@ const embeddedChromeCss = `
     font-size: 14px !important;
   }
 
+  html[data-theme="dark"],
+  html[data-theme="dark"] body {
+    background: #07111f !important;
+    color: #e5edf7 !important;
+  }
+
+  html[data-theme="dark"] .card,
+  html[data-theme="dark"] .panel,
+  html[data-theme="dark"] .section,
+  html[data-theme="dark"] .stat,
+  html[data-theme="dark"] .kpi,
+  html[data-theme="dark"] .modal,
+  html[data-theme="dark"] .supplier,
+  html[data-theme="dark"] .order-card,
+  html[data-theme="dark"] .freight-card,
+  html[data-theme="dark"] .vehicle-card,
+  html[data-theme="dark"] .chart-card,
+  html[data-theme="dark"] .table-wrap {
+    background: #0d1b2e !important;
+    border-color: #1f3350 !important;
+    color: #e5edf7 !important;
+  }
+
+  html[data-theme="dark"] input,
+  html[data-theme="dark"] select,
+  html[data-theme="dark"] textarea,
+  html[data-theme="dark"] .tab,
+  html[data-theme="dark"] .chip {
+    background: #10233f !important;
+    border-color: #1f3350 !important;
+    color: #e5edf7 !important;
+  }
+
   body.supply-embedded-frota > header.topbar,
   body.supply-embedded-fretes > header,
   body.supply-embedded-estoque_obras #loginPage {
     display: none !important;
+  }
+
+  body.supply-embedded-frota .hero {
+    display: none !important;
+  }
+
+  body.supply-embedded-fretes {
+    overflow-x: hidden !important;
+  }
+
+  body.supply-embedded-fretes .container,
+  body.supply-embedded-fretes main,
+  body.supply-embedded-fretes .section {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  body.supply-embedded-fretes .tabs {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 40 !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 8px !important;
+    padding: 8px !important;
+    background: rgba(255, 255, 255, .96) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+  }
+
+  body.supply-embedded-fretes .section {
+    scroll-margin-top: 64px !important;
   }
 
   body.supply-embedded [data-supply-hidden="true"] {
@@ -136,6 +201,20 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var canManage = !!ctx.canManage;
   var applying = false;
   var stockLogged = false;
+
+  function syncTheme() {
+    var theme = "light";
+    try {
+      theme = window.parent.document.documentElement.dataset.theme || "light";
+    } catch (err) {
+      try {
+        theme = window.localStorage.getItem("supply-flow:theme") || "light";
+      } catch (storageErr) {
+        theme = "light";
+      }
+    }
+    document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+  }
 
   function ready(fn) {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
@@ -225,9 +304,9 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   function applyFretesRules() {
     if (canManage) return;
 
-    hide("button[onclick*='mapa'], button[onclick*='cotacao'], button[onclick*='dashboard']");
+    hide("button[onclick*='dashboard'], button[onclick*='history']");
     hide(".header-actions, button[onclick*='editBasic'], button[onclick*='deleteFreight'], button[onclick*='addQuote'], button[onclick*='selectBestQuote'], button[onclick*='deleteQuote']");
-    hide("#cotacao, #dashboard, #mapa, .quotation-actions, .quote-layout, .quotation-form-card");
+    hide("#dashboard, #history, .quotation-actions, .quotation-form-card");
     disable(".phase-select, select[onchange*='changePhase']");
 
     guard("changePhase", "Apenas super_admin pode mudar fases de frete.");
@@ -297,9 +376,11 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   }
 
   ready(function() {
+    syncTheme();
     applyRules();
     var observer = new MutationObserver(function() { applyRules(); });
     observer.observe(document.body, { childList: true, subtree: true });
+    window.setInterval(syncTheme, 1000);
     window.setTimeout(applyRules, 250);
     window.setTimeout(applyRules, 900);
     window.setTimeout(applyRules, 1800);

@@ -8,17 +8,19 @@ import {
   LogOut,
   MapPinned,
   Menu,
+  Moon,
   Package,
   Settings,
   ShieldCheck,
   Star,
+  Sun,
   Truck,
   UploadCloud,
   Users,
   X,
 } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { canView, roleLabel } from "../lib/permissions";
@@ -56,6 +58,10 @@ const routeTitles: Record<string, string> = {
 
 export function AppLayout() {
   const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    return window.localStorage.getItem("supply-flow:theme") === "dark" ? "dark" : "light";
+  });
   const location = useLocation();
   const { profile, obras, signOut } = useAuth();
 
@@ -63,6 +69,11 @@ export function AppLayout() {
     () => menu.filter((item) => canView(profile?.role, item.module)),
     [profile?.role]
   );
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("supply-flow:theme", theme);
+  }, [theme]);
 
   return (
     <div className="app-shell">
@@ -116,6 +127,15 @@ export function AppLayout() {
             <h1>{routeTitles[location.pathname] || "Supply Flow"}</h1>
           </div>
           <div className="profile-area">
+            <button
+              className="icon-button"
+              type="button"
+              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+              aria-label={theme === "dark" ? "Usar tema claro" : "Usar tema escuro"}
+              title={theme === "dark" ? "Tema claro" : "Tema escuro"}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             <div className="role-pill">
               <ShieldCheck size={16} />
               {roleLabel(profile?.role)}

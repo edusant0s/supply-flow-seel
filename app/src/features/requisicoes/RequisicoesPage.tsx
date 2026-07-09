@@ -94,6 +94,7 @@ export function RequisicoesPage() {
   const activeItems = filtered.filter((item) => !closedOrSeparatedStatuses.includes(getRequisicaoStatus(item)));
   const openItemCount = activeItems.reduce((sum, item) => sum + getPayloadRows(item.payload).length, 0);
   const prioritySummary = buildPrioritySummary(activeItems);
+  const ocSummary = buildOcSummary(filtered.filter((item) => getRequisicaoStatus(item) === "OC"));
   const buyerReport = buildBuyerReport(activeItems, buyer);
 
   return (
@@ -181,15 +182,6 @@ export function RequisicoesPage() {
         </div>
       </section>
 
-      <section className="phase-strip">
-        {statuses.map(([key, title, subtitle]) => (
-          <article key={key}>
-            <strong>{title}</strong>
-            <span>{subtitle}</span>
-          </article>
-        ))}
-      </section>
-
       <section className="kpi-grid">
         <KpiCard title="RMs visiveis" value={activeItems.length} />
         <KpiCard title="Itens em aberto" value={openItemCount} />
@@ -213,6 +205,35 @@ export function RequisicoesPage() {
             <span>Urgentes</span>
             <strong>{prioritySummary.urgent.count}</strong>
             <b>{prioritySummary.urgent.percent}</b>
+          </article>
+        </div>
+      </section>
+
+      <section className="oc-summary">
+        <div>
+          <span className="eyebrow">Ordens de compra</span>
+          <h2>Indicadores de OC</h2>
+        </div>
+        <div className="oc-summary__grid">
+          <article>
+            <span>Quantidade de OCs</span>
+            <strong>{ocSummary.total}</strong>
+            <b>{ocSummary.total ? "Itens em fase OC" : "Sem OC no filtro"}</b>
+          </article>
+          <article>
+            <span>OCs normais</span>
+            <strong>{ocSummary.normal.count}</strong>
+            <b>{ocSummary.normal.percent} · SLA {ocSummary.normal.avgSla}</b>
+          </article>
+          <article className="oc-summary__urgent">
+            <span>OCs urgentes</span>
+            <strong>{ocSummary.urgent.count}</strong>
+            <b>{ocSummary.urgent.percent} · SLA {ocSummary.urgent.avgSla}</b>
+          </article>
+          <article>
+            <span>SLA medio</span>
+            <strong>{ocSummary.avgSla}</strong>
+            <b>Media das OCs filtradas</b>
           </article>
         </div>
       </section>
@@ -460,14 +481,7 @@ function isUrgent(item: Requisicao) {
 
 function getSlaInfo(item: Requisicao) {
   const status = getRequisicaoStatus(item);
-  const rawDays = getPayloadField(item.payload, ["Dias RM em aberto", "Dias Em Aberto", "Atraso"]);
-  const daysFromSheet = Number(String(rawDays).replace(",", ".").match(/\d+(\.\d+)?/)?.[0] || "");
-  const created = item.data_inclusao ? new Date(`${item.data_inclusao}T00:00:00`).getTime() : Number.NaN;
-  const elapsed = Number.isFinite(daysFromSheet)
-    ? Math.floor(daysFromSheet)
-    : Number.isFinite(created)
-      ? Math.max(0, Math.floor((Date.now() - created) / 86400000))
-      : null;
+  const elapsed = getSlaElapsedDays(item);
   const urgent = isUrgent(item);
   const isHugo = normalizeText(item.comprador) === "hugo";
   const limit = isHugo ? (urgent ? 30 : 35) : urgent ? 3 : 5;
@@ -479,6 +493,15 @@ function getSlaInfo(item: Requisicao) {
   return { tone: "success" as const, label: `${elapsed}d no prazo` };
 }
 
+function getSlaElapsedDays(item: Requisicao) {
+  const rawDays = getPayloadField(item.payload, ["Dias RM em aberto", "Dias Em Aberto", "Atraso"]);
+  const daysFromSheet = Number(String(rawDays).replace(",", ".").match(/\d+(\.\d+)?/)?.[0] || "");
+  const created = item.data_inclusao ? new Date(`${item.data_inclusao}T00:00:00`).getTime() : Number.NaN;
+  if (Number.isFinite(daysFromSheet)) return Math.floor(daysFromSheet);
+  if (Number.isFinite(created)) return Math.max(0, Math.floor((Date.now() - created) / 86400000));
+  return null;
+}
+
 function buildPrioritySummary(items: Requisicao[]) {
   const total = items.length;
   const urgent = items.filter(isUrgent).length;
@@ -487,6 +510,32 @@ function buildPrioritySummary(items: Requisicao[]) {
     normal: { count: normal, percent: formatPercent(normal, total) },
     urgent: { count: urgent, percent: formatPercent(urgent, total) },
   };
+}
+
+function buildOcSummary(items: Requisicao[]) {
+  const urgentItems = items.filter(isUrgent);
+  const normalItems = items.filter((item) => !isUrgent(item));
+  return {
+    total: items.length,
+    avgSla: averageSlaLabel(items),
+    normal: {
+      count: normalItems.length,
+      percent: formatPercent(normalItems.length, items.length),
+      avgSla: averageSlaLabel(normalItems),
+    },
+    urgent: {
+      count: urgentItems.length,
+      percent: formatPercent(urgentItems.length, items.length),
+      avgSla: averageSlaLabel(urgentItems),
+    },
+  };
+}
+
+function averageSlaLabel(items: Requisicao[]) {
+  const values = items.map(getSlaElapsedDays).filter((value): value is number => value !== null);
+  if (!values.length) return "sem data";
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  return `${average.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}d`;
 }
 
 function formatPercent(value: number, total: number) {

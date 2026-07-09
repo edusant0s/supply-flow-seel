@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type React from "react";
 import {
   AlertTriangle,
   BarChart3,
@@ -74,7 +75,8 @@ export function DashboardPage() {
   if (!data) return null;
 
   const filteredRows = processFilter === "todos" ? rows : rows.filter((row) => row.key === processFilter);
-  const totals = filteredRows.reduce(
+  const managedRows = filteredRows.filter((row) => row.key !== "fornecedores");
+  const totals = managedRows.reduce(
     (acc, row) => ({
       demanda: acc.demanda + row.demanda,
       emAberto: acc.emAberto + row.emAberto,
@@ -107,6 +109,8 @@ export function DashboardPage() {
         <KpiCard title="Risco SLA" value={totals.riscoSla} icon={AlertTriangle} tone={totals.riscoSla ? "danger" : "success"} />
         <KpiCard title="Conclusao" value={`${completion}%`} icon={Star} />
       </section>
+
+      <DashboardCharts rows={managedRows} />
 
       <section className="dashboard-process-grid">
         {filteredRows.map((row) => (
@@ -171,11 +175,11 @@ function buildDashboardRows(data: {
     {
       key: "fornecedores",
       processo: "Mapa de fornecedores",
-      demanda: data.fornecedores.length,
+      demanda: 0,
       emAberto: data.fornecedores.filter((item) => !item.cadastro_ativo).length,
       finalizados: data.fornecedores.filter((item) => item.cadastro_ativo).length,
       riscoSla: data.fornecedores.filter((item) => !item.email && !item.telefone).length,
-      indicador: "Cadastros ativos e contatos completos.",
+      indicador: `${data.fornecedores.length.toLocaleString("pt-BR")} cadastros. Consulta, base e contatos completos, sem contar como demanda.`,
     },
     {
       key: "fretes",
@@ -214,6 +218,66 @@ function buildDashboardRows(data: {
       indicador: "Fornecedores pendentes e notas abaixo do esperado.",
     },
   ];
+}
+
+function DashboardCharts({ rows }: { rows: DashboardRow[] }) {
+  const maxDemand = Math.max(...rows.map((row) => row.demanda), 1);
+  const totals = rows.reduce(
+    (acc, row) => ({
+      demanda: acc.demanda + row.demanda,
+      emAberto: acc.emAberto + row.emAberto,
+      finalizados: acc.finalizados + row.finalizados,
+      riscoSla: acc.riscoSla + row.riscoSla,
+    }),
+    { demanda: 0, emAberto: 0, finalizados: 0, riscoSla: 0 }
+  );
+  const donePercent = totals.demanda ? Math.round((totals.finalizados / totals.demanda) * 100) : 0;
+  const openPercent = totals.demanda ? Math.round((totals.emAberto / totals.demanda) * 100) : 0;
+  const riskPercent = totals.demanda ? Math.round((totals.riscoSla / totals.demanda) * 100) : 0;
+
+  return (
+    <section className="dashboard-chart-grid">
+      <article className="panel dashboard-chart-card">
+        <div className="panel-heading">
+          <div>
+            <span className="eyebrow">Volume</span>
+            <h2>Demandas por processo</h2>
+          </div>
+        </div>
+        <div className="bar-chart" role="img" aria-label="Demandas por processo">
+          {rows.map((row) => (
+            <div className="bar-chart__row" key={row.key}>
+              <span>{row.processo}</span>
+              <div>
+                <i style={{ width: `${Math.max(4, (row.demanda / maxDemand) * 100)}%` }} />
+              </div>
+              <strong>{row.demanda.toLocaleString("pt-BR")}</strong>
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="panel dashboard-chart-card dashboard-chart-card--compact">
+        <div className="panel-heading">
+          <div>
+            <span className="eyebrow">Funil</span>
+            <h2>Status geral</h2>
+          </div>
+        </div>
+        <div className="donut-summary" style={{ "--done": `${donePercent * 3.6}deg`, "--open": `${openPercent * 3.6}deg` } as React.CSSProperties}>
+          <div className="donut-summary__chart">
+            <strong>{donePercent}%</strong>
+            <span>conclusao</span>
+          </div>
+          <div className="donut-summary__legend">
+            <span><b className="legend-dot legend-dot--done" />Finalizados {totals.finalizados.toLocaleString("pt-BR")}</span>
+            <span><b className="legend-dot legend-dot--open" />Em aberto {totals.emAberto.toLocaleString("pt-BR")}</span>
+            <span><b className="legend-dot legend-dot--risk" />Risco SLA {totals.riscoSla.toLocaleString("pt-BR")} ({riskPercent}%)</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  );
 }
 
 function summarizeRequisicoes(rows: Requisicao[]): DashboardRow {
