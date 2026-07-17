@@ -132,7 +132,7 @@ export function FornecedoresPage() {
       });
   }, [categoria, data, query, region, status, uf]);
 
-  const selected = filtered.find((item) => item.id === selectedId) || filtered[0] || null;
+  const selected = filtered.find((item) => item.id === selectedId) || filtered.find(hasMapLocation) || filtered[0] || null;
 
   if (loading) return <LoadingState label="Carregando fornecedores" />;
   if (error) return <EmptyState title="Falha ao carregar fornecedores" description={error} />;
@@ -784,6 +784,14 @@ function supplierQuery(supplier: Fornecedor | null) {
   if (!supplier) return "Brasil";
   if (supplier.latitude !== null && supplier.longitude !== null) return `${supplier.latitude},${supplier.longitude}`;
   return [supplier.nome, supplier.cidade, supplier.uf, "Brasil"].filter(Boolean).join(", ");
+}
+
+function hasMapLocation(supplier: Fornecedor) {
+  return (
+    (supplier.latitude !== null && supplier.longitude !== null) ||
+    Boolean(supplier.cidade && supplier.uf) ||
+    Boolean(supplier.cidade)
+  );
 }
 
 function mapsEmbedUrl(supplier: Fornecedor | null) {

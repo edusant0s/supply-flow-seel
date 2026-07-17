@@ -110,7 +110,7 @@ export function AppLayout() {
         <div className="sidebar-footer">
           <div className="obra-chip">
             <Building2 size={16} />
-            <span>{profile?.role === "viewer" ? `${obras.length} obra(s)` : "Escopo admin"}</span>
+            <span>{scopeLabel(profile?.role, obras.length)}</span>
           </div>
         </div>
       </aside>
@@ -155,4 +155,10 @@ export function AppLayout() {
       </div>
     </div>
   );
+}
+
+function scopeLabel(role: string | undefined, obraCount: number) {
+  if (role === "viewer") return `${obraCount} obra(s)`;
+  if (role === "viewer_global") return "Todas as obras";
+  return "Escopo administrativo";
 }
