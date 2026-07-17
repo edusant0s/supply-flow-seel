@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ClipboardList, FileText, Plus, Search, UploadCloud } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ClipboardList, FileText, Plus, RefreshCw, Search, UploadCloud } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { EmbeddedHtmlToolPage } from "../../components/EmbeddedHtmlToolPage";
@@ -35,7 +35,8 @@ export function ContratosPage() {
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("contratos"), [], { cacheKey: "contratos" });
   const obrasData = useAsyncData(listObras, [], { cacheKey: "obras" });
   const canEdit = canManage(profile?.role, "contratos");
-  const availableObras = canEdit ? obrasData.data || obras : obras;
+  const shouldUseGlobalObras = canEdit || profile?.role === "viewer_global";
+  const availableObras = shouldUseGlobalObras ? obrasData.data || obras : obras;
 
   const filtered = useMemo(() => {
     const q = normalizeText(query);
@@ -88,6 +89,10 @@ export function ContratosPage() {
           <Plus size={18} />
           Solicitar contrato
         </button>
+        <button className="secondary-button" type="button" onClick={refresh}>
+          <RefreshCw size={18} />
+          Atualizar
+        </button>
         {canEdit ? (
           <>
             <Link className="secondary-button" to="/importacoes">
@@ -109,7 +114,14 @@ export function ContratosPage() {
         <KpiCard title="Finalizados" value={finished} icon={FileText} tone="success" />
       </section>
 
-      {showForm ? <ContratoForm obras={canEdit ? availableObras : undefined} onSaved={refresh} /> : null}
+      {showForm ? (
+        <ContratoForm
+          obras={availableObras}
+          obrasLoading={shouldUseGlobalObras && obrasData.loading && !availableObras.length}
+          obrasError={shouldUseGlobalObras ? obrasData.error : ""}
+          onSaved={refresh}
+        />
+      ) : null}
 
       <KanbanBoard
         columns={statuses.map(([key, title]) => ({
@@ -157,9 +169,19 @@ export function ContratosPage() {
   );
 }
 
-function ContratoForm({ obras: adminObras, onSaved }: { obras?: Obra[]; onSaved: () => void }) {
+function ContratoForm({
+  obras: formObras,
+  obrasLoading = false,
+  obrasError = "",
+  onSaved,
+}: {
+  obras?: Obra[];
+  obrasLoading?: boolean;
+  obrasError?: string;
+  onSaved: () => void;
+}) {
   const { profile, obras: linkedObras } = useAuth();
-  const obras = adminObras || linkedObras;
+  const obras = formObras || linkedObras;
   const [form, setForm] = useState({
     obra_id: obras[0]?.id || "",
     solicitante: profile?.nome || "",
@@ -175,7 +197,31 @@ function ContratoForm({ obras: adminObras, onSaved }: { obras?: Obra[]; onSaved:
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    const firstObra = obras[0];
+    if (!firstObra) return;
+    setForm((current) =>
+      current.obra_id
+        ? current
+        : {
+            ...current,
+            obra_id: firstObra.id,
+            centro_custo: firstObra.centro_custo || current.centro_custo,
+          }
+    );
+  }, [obras]);
+
   async function submit() {
+    if (obrasError) {
+      setFeedback({ type: "error", text: `Falha ao carregar obras para solicitação: ${obrasError}` });
+      return;
+    }
+
+    if (!obras.length) {
+      setFeedback({ type: "error", text: "Nenhuma obra disponível para solicitar contrato. Revise o cadastro/permissão do usuário." });
+      return;
+    }
+
     if (!form.obra_id || !form.solicitante.trim() || !form.email_solicitante.trim() || !form.tipo_documento.trim()) {
       setFeedback({ type: "error", text: "Preencha obra, solicitante, e-mail e tipo de documento." });
       return;
@@ -268,9 +314,11 @@ function ContratoForm({ obras: adminObras, onSaved }: { obras?: Obra[]; onSaved:
           <textarea value={form.observacoes} onChange={(event) => setForm((current) => ({ ...current, observacoes: event.target.value }))} />
         </label>
       </div>
+      {obrasLoading ? <div className="form-note">Carregando obras disponíveis para solicitação...</div> : null}
+      {obrasError ? <div className="form-error">Falha ao carregar obras: {obrasError}</div> : null}
       {feedback ? <div className={feedback.type === "error" ? "form-error" : "form-note"}>{feedback.text}</div> : null}
       <div className="form-actions">
-        <button className="primary-button" type="button" onClick={submit} disabled={saving}>
+        <button className="primary-button" type="button" onClick={submit} disabled={saving || obrasLoading}>
           {saving ? "Enviando..." : "Enviar solicitacao"}
         </button>
       </div>

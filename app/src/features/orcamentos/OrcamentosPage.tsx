@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clock3, Download, Paperclip, Plus, Search, Trash2, UploadCloud, X } from "lucide-react";
+import { Clock3, Download, Paperclip, Plus, RefreshCw, Search, Trash2, UploadCloud, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { KanbanBoard } from "../../components/KanbanBoard";
@@ -108,6 +108,10 @@ export function OrcamentosPage() {
         <button className="secondary-button" type="button" onClick={() => setShowForm((current) => !current)}>
           <Plus size={18} />
           Nova solicitação
+        </button>
+        <button className="secondary-button" type="button" onClick={refresh}>
+          <RefreshCw size={18} />
+          Atualizar
         </button>
         <RoleGate module="orcamentos">
           <Link className="primary-button" to="/importacoes">
@@ -221,7 +225,6 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
     const missingRequired = [
       form.nome_solicitante,
       form.email_solicitante,
-      form.numero_proposta,
       form.nome_obra,
       form.cliente,
       form.local_obra,
@@ -238,8 +241,8 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
     setFeedback(null);
     try {
       const attachments = await uploadAttachments("orcamentos", files);
-      const proposal = form.numero_proposta || buildProposalNumber();
-      const payload = { ...form, anexos: attachments, sla: createInitialSla("nao_iniciado", form.data_solicitacao) };
+      const proposal = form.numero_proposta.trim() || buildProposalNumber();
+      const payload = { ...form, numero_proposta: proposal, anexos: attachments, sla: createInitialSla("nao_iniciado", form.data_solicitacao) };
       await insertEntity("orcamentos", {
         criado_por: session?.user.id || profile?.id || null,
         numero_proposta: proposal,
@@ -263,7 +266,13 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
       setFiles([]);
       onSaved();
     } catch (err) {
-      setFeedback({ type: "error", text: err instanceof Error ? err.message : "Falha ao salvar solicitacao." });
+      const message = err instanceof Error ? err.message : "Falha ao salvar solicitacao.";
+      setFeedback({
+        type: "error",
+        text: message.toLowerCase().includes("duplicate") || message.toLowerCase().includes("numero_proposta")
+          ? "Já existe uma solicitação com esse número de proposta. Apague o número para gerar automaticamente ou informe outro."
+          : message,
+      });
     } finally {
       setSaving(false);
     }
@@ -281,7 +290,7 @@ function OrcamentoForm({ onSaved }: { onSaved: () => void }) {
         <Field label="Data da solicitacao" type="date" value={form.data_solicitacao} onChange={(value) => setForm((current) => ({ ...current, data_solicitacao: value }))} />
         <Field label="Nome do solicitante" value={form.nome_solicitante} onChange={(value) => setForm((current) => ({ ...current, nome_solicitante: value }))} required />
         <Field label="E-mail do solicitante" type="email" value={form.email_solicitante} onChange={(value) => setForm((current) => ({ ...current, email_solicitante: value }))} required />
-        <Field label="Numero da proposta" value={form.numero_proposta} onChange={(value) => setForm((current) => ({ ...current, numero_proposta: value }))} placeholder="Pp-001-26" required />
+        <Field label="Numero da proposta" value={form.numero_proposta} onChange={(value) => setForm((current) => ({ ...current, numero_proposta: value }))} placeholder="Em branco gera automaticamente" />
         <Field label="Nome da obra" value={form.nome_obra} onChange={(value) => setForm((current) => ({ ...current, nome_obra: value }))} required />
         <Field label="Cliente" value={form.cliente} onChange={(value) => setForm((current) => ({ ...current, cliente: value }))} required />
         <Field label="Local da obra" value={form.local_obra} onChange={(value) => setForm((current) => ({ ...current, local_obra: value }))} required />
