@@ -1887,6 +1887,253 @@ html[data-theme="dark"] .oc-summary__urgent {
   margin-top: 0;
 }
 
+.module-command-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.module-command-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--yellow), var(--blue-950));
+}
+
+.module-command-bar h2,
+.module-command-bar p {
+  margin: 0;
+}
+
+.module-command-bar h2 {
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.module-command-bar p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.module-command-bar__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.module-command-bar__badge {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 230, 28, 0.45);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--yellow);
+  background: rgba(255, 230, 28, 0.08);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.module-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 8px;
+}
+
+.module-tabs button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.84rem;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.module-tabs button.active {
+  color: var(--blue-950);
+  border-color: var(--yellow);
+  background: var(--yellow);
+}
+
+html[data-theme="dark"] .module-tabs button.active {
+  color: #07111f;
+}
+
+.supplier-modern-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 430px) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.supplier-table-panel {
+  grid-column: 1 / -1;
+}
+
+.supplier-map-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 14px;
+  min-height: 680px;
+}
+
+.supplier-map-side {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 15px;
+}
+
+.supplier-route-box {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0;
+}
+
+.supplier-route-box svg {
+  color: var(--blue-700);
+  flex: 0 0 auto;
+}
+
+.supplier-route-box strong,
+.supplier-route-box span {
+  display: block;
+}
+
+.supplier-route-box span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.supplier-map-list {
+  max-height: 360px;
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.supplier-map-list button {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text);
+  background: var(--panel);
+  text-align: left;
+  cursor: pointer;
+}
+
+.supplier-map-list button.active {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255, 230, 28, 0.12);
+}
+
+.supplier-map-list span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.supplier-map-frame {
+  overflow: hidden;
+  padding: 0;
+}
+
+.supplier-map-frame iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 680px;
+  border: 0;
+  filter: saturate(0.85) contrast(0.95);
+}
+
+html[data-theme="dark"] .supplier-map-frame iframe {
+  filter: invert(0.9) hue-rotate(180deg) saturate(0.75) contrast(0.92);
+}
+
+.supplier-form-panel {
+  max-width: 1180px;
+}
+
+.data-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.data-hub-grid button {
+  min-height: 150px;
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--text);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.data-hub-grid button::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--yellow), var(--blue-950));
+}
+
+.data-hub-grid button.active {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255, 230, 28, 0.12), var(--shadow);
+}
+
+.data-hub-grid svg {
+  color: var(--yellow);
+}
+
+.data-hub-grid strong {
+  font-size: 0.96rem;
+}
+
+.data-hub-grid span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.42;
+}
+
 .embedded-tool-page,
 .embedded-tool-frame {
   min-height: calc(100vh - 102px);
@@ -1905,6 +2152,20 @@ html[data-theme="dark"] .oc-summary__urgent {
   .dashboard-chart-grid,
   .oc-summary {
     grid-template-columns: 1fr;
+  }
+
+  .module-command-bar,
+  .supplier-modern-grid,
+  .supplier-map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .module-command-bar {
+    display: grid;
+  }
+
+  .data-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .oc-summary__grid {
@@ -1954,6 +2215,23 @@ html[data-theme="dark"] .oc-summary__urgent {
     grid-template-columns: 1fr;
   }
 
+  .module-command-bar__actions {
+    justify-content: stretch;
+  }
+
+  .module-command-bar__actions > *,
+  .module-tabs button {
+    flex: 1 0 auto;
+  }
+
+  .data-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .supplier-map-frame iframe {
+    min-height: 420px;
+  }
+
   .supplier-list {
     min-height: auto;
   }
@@ -1968,4 +2246,213 @@ html[data-theme="dark"] .oc-summary__urgent {
     height: calc(100vh - 82px);
     border-radius: 0;
   }
+}
+
+/* Dark mode hardening */
+html[data-theme="dark"] {
+  --blue-950: #061426;
+  --blue-900: #0b2038;
+  --blue-700: #63a7ff;
+  --dark-surface-1: #07111f;
+  --dark-surface-2: #0d1b2e;
+  --dark-surface-3: #10233f;
+  --dark-surface-4: #152b49;
+  --dark-text-strong: #f6f9fd;
+  --dark-text: #e5edf7;
+  --dark-text-muted: #b7c6d9;
+  --dark-border: #28415f;
+}
+
+html[data-theme="dark"],
+html[data-theme="dark"] body,
+html[data-theme="dark"] #root,
+html[data-theme="dark"] .main-shell,
+html[data-theme="dark"] .content {
+  background: var(--dark-surface-1);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .topbar {
+  background: rgba(7, 17, 31, 0.96);
+  border-color: var(--dark-border);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
+}
+
+html[data-theme="dark"] .sidebar {
+  background: linear-gradient(180deg, #061426, #0a192f 62%, #061426);
+  border-color: rgba(255, 230, 28, 0.16);
+}
+
+html[data-theme="dark"] .brand img {
+  background: #eef4fb;
+}
+
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .toolbar-panel,
+html[data-theme="dark"] .state-panel,
+html[data-theme="dark"] .buyer-panel,
+html[data-theme="dark"] .priority-summary,
+html[data-theme="dark"] .oc-summary,
+html[data-theme="dark"] .module-command-bar,
+html[data-theme="dark"] .module-tabs,
+html[data-theme="dark"] .data-hub-grid button,
+html[data-theme="dark"] .dashboard-process-grid article,
+html[data-theme="dark"] .dashboard-chart-card,
+html[data-theme="dark"] .kpi-card,
+html[data-theme="dark"] .table-shell,
+html[data-theme="dark"] .detail-drawer,
+html[data-theme="dark"] .supplier-card,
+html[data-theme="dark"] .supplier-detail,
+html[data-theme="dark"] .supplier-map-list button,
+html[data-theme="dark"] .kanban-card,
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] .import-step,
+html[data-theme="dark"] .import-danger-zone,
+html[data-theme="dark"] .danger-zone,
+html[data-theme="dark"] .route-box,
+html[data-theme="dark"] .muted-box {
+  background: var(--dark-surface-2);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
+}
+
+html[data-theme="dark"] .kanban-column,
+html[data-theme="dark"] .info-field,
+html[data-theme="dark"] .supplier-map-side,
+html[data-theme="dark"] .supplier-map-frame,
+html[data-theme="dark"] .card-main-info,
+html[data-theme="dark"] .import-results,
+html[data-theme="dark"] .bar-chart__row > div,
+html[data-theme="dark"] .score,
+html[data-theme="dark"] .mini-badge,
+html[data-theme="dark"] .attachment-count,
+html[data-theme="dark"] .timer-pill,
+html[data-theme="dark"] .toggle-row {
+  background: var(--dark-surface-3);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .search-field,
+html[data-theme="dark"] .secondary-button,
+html[data-theme="dark"] .table-action,
+html[data-theme="dark"] .icon-button,
+html[data-theme="dark"] .pager button {
+  background: var(--dark-surface-3);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #8fa3ba;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] .topbar h1,
+html[data-theme="dark"] .panel-heading h2,
+html[data-theme="dark"] .panel-heading h3,
+html[data-theme="dark"] .module-command-bar h2,
+html[data-theme="dark"] .dashboard-process-grid__top,
+html[data-theme="dark"] .kpi-card strong,
+html[data-theme="dark"] .card-main-info strong,
+html[data-theme="dark"] .supplier-card strong,
+html[data-theme="dark"] .supplier-detail h3,
+html[data-theme="dark"] .info-field strong,
+html[data-theme="dark"] .bar-chart__row strong {
+  color: var(--dark-text-strong);
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .breadcrumb,
+html[data-theme="dark"] .profile-name span,
+html[data-theme="dark"] .card-meta span,
+html[data-theme="dark"] .supplier-card span,
+html[data-theme="dark"] .supplier-detail p,
+html[data-theme="dark"] .dashboard-process-grid p,
+html[data-theme="dark"] .dashboard-process-grid__numbers,
+html[data-theme="dark"] .data-hub-grid span,
+html[data-theme="dark"] .module-command-bar p,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .muted-box,
+html[data-theme="dark"] .field-hint,
+html[data-theme="dark"] .info-field span,
+html[data-theme="dark"] .bar-chart__row,
+html[data-theme="dark"] .donut-summary__legend,
+html[data-theme="dark"] .donut-summary__chart span,
+html[data-theme="dark"] .supplier-route-box span,
+html[data-theme="dark"] .supplier-map-list span,
+html[data-theme="dark"] .import-summary span,
+html[data-theme="dark"] .state-panel p {
+  color: var(--dark-text-muted);
+}
+
+html[data-theme="dark"] th {
+  background: #132845;
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+
+html[data-theme="dark"] td {
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] tbody tr:hover td {
+  background: rgba(99, 167, 255, 0.08);
+}
+
+html[data-theme="dark"] .primary-button {
+  color: #07111f;
+  background: var(--yellow);
+  border-color: var(--yellow);
+}
+
+html[data-theme="dark"] .secondary-button:hover,
+html[data-theme="dark"] .table-action:hover,
+html[data-theme="dark"] .icon-button:hover {
+  background: var(--dark-surface-4);
+}
+
+html[data-theme="dark"] .mini-badge--good,
+html[data-theme="dark"] .form-note,
+html[data-theme="dark"] .import-step--done {
+  color: #bdf7d8;
+  background: rgba(5, 150, 105, 0.16);
+  border-color: rgba(5, 150, 105, 0.42);
+}
+
+html[data-theme="dark"] .mini-badge--warn,
+html[data-theme="dark"] .priority-summary__urgent,
+html[data-theme="dark"] .oc-summary__urgent {
+  color: #ffe8a3;
+  background: rgba(217, 119, 6, 0.16) !important;
+  border-color: rgba(217, 119, 6, 0.42) !important;
+}
+
+html[data-theme="dark"] .form-error,
+html[data-theme="dark"] .danger-zone {
+  color: #fecaca;
+  background: rgba(220, 38, 38, 0.14);
+  border-color: rgba(220, 38, 38, 0.42);
+}
+
+html[data-theme="dark"] .table-empty,
+html[data-theme="dark"] .kanban-empty {
+  color: var(--dark-text-muted);
+  background: rgba(16, 35, 63, 0.72);
+  border-color: var(--dark-border);
+}
+
+html[data-theme="dark"] .embedded-tool-page {
+  background: var(--dark-surface-1);
+  border-color: var(--dark-border);
 }

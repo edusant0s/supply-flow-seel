@@ -8,7 +8,8 @@
     "build": "vite build app",
     "preview": "vite preview app --host 0.0.0.0",
     "security:scan": "node scripts/security-scan.mjs",
-    "typecheck": "tsc -p app/tsconfig.json --noEmit"
+    "typecheck": "tsc -p app/tsconfig.json --noEmit",
+    "users:import": "node scripts/import-users.mjs"
   },
   "dependencies": {
     "@e965/xlsx": "^0.20.3",

@@ -396,7 +396,7 @@ function BulkUserImport({ obras, existingProfiles, onSaved }: { obras: Obra[]; e
           results.push(`Linha ${row.row}: atualizado`);
         } else {
           const created = await createUser({ nome: row.nome, email: row.email, role, ativo: row.ativo, obraIds, password: row.password });
-          results.push(created.temporary_password ? `Linha ${row.row}: criado (${created.temporary_password})` : `Linha ${row.row}: criado`);
+          results.push(created.temporary_password ? `Linha ${row.row}: criado com senha temporaria` : `Linha ${row.row}: criado`);
         }
       } catch (error) {
         results.push(`Linha ${row.row}: ${(error as Error).message}`);
@@ -464,8 +464,9 @@ function mapBulkUserRow(row: RawRow, rowNumber: number, obras: Obra[]): BulkUser
   const nome = getCell(row, ["nome", "usuario", "usuário", "name"]);
   const email = getCell(row, ["email", "e-mail", "mail"]);
   const rawRole = getCell(row, ["perfil", "permissao", "permissão", "role"]);
-  const allObras = parseBoolean(getCell(row, ["todas as obras", "todas obras", "global", "ver todas"]));
-  const role = parseRole(rawRole, allObras);
+  const explicitAllObras = parseBoolean(getCell(row, ["todas as obras", "todas obras", "global", "ver todas"]));
+  const role = parseRole(rawRole, explicitAllObras);
+  const allObras = explicitAllObras || role === "viewer_global";
   const ativo = parseBoolean(getCell(row, ["ativo", "status", "active"]), true);
   const password = getCell(row, ["senha", "senha temporaria", "senha temporária", "password"]);
   const obraIds = allObras ? [] : findObraIds(getCell(row, ["obras", "obra", "obras permitidas", "obra permitida"]), obras);

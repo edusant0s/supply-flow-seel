@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Download, Mail, MessageCircle, Plus, Search, UploadCloud, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
-import { ImportWizard } from "../../components/ImportWizard";
 import { KanbanBoard } from "../../components/KanbanBoard";
 import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
@@ -36,7 +36,6 @@ export function RequisicoesPage() {
   const [customBuyers, setCustomBuyers] = useState<string[]>(() => loadCustomBuyers());
   const [obraFilter, setObraFilter] = useState("");
   const [slaFilter, setSlaFilter] = useState("");
-  const [showImport, setShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("requisicoes"), []);
   const obras = useAsyncData(listObras, []);
@@ -145,10 +144,10 @@ export function RequisicoesPage() {
           Exportar
         </button>
         <RoleGate module="requisicoes">
-          <button className="primary-button" type="button" onClick={() => setShowImport((current) => !current)}>
+          <Link className="primary-button" to="/importacoes">
             <UploadCloud size={18} />
-            Importar
-          </button>
+            Central de dados
+          </Link>
         </RoleGate>
       </section>
 
@@ -237,8 +236,6 @@ export function RequisicoesPage() {
           </article>
         </div>
       </section>
-
-      {showImport ? <ImportWizard kind="requisicoes" onComplete={refresh} /> : null}
 
       <KanbanBoard
         columns={columns}

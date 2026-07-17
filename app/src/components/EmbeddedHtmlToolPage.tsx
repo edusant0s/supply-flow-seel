@@ -85,12 +85,28 @@ const embeddedChromeCss = `
   html[data-theme="dark"] .stat,
   html[data-theme="dark"] .kpi,
   html[data-theme="dark"] .modal,
+  html[data-theme="dark"] .modal-content,
+  html[data-theme="dark"] .modal-body,
+  html[data-theme="dark"] .drawer,
   html[data-theme="dark"] .supplier,
   html[data-theme="dark"] .order-card,
   html[data-theme="dark"] .freight-card,
   html[data-theme="dark"] .vehicle-card,
   html[data-theme="dark"] .chart-card,
-  html[data-theme="dark"] .table-wrap {
+  html[data-theme="dark"] .table-wrap,
+  html[data-theme="dark"] .table-panel,
+  html[data-theme="dark"] .toolbar,
+  html[data-theme="dark"] .toolbar-panel,
+  html[data-theme="dark"] .filters,
+  html[data-theme="dark"] .kanban-column,
+  html[data-theme="dark"] .col,
+  html[data-theme="dark"] .detail-box,
+  html[data-theme="dark"] .detail-section,
+  html[data-theme="dark"] .detail-answer,
+  html[data-theme="dark"] .detail-kv,
+  html[data-theme="dark"] .empty,
+  html[data-theme="dark"] .empty-col,
+  html[data-theme="dark"] .notice {
     background: #0d1b2e !important;
     border-color: #1f3350 !important;
     color: #e5edf7 !important;
@@ -100,10 +116,75 @@ const embeddedChromeCss = `
   html[data-theme="dark"] select,
   html[data-theme="dark"] textarea,
   html[data-theme="dark"] .tab,
-  html[data-theme="dark"] .chip {
+  html[data-theme="dark"] .chip,
+  html[data-theme="dark"] .badge,
+  html[data-theme="dark"] .pill,
+  html[data-theme="dark"] .tag,
+  html[data-theme="dark"] .status,
+  html[data-theme="dark"] .control,
+  html[data-theme="dark"] .btn,
+  html[data-theme="dark"] .secondary,
+  html[data-theme="dark"] .search,
+  html[data-theme="dark"] .file,
+  html[data-theme="dark"] .file-chip,
+  html[data-theme="dark"] .timer,
+  html[data-theme="dark"] .sla-box,
+  html[data-theme="dark"] .info-box {
     background: #10233f !important;
     border-color: #1f3350 !important;
     color: #e5edf7 !important;
+  }
+
+  html[data-theme="dark"] h1,
+  html[data-theme="dark"] h2,
+  html[data-theme="dark"] h3,
+  html[data-theme="dark"] h4,
+  html[data-theme="dark"] strong,
+  html[data-theme="dark"] b,
+  html[data-theme="dark"] .card-title,
+  html[data-theme="dark"] .col-title,
+  html[data-theme="dark"] .panel-title,
+  html[data-theme="dark"] .supplier-name,
+  html[data-theme="dark"] .kpi-value,
+  html[data-theme="dark"] .stat strong,
+  html[data-theme="dark"] .kpi strong {
+    color: #f6f9fd !important;
+  }
+
+  html[data-theme="dark"] p,
+  html[data-theme="dark"] span,
+  html[data-theme="dark"] small,
+  html[data-theme="dark"] label,
+  html[data-theme="dark"] td,
+  html[data-theme="dark"] .muted,
+  html[data-theme="dark"] .hint,
+  html[data-theme="dark"] .sub,
+  html[data-theme="dark"] .card-line,
+  html[data-theme="dark"] .card-desc,
+  html[data-theme="dark"] .panel-sub,
+  html[data-theme="dark"] .col-subtitle,
+  html[data-theme="dark"] .detail-answer div,
+  html[data-theme="dark"] .detail-answer small {
+    color: #b7c6d9 !important;
+  }
+
+  html[data-theme="dark"] th {
+    background: #132845 !important;
+    color: #b7c6d9 !important;
+    border-color: #1f3350 !important;
+  }
+
+  html[data-theme="dark"] button.primary,
+  html[data-theme="dark"] .btn.primary,
+  html[data-theme="dark"] .primary {
+    background: #ffe61c !important;
+    color: #07111f !important;
+    border-color: #ffe61c !important;
+  }
+
+  html[data-theme="dark"] input::placeholder,
+  html[data-theme="dark"] textarea::placeholder {
+    color: #8fa3ba !important;
   }
 
   body.supply-embedded-frota > header.topbar,
@@ -138,6 +219,12 @@ const embeddedChromeCss = `
     background: rgba(255, 255, 255, .96) !important;
     border-bottom: 1px solid #e2e8f0 !important;
     box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded-fretes .tabs {
+    background: rgba(7, 17, 31, .96) !important;
+    border-color: #1f3350 !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .36) !important;
   }
 
   body.supply-embedded-fretes .section {
@@ -203,14 +290,14 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var stockLogged = false;
 
   function syncTheme() {
-    var theme = "light";
+    var theme = "dark";
     try {
-      theme = window.parent.document.documentElement.dataset.theme || "light";
+      theme = window.parent.document.documentElement.dataset.theme || "dark";
     } catch (err) {
       try {
-        theme = window.localStorage.getItem("supply-flow:theme") || "light";
+        theme = window.localStorage.getItem("supply-flow:theme") || "dark";
       } catch (storageErr) {
-        theme = "light";
+        theme = "dark";
       }
     }
     document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";

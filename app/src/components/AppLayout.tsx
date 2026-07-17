@@ -59,8 +59,8 @@ const routeTitles: Record<string, string> = {
 export function AppLayout() {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "light";
-    return window.localStorage.getItem("supply-flow:theme") === "dark" ? "dark" : "light";
+    if (typeof window === "undefined") return "dark";
+    return window.localStorage.getItem("supply-flow:theme") === "light" ? "light" : "dark";
   });
   const location = useLocation();
   const { profile, obras, signOut } = useAuth();

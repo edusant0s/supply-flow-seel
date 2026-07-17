@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Clock3, Download, Paperclip, Plus, Search, Trash2, UploadCloud, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
-import { ImportWizard } from "../../components/ImportWizard";
 import { KanbanBoard } from "../../components/KanbanBoard";
 import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
@@ -33,7 +33,6 @@ const tipoOptions = [
 export function OrcamentosPage() {
   const { profile } = useAuth();
   const [query, setQuery] = useState("");
-  const [showImport, setShowImport] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -109,10 +108,10 @@ export function OrcamentosPage() {
           Nova solicitação
         </button>
         <RoleGate module="orcamentos">
-          <button className="primary-button" type="button" onClick={() => setShowImport((current) => !current)}>
+          <Link className="primary-button" to="/importacoes">
             <UploadCloud size={18} />
-            Importar
-          </button>
+            Central de dados
+          </Link>
         </RoleGate>
       </section>
 
@@ -124,7 +123,6 @@ export function OrcamentosPage() {
       </section>
 
       {showForm ? <OrcamentoForm onSaved={refresh} /> : null}
-      {showImport ? <ImportWizard kind="orcamentos" onComplete={refresh} /> : null}
 
       <KanbanBoard
         columns={statuses.map(([key, title]) => ({

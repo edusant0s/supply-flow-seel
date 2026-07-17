@@ -137,6 +137,12 @@ serve(async (req) => {
     return jsonResponse(req, { error: "Perfil invalido." }, 400);
   }
 
+  if (role === "viewer" && !obraIds.length) {
+    return jsonResponse(req, { error: "Viewer precisa estar vinculado a pelo menos uma obra ou usar viewer_global." }, 400);
+  }
+
+  const scopedObraIds = role === "viewer_global" ? [] : obraIds;
+
   const { data: created, error: createError } = await adminClient.auth.admin.createUser({
     email,
     password: temporaryPassword,
@@ -161,10 +167,10 @@ serve(async (req) => {
   }
 
   await adminClient.from("user_obras").delete().eq("user_id", created.user.id);
-  if (obraIds.length) {
+  if (scopedObraIds.length) {
     const { error: obraError } = await adminClient
       .from("user_obras")
-      .insert(obraIds.map((obra_id) => ({ user_id: created.user.id, obra_id })));
+      .insert(scopedObraIds.map((obra_id) => ({ user_id: created.user.id, obra_id })));
 
     if (obraError) {
       return jsonResponse(req, { error: obraError.message }, 400);

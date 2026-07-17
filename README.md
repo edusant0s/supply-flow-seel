@@ -80,6 +80,25 @@ Chaves de atualização:
 
 Campos não mapeados são preservados em `payload`.
 
+### Importar usuarios em massa
+
+Na aplicacao, acesse `Usuarios`, clique em `Importar usuarios`, selecione o modelo `.xlsx`, revise os erros e confirme.
+
+Para importacao operacional via terminal, use sempre uma variavel de ambiente local para a Service Role. Nao grave essa chave em nenhum arquivo versionado.
+
+```bash
+npm run users:import -- --file "C:/caminho/modelo-importacao-usuarios.xlsx" --dry-run
+```
+
+Depois da conferencia:
+
+```bash
+$env:SUPABASE_SERVICE_ROLE_KEY="sua_service_role_key_apenas_no_terminal"
+npm run users:import -- --file "C:/caminho/modelo-importacao-usuarios.xlsx" --yes
+```
+
+O script nao imprime senhas e cria/atualiza `auth.users`, `profiles` e vinculos em `user_obras`. Para `viewer_global`, a coluna `todas as obras` pode ficar em branco se o perfil ja estiver preenchido como `viewer_global`.
+
 ## Solicitação de Contratos
 
 Usuários comuns podem abrir Contratos e clicar em `Solicitar contrato`.
