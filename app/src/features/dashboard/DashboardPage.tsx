@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type React from "react";
 import {
   AlertTriangle,
@@ -8,6 +8,7 @@ import {
   FileText,
   MapPinned,
   PackageCheck,
+  RefreshCw,
   Star,
   Truck,
   Warehouse,
@@ -16,7 +17,7 @@ import { DataTable } from "../../components/DataTable";
 import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
 import { normalizeText } from "../../lib/format";
-import { useAsyncData } from "../../hooks";
+import { useAsyncData, useSessionState } from "../../hooks";
 import { listEntities } from "../../services/entities";
 import type { Contrato, Fornecedor, Orcamento, Requisicao } from "../../types";
 
@@ -54,8 +55,8 @@ const processOptions: Array<{ key: ProcessKey; label: string }> = [
 ];
 
 export function DashboardPage() {
-  const [processFilter, setProcessFilter] = useState<ProcessKey>("todos");
-  const { data, loading, error } = useAsyncData(async () => {
+  const [processFilter, setProcessFilter] = useSessionState<ProcessKey>("supply-flow:dashboard:process-filter", "todos");
+  const { data, loading, error, refresh } = useAsyncData(async () => {
     const [requisicoes, orcamentos, contratos, fornecedores] = await Promise.all([
       listEntities("requisicoes"),
       listEntities("orcamentos"),
@@ -63,7 +64,7 @@ export function DashboardPage() {
       listEntities("fornecedores"),
     ]);
     return { requisicoes, orcamentos, contratos, fornecedores };
-  }, []);
+  }, [], { cacheKey: "dashboard:summary" });
 
   const rows = useMemo(() => {
     if (!data) return [];
@@ -100,6 +101,10 @@ export function DashboardPage() {
             ))}
           </select>
         </label>
+        <button className="secondary-button" type="button" onClick={refresh}>
+          <RefreshCw size={18} />
+          Atualizar dados
+        </button>
       </section>
 
       <section className="kpi-grid">
@@ -111,6 +116,8 @@ export function DashboardPage() {
       </section>
 
       <DashboardCharts rows={managedRows} />
+
+      <StrategicInsights rows={managedRows} fornecedores={data.fornecedores} />
 
       <section className="dashboard-process-grid">
         {filteredRows.map((row) => (
@@ -245,8 +252,8 @@ function DashboardCharts({ rows }: { rows: DashboardRow[] }) {
           </div>
         </div>
         <div className="bar-chart" role="img" aria-label="Demandas por processo">
-          {rows.map((row) => (
-            <div className="bar-chart__row" key={row.key}>
+          {rows.map((row, index) => (
+            <div className="bar-chart__row" key={row.key} style={{ "--bar-color": chartColor(index) } as React.CSSProperties}>
               <span>{row.processo}</span>
               <div>
                 <i style={{ width: `${Math.max(4, (row.demanda / maxDemand) * 100)}%` }} />
@@ -275,6 +282,49 @@ function DashboardCharts({ rows }: { rows: DashboardRow[] }) {
             <span><b className="legend-dot legend-dot--risk" />Risco SLA {totals.riscoSla.toLocaleString("pt-BR")} ({riskPercent}%)</span>
           </div>
         </div>
+      </article>
+    </section>
+  );
+}
+
+function StrategicInsights({ rows, fornecedores }: { rows: DashboardRow[]; fornecedores: Fornecedor[] }) {
+  const totals = rows.reduce(
+    (acc, row) => ({
+      demanda: acc.demanda + row.demanda,
+      emAberto: acc.emAberto + row.emAberto,
+      finalizados: acc.finalizados + row.finalizados,
+      riscoSla: acc.riscoSla + row.riscoSla,
+    }),
+    { demanda: 0, emAberto: 0, finalizados: 0, riscoSla: 0 }
+  );
+  const completion = totals.demanda ? Math.round((totals.finalizados / totals.demanda) * 100) : 0;
+  const risk = totals.demanda ? Math.round((totals.riscoSla / totals.demanda) * 100) : 0;
+  const contactCoverage = fornecedores.length
+    ? Math.round((fornecedores.filter((item) => item.email || item.telefone).length / fornecedores.length) * 100)
+    : 0;
+  const topBacklog = rows.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
+
+  return (
+    <section className="strategic-grid">
+      <article>
+        <span>Conversao operacional</span>
+        <strong>{completion}%</strong>
+        <p>Demandas finalizadas sobre o volume total dos processos de atendimento.</p>
+      </article>
+      <article>
+        <span>Risco consolidado</span>
+        <strong>{risk}%</strong>
+        <p>Percentual de demandas em risco de SLA para priorizacao diaria.</p>
+      </article>
+      <article>
+        <span>Maior backlog</span>
+        <strong>{topBacklog?.processo || "-"}</strong>
+        <p>{topBacklog ? `${topBacklog.emAberto.toLocaleString("pt-BR")} demandas abertas.` : "Sem demandas abertas."}</p>
+      </article>
+      <article>
+        <span>Base de fornecedores</span>
+        <strong>{contactCoverage}%</strong>
+        <p>Cadastros com telefone ou e-mail para acionar fornecedores rapidamente.</p>
       </article>
     </section>
   );
@@ -377,4 +427,9 @@ function processIcon(key: DashboardRow["key"]) {
     avaliacao: <Star size={22} />,
   };
   return icons[key];
+}
+
+function chartColor(index: number) {
+  const colors = ["#ffe61c", "#49a7d9", "#10b981", "#f97316", "#ef4444", "#8b5cf6", "#14b8a6", "#94a3b8"];
+  return colors[index % colors.length];
 }

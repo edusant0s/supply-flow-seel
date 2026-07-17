@@ -7,10 +7,10 @@ import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
-import { formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
+import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import { canManage } from "../../lib/permissions";
 import { exportToXlsx } from "../../lib/spreadsheet";
-import { useAsyncData } from "../../hooks";
+import { useAsyncData, useSessionState } from "../../hooks";
 import { deleteEntity, insertEntity, listEntities, updateEntity } from "../../services/entities";
 import { signedAttachmentUrl, uploadAttachments, type AttachmentMeta } from "../../services/storage";
 import type { Orcamento } from "../../types";
@@ -32,11 +32,11 @@ const tipoOptions = [
 
 export function OrcamentosPage() {
   const { profile } = useAuth();
-  const [query, setQuery] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [query, setQuery] = useSessionState("supply-flow:orcamentos:query", "");
+  const [showForm, setShowForm] = useSessionState("supply-flow:orcamentos:show-form", false);
+  const [selectedId, setSelectedId] = useSessionState<string | null>("supply-flow:orcamentos:selected", null);
   const [now, setNow] = useState(() => Date.now());
-  const { data, loading, error, refresh } = useAsyncData(() => listEntities("orcamentos"), []);
+  const { data, loading, error, refresh } = useAsyncData(() => listEntities("orcamentos"), [], { cacheKey: "orcamentos" });
   const canEdit = canManage(profile?.role, "orcamentos");
 
   useEffect(() => {
@@ -68,6 +68,7 @@ export function OrcamentosPage() {
   const openRequests = filtered.filter((item) => ["nao_iniciado", "em_cotacao"].includes(item.status || "nao_iniciado"));
   const finishedRequests = filtered.filter((item) => item.status === "finalizado");
   const averageSla = averageOrcamentoSla(filtered, now);
+  const totalSaving = filtered.reduce((sum, item) => sum + Number(item.saving || 0), 0);
 
   if (loading) return <LoadingState label="Carregando orçamentos" />;
   if (error) return <EmptyState title="Falha ao carregar orçamentos" description={error} />;
@@ -93,6 +94,7 @@ export function OrcamentosPage() {
                 LocalObra: item.local_obra,
                 Tipo: item.tipo_orcamento,
                 Fornecedor: item.fornecedor,
+                Saving: item.saving || 0,
                 SlaTotal: formatBusinessDuration(getOrcamentoSla(item, now).totalMs),
                 Entrega: formatDateBr(item.data_entrega_cotacoes),
               })),
@@ -120,6 +122,7 @@ export function OrcamentosPage() {
         <KpiCard title="Em aberto" value={openRequests.length} tone={openRequests.length ? "warning" : "success"} />
         <KpiCard title="Finalizados" value={finishedRequests.length} tone="success" />
         <KpiCard title="SLA medio" value={averageSla} tone="blue" />
+        <KpiCard title="Saving" value={formatCurrency(totalSaving)} tone={totalSaving > 0 ? "success" : "blue"} />
       </section>
 
       {showForm ? <OrcamentoForm onSaved={refresh} /> : null}
@@ -149,6 +152,7 @@ export function OrcamentosPage() {
               <Clock3 size={15} />
               <span>{item.status === "finalizado" ? "Total" : "Fase atual"}: {formatBusinessDuration(item.status === "finalizado" ? sla.totalMs : sla.currentMs)}</span>
             </div>
+            <div className="saving-pill">Saving: {formatCurrency(item.saving || 0)}</div>
             <div className="card-meta">
               <span>{phaseLabel(item.status)}</span>
               <span>{formatDateBr(item.data_entrega_cotacoes)}</span>
@@ -175,6 +179,7 @@ export function OrcamentosPage() {
           { key: "proposta", label: "Proposta", render: (item) => item.numero_proposta || "-" },
           { key: "status", label: "Status", render: (item) => item.status },
           { key: "cliente", label: "Cliente", render: (item) => item.cliente || "-" },
+          { key: "saving", label: "Saving", render: (item) => formatCurrency(item.saving || 0) },
           { key: "sla", label: "SLA total", render: (item) => formatBusinessDuration(getOrcamentoSla(item, now).totalMs) },
           { key: "anexos", label: "Anexos", render: (item) => getAttachments(item).length },
         ]}
@@ -327,6 +332,8 @@ function OrcamentoDrawer({
 }) {
   const [requestDate, setRequestDate] = useState(item.data_solicitacao || "");
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
+  const [saving, setSaving] = useState(String(item.saving || ""));
+  const [valorFinal, setValorFinal] = useState(String(item.valor_final || ""));
   const [deleteMessage, setDeleteMessage] = useState("");
   const [deleting, setDeleting] = useState(false);
   const sla = getOrcamentoSla(item, now);
@@ -335,6 +342,8 @@ function OrcamentoDrawer({
     await updateEntity("orcamentos", item.id, {
       ...buildRequestDatePatch(item, requestDate),
       quantidade_req: Number(qtd || 0),
+      saving: Number(saving || 0),
+      valor_final: Number(valorFinal || 0),
     });
     onSaved();
   }
@@ -377,6 +386,8 @@ function OrcamentoDrawer({
           <Info label="Tipo" value={item.tipo_orcamento || "-"} />
           <Info label="Entrega" value={formatDateBr(item.data_entrega_cotacoes)} />
           <Info label="Status" value={item.status} />
+          <Info label="Saving" value={formatCurrency(item.saving || 0)} />
+          <Info label="Valor final" value={formatCurrency(item.valor_final || 0)} />
           <Info label="Fase atual" value={formatBusinessDuration(sla.currentMs)} />
           <Info label="Nao iniciado" value={formatBusinessDuration(sla.phaseMs.nao_iniciado || 0)} />
           <Info label="Em cotacao" value={formatBusinessDuration(sla.phaseMs.em_cotacao || 0)} />
@@ -395,6 +406,8 @@ function OrcamentoDrawer({
             <div className="form-grid">
               <Field label="Data da solicitacao" type="date" value={requestDate} onChange={setRequestDate} />
               <Field label="Quantidade REQ" value={qtd} onChange={setQtd} />
+              <Field label="Saving" type="number" value={saving} onChange={setSaving} />
+              <Field label="Valor final" type="number" value={valorFinal} onChange={setValorFinal} />
             </div>
             <div className="form-actions">
               <button className="primary-button" type="button" onClick={saveAdminFields}>

@@ -19,7 +19,7 @@ const moduleViewers: Record<ModuleKey, UserRole[]> = {
   dashboard: ["super_admin", "admin_suprimentos", "admin_orcamentos", "admin_contratos", "viewer_global", "viewer"],
   requisicoes: ["super_admin", "admin_suprimentos", "viewer_global", "viewer"],
   orcamentos: ["super_admin", "admin_orcamentos", "viewer_global", "viewer"],
-  contratos: ["super_admin", "admin_contratos", "viewer"],
+  contratos: ["super_admin", "admin_contratos", "viewer_global", "viewer"],
   fretes: ["super_admin", "admin_suprimentos", "admin_orcamentos", "admin_contratos", "viewer_global", "viewer"],
   estoque_obras: ["super_admin", "admin_suprimentos", "admin_orcamentos", "admin_contratos", "viewer_global", "viewer"],
   frota: ["super_admin", "admin_suprimentos", "admin_orcamentos", "admin_contratos", "viewer_global", "viewer"],

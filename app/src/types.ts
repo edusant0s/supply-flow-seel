@@ -134,4 +134,6 @@ export type KanbanColumn<T> = {
   title: string;
   subtitle?: string;
   items: T[];
+  totalCount?: number;
+  overflowLabel?: string;
 };

@@ -21,7 +21,7 @@ import { DataTable } from "../../components/DataTable";
 import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
-import { useAsyncData } from "../../hooks";
+import { useAsyncData, useSessionState } from "../../hooks";
 import { formatDateBr, headerKey, normalizeText } from "../../lib/format";
 import { canManage } from "../../lib/permissions";
 import { exportToXlsx } from "../../lib/spreadsheet";
@@ -75,18 +75,18 @@ const tabs: Array<{ key: SupplierTab; label: string; icon: ElementType }> = [
 
 export function FornecedoresPage() {
   const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState<SupplierTab>("executiva");
-  const [query, setQuery] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [region, setRegion] = useState("");
-  const [uf, setUf] = useState("");
-  const [status, setStatus] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useSessionState<SupplierTab>("supply-flow:fornecedores:tab", "executiva");
+  const [query, setQuery] = useSessionState("supply-flow:fornecedores:query", "");
+  const [categoria, setCategoria] = useSessionState("supply-flow:fornecedores:categoria", "");
+  const [region, setRegion] = useSessionState("supply-flow:fornecedores:region", "");
+  const [uf, setUf] = useSessionState("supply-flow:fornecedores:uf", "");
+  const [status, setStatus] = useSessionState("supply-flow:fornecedores:status", "");
+  const [selectedId, setSelectedId] = useSessionState<string | null>("supply-flow:fornecedores:selected", null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [workAddress, setWorkAddress] = useState("");
+  const [workAddress, setWorkAddress] = useSessionState("supply-flow:fornecedores:work-address", "");
   const [form, setForm] = useState<SupplierForm>(initialForm);
   const [feedback, setFeedback] = useState("");
-  const { data, loading, error, refresh } = useAsyncData(() => listEntities("fornecedores"), []);
+  const { data, loading, error, refresh } = useAsyncData(() => listEntities("fornecedores"), [], { cacheKey: "fornecedores" });
   const canEdit = canManage(profile?.role, "fornecedores");
 
   const ufs = useMemo(() => sortedUnique((data || []).map((item) => item.uf)), [data]);
@@ -764,9 +764,10 @@ function supplierPayloadField(supplier: Fornecedor, aliases: string[]) {
 }
 
 function isCartorioSupplier(supplier: Fornecedor) {
-  return normalizeText(
+  const text = normalizeText(
     [supplier.nome, supplier.categoria, supplier.produto_servico, supplier.payload ? JSON.stringify(supplier.payload) : ""].join(" ")
-  ).includes("cartorio");
+  );
+  return ["cartorio", "tabelionato", "oficio", "protesto", "registro civil", "registro de imoveis"].some((term) => text.includes(term));
 }
 
 function normalizeSite(site: string) {

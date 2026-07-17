@@ -10,7 +10,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { formatDateBr, headerKey, normalizeText } from "../../lib/format";
 import { exportToXlsx, type RawRow } from "../../lib/spreadsheet";
 import { canManage } from "../../lib/permissions";
-import { useAsyncData } from "../../hooks";
+import { useAsyncData, useSessionState } from "../../hooks";
 import { listObras } from "../../services/admin";
 import { listEntities, updateEntity } from "../../services/entities";
 import type { Obra, Requisicao } from "../../types";
@@ -28,47 +28,72 @@ const customBuyersKey = "supply-flow:custom-buyers";
 const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovacao RM"];
 const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
 const closedOrSeparatedStatuses = ["OC", "CANCELADA", "PENDENTE_ASSINATURA"];
+const kanbanColumnLimit = 60;
+
+type RequisicaoIndex = {
+  item: Requisicao;
+  status: string;
+  obra: string;
+  sla: ReturnType<typeof getSlaInfo>;
+  rows: RawRow[];
+  rowsText: string;
+  ocNumber: string;
+  firstItem: string;
+  urgent: boolean;
+  elapsedDays: number | null;
+  itemCount: number;
+};
 
 export function RequisicoesPage() {
   const { profile } = useAuth();
-  const [query, setQuery] = useState("");
-  const [buyer, setBuyer] = useState("Todos");
+  const [query, setQuery] = useSessionState("supply-flow:requisicoes:query", "");
+  const [buyer, setBuyer] = useSessionState("supply-flow:requisicoes:buyer", "Todos");
   const [customBuyers, setCustomBuyers] = useState<string[]>(() => loadCustomBuyers());
-  const [obraFilter, setObraFilter] = useState("");
-  const [slaFilter, setSlaFilter] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { data, loading, error, refresh } = useAsyncData(() => listEntities("requisicoes"), []);
-  const obras = useAsyncData(listObras, []);
+  const [obraFilter, setObraFilter] = useSessionState("supply-flow:requisicoes:obra", "");
+  const [slaFilter, setSlaFilter] = useSessionState("supply-flow:requisicoes:sla", "");
+  const [selectedId, setSelectedId] = useSessionState<string | null>("supply-flow:requisicoes:selected", null);
+  const { data, loading, error, refresh } = useAsyncData(() => listEntities("requisicoes"), [], { cacheKey: "requisicoes" });
+  const obras = useAsyncData(listObras, [], { cacheKey: "obras" });
   const canEdit = canManage(profile?.role, "requisicoes");
 
-  const buyers = useMemo(() => {
-    const importedBuyers = (data || []).map((item) => item.comprador || "Sem comprador");
-    return ["Todos", ...Array.from(new Set([...importedBuyers, ...customBuyers])).sort((a, b) => a.localeCompare(b, "pt-BR"))];
-  }, [customBuyers, data]);
-
-  const obraOptions = useMemo(() => {
-    return Array.from(new Set((data || []).map((item) => obraName(item, obras.data || [])).filter(Boolean))).sort((a, b) =>
-      a.localeCompare(b, "pt-BR", { numeric: true })
-    );
+  const indexed = useMemo(() => {
+    return (data || []).map((item): RequisicaoIndex => {
+      const rows = getPayloadRows(item.payload);
+      const status = getRequisicaoStatus(item);
+      const obra = obraName(item, obras.data || []);
+      const sla = getSlaInfo(item);
+      const ocNumber = getOcNumber(item);
+      const firstItem = getFirstItemDescription(item);
+      const urgent = isUrgent(item);
+      const elapsedDays = getSlaElapsedDays(item);
+      const rowsText = normalizeText(rows.map((row) => Object.values(row).join(" ")).join(" "));
+      const searchText = normalizeText([item.numero_rm, ocNumber, item.solicitante, item.comprador, item.categoria, item.centro_custo, obra, status, rowsText].join(" "));
+      return { item, status, obra, sla, rows, rowsText: searchText, ocNumber, firstItem, urgent, elapsedDays, itemCount: rows.length };
+    });
   }, [data, obras.data]);
 
-  const filtered = useMemo(() => {
+  const buyers = useMemo(() => {
+    const importedBuyers = indexed.map(({ item }) => item.comprador || "Sem comprador");
+    return ["Todos", ...Array.from(new Set([...importedBuyers, ...customBuyers])).sort((a, b) => a.localeCompare(b, "pt-BR"))];
+  }, [customBuyers, indexed]);
+
+  const obraOptions = useMemo(() => {
+    return Array.from(new Set(indexed.map((item) => item.obra).filter(Boolean))).sort((a, b) => a.localeCompare(b, "pt-BR", { numeric: true }));
+  }, [indexed]);
+
+  const filteredIndex = useMemo(() => {
     const q = normalizeText(query);
-    return (data || []).filter((item) => {
+    return indexed.filter(({ item, obra, rowsText, sla }) => {
       const matchesBuyer = buyer === "Todos" || (item.comprador || "Sem comprador") === buyer;
-      const obra = obraName(item, obras.data || []);
       const matchesObra = !obraFilter || obra === obraFilter;
-      const matchesSla = !slaFilter || getSlaInfo(item).tone === slaFilter;
-      const rowsText = getPayloadRows(item.payload)
-        .map((row) => Object.values(row).join(" "))
-        .join(" ");
-      const matchesQuery = [item.numero_rm, getOcNumber(item), item.solicitante, item.comprador, item.categoria, item.centro_custo, obra, getRequisicaoStatus(item), rowsText]
-        .join(" ")
-        .toLowerCase()
-        .includes(q);
+      const matchesSla = !slaFilter || sla.tone === slaFilter;
+      const matchesQuery = !q || rowsText.includes(q);
       return matchesBuyer && matchesObra && matchesSla && matchesQuery;
     });
-  }, [buyer, data, obraFilter, obras.data, query, slaFilter]);
+  }, [buyer, indexed, obraFilter, query, slaFilter]);
+
+  const filtered = useMemo(() => filteredIndex.map(({ item }) => item), [filteredIndex]);
+  const indexById = useMemo(() => new Map(filteredIndex.map((item) => [item.item.id, item])), [filteredIndex]);
 
   const selected = useMemo(() => (data || []).find((item) => item.id === selectedId) || null, [data, selectedId]);
 
@@ -84,16 +109,23 @@ export function RequisicoesPage() {
   if (loading) return <LoadingState label="Carregando requisicoes" />;
   if (error) return <EmptyState title="Falha ao carregar RMs" description={error} />;
 
-  const columns = statuses.map(([key, title, subtitle]) => ({
-    key,
-    title,
-    subtitle,
-    items: filtered.filter((item) => getRequisicaoStatus(item) === key).sort(compareSla),
-  }));
-  const activeItems = filtered.filter((item) => !closedOrSeparatedStatuses.includes(getRequisicaoStatus(item)));
-  const openItemCount = activeItems.reduce((sum, item) => sum + getPayloadRows(item.payload).length, 0);
-  const prioritySummary = buildPrioritySummary(activeItems);
-  const ocSummary = buildOcSummary(filtered.filter((item) => getRequisicaoStatus(item) === "OC"));
+  const columns = statuses.map(([key, title, subtitle]) => {
+    const items = filteredIndex.filter((item) => item.status === key).sort(compareIndexedSla);
+    const hiddenCount = Math.max(items.length - kanbanColumnLimit, 0);
+    return {
+      key,
+      title,
+      subtitle,
+      totalCount: items.length,
+      items: items.slice(0, kanbanColumnLimit).map(({ item }) => item),
+      overflowLabel: hiddenCount ? `Mais ${hiddenCount} RM(s). Use busca, obra, SLA ou comprador para refinar.` : undefined,
+    };
+  });
+  const activeIndexes = filteredIndex.filter((item) => !closedOrSeparatedStatuses.includes(item.status));
+  const activeItems = activeIndexes.map(({ item }) => item);
+  const openItemCount = activeIndexes.reduce((sum, item) => sum + item.itemCount, 0);
+  const prioritySummary = buildPrioritySummaryFromIndex(activeIndexes);
+  const ocSummary = buildOcSummaryFromIndex(filteredIndex.filter((item) => item.status === "OC"));
   const buyerReport = buildBuyerReport(activeItems, buyer);
 
   return (
@@ -242,10 +274,11 @@ export function RequisicoesPage() {
         canDrag={canEdit}
         onMove={(id, status) => updateEntity("requisicoes", id, { status }).then(refresh)}
         renderCard={(item: Requisicao) => {
-          const sla = getSlaInfo(item);
-          const rows = getPayloadRows(item.payload);
-          const ocNumber = getOcNumber(item);
-          const firstItem = getFirstItemDescription(item);
+          const indexedItem = indexById.get(item.id);
+          const sla = indexedItem?.sla || getSlaInfo(item);
+          const rows = indexedItem?.rows || getPayloadRows(item.payload);
+          const ocNumber = indexedItem?.ocNumber || getOcNumber(item);
+          const firstItem = indexedItem?.firstItem || getFirstItemDescription(item);
           return (
             <>
               <div className="card-topline">
@@ -509,6 +542,16 @@ function buildPrioritySummary(items: Requisicao[]) {
   };
 }
 
+function buildPrioritySummaryFromIndex(items: RequisicaoIndex[]) {
+  const total = items.length;
+  const urgent = items.filter((item) => item.urgent).length;
+  const normal = Math.max(0, total - urgent);
+  return {
+    normal: { count: normal, percent: formatPercent(normal, total) },
+    urgent: { count: urgent, percent: formatPercent(urgent, total) },
+  };
+}
+
 function buildOcSummary(items: Requisicao[]) {
   const urgentItems = items.filter(isUrgent);
   const normalItems = items.filter((item) => !isUrgent(item));
@@ -528,8 +571,34 @@ function buildOcSummary(items: Requisicao[]) {
   };
 }
 
+function buildOcSummaryFromIndex(items: RequisicaoIndex[]) {
+  const urgentItems = items.filter((item) => item.urgent);
+  const normalItems = items.filter((item) => !item.urgent);
+  return {
+    total: items.length,
+    avgSla: averageIndexedSlaLabel(items),
+    normal: {
+      count: normalItems.length,
+      percent: formatPercent(normalItems.length, items.length),
+      avgSla: averageIndexedSlaLabel(normalItems),
+    },
+    urgent: {
+      count: urgentItems.length,
+      percent: formatPercent(urgentItems.length, items.length),
+      avgSla: averageIndexedSlaLabel(urgentItems),
+    },
+  };
+}
+
 function averageSlaLabel(items: Requisicao[]) {
   const values = items.map(getSlaElapsedDays).filter((value): value is number => value !== null);
+  if (!values.length) return "sem data";
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  return `${average.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}d`;
+}
+
+function averageIndexedSlaLabel(items: RequisicaoIndex[]) {
+  const values = items.map((item) => item.elapsedDays).filter((value): value is number => value !== null);
   if (!values.length) return "sem data";
   const average = values.reduce((sum, value) => sum + value, 0) / values.length;
   return `${average.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}d`;
@@ -547,13 +616,22 @@ function compareSla(a: Requisicao, b: Requisicao) {
   return String(a.numero_rm || "").localeCompare(String(b.numero_rm || ""), "pt-BR", { numeric: true });
 }
 
+function compareIndexedSla(a: RequisicaoIndex, b: RequisicaoIndex) {
+  const order = { danger: 0, warning: 1, success: 2, neutral: 3 };
+  const diff = order[a.sla.tone] - order[b.sla.tone];
+  if (diff) return diff;
+  return String(a.item.numero_rm || "").localeCompare(String(b.item.numero_rm || ""), "pt-BR", { numeric: true });
+}
+
 function buildBuyerReport(items: Requisicao[], buyer: string) {
   if (buyer === "Todos") return { whatsapp: "", email: "" };
   const phone = normalizePhone(getPayloadField(items[0]?.payload || {}, ["Telefone", "Celular", "WhatsApp", "Wpp"]));
   const email = getPayloadField(items[0]?.payload || {}, ["Email", "E-mail", "Correio"]);
-  const message = `Visao Geral - ${buyer}\nRMs: ${items.length}\n\n${items
+  const listedItems = items.slice(0, 40);
+  const extra = items.length > listedItems.length ? `\n...mais ${items.length - listedItems.length} RM(s). Consulte o Supply Flow para a lista completa.` : "";
+  const message = `Visao Geral - ${buyer}\nRMs: ${items.length}\n\n${listedItems
     .map((item, index) => `${index + 1}. RM ${item.numero_rm || "S/N"} - ${getSlaInfo(item).label} - ${statusLabel(getRequisicaoStatus(item))}`)
-    .join("\n")}\n\nFavor verificar prioridades.`;
+    .join("\n")}${extra}\n\nFavor verificar prioridades.`;
   return {
     whatsapp: phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : "",
     email: email
