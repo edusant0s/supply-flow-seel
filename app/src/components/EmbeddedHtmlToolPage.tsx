@@ -369,7 +369,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     if (canManage) return;
 
     hide("button[onclick*='cadastroTab'], button[onclick*='importacaoTab'], button[onclick*='medicoesTab'], button[onclick*='multasTab']");
-    hide("button[onclick*='editVehicle'], button[onclick*='makeAvailable'], #deleteSelectedVehicleButton, #cancelEdit, #saveApiSettingsButton");
+    hide("button[onclick*='editVehicle'], button[onclick*='makeAvailable'], button[onclick*='deleteVehicle'], button[onclick*='deleteFine'], #deleteSelectedVehicleButton, #cancelEdit, #saveVehicleButton, #saveApiSettingsButton");
     hide("#importGrid, #fineForm, .api-actions, .quick-actions button[onclick*='cadastroTab']");
     disable("#vehicleForm input, #vehicleForm select, #vehicleForm textarea, #fineForm input, #fineForm select, #fineForm textarea");
 
@@ -382,6 +382,8 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     guard("makeAvailable", "Apenas super_admin pode movimentar a frota.");
     guard("deleteCurrentVehicle", "Apenas super_admin pode excluir veiculos.");
     guard("deleteSelectedVehicle", "Apenas super_admin pode excluir veiculos.");
+    guard("deleteVehicle", "Apenas super_admin pode excluir veiculos.");
+    guard("deleteFine", "Apenas super_admin pode excluir multas.");
     guard("importInitialSpreadsheet", "Apenas super_admin pode importar a planilha da frota.");
     guard("syncMeasurements", "Apenas super_admin pode sincronizar medicoes.");
     guard("syncArvalFines", "Apenas super_admin pode sincronizar multas.");
