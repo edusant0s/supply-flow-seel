@@ -11741,7 +11741,323 @@
       border-color: #991b1b !important;
     }
 
+
+
+    /* Relatório final de fretes entregues */
+    #report .freight-report-shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    #report .freight-report-filters {
+      display: grid;
+      grid-template-columns: minmax(250px, 1.5fr) repeat(4, minmax(165px, .8fr)) minmax(300px, 1.35fr) auto;
+      gap: 12px;
+      align-items: end;
+      padding: 15px;
+      border: 1px solid rgba(21,90,130,.18);
+      border-radius: 18px;
+      background: rgba(255,255,255,.90);
+      box-shadow: 0 10px 24px rgba(7,50,77,.08);
+    }
+
+    #report .freight-report-filters > * {
+      min-width: 0;
+      margin: 0;
+    }
+
+    #report .freight-report-filters label {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+    }
+
+    #report .freight-report-filters label > span {
+      color: #526f82;
+      font-size: 9px;
+      line-height: 1.1;
+      font-weight: 950;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    #report .freight-report-filters input,
+    #report .freight-report-filters select {
+      width: 100%;
+      min-width: 0;
+      height: 40px;
+      padding: 0 11px;
+      border-radius: 11px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    #report .freight-report-date-range {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 8px;
+      min-width: 0;
+    }
+
+    #report .freight-report-clear {
+      height: 40px;
+      min-width: 112px;
+      white-space: nowrap;
+    }
+
+    #report .freight-report-table-card {
+      overflow: hidden;
+      border: 1px solid rgba(21,90,130,.18);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(7,50,77,.09);
+    }
+
+    #report .freight-report-table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 17px 18px;
+      border-bottom: 1px solid #dbe5eb;
+      background: linear-gradient(135deg, rgba(231,242,248,.82), rgba(255,255,255,.96));
+    }
+
+    #report .freight-report-table-head h2 {
+      margin: 0 0 5px;
+      color: #0e4a6e;
+      font-size: 19px;
+    }
+
+    #report .freight-report-table-head h2::after { display: none; }
+
+    #report .freight-report-table-head p {
+      margin: 0;
+      color: #607b8d;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    #report .freight-report-table-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    #report .freight-report-status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    #report .freight-report-export {
+      min-height: 36px;
+      background: linear-gradient(135deg, var(--seel-yellow), #fff06a);
+      color: var(--seel-blue-dark);
+      border: 1px solid rgba(14,74,110,.18);
+    }
+
+    #report .freight-report-table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+    }
+
+    #report .freight-report-table {
+      width: 100%;
+      min-width: 2250px;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+    }
+
+    #report .freight-report-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 11px 10px;
+      background: linear-gradient(135deg, #0e4a6e, #155a82);
+      color: #fff;
+      border-bottom: 3px solid var(--seel-yellow);
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 950;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #report .freight-report-table tbody td {
+      padding: 10px;
+      border-bottom: 1px solid #e6edf2;
+      color: #334155;
+      font-size: 10.5px;
+      line-height: 1.35;
+      vertical-align: top;
+    }
+
+    #report .freight-report-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    #report .freight-report-table tbody tr:hover td { background: #fffce8; }
+
+    #report .freight-report-main {
+      display: block;
+      color: #0f3047;
+      font-weight: 900;
+    }
+
+    #report .freight-report-sub {
+      display: block;
+      margin-top: 3px;
+      color: #738b9a;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    #report .freight-report-code {
+      display: inline-flex;
+      padding: 5px 7px;
+      border-radius: 8px;
+      background: #e7f2f8;
+      color: #0e4a6e;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    #report .freight-report-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 7px;
+      border-radius: 999px;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    #report .freight-report-badge.urgent { background: #ffe4d2; color: #c2410c; }
+    #report .freight-report-badge.normal { background: #dbeafe; color: #1d4ed8; }
+    #report .freight-report-badge.ok { background: #dcfce7; color: #166534; }
+    #report .freight-report-badge.error { background: #fee2e2; color: #991b1b; }
+
+    #report .freight-report-money,
+    #report .freight-report-sla {
+      color: #0e4a6e;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    #report .freight-report-observation {
+      display: block;
+      min-width: 220px;
+      max-width: 360px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    #report .freight-report-empty {
+      padding: 30px 18px;
+      color: #688091;
+      font-size: 12px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    @media (max-width: 1550px) {
+      #report .freight-report-filters {
+        grid-template-columns: repeat(4, minmax(170px, 1fr));
+      }
+      #report .freight-report-search,
+      #report .freight-report-date-filter { grid-column: span 2; }
+      #report .freight-report-clear { width: 100%; }
+    }
+
+    @media (max-width: 900px) {
+      #report .freight-report-filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      #report .freight-report-search,
+      #report .freight-report-date-filter { grid-column: 1 / -1; }
+      #report .freight-report-table-head { align-items: flex-start; flex-direction: column; }
+      #report .freight-report-table-actions { width: 100%; justify-content: flex-start; }
+    }
+
+    @media (max-width: 580px) {
+      #report .freight-report-filters { grid-template-columns: 1fr; }
+      #report .freight-report-search,
+      #report .freight-report-date-filter { grid-column: auto; }
+      #report .freight-report-date-range { grid-template-columns: 1fr; }
+      #report .freight-report-clear { width: 100%; }
+    }
+
 </style>
+
+<style id="freight-oc-card-style">
+  .freight-oc-field {
+    display: grid;
+    gap: 5px;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid rgba(21, 90, 130, 0.20);
+    border-radius: 11px;
+    background: linear-gradient(135deg, rgba(255,225,25,.12), rgba(255,255,255,.96));
+  }
+  .freight-oc-field label {
+    margin: 0;
+    color: #49687b;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .freight-oc-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px;
+    align-items: center;
+  }
+  .freight-oc-input {
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 0 9px;
+    border: 1px solid #b9cad5;
+    border-radius: 9px;
+    background: #fff;
+    color: #07324d;
+    font-size: 10px;
+    font-weight: 850;
+    box-shadow: none;
+  }
+  .freight-oc-input:focus {
+    border-color: #155a82;
+    box-shadow: 0 0 0 3px rgba(255,225,25,.22);
+  }
+  .freight-oc-save-status {
+    min-width: 42px;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: 900;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .freight-oc-save-status.saved { color: #15803d; }
+  .freight-oc-save-status.pending { color: #a16207; }
+  .freight-report-table th:nth-child(3),
+  .freight-report-table td:nth-child(3) {
+    min-width: 125px;
+  }
+</style>
+
 </head>
 <body>
   <div class="sf-app" id="sfFreightApp">
@@ -11753,6 +12069,7 @@
         <button class="tab" onclick="showTab('mapa', this)"><span class="tab-icon">🗺️</span>Mapa</button>
         <button class="tab" onclick="showTab('cotacao', this)"><span class="tab-icon">💰</span>Mapa de Cotações</button>
         <button class="tab" onclick="showTab('dashboard', this)"><span class="tab-icon">📊</span>Dashboard</button>
+        <button class="tab" onclick="showTab('report', this)"><span class="tab-icon">📋</span>Relatório</button>
         <button class="tab" onclick="showTab('history', this)"><span class="tab-icon">📄</span>Histórico</button>
         <button class="tab" onclick="showTab('editor', this)"><span class="tab-icon">⚙️</span>Editor do formulário</button>
       </nav>
@@ -11767,10 +12084,10 @@
             <div class="form-section-title">Informações iniciais</div>
             <div><label>Número da RM *</label><input id="numeroRM" required placeholder="Ex.: 17901" /></div>
             <div><label>Número da Obra / Departamento *</label><input id="numeroObra" required placeholder="Ex.: 949" /></div>
-            <div class="logged-user-field"><label>Solicitante *</label><input id="solicitante" required placeholder="Preenchido pelo login do aplicativo principal" autocomplete="off" /></div>
+            <div class="logged-user-field"><label>Solicitante conectado *</label><input id="solicitante" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando usuário conectado..." autocomplete="off" /></div>
+            <div class="logged-user-field"><label>E-mail do solicitante conectado *</label><input id="emailSolicitante" type="email" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando e-mail do usuário..." autocomplete="off" /></div>
             <div><label>Telefone do Solicitante</label><input id="telefoneSolicitante" placeholder="Ex.: 21980931551" /></div>
-            <div class="logged-user-field"><label>E-mail do Solicitante *</label><input id="emailSolicitante" type="email" required placeholder="Preenchido pelo login do aplicativo principal" autocomplete="off" /></div>
-            <div id="loggedUserHint" class="full logged-user-hint">Nome e e-mail serão carregados automaticamente do usuário conectado no aplicativo principal.</div>
+            <div id="loggedUserHint" class="full logged-user-hint">Identificando automaticamente o nome e o e-mail do usuário conectado no aplicativo principal.</div>
             <div><label>Urgência *</label><select id="urgencia" required><option value="NORMAL">NORMAL</option><option value="URGENTE">URGENTE</option></select></div>
             <div><label>Data da solicitação *</label><input id="dataSolicitacao" type="date" required readonly /></div>
             <div><label>Data da Coleta do Material *</label><input id="dataColetaMaterial" type="date" required /></div>
@@ -12250,6 +12567,63 @@
       </div>
     </section>
 
+    <section id="report" class="section">
+      <div class="freight-report-shell">
+        <section class="freight-report-filters">
+          <label class="freight-report-search"><span>Pesquisa</span><input id="freightReportSearch" type="search" placeholder="Solicitação, RM, obra, solicitante, rota ou transportadora"></label>
+          <label><span>Urgência</span><select id="freightReportUrgency"><option value="">Normal ou urgente</option><option value="NORMAL">Normal</option><option value="URGENTE">Urgente</option></select></label>
+          <label><span>Tipo de movimentação</span><select id="freightReportMovement"><option value="">Todos os tipos</option></select></label>
+          <label><span>Obra / departamento</span><select id="freightReportObra"><option value="">Todas</option></select></label>
+          <label><span>Transportadora</span><select id="freightReportCarrier"><option value="">Todas</option></select></label>
+          <label class="freight-report-date-filter"><span>Data da solicitação</span><div class="freight-report-date-range"><input id="freightReportDateFrom" aria-label="Data inicial" type="date"><input id="freightReportDateTo" aria-label="Data final" type="date"></div></label>
+          <button class="btn-secondary freight-report-clear" id="clearFreightReportFilters" type="button">Limpar filtros</button>
+        </section>
+
+        <section class="freight-report-table-card">
+          <div class="freight-report-table-head">
+            <div>
+              <h2>Relatório de Fretes Entregues</h2>
+              <p id="freightReportSummary">Nenhum frete entregue.</p>
+            </div>
+            <div class="freight-report-table-actions">
+              <span class="freight-report-status">Fase final · Entregue</span>
+              <button class="btn-primary freight-report-export" id="exportFreightReport" type="button">⬇ Exportar Excel</button>
+            </div>
+          </div>
+          <div class="freight-report-table-wrap">
+            <table class="freight-report-table">
+              <thead>
+                <tr>
+                  <th>Solicitação</th>
+                  <th>Nº RM</th>
+                  <th>Nº da OC</th>
+                  <th>Obra / departamento</th>
+                  <th>Solicitante</th>
+                  <th>Urgência</th>
+                  <th>Tipo de movimentação</th>
+                  <th>Origem</th>
+                  <th>Destino</th>
+                  <th>Veículo</th>
+                  <th>Transportadora aprovada</th>
+                  <th>Valor aprovado</th>
+                  <th>Condição de pagamento</th>
+                  <th>Saving</th>
+                  <th>Data da solicitação</th>
+                  <th>Data da coleta</th>
+                  <th>Data da entrega</th>
+                  <th>SLA total</th>
+                  <th>Qualidade</th>
+                  <th>Observações</th>
+                </tr>
+              </thead>
+              <tbody id="freightReportBody"></tbody>
+            </table>
+          </div>
+          <div class="freight-report-empty" id="freightReportEmpty" style="display:none;">Nenhum frete entregue corresponde aos filtros selecionados.</div>
+        </section>
+      </div>
+    </section>
+
     <section id="history" class="section">
       <div class="panel">
         <h2>Histórico de movimentações</h2>
@@ -12324,6 +12698,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const PHASES = [
       "Não iniciado",
@@ -12726,8 +13101,10 @@
     }
 
     const LOGGED_USER_STORAGE_KEYS = [
-      "seel_current_user", "seelCurrentUser", "currentUser", "loggedUser", "authUser",
-      "usuarioLogado", "usuarioAtual", "supplyFlowUser", "sfUser", "appUser", "userData", "profile"
+      "seel_current_user", "seelCurrentUser", "SEEL_CURRENT_USER", "currentUser", "current_user",
+      "loggedUser", "logged_user", "authUser", "auth_user", "usuarioLogado", "usuario_logado",
+      "usuarioAtual", "supplyFlowUser", "supply_flow_user", "sfUser", "appUser", "userData",
+      "user_data", "profile", "userProfile", "account", "sessionUser", "userSession", "authSession"
     ];
 
     let loggedRequesterIdentity = null;
@@ -12745,16 +13122,20 @@
         }
       }
       if (typeof value !== "object") return null;
+      if (value.data && typeof value.data === "object") value = { ...value, ...value.data };
+      if (value.session && typeof value.session === "object") value = { ...value, ...value.session };
+      if (value.account && typeof value.account === "object") value = { ...value, ...value.account };
       if (value.user && typeof value.user === "object") value = { ...value, ...value.user };
       if (value.usuario && typeof value.usuario === "object") value = { ...value, ...value.usuario };
       if (value.profile && typeof value.profile === "object") value = { ...value, ...value.profile };
       const name = String(
-        value.name || value.nome || value.fullName || value.displayName || value.nomeCompleto ||
-        value.userName || value.username || value.preferred_username || ""
+        value.name || value.nome || value.fullName || value.full_name || value.displayName ||
+        value.display_name || value.nomeCompleto || value.nome_completo || value.userName ||
+        value.username || value.preferred_username || value.given_name || ""
       ).trim();
       const email = String(
-        value.email || value.mail || value.userEmail || value.emailUsuario || value.upn ||
-        value.preferred_username || ""
+        value.email || value.mail || value.userEmail || value.user_email || value.emailUsuario ||
+        value.email_usuario || value.upn || value.userPrincipalName || value.preferred_username || ""
       ).trim();
       if (!name && !email) return null;
       return { name, email };
@@ -12768,8 +13149,8 @@
           if (user) return user;
         } catch (error) {}
       }
-      const nameKeys = ["userName", "nomeUsuario", "usuarioNome", "loggedUserName"];
-      const emailKeys = ["userEmail", "emailUsuario", "usuarioEmail", "loggedUserEmail"];
+      const nameKeys = ["userName", "username", "nomeUsuario", "usuarioNome", "loggedUserName", "displayName", "fullName", "nomeCompleto"];
+      const emailKeys = ["userEmail", "email", "emailUsuario", "usuarioEmail", "loggedUserEmail", "mail", "upn", "userPrincipalName"];
       let name = "";
       let email = "";
       for (const key of nameKeys) {
@@ -12826,21 +13207,21 @@
       if (user?.name) requesterInput.value = user.name;
       if (user?.email) emailInput.value = user.email;
 
-      const lockName = Boolean(lockFields && requesterInput.value.trim());
-      const lockEmail = Boolean(lockFields && emailInput.value.trim());
-      requesterInput.readOnly = lockName;
-      emailInput.readOnly = lockEmail;
-      requesterInput.setAttribute("aria-readonly", String(lockName));
-      emailInput.setAttribute("aria-readonly", String(lockEmail));
-      requesterInput.classList.toggle("login-fixed-field", lockName);
-      emailInput.classList.toggle("login-fixed-field", lockEmail);
+      const hasName = Boolean(requesterInput.value.trim());
+      const hasEmail = Boolean(emailInput.value.trim());
+      requesterInput.readOnly = true;
+      emailInput.readOnly = true;
+      requesterInput.setAttribute("aria-readonly", "true");
+      emailInput.setAttribute("aria-readonly", "true");
+      requesterInput.classList.add("login-fixed-field");
+      emailInput.classList.add("login-fixed-field");
 
       if (hint) {
-        if (lockName && lockEmail) {
-          hint.textContent = "Solicitante e e-mail preenchidos automaticamente pelo login do aplicativo principal.";
+        if (hasName && hasEmail) {
+          hint.textContent = `Usuário conectado: ${requesterInput.value} · ${emailInput.value}`;
           hint.classList.add("login-found");
         } else {
-          hint.textContent = "Login do aplicativo principal não identificado. Preencha nome e e-mail para continuar.";
+          hint.textContent = "Aguardando a identificação do usuário conectado no aplicativo principal. Nome e e-mail não podem ser digitados manualmente.";
           hint.classList.remove("login-found");
         }
       }
@@ -12850,10 +13231,11 @@
       const resolved = resolveLoggedRequesterIdentity();
       if (resolved) loggedRequesterIdentity = resolved;
       if (editingFreightId && !forceApply) return;
-      applyRequesterIdentity(loggedRequesterIdentity, Boolean(loggedRequesterIdentity));
+      applyRequesterIdentity(loggedRequesterIdentity, true);
       try {
         if (window.parent && window.parent !== window) {
           window.parent.postMessage({ type: "REQUEST_CURRENT_USER", source: "gestao-fretes" }, "*");
+          window.parent.postMessage({ type: "GET_LOGGED_USER", source: "gestao-fretes" }, "*");
         }
       } catch (error) {}
     }
@@ -12870,9 +13252,24 @@
       const payload = event?.data;
       if (!payload || typeof payload !== "object") return;
       const type = String(payload.type || "").toUpperCase();
-      if (!["CURRENT_USER", "AUTH_USER", "SEEL_USER", "LOGGED_USER", "USER_SESSION"].includes(type)) return;
-      window.setFreightLoggedUser(payload.user || payload.usuario || payload.data || payload);
+      if (!["CURRENT_USER", "AUTH_USER", "SEEL_USER", "LOGGED_USER", "USER_SESSION", "CURRENT_USER_RESPONSE", "LOGGED_USER_RESPONSE"].includes(type)) return;
+      window.setFreightLoggedUser(payload.user || payload.usuario || payload.account || payload.profile || payload.data || payload);
     });
+
+    window.addEventListener("storage", event => {
+      if (!event.key || LOGGED_USER_STORAGE_KEYS.includes(event.key) || /user|usuario|email|profile|account|session/i.test(event.key)) {
+        setupLoggedRequesterFromHost(true);
+      }
+    });
+
+    let loggedRequesterSyncAttempts = 0;
+    const loggedRequesterSyncTimer = window.setInterval(() => {
+      loggedRequesterSyncAttempts += 1;
+      if (!editingFreightId) setupLoggedRequesterFromHost(true);
+      if ((loggedRequesterIdentity?.name && loggedRequesterIdentity?.email) || loggedRequesterSyncAttempts >= 30) {
+        window.clearInterval(loggedRequesterSyncTimer);
+      }
+    }, 1000);
 
     initializeFreightFormEditor();
     setupObservationsLimit();
@@ -12883,6 +13280,13 @@
 
     document.getElementById("freightForm").addEventListener("submit", function(event) {
       event.preventDefault();
+      const requesterName = document.getElementById("solicitante")?.value.trim();
+      const requesterEmail = document.getElementById("emailSolicitante")?.value.trim();
+      if (!requesterName || !requesterEmail) {
+        setupLoggedRequesterFromHost(true);
+        alert("Não foi possível identificar o nome e o e-mail do usuário conectado. Acesse o módulo pelo aplicativo principal e tente novamente.");
+        return;
+      }
       createFreight();
     });
 
@@ -12908,6 +13312,7 @@
     }, 1000);
     renderAll();
     bindDashboardFilters();
+    bindFreightReportControls();
     bindSupplyFlowSearch();
 
     function showTab(id, button) {
@@ -12938,6 +13343,7 @@
       if (id === "mapa") renderMap();
       if (id === "cotacao") renderQuotes();
       if (id === "dashboard") renderDashboard();
+      if (id === "report") { bindFreightReportControls(); renderFreightReport(); }
       if (id === "history") renderHistory();
       if (id === "editor") renderFreightFormEditor();
       updateSupplyFlowPage(id);
@@ -12949,6 +13355,7 @@
       form: ["Solicitações de frete", "Cadastre e acompanhe fretes, prazos, cotações, rotas e entregas."],
       kanban: ["Kanban de fretes", "Controle operacional por etapa, prazo, semáforo e tempo em fase."],
       dashboard: ["Dashboard de fretes", "Indicadores gerenciais, semáforo de filas e médias de tempo por fase."],
+      report: ["Relatório de fretes", "Consulte e exporte os fretes entregues com SLA, transportadora, saving e dados principais."],
       mapa: ["Mapa de rotas", "Acompanhe coleta, entrega, rota e evolução operacional dos fretes."],
       cotacao: ["Mapa de cotações", "Compare transportadoras, condições comerciais e saving por frete."],
       history: ["Histórico operacional", "Consulte entradas, saídas e tempos registrados em cada etapa."],
@@ -13648,6 +14055,7 @@
       normalized.observacoesVeiculoOperacao = normalized.observacoesVeiculoOperacao || normalized.formData?.observacoesVeiculoOperacao?.value || "";
       normalized.dataSolicitacao = String(normalized.dataSolicitacao || normalized.formData?.dataSolicitacao?.value || dateToInputValue(new Date(createdAt))).slice(0, 10);
       normalized.observacoes = String(normalized.observacoes || "").slice(0, 240);
+      normalized.numeroOC = String(normalized.numeroOC || normalized.numeroOc || normalized.ordemCompra || "").trim().slice(0, 40);
       if (!Array.isArray(normalized.history) || !normalized.history.length) {
         normalized.history = [{ phase: normalized.status, enteredAt: createdAt, exitedAt: null }];
       }
@@ -14194,6 +14602,7 @@
       try { populateObraFilter(); } catch (error) { console.error("Erro filtro obra:", error); }
       try { renderKanban(); } catch (error) { console.error("Erro Kanban:", error); }
       try { renderDashboard(); } catch (error) { console.error("Erro Dashboard:", error); }
+      try { renderFreightReport(); } catch (error) { console.error("Erro Relatório:", error); }
       try { renderHistory(); } catch (error) { console.error("Erro Histórico:", error); }
       try { renderMap(); } catch (error) { console.error("Erro Mapa:", error); }
       try { renderQuotes(); } catch (error) { console.error("Erro Mapa de Cotações:", error); }
@@ -14407,6 +14816,8 @@
       const deadlineText = formatDate(getFreightAttendanceDeadline(freight));
       const remainingText = getRemainingTime(freight);
       const statusText = traffic.key === "red" ? "Atrasado" : traffic.key === "yellow" ? "Em alerta" : traffic.key === "green" ? "No prazo" : "Encerrado";
+      const showOcField = ["Coleta Agendada", "Em transporte", "Entregue"].includes(freight.status);
+      const numeroOC = String(freight.numeroOC || "").trim();
 
       card.innerHTML = `
         <div class="freight-compact-top">
@@ -14449,6 +14860,16 @@
           <div><span>Acumulado fase</span><strong data-live="phase">${getCurrentPhaseTime(freight)}</strong></div>
           <div><span>Total acumulado</span><strong data-live="total">${getTotalProcessTime(freight)}</strong></div>
         </div>
+
+        ${showOcField ? `
+          <div class="freight-oc-field" data-oc-field>
+            <label for="oc-${escapeHtml(freight.id)}">Nº da OC</label>
+            <div class="freight-oc-input-row">
+              <input id="oc-${escapeHtml(freight.id)}" class="freight-oc-input" type="text" maxlength="40" value="${escapeHtml(numeroOC)}" placeholder="Digite o número da OC" autocomplete="off" />
+              <span class="freight-oc-save-status ${numeroOC ? "saved" : ""}" data-oc-status>${numeroOC ? "Salvo" : "Pendente"}</span>
+            </div>
+          </div>
+        ` : ""}
 
         <div class="freight-phase-selector-wrap">
           <label>Selecionar fase</label>
@@ -14502,6 +14923,56 @@
         toggleFreightFormError(freight.id, event.target.checked, card);
       });
       card.querySelector(".freight-form-error-check")?.addEventListener("click", event => event.stopPropagation());
+
+      const ocInput = card.querySelector(".freight-oc-input");
+      const ocStatus = card.querySelector("[data-oc-status]");
+      let ocSaveTimer = null;
+      const persistOcNumber = () => {
+        if (!ocInput) return;
+        const value = String(ocInput.value || "").trim().slice(0, 40);
+        ocInput.value = value;
+        freight.numeroOC = value;
+        saveFreights();
+        if (ocStatus) {
+          ocStatus.textContent = value ? "Salvo" : "Pendente";
+          ocStatus.classList.toggle("saved", Boolean(value));
+          ocStatus.classList.remove("pending");
+        }
+        try { renderFreightReport(); } catch (error) { console.error("Erro ao atualizar Nº da OC no relatório:", error); }
+      };
+      if (ocInput) {
+        ["pointerdown", "mousedown", "click", "focus"].forEach(eventName => {
+          ocInput.addEventListener(eventName, event => event.stopPropagation());
+        });
+        ocInput.addEventListener("input", event => {
+          event.stopPropagation();
+          if (ocInput.value.length > 40) ocInput.value = ocInput.value.slice(0, 40);
+          if (ocStatus) {
+            ocStatus.textContent = "Salvando";
+            ocStatus.classList.remove("saved");
+            ocStatus.classList.add("pending");
+          }
+          window.clearTimeout(ocSaveTimer);
+          ocSaveTimer = window.setTimeout(persistOcNumber, 350);
+        });
+        ocInput.addEventListener("change", event => {
+          event.stopPropagation();
+          window.clearTimeout(ocSaveTimer);
+          persistOcNumber();
+        });
+        ocInput.addEventListener("blur", () => {
+          window.clearTimeout(ocSaveTimer);
+          persistOcNumber();
+        });
+        ocInput.addEventListener("keydown", event => {
+          event.stopPropagation();
+          if (event.key === "Enter") {
+            event.preventDefault();
+            ocInput.blur();
+          }
+        });
+      }
+      card.querySelector("[data-oc-field]")?.addEventListener("click", event => event.stopPropagation());
 
       const emailButton = card.querySelector('[data-action="email-quote"]');
       const correctionEmailButton = card.querySelector('[data-action="email-correction"]');
@@ -14757,6 +15228,7 @@
           <h2>Dados da solicitação</h2>
           <div class="form-grid">
             ${detail("Número da RM", freight.numeroRM)}
+            ${detail("Nº da OC", freight.numeroOC || "-")}
             ${detail("Data da solicitação", formatDateOnlyPtBr(getFreightRequestDateValue(freight)))}
             ${detail("Urgência", getFreightUrgency(freight))}
             ${detail("Prazo de atendimento", formatDate(getFreightAttendanceDeadline(freight)))}
@@ -16161,6 +16633,253 @@
       }).join("");
     }
 
+
+    function getFreightReportRequestDate(freight) {
+      return String(freight?.dataSolicitacao || freight?.createdAt || "").slice(0, 10);
+    }
+
+    function getFreightDeliveredAt(freight) {
+      const deliveredEntries = (Array.isArray(freight?.history) ? freight.history : [])
+        .filter(entry => entry?.phase === "Entregue" && entry?.enteredAt);
+      return deliveredEntries.length ? deliveredEntries[deliveredEntries.length - 1].enteredAt : "";
+    }
+
+    function getFreightReportObra(freight) {
+      return freight?.numeroObra || freight?.obra || freight?.centroCusto || "Não informado";
+    }
+
+    function getFreightReportOrigin(freight) {
+      return getFreightLocationDisplay(freight, "origin") || freight?.enderecoColeta || freight?.origem || "Não informado";
+    }
+
+    function getFreightReportDestination(freight) {
+      return getFreightLocationDisplay(freight, "destination") || freight?.enderecoEntrega || freight?.destino || "Não informado";
+    }
+
+    function getFreightReportSelectedQuote(freight) {
+      return getSelectedQuote(freight) || null;
+    }
+
+    function getFreightReportCarrier(freight) {
+      const selected = getFreightReportSelectedQuote(freight);
+      return selected?.carrier || freight?.transportadora || freight?.melhorPropostaFrete || "Não informado";
+    }
+
+    function getFreightReportPayment(freight) {
+      const selected = getFreightReportSelectedQuote(freight);
+      return selected?.payment || freight?.condicaoPagamentoFrete || freight?.condicaoPagamento || "Não informado";
+    }
+
+    function getFreightReportApprovedValue(freight) {
+      const selected = getFreightReportSelectedQuote(freight);
+      const value = Number(selected?.price ?? freight?.valorAprovado ?? freight?.valorFreteAprovado ?? 0);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function getFreightReportSaving(freight) {
+      const calculated = calculateFreightSaving(freight);
+      const value = Number(freight?.savingFrete ?? calculated.value ?? 0);
+      const percent = Number(freight?.savingFretePercentual ?? calculated.percent ?? 0);
+      return {
+        value: Number.isFinite(value) ? value : 0,
+        percent: Number.isFinite(percent) ? percent : 0
+      };
+    }
+
+    function fillFreightReportFilters() {
+      const delivered = freights.filter(freight => freight.status === "Entregue");
+      const fill = (id, placeholder, values) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const current = select.value;
+        const unique = [...new Set(values.filter(Boolean).filter(value => value !== "Não informado"))]
+          .sort((a, b) => String(a).localeCompare(String(b), "pt-BR", { numeric: true }));
+        select.innerHTML = `<option value="">${placeholder}</option>${unique.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")}`;
+        if (unique.includes(current)) select.value = current;
+      };
+      fill("freightReportMovement", "Todos os tipos", delivered.map(freight => freight.tipoMovimentacao || freight.tipoFrete || ""));
+      fill("freightReportObra", "Todas", delivered.map(getFreightReportObra));
+      fill("freightReportCarrier", "Todas", delivered.map(getFreightReportCarrier));
+    }
+
+    function getFilteredFreightReportRows() {
+      const search = safeValue("freightReportSearch").toLowerCase();
+      const urgency = safeValue("freightReportUrgency");
+      const movement = safeValue("freightReportMovement");
+      const obra = safeValue("freightReportObra");
+      const carrier = safeValue("freightReportCarrier");
+      const dateFrom = safeValue("freightReportDateFrom");
+      const dateTo = safeValue("freightReportDateTo");
+
+      let rows = freights.filter(freight => freight.status === "Entregue");
+      if (urgency) rows = rows.filter(freight => getFreightUrgency(freight) === urgency);
+      if (movement) rows = rows.filter(freight => String(freight.tipoMovimentacao || freight.tipoFrete || "") === movement);
+      if (obra) rows = rows.filter(freight => getFreightReportObra(freight) === obra);
+      if (carrier) rows = rows.filter(freight => getFreightReportCarrier(freight) === carrier);
+      if (dateFrom) rows = rows.filter(freight => getFreightReportRequestDate(freight) >= dateFrom);
+      if (dateTo) rows = rows.filter(freight => getFreightReportRequestDate(freight) <= dateTo);
+      if (search) {
+        rows = rows.filter(freight => [
+          freight.id,
+          freight.numeroRM,
+          freight.numeroOC,
+          getFreightReportObra(freight),
+          freight.solicitante,
+          freight.emailSolicitante,
+          freight.tipoMovimentacao,
+          freight.tipoFrete,
+          getFreightReportOrigin(freight),
+          getFreightReportDestination(freight),
+          freight.tipoVeiculo,
+          getFreightReportCarrier(freight),
+          getFreightReportPayment(freight),
+          freight.observacoes
+        ].join(" ").toLowerCase().includes(search));
+      }
+      return rows.sort((a, b) => new Date(getFreightDeliveredAt(b) || 0) - new Date(getFreightDeliveredAt(a) || 0));
+    }
+
+    function renderFreightReport() {
+      const body = document.getElementById("freightReportBody");
+      const empty = document.getElementById("freightReportEmpty");
+      const summary = document.getElementById("freightReportSummary");
+      if (!body || !empty) return;
+
+      fillFreightReportFilters();
+      const allDelivered = freights.filter(freight => freight.status === "Entregue");
+      const rows = getFilteredFreightReportRows();
+      if (summary) summary.textContent = `Exibindo ${rows.length} de ${allDelivered.length} frete(s) entregue(s).`;
+      empty.style.display = rows.length ? "none" : "block";
+
+      body.innerHTML = rows.map(freight => {
+        const urgency = getFreightUrgency(freight);
+        const saving = getFreightReportSaving(freight);
+        const approvedValue = getFreightReportApprovedValue(freight);
+        const isWrong = freight.formularioErrado === true;
+        const collectionDate = freight.dataColetaAgendada || combineDateTime(freight.dataColetaMaterial, freight.horarioColeta);
+        return `
+          <tr>
+            <td><span class="freight-report-code">${escapeHtml(freight.id || "-")}</span></td>
+            <td><span class="freight-report-main">${escapeHtml(freight.numeroRM || "-")}</span></td>
+            <td><span class="freight-report-main">${escapeHtml(freight.numeroOC || "-")}</span></td>
+            <td><span class="freight-report-main">${escapeHtml(getFreightReportObra(freight))}</span></td>
+            <td><span class="freight-report-main">${escapeHtml(freight.solicitante || "Não informado")}</span><span class="freight-report-sub">${escapeHtml(freight.emailSolicitante || "")}</span></td>
+            <td><span class="freight-report-badge ${urgency === "URGENTE" ? "urgent" : "normal"}">${urgency}</span></td>
+            <td>${escapeHtml(freight.tipoMovimentacao || freight.tipoFrete || "Não informado")}</td>
+            <td><span class="freight-report-main">${escapeHtml(getFreightReportOrigin(freight))}</span></td>
+            <td><span class="freight-report-main">${escapeHtml(getFreightReportDestination(freight))}</span></td>
+            <td>${escapeHtml(freight.tipoVeiculo || freight.veiculoEspecial || "Não informado")}</td>
+            <td><span class="freight-report-main">${escapeHtml(getFreightReportCarrier(freight))}</span></td>
+            <td><span class="freight-report-money">${escapeHtml(formatCurrency(approvedValue))}</span></td>
+            <td>${escapeHtml(getFreightReportPayment(freight))}</td>
+            <td><span class="freight-report-money">${escapeHtml(formatCurrency(saving.value))}</span><span class="freight-report-sub">${saving.percent}%</span></td>
+            <td>${escapeHtml(formatDateOnlyPtBr(getFreightReportRequestDate(freight)))}</td>
+            <td>${escapeHtml(formatDate(collectionDate))}</td>
+            <td>${escapeHtml(formatDate(getFreightDeliveredAt(freight)))}</td>
+            <td><span class="freight-report-sla">${escapeHtml(getTotalProcessTime(freight))}</span></td>
+            <td><span class="freight-report-badge ${isWrong ? "error" : "ok"}">${isWrong ? "COM ERRO" : "CORRETA"}</span></td>
+            <td><span class="freight-report-observation">${escapeHtml(freight.observacoes || "-")}</span></td>
+          </tr>`;
+      }).join("");
+    }
+
+    function bindFreightReportControls() {
+      ["freightReportSearch","freightReportUrgency","freightReportMovement","freightReportObra","freightReportCarrier","freightReportDateFrom","freightReportDateTo"].forEach(id => {
+        const element = document.getElementById(id);
+        if (!element || element.dataset.bound === "1") return;
+        element.dataset.bound = "1";
+        element.addEventListener(element.tagName === "INPUT" ? "input" : "change", renderFreightReport);
+      });
+
+      const clear = document.getElementById("clearFreightReportFilters");
+      if (clear && clear.dataset.bound !== "1") {
+        clear.dataset.bound = "1";
+        clear.addEventListener("click", () => {
+          ["freightReportSearch","freightReportUrgency","freightReportMovement","freightReportObra","freightReportCarrier","freightReportDateFrom","freightReportDateTo"].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.value = "";
+          });
+          renderFreightReport();
+        });
+      }
+
+      const exportButton = document.getElementById("exportFreightReport");
+      if (exportButton && exportButton.dataset.bound !== "1") {
+        exportButton.dataset.bound = "1";
+        exportButton.addEventListener("click", exportFreightReportExcel);
+      }
+    }
+
+    function getFreightReportExportRows() {
+      return getFilteredFreightReportRows().map(freight => {
+        const urgency = getFreightUrgency(freight);
+        const saving = getFreightReportSaving(freight);
+        const collectionDate = freight.dataColetaAgendada || combineDateTime(freight.dataColetaMaterial, freight.horarioColeta);
+        return {
+          "Solicitação": freight.id || "",
+          "Nº RM": freight.numeroRM || "",
+          "Nº da OC": freight.numeroOC || "",
+          "Obra / departamento": getFreightReportObra(freight),
+          "Solicitante": freight.solicitante || "",
+          "E-mail do solicitante": freight.emailSolicitante || "",
+          "Urgência": urgency,
+          "Tipo de movimentação": freight.tipoMovimentacao || freight.tipoFrete || "",
+          "Origem": getFreightReportOrigin(freight),
+          "Destino": getFreightReportDestination(freight),
+          "Tipo de veículo": freight.tipoVeiculo || freight.veiculoEspecial || "",
+          "Transportadora aprovada": getFreightReportCarrier(freight),
+          "Valor aprovado": getFreightReportApprovedValue(freight),
+          "Condição de pagamento": getFreightReportPayment(freight),
+          "Saving": saving.value,
+          "Saving %": saving.percent,
+          "Data da solicitação": formatDateOnlyPtBr(getFreightReportRequestDate(freight)),
+          "Data da coleta": formatDate(collectionDate),
+          "Data da entrega": formatDate(getFreightDeliveredAt(freight)),
+          "SLA total": getTotalProcessTime(freight),
+          "Qualidade da solicitação": freight.formularioErrado === true ? "Com erro" : "Correta",
+          "Observações": freight.observacoes || ""
+        };
+      });
+    }
+
+    function exportFreightReportExcelFallback(rows) {
+      const headers = Object.keys(rows[0]);
+      const escapeXml = value => String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+      const table = `<table><thead><tr>${headers.map(header => `<th>${escapeXml(header)}</th>`).join("")}</tr></thead><tbody>${rows.map(row => `<tr>${headers.map(header => `<td>${escapeXml(row[header])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      const blob = new Blob(["\ufeff", table], { type: "application/vnd.ms-excel;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `relatorio_fretes_entregues_${dateToInputValue(new Date())}.xls`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function exportFreightReportExcel() {
+      const rows = getFreightReportExportRows();
+      if (!rows.length) {
+        alert("Nenhum frete entregue disponível para exportação.");
+        return;
+      }
+      if (!window.XLSX) {
+        exportFreightReportExcelFallback(rows);
+        return;
+      }
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet["!cols"] = [
+        {wch:15},{wch:12},{wch:15},{wch:22},{wch:24},{wch:30},{wch:11},{wch:24},{wch:44},{wch:44},{wch:22},
+        {wch:30},{wch:16},{wch:24},{wch:16},{wch:12},{wch:18},{wch:22},{wch:22},{wch:18},{wch:22},{wch:50}
+      ];
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Fretes Entregues");
+      XLSX.writeFile(workbook, `relatorio_fretes_entregues_${dateToInputValue(new Date())}.xlsx`);
+    }
+
     function renderHistory() {
       const tbody = document.getElementById("historyTable");
       if (!tbody) return;
@@ -16332,7 +17051,7 @@
     }
 
     function checkAppTabsHealth() {
-      const sections = ["form", "kanban", "dashboard", "mapa", "cotacao", "history"];
+      const sections = ["form", "kanban", "dashboard", "report", "mapa", "cotacao", "history", "editor"];
       return sections.map(id => ({
         aba: id,
         existe: Boolean(document.getElementById(id)),

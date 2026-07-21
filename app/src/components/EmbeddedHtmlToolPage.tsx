@@ -749,7 +749,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     hide("button[onclick*='dashboard'], button[onclick*='history'], button[onclick*='editor']");
     hide(".header-actions, button[onclick*='editBasic'], button[onclick*='deleteFreight'], button[onclick*='addQuote'], button[onclick*='selectBestQuote'], button[onclick*='deleteQuote']");
     hide("#dashboard, #history, #editor, .quotation-actions, .quotation-form-card, .form-editor-tools, .form-editor-actions, .freight-form-error-check, [data-action='edit'], [data-action='email-quote'], [data-action='email-correction']");
-    disable(".phase-select, .form-error-checkbox, select[onchange*='changePhase']");
+    disable(".phase-select, .form-error-checkbox, .freight-oc-input, select[onchange*='changePhase']");
 
     guard("changePhase", "Apenas super_admin pode mudar fases de frete.");
     guard("editBasic", "Apenas super_admin pode editar fretes.");
