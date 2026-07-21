@@ -5,6 +5,7 @@ import { canManage } from "../lib/permissions";
 import {
   AVALIACAO_DB_STORAGE_KEY,
   CONTRATOS_FORM_STORAGE_KEY,
+  CONTRATOS_REQUESTS_STORAGE_KEY,
   ESTOQUE_STATE_STORAGE_KEY,
   FRETES_STORAGE_KEY,
   getEmbeddedStorageKeysForModule,
@@ -383,6 +384,7 @@ type EmbeddedContext = {
     supabaseAnonKey: string;
     accessToken: string;
     contractFormStorageKey: string;
+    contractRequestsStorageKey: string;
     freightStorageKey: string;
     stockStateKey: string;
     evaluationDbKey: string;
@@ -454,6 +456,16 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   initialEvaluations.forEach(function(item) {
     if (item && item.id) knownEvaluationIds[String(item.id)] = true;
   });
+  var knownContractDbIds = {};
+  var knownContractCodes = {};
+  var syncingContractStorage = false;
+  var initialContracts = Array.isArray(sharedStorage[syncConfig.contractRequestsStorageKey]) ? sharedStorage[syncConfig.contractRequestsStorageKey] : [];
+  initialContracts.forEach(function(item) {
+    var dbId = item && (item.__supplyContratoDbId || item.dbId || item.supabaseId);
+    if (dbId) knownContractDbIds[String(dbId)] = true;
+    var code = item && (item.codigo_embutido || item.id);
+    if (code) knownContractCodes[String(code)] = true;
+  });
 
   function parseStoragePayload(value) {
     try {
@@ -485,6 +497,25 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     }).catch(function(error) {
       console.warn(error.message || error);
       return false;
+    });
+  }
+
+  function postgrestJson(path, options) {
+    var headers = syncHeaders(options && options.headers);
+    if (!headers) return Promise.resolve(null);
+    return fetch(syncUrl(path), Object.assign({}, options, { headers: headers })).then(function(response) {
+      if (!response.ok) throw new Error("Falha ao sincronizar dados: " + response.status);
+      return response.text().then(function(text) {
+        if (!text) return null;
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          return null;
+        }
+      });
+    }).catch(function(error) {
+      console.warn(error.message || error);
+      return null;
     });
   }
 
@@ -549,6 +580,238 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       fornecedor: String(payload.fornecedor || ""),
       avaliador_email: evaluatorEmail
     };
+  }
+
+  function normalizeEmbeddedText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  }
+
+  function firstFilled() {
+    for (var i = 0; i < arguments.length; i++) {
+      var text = String(arguments[i] == null ? "" : arguments[i]).trim();
+      if (text) return text;
+    }
+    return "";
+  }
+
+  function dateOnly(value) {
+    var text = firstFilled(value);
+    var match = text.match(/^\\d{4}-\\d{2}-\\d{2}/);
+    return match ? match[0] : "";
+  }
+
+  function isUuid(value) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ""));
+  }
+
+  function detailedContractStatus(value) {
+    var status = normalizeEmbeddedText(value);
+    if (!status) return "N\\u00e3o Iniciado";
+    if (status.indexOf("aprovado") >= 0 || status.indexOf("finalizado") >= 0) return "Aprovado no Compor";
+    if (status.indexOf("compor") >= 0 || status.indexOf("cadastro") >= 0) return "Em Cadastro no Compor";
+    if (status.indexOf("assinado") >= 0) return "Contrato Assinado";
+    if (status.indexOf("assinatura") >= 0) return "Enviado para Assinatura";
+    if (status.indexOf("validacao") >= 0 || status.indexOf("analise") >= 0 || status.indexOf("aguardando") >= 0) return "Aguardando Valida\\u00e7\\u00e3o";
+    if (status.indexOf("elaboracao") >= 0) return "Em Elabora\\u00e7\\u00e3o";
+    if (status.indexOf("solicitado") >= 0 || status.indexOf("iniciado") >= 0) return "N\\u00e3o Iniciado";
+    return firstFilled(value, "N\\u00e3o Iniciado");
+  }
+
+  function contractCode(item, index) {
+    return firstFilled(item && item.codigo_embutido, item && item.id, stableRecordId("contrato", item, index));
+  }
+
+  function resolveContratoObraId(item) {
+    if (item && item.__supplyObraId && isUuid(item.__supplyObraId)) return String(item.__supplyObraId);
+    var data = item && item.data && typeof item.data === "object" ? item.data : {};
+    var target = normalizeEmbeddedText(firstFilled(
+      data.obra,
+      data.nome_obra,
+      data.centro_obra,
+      data.centro_departamento,
+      item && item.obra,
+      item && item.centro
+    ));
+    var obras = Array.isArray(ctx.obras) ? ctx.obras : [];
+    var match = obras.find(function(obra) {
+      var values = [obra.id, obra.nome, obra.codigo, obra.centro_custo].map(normalizeEmbeddedText).filter(Boolean);
+      return values.some(function(value) {
+        return target === value || (target && value && (target.indexOf(value) >= 0 || value.indexOf(target) >= 0));
+      });
+    });
+    if (match && match.id) return String(match.id);
+    if (!canManage && obras.length === 1 && obras[0].id) return String(obras[0].id);
+    return null;
+  }
+
+  function contractRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var data = item.data && typeof item.data === "object" ? Object.assign({}, item.data) : {};
+    var code = contractCode(item, index);
+    var hostEmail = String(hostUser.email || "").trim();
+    var hostName = String(hostUser.nome || "").trim();
+    if (!canManage) {
+      if (hostEmail) {
+        item.email = hostEmail;
+        data.email = hostEmail;
+      }
+      if (hostName) {
+        item.solicitante = hostName;
+        data.solicitante = hostName;
+      }
+    }
+    var centro = firstFilled(item.centro, data.centro_obra, data.centro_departamento);
+    var tipo = firstFilled(item.tipo, data.tipo_documento_obra, data.tipo_documento_departamento, data.tipo_contrato, "Solicitacao");
+    var urgencia = firstFilled(item.urgencia, data.prazo_urgencia, "NORMAL - 5 DIAS UTEIS");
+    var deadline = dateOnly(firstFilled(item.dataLimite, data.data_limite_atendimento));
+    var status = detailedContractStatus(item.status);
+    var dbId = firstFilled(item.__supplyContratoDbId, item.dbId, item.supabaseId);
+    var payloadRequest = Object.assign({}, item, {
+      id: firstFilled(item.id, code),
+      codigo_embutido: code,
+      __supplyContratoDbId: dbId || undefined,
+      __supplyObraId: resolveContratoObraId(item) || undefined,
+      data: data
+    });
+    var payload = Object.assign({}, data, {
+      canal: "embedded_contracts",
+      codigo_embutido: code,
+      embedded_request_id: code,
+      __embedded_contract_request: payloadRequest,
+      observacoesResponsavel: firstFilled(item.observacoesResponsavel, data.observacoesResponsavel),
+      solicitacaoComErro: Boolean(item.solicitacaoComErro || data.solicitacaoComErro)
+    });
+    var record = {
+      codigo_embutido: code,
+      obra_id: resolveContratoObraId(item),
+      solicitante: firstFilled(item.solicitante, data.solicitante, hostName),
+      email_solicitante: firstFilled(item.email, data.email, hostEmail),
+      centro_custo: centro,
+      tipo_documento: tipo,
+      urgencia: urgencia,
+      prazo_urgencia: deadline || null,
+      status: status,
+      fase_compor: status,
+      payload: payload
+    };
+    if (isUuid(dbId)) record.id = dbId;
+    return record;
+  }
+
+  function deleteContractRecord(id) {
+    return postgrestRequest("/rest/v1/contratos?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function mergeContractIdsIntoStorage(rows, returnedRows) {
+    if (!Array.isArray(rows) || !Array.isArray(returnedRows) || !returnedRows.length || !syncConfig.contractRequestsStorageKey) return;
+    var byCode = {};
+    returnedRows.forEach(function(row) {
+      if (row && row.codigo_embutido && row.id) byCode[String(row.codigo_embutido)] = row;
+    });
+    var changed = false;
+    var nextRows = rows.map(function(item, index) {
+      if (!item || typeof item !== "object") return item;
+      var code = contractCode(item, index);
+      var match = byCode[code];
+      if (!match || item.__supplyContratoDbId === match.id) return item;
+      changed = true;
+      return Object.assign({}, item, {
+        codigo_embutido: code,
+        __supplyContratoDbId: match.id,
+        __supplyObraId: match.obra_id || item.__supplyObraId || ""
+      });
+    });
+    if (!changed) return;
+    syncingContractStorage = true;
+    try {
+      nativeStorageSetItem.call(window.localStorage, syncConfig.contractRequestsStorageKey, JSON.stringify(nextRows));
+    } catch (err) {
+    } finally {
+      syncingContractStorage = false;
+    }
+  }
+
+  function syncContractRows(rows) {
+    if (!Array.isArray(rows) || !syncConfig.contractRequestsStorageKey || syncingContractStorage) return;
+    var records = rows.map(contractRecord).filter(Boolean);
+    var nextDbIds = {};
+    var nextCodes = {};
+    records.forEach(function(record) {
+      if (record.id) nextDbIds[String(record.id)] = true;
+      if (record.codigo_embutido) nextCodes[String(record.codigo_embutido)] = true;
+    });
+
+    if (canManage) {
+      var tasks = [];
+      var recordsWithId = records.filter(function(record) { return record.id; });
+      var recordsWithoutId = records.filter(function(record) { return !record.id; });
+      if (recordsWithId.length) {
+        tasks.push(postgrestJson("/rest/v1/contratos?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+          body: JSON.stringify(recordsWithId)
+        }));
+      }
+      if (recordsWithoutId.length) {
+        tasks.push(postgrestJson("/rest/v1/contratos?on_conflict=codigo_embutido", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+          body: JSON.stringify(recordsWithoutId)
+        }));
+      }
+      Object.keys(knownContractDbIds).forEach(function(id) {
+        if (!nextDbIds[id]) tasks.push(deleteContractRecord(id));
+      });
+      Promise.all(tasks).then(function(results) {
+        var returned = [];
+        results.forEach(function(result) {
+          if (Array.isArray(result)) returned = returned.concat(result);
+        });
+        mergeContractIdsIntoStorage(rows, returned);
+        knownContractDbIds = {};
+        knownContractCodes = {};
+        records.forEach(function(record) {
+          if (record.id) knownContractDbIds[String(record.id)] = true;
+          if (record.codigo_embutido) knownContractCodes[String(record.codigo_embutido)] = true;
+        });
+        returned.forEach(function(record) {
+          if (record && record.id) knownContractDbIds[String(record.id)] = true;
+          if (record && record.codigo_embutido) knownContractCodes[String(record.codigo_embutido)] = true;
+        });
+      });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) {
+      var dbId = record.id && knownContractDbIds[String(record.id)];
+      var code = record.codigo_embutido && knownContractCodes[String(record.codigo_embutido)];
+      return !dbId && !code;
+    }).map(function(record) {
+      var next = Object.assign({}, record);
+      delete next.id;
+      return next;
+    });
+    if (!newRecords.length) return;
+    postgrestJson("/rest/v1/contratos", {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify(newRecords)
+    }).then(function(returned) {
+      if (!Array.isArray(returned)) return;
+      mergeContractIdsIntoStorage(rows, returned);
+      returned.forEach(function(record) {
+        if (record && record.id) knownContractDbIds[String(record.id)] = true;
+        if (record && record.codigo_embutido) knownContractCodes[String(record.codigo_embutido)] = true;
+      });
+    });
   }
 
   function deleteFreightRecord(id) {
@@ -714,12 +977,17 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
 
   function syncStorageWrite(key, value) {
     var isSharedStateKey = Array.isArray(syncConfig.sharedStateKeys) && syncConfig.sharedStateKeys.indexOf(key) >= 0;
-    var isDedicatedRowKey = key === syncConfig.freightStorageKey || key === syncConfig.stockStateKey || key === syncConfig.evaluationDbKey;
+    var isDedicatedRowKey =
+      key === syncConfig.freightStorageKey ||
+      key === syncConfig.stockStateKey ||
+      key === syncConfig.evaluationDbKey ||
+      key === syncConfig.contractRequestsStorageKey;
     if (!isSharedStateKey && !isDedicatedRowKey) return;
     window.clearTimeout(syncTimers[key]);
     syncTimers[key] = window.setTimeout(function() {
       var payload = parseStoragePayload(value);
-      if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
+      if (key === syncConfig.contractRequestsStorageKey) syncContractRows(payload);
+      else if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
       else if (key === syncConfig.stockStateKey) syncStockState(payload);
       else if (key === syncConfig.evaluationDbKey) syncSupplierEvaluationDb(payload);
       else syncSharedState(key, payload);
@@ -872,15 +1140,44 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   }
 
   function applyContratosRules() {
-    if (isSuperAdmin) return;
-    hide("button[data-tab='editor'], #editorView");
-    if (document.getElementById("editorView") && !document.getElementById("editorView").classList.contains("hidden")) {
-      if (typeof window.switchTab === "function") window.switchTab("kanban");
-      else document.getElementById("editorView").classList.add("hidden");
+    if (!isSuperAdmin) {
+      hide("button[data-tab='editor'], #editorView");
+      if (document.getElementById("editorView") && !document.getElementById("editorView").classList.contains("hidden")) {
+        if (typeof window.switchTab === "function") window.switchTab("kanban");
+        else document.getElementById("editorView").classList.add("hidden");
+      }
+      guard("saveFormSpec", "Apenas super_admin pode alterar a estrutura do formulario.");
+      guard("renderEditor", "Apenas super_admin pode acessar o editor do formulario.");
+      guard("setEditorSection", "Apenas super_admin pode editar secoes do formulario.");
     }
-    guard("saveFormSpec", "Apenas super_admin pode alterar a estrutura do formulario.");
-    guard("renderEditor", "Apenas super_admin pode acessar o editor do formulario.");
-    guard("setEditorSection", "Apenas super_admin pode editar secoes do formulario.");
+
+    if (canManage) return;
+
+    hide("button[data-tab='dashboard'], button[data-tab='report'], button[data-tab='import'], #dashboardView, #reportView, #importView");
+    hide(".contract-card-observation, .contract-error-toggle, .contract-phase-selector-wrap, .contract-edit-btn, .detail-edit-actions, #clearData");
+    disable(".contract-phase-select, .contract-card-observation textarea, .contract-error-toggle input");
+
+    var blockedView = ["dashboardView", "reportView", "importView", "editorView"].some(function(id) {
+      var view = document.getElementById(id);
+      return view && !view.classList.contains("hidden");
+    });
+    if (blockedView) {
+      if (typeof window.switchTab === "function") window.switchTab("kanban");
+      else {
+        ["dashboardView", "reportView", "importView", "editorView"].forEach(function(id) {
+          var view = document.getElementById(id);
+          if (view) view.classList.add("hidden");
+        });
+      }
+    }
+
+    guard("setReqStage", "Apenas administradores de contratos podem mudar fases.");
+    guard("moveReq", "Apenas administradores de contratos podem mudar fases.");
+    guard("startRequestEdit", "Apenas administradores de contratos podem editar solicitacoes.");
+    guard("toggleContractRequestError", "Apenas administradores de contratos podem marcar erro na solicitacao.");
+    guard("persistContractResponsibleObservation", "Apenas administradores de contratos podem registrar observacoes.");
+    guard("queueContractObservationSave", "Apenas administradores de contratos podem registrar observacoes.");
+    guard("bindLegacyImport", "Apenas administradores de contratos podem importar historico.");
   }
 
   function stockLogin() {
@@ -1009,10 +1306,13 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         supabaseAnonKey: supabaseAnonKey || "",
         accessToken: session?.access_token || "",
         contractFormStorageKey: CONTRATOS_FORM_STORAGE_KEY,
+        contractRequestsStorageKey: CONTRATOS_REQUESTS_STORAGE_KEY,
         freightStorageKey: FRETES_STORAGE_KEY,
         stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
         evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
-        sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter((key) => key !== FRETES_STORAGE_KEY),
+        sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter(
+          (key) => key !== FRETES_STORAGE_KEY && key !== CONTRATOS_REQUESTS_STORAGE_KEY
+        ),
       },
     });
   }, [html, moduleKey, obras, profile, session, sharedStorage]);

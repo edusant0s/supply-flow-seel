@@ -82,6 +82,7 @@ export type Orcamento = {
 
 export type Contrato = {
   id: string;
+  codigo_embutido?: string | null;
   obra_id: string | null;
   solicitante: string | null;
   email_solicitante: string | null;
