@@ -80,6 +80,8 @@ const embeddedChromeCss = `
 
   body.supply-embedded {
     font-size: 14px !important;
+    overflow-x: hidden !important;
+    padding: 0 !important;
   }
 
   html[data-theme="dark"],
@@ -206,10 +208,13 @@ const embeddedChromeCss = `
     display: none !important;
   }
 
-  body.supply-embedded-fretes {
-    overflow-x: hidden !important;
-  }
-
+  body.supply-embedded .container,
+  body.supply-embedded .topbar-content,
+  body.supply-embedded .topbar-inner,
+  body.supply-embedded main,
+  body.supply-embedded .main,
+  body.supply-embedded .admin-main,
+  body.supply-embedded .content,
   body.supply-embedded-fretes .container,
   body.supply-embedded-fretes main,
   body.supply-embedded-fretes .section {
@@ -217,23 +222,99 @@ const embeddedChromeCss = `
     max-width: none !important;
   }
 
-  body.supply-embedded-fretes .tabs {
+  body.supply-embedded main,
+  body.supply-embedded .main,
+  body.supply-embedded .admin-main {
+    padding: 12px !important;
+  }
+
+  body.supply-embedded .tabs,
+  body.supply-embedded .sf-module-tabs,
+  body.supply-embedded .nav-tabs,
+  body.supply-embedded .tabbar,
+  body.supply-embedded [role="tablist"] {
     position: sticky !important;
     top: 0 !important;
     z-index: 40 !important;
     display: flex !important;
+    align-items: center !important;
     overflow-x: auto !important;
     gap: 8px !important;
     padding: 8px !important;
     background: rgba(255, 255, 255, .96) !important;
     border-bottom: 1px solid #e2e8f0 !important;
     box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
-  html[data-theme="dark"] body.supply-embedded-fretes .tabs {
+  body.supply-embedded .tabs > *,
+  body.supply-embedded .sf-module-tabs > *,
+  body.supply-embedded .nav-tabs > *,
+  body.supply-embedded .tabbar > *,
+  body.supply-embedded [role="tablist"] > * {
+    flex: 0 0 auto !important;
+  }
+
+  body.supply-embedded .tab,
+  body.supply-embedded .tabs button,
+  body.supply-embedded .sf-module-tabs button,
+  body.supply-embedded .nav-tabs button,
+  body.supply-embedded [role="tab"],
+  body.supply-embedded [data-tab],
+  body.supply-embedded [data-page] {
+    min-height: 36px !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #dbe5ee !important;
+    background: #ffffff !important;
+    color: #17324a !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+  }
+
+  body.supply-embedded .tab.active,
+  body.supply-embedded .tabs button.active,
+  body.supply-embedded .sf-module-tabs button.active,
+  body.supply-embedded .nav-tabs button.active,
+  body.supply-embedded [aria-selected="true"] {
+    background: #ffe119 !important;
+    border-color: #ffe119 !important;
+    color: #07111f !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded .tabs,
+  html[data-theme="dark"] body.supply-embedded .sf-module-tabs,
+  html[data-theme="dark"] body.supply-embedded .nav-tabs,
+  html[data-theme="dark"] body.supply-embedded .tabbar,
+  html[data-theme="dark"] body.supply-embedded [role="tablist"] {
     background: rgba(7, 17, 31, .96) !important;
     border-color: #1f3350 !important;
     box-shadow: 0 10px 24px rgba(0, 0, 0, .36) !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded .tab,
+  html[data-theme="dark"] body.supply-embedded .tabs button,
+  html[data-theme="dark"] body.supply-embedded .sf-module-tabs button,
+  html[data-theme="dark"] body.supply-embedded .nav-tabs button,
+  html[data-theme="dark"] body.supply-embedded [role="tab"],
+  html[data-theme="dark"] body.supply-embedded [data-tab],
+  html[data-theme="dark"] body.supply-embedded [data-page] {
+    background: #10233f !important;
+    border-color: #1f3350 !important;
+    color: #dbe7f4 !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded .tab.active,
+  html[data-theme="dark"] body.supply-embedded .tabs button.active,
+  html[data-theme="dark"] body.supply-embedded .sf-module-tabs button.active,
+  html[data-theme="dark"] body.supply-embedded .nav-tabs button.active,
+  html[data-theme="dark"] body.supply-embedded [aria-selected="true"] {
+    background: #ffe119 !important;
+    border-color: #ffe119 !important;
+    color: #07111f !important;
   }
 
   body.supply-embedded-fretes .section {
@@ -259,6 +340,22 @@ const embeddedChromeCss = `
     header.topbar,
     .topbar {
       position: relative !important;
+    }
+
+    body.supply-embedded main,
+    body.supply-embedded .main,
+    body.supply-embedded .admin-main {
+      padding: 8px !important;
+    }
+
+    body.supply-embedded .tabs,
+    body.supply-embedded .sf-module-tabs,
+    body.supply-embedded .nav-tabs,
+    body.supply-embedded .tabbar,
+    body.supply-embedded [role="tablist"] {
+      top: 0 !important;
+      padding: 7px !important;
+      gap: 6px !important;
     }
   }
 `;
@@ -325,6 +422,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   window.currentUser = window.SEEL_CURRENT_USER;
   window.supplyFlowUser = window.SEEL_CURRENT_USER;
   window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
+  window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
 
   Object.keys(sharedStorage).forEach(function(key) {
     try {
@@ -831,6 +929,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       document.body.classList.add("supply-embedded", "supply-embedded-" + moduleKey);
       document.body.dataset.supplyRole = ctx.role || "viewer";
       document.body.dataset.supplyCanManage = canManage ? "true" : "false";
+      document.body.dataset.supplySupabase = window.SUPPLY_FLOW_SUPABASE_CONNECTED ? "connected" : "offline";
 
       if (moduleKey === "frota") applyFrotaRules();
       if (moduleKey === "contratos") applyContratosRules();

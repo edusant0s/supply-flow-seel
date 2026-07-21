@@ -134,6 +134,18 @@ O autocomplete dos enderecos de coleta e entrega no modulo de Fretes usa `VITE_G
 - Em producao, cadastre a variavel no painel da Vercel e refaca o deploy.
 - A chave de navegador aparece no frontend por natureza; a seguranca depende das restricoes de dominio e API no Google Cloud.
 
+## Modulos Embutidos e Supabase
+
+As abas operacionais incorporadas ao Supply Flow usam o wrapper `EmbeddedHtmlToolPage` para carregar estado inicial do Supabase e sincronizar alteracoes autorizadas:
+
+- Fretes: solicitacoes em `fretes_solicitacoes`; formulario em `embedded_app_state`.
+- Frota: veiculos, multas, medicoes e responsavel em `embedded_app_state`.
+- Estoque de obras: pedidos em `estoque_obras_pedidos`; catalogo/configuracoes em `embedded_app_state`.
+- Avaliacao de fornecedores: avaliacoes em `avaliacao_fornecedores_avaliacoes`; ciclos/fornecedores em `embedded_app_state`.
+- Contratos: formulario detalhado e controle legado em `embedded_app_state`; solicitacoes do portal em `contratos`.
+
+Credenciais operacionais, como service role e chaves privadas, nao devem ser salvas nesses estados nem no frontend.
+
 ## Deploy Gratuito
 
 ### GitHub Pages
