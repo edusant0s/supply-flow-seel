@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
 import {
   AVALIACAO_DB_STORAGE_KEY,
+  CONTRATOS_FORM_STORAGE_KEY,
   ESTOQUE_STATE_STORAGE_KEY,
   FRETES_STORAGE_KEY,
   getEmbeddedStorageKeysForModule,
@@ -281,6 +282,7 @@ type EmbeddedContext = {
     supabaseUrl: string;
     supabaseAnonKey: string;
     accessToken: string;
+    contractFormStorageKey: string;
     freightStorageKey: string;
     stockStateKey: string;
     evaluationDbKey: string;
@@ -304,6 +306,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var ctx = window.SUPPLY_FLOW_CONTEXT || {};
   var moduleKey = ctx.module || "";
   var canManage = !!ctx.canManage;
+  var isSuperAdmin = ctx.role === "super_admin";
   var sharedStorage = ctx.sharedStorage || {};
   var syncConfig = ctx.sync || {};
   var applying = false;
@@ -587,8 +590,14 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function canSyncSharedState(key) {
+    if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return false;
+    if (moduleKey === "contratos" && key === syncConfig.contractFormStorageKey && !isSuperAdmin) return false;
+    return true;
+  }
+
   function syncSharedState(key, payload) {
-    if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return;
+    if (!canSyncSharedState(key)) return;
     postgrestRequest("/rest/v1/embedded_app_state?on_conflict=storage_key", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
@@ -759,6 +768,18 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     guard("loadDemoData", "Apenas super_admin pode carregar exemplos.");
   }
 
+  function applyContratosRules() {
+    if (isSuperAdmin) return;
+    hide("button[data-tab='editor'], #editorView");
+    if (document.getElementById("editorView") && !document.getElementById("editorView").classList.contains("hidden")) {
+      if (typeof window.switchTab === "function") window.switchTab("kanban");
+      else document.getElementById("editorView").classList.add("hidden");
+    }
+    guard("saveFormSpec", "Apenas super_admin pode alterar a estrutura do formulario.");
+    guard("renderEditor", "Apenas super_admin pode acessar o editor do formulario.");
+    guard("setEditorSection", "Apenas super_admin pode editar secoes do formulario.");
+  }
+
   function stockLogin() {
     if (moduleKey !== "estoque_obras" || stockLogged || typeof window.login !== "function") return;
     stockLogged = true;
@@ -807,6 +828,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       document.body.dataset.supplyCanManage = canManage ? "true" : "false";
 
       if (moduleKey === "frota") applyFrotaRules();
+      if (moduleKey === "contratos") applyContratosRules();
       if (moduleKey === "fretes") applyFretesRules();
       if (moduleKey === "estoque_obras") applyEstoqueRules();
       if (moduleKey === "avaliacao_fornecedores") applyAvaliacaoRules();
@@ -879,6 +901,7 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         supabaseUrl: supabaseUrl || "",
         supabaseAnonKey: supabaseAnonKey || "",
         accessToken: session?.access_token || "",
+        contractFormStorageKey: CONTRATOS_FORM_STORAGE_KEY,
         freightStorageKey: FRETES_STORAGE_KEY,
         stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
         evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,

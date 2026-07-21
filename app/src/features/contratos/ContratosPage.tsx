@@ -38,6 +38,10 @@ export function ContratosPage() {
   const shouldUseGlobalObras = canEdit || profile?.role === "viewer_global";
   const availableObras = shouldUseGlobalObras ? obrasData.data || obras : obras;
 
+  useEffect(() => {
+    if (viewMode === "detalhado" && !canEdit) setViewMode("solicitacoes");
+  }, [canEdit, setViewMode, viewMode]);
+
   const filtered = useMemo(() => {
     const q = normalizeText(query);
     return (data || []).filter((item) =>
@@ -57,7 +61,7 @@ export function ContratosPage() {
     );
   }, [data, query]);
 
-  if (viewMode === "detalhado") {
+  if (viewMode === "detalhado" && canEdit) {
     return (
       <div className="page-stack">
         <section className="toolbar-panel toolbar-panel--wrap">
