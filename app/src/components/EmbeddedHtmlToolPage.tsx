@@ -624,6 +624,15 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     if (this === window.localStorage) syncStorageWrite(String(key), "null");
   };
 
+  function syncInitialSharedStorage() {
+    if (!canManage || !sharedStorage || typeof sharedStorage !== "object") return;
+    Object.keys(sharedStorage).forEach(function(key) {
+      try {
+        syncStorageWrite(key, JSON.stringify(sharedStorage[key]));
+      } catch (err) {}
+    });
+  }
+
   function syncTheme() {
     var theme = "dark";
     try {
@@ -811,6 +820,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     applyRules();
     var observer = new MutationObserver(function() { applyRules(); });
     observer.observe(document.body, { childList: true, subtree: true });
+    window.setTimeout(syncInitialSharedStorage, 900);
     window.setInterval(syncTheme, 1000);
     window.setTimeout(applyRules, 250);
     window.setTimeout(applyRules, 900);
