@@ -13375,7 +13375,16 @@
     const GOOGLE_MAPS_API_KEY_STORAGE = "gestao_fretes_google_maps_api_key_v1";
     const GOOGLE_MAPS_API_KEY_FALLBACK = "COLE_SUA_CHAVE_DO_GOOGLE_MAPS_AQUI";
     const GOOGLE_MAPS_EMBED_FALLBACK_URL = "https://www.google.com/maps?q=Brasil&output=embed";
+    const getManagedGoogleMapsApiKey = () => {
+      try {
+        return String(window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY || "").trim();
+      } catch (error) {
+        return "";
+      }
+    };
     let GOOGLE_MAPS_API_KEY = (() => {
+      const managedKey = getManagedGoogleMapsApiKey();
+      if (managedKey) return managedKey;
       try {
         return String(localStorage.getItem(GOOGLE_MAPS_API_KEY_STORAGE) || GOOGLE_MAPS_API_KEY_FALLBACK).trim();
       } catch (error) {
@@ -16563,6 +16572,18 @@
       const activateButton = document.getElementById("activateGooglePlacesButton");
       const clearButton = document.getElementById("clearGooglePlacesKeyButton");
       if (!keyInput || !activateButton || !clearButton) return;
+      const managedKey = getManagedGoogleMapsApiKey();
+
+      if (isValidGoogleMapsApiKey(managedKey)) {
+        GOOGLE_MAPS_API_KEY = managedKey;
+        keyInput.value = "";
+        keyInput.placeholder = "Chave configurada pelo Supply Flow";
+        keyInput.disabled = true;
+        activateButton.disabled = true;
+        clearButton.disabled = true;
+        setGooglePlacesConfigStatus("Google Maps configurado pelo ambiente do Supply Flow. A pesquisa de endereços está ativa para todos os usuários.", "active");
+        return;
+      }
 
       if (hasConfiguredGoogleMapsKey()) {
         keyInput.value = GOOGLE_MAPS_API_KEY;

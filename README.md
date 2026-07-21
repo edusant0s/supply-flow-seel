@@ -17,6 +17,7 @@ npm install
 ```bash
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua_anon_key_publica
+VITE_GOOGLE_MAPS_API_KEY=sua_chave_publica_restrita_google_maps
 ```
 
 3. Rode:
@@ -123,6 +124,16 @@ Usuários ativos podem abrir Orçamentos e clicar em `Nova solicitação`.
 - Anexos enviados no formulário vão para o bucket privado `supply-flow-anexos`.
 - Apenas `admin_orcamentos` e `super_admin` movem status, importam planilhas e atualizam spend/saving/REQ.
 
+## Google Maps em Fretes
+
+O autocomplete dos enderecos de coleta e entrega no modulo de Fretes usa `VITE_GOOGLE_MAPS_API_KEY`.
+
+- Use uma chave de navegador da Google Maps Platform, nunca uma credencial de servidor.
+- Habilite `Maps JavaScript API`, `Places API (New)` e `Directions API`.
+- Restrinja a chave por HTTP referrer para `http://localhost:5173/*` e para os dominios de producao, como `https://supply-flow-seel.vercel.app/*`.
+- Em producao, cadastre a variavel no painel da Vercel e refaca o deploy.
+- A chave de navegador aparece no frontend por natureza; a seguranca depende das restricoes de dominio e API no Google Cloud.
+
 ## Deploy Gratuito
 
 ### GitHub Pages
@@ -130,7 +141,7 @@ Usuários ativos podem abrir Orçamentos e clicar em `Nova solicitação`.
 Este repositorio ja inclui `.github/workflows/deploy-pages.yml`.
 
 1. No GitHub, habilite Pages usando a branch `gh-pages` e a pasta `/`, se ainda nao estiver habilitado.
-2. Cadastre os secrets `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+2. Cadastre os secrets `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` e `VITE_GOOGLE_MAPS_API_KEY`.
 3. A cada push na `main`, o workflow executa `npm run security:scan` e publica o build em:
 
 ```text
@@ -143,7 +154,7 @@ https://edusant0s.github.io/supply-flow-seel/
 - Build command: `npm run build`.
 - Output directory: `app/dist`.
 - Headers de seguranca definidos em `vercel.json`.
-- Variáveis: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+- Variáveis: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GOOGLE_MAPS_API_KEY`.
 
 ### Netlify
 

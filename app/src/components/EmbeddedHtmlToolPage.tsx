@@ -278,6 +278,9 @@ type EmbeddedContext = {
     centro_custo: string | null;
   }>;
   sharedStorage: Record<string, unknown>;
+  integrations: {
+    googleMapsApiKey: string;
+  };
   sync: {
     supabaseUrl: string;
     supabaseAnonKey: string;
@@ -308,6 +311,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var canManage = !!ctx.canManage;
   var isSuperAdmin = ctx.role === "super_admin";
   var sharedStorage = ctx.sharedStorage || {};
+  var integrations = ctx.integrations || {};
   var syncConfig = ctx.sync || {};
   var applying = false;
   var stockLogged = false;
@@ -320,6 +324,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   };
   window.currentUser = window.SEEL_CURRENT_USER;
   window.supplyFlowUser = window.SEEL_CURRENT_USER;
+  window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
 
   Object.keys(sharedStorage).forEach(function(key) {
     try {
@@ -897,6 +902,9 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         centro_custo: obra.centro_custo,
       })),
       sharedStorage,
+      integrations: {
+        googleMapsApiKey: moduleKey === "fretes" ? String(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim() : "",
+      },
       sync: {
         supabaseUrl: supabaseUrl || "",
         supabaseAnonKey: supabaseAnonKey || "",
