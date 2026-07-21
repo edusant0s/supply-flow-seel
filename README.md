@@ -38,6 +38,8 @@ npm run dev
    - `supabase/migrations/005_orcamento_creator_delete.sql`
    - `supabase/migrations/006_viewer_global_contract_scope.sql`
    - `supabase/migrations/007_embedded_shared_fretes.sql`
+   - `supabase/migrations/008_embedded_all_shared_bases.sql`
+   - `supabase/migrations/009_restrict_embedded_contract_state.sql`
 4. Em Auth, crie manualmente o primeiro usuário administrador.
 5. Edite e execute `supabase/seed_first_super_admin.sql` com o e-mail desse usuário.
 6. Configure a Edge Function `create-user`:

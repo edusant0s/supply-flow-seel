@@ -26,7 +26,15 @@ import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
 import { formatCurrency, normalizeText, parseMoney } from "../../lib/format";
 import { useAsyncData, useSessionState } from "../../hooks";
-import { listFretePayloads } from "../../services/embeddedSync";
+import {
+  AVALIACAO_DB_STORAGE_KEY,
+  ESTOQUE_STATE_STORAGE_KEY,
+  FRETES_STORAGE_KEY,
+  FROTA_FINES_STORAGE_KEY,
+  FROTA_VEHICLES_STORAGE_KEY,
+  loadEmbeddedStorageSnapshot,
+  type EmbeddedStorageSnapshot,
+} from "../../services/embeddedSync";
 import { listEntities } from "../../services/entities";
 import type { Contrato, Fornecedor, Orcamento, Requisicao } from "../../types";
 
@@ -90,14 +98,17 @@ const familyLabels: Record<DashboardFamily, string> = {
 export function DashboardPage() {
   const [processFilter, setProcessFilter] = useSessionState<ProcessKey>("supply-flow:dashboard:process-filter", "todos");
   const { data, loading, error, refresh } = useAsyncData(async () => {
-    const [requisicoes, orcamentos, contratos, fornecedores, fretes] = await Promise.all([
+    const [requisicoes, orcamentos, contratos, fornecedores, fretesState, frotaState, estoqueState, avaliacaoState] = await Promise.all([
       listEntities("requisicoes"),
       listEntities("orcamentos"),
       listEntities("contratos"),
       listEntities("fornecedores"),
-      listFretePayloads(),
+      loadEmbeddedStorageSnapshot("fretes"),
+      loadEmbeddedStorageSnapshot("frota"),
+      loadEmbeddedStorageSnapshot("estoque_obras"),
+      loadEmbeddedStorageSnapshot("avaliacao_fornecedores"),
     ]);
-    return { requisicoes, orcamentos, contratos, fornecedores, fretes: fretes || [] };
+    return { requisicoes, orcamentos, contratos, fornecedores, fretesState, frotaState, estoqueState, avaliacaoState };
   }, [], { cacheKey: "dashboard:summary" });
 
   const rows = useMemo(() => {
@@ -192,13 +203,16 @@ function buildDashboardRows(data: {
   orcamentos: Orcamento[];
   contratos: Contrato[];
   fornecedores: Fornecedor[];
-  fretes: Array<Record<string, unknown>>;
+  fretesState: EmbeddedStorageSnapshot;
+  frotaState: EmbeddedStorageSnapshot;
+  estoqueState: EmbeddedStorageSnapshot;
+  avaliacaoState: EmbeddedStorageSnapshot;
 }): DashboardRow[] {
-  const fretes = data.fretes.length ? data.fretes : safeLocalArray("gestao_fretes_solicitacoes_v1");
-  const frota = safeLocalArray("frota_veiculos_v4_importacao_inicial");
-  const multasFrota = safeLocalArray("frota_multas_v4_importacao_inicial");
-  const estoque = safeLocalObject("obrastock_clean_state_v1");
-  const avaliacao = safeLocalObject("seel_supplier_evaluation_db_v10");
+  const fretes = arrayFromSnapshot(data.fretesState, FRETES_STORAGE_KEY, "gestao_fretes_solicitacoes_v1");
+  const frota = arrayFromSnapshot(data.frotaState, FROTA_VEHICLES_STORAGE_KEY, "frota_veiculos_v4_importacao_inicial");
+  const multasFrota = arrayFromSnapshot(data.frotaState, FROTA_FINES_STORAGE_KEY, "frota_multas_v4_importacao_inicial");
+  const estoque = objectFromSnapshot(data.estoqueState, ESTOQUE_STATE_STORAGE_KEY, "obrastock_clean_state_v1");
+  const avaliacao = objectFromSnapshot(data.avaliacaoState, AVALIACAO_DB_STORAGE_KEY, "seel_supplier_evaluation_db_v10");
 
   const estoquePedidos = Array.isArray(estoque.orders) ? estoque.orders : [];
   const estoqueItens = Array.isArray(estoque.items) ? estoque.items : [];
@@ -686,6 +700,20 @@ function safeLocalArray(key: string): Array<Record<string, unknown>> {
 function safeLocalObject(key: string): Record<string, any> {
   const value = safeLocalValue(key);
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, any>) : {};
+}
+
+function arrayFromSnapshot(snapshot: EmbeddedStorageSnapshot, storageKey: string, fallbackLocalKey: string): Array<Record<string, unknown>> {
+  const value = snapshot[storageKey];
+  if (Array.isArray(value)) {
+    return value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item));
+  }
+  return safeLocalArray(fallbackLocalKey);
+}
+
+function objectFromSnapshot(snapshot: EmbeddedStorageSnapshot, storageKey: string, fallbackLocalKey: string): Record<string, any> {
+  const value = snapshot[storageKey];
+  if (value && typeof value === "object" && !Array.isArray(value)) return value as Record<string, any>;
+  return safeLocalObject(fallbackLocalKey);
 }
 
 function sumRows(rows: DashboardRow[], key: "demanda" | "emAberto" | "finalizados" | "riscoSla") {

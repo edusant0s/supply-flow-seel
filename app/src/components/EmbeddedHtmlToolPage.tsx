@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { LoadingState } from "./States";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
-import { FRETES_FORM_STORAGE_KEY, FRETES_STORAGE_KEY, loadEmbeddedStorageSnapshot } from "../services/embeddedSync";
+import {
+  AVALIACAO_DB_STORAGE_KEY,
+  ESTOQUE_STATE_STORAGE_KEY,
+  FRETES_STORAGE_KEY,
+  getEmbeddedStorageKeysForModule,
+  loadEmbeddedStorageSnapshot,
+} from "../services/embeddedSync";
 import { supabaseAnonKey, supabaseUrl } from "../services/supabase";
 import type { ModuleKey } from "../types";
 
@@ -276,6 +282,8 @@ type EmbeddedContext = {
     supabaseAnonKey: string;
     accessToken: string;
     freightStorageKey: string;
+    stockStateKey: string;
+    evaluationDbKey: string;
     sharedStateKeys: string[];
   };
 };
@@ -317,11 +325,28 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   });
 
   var nativeStorageSetItem = Storage.prototype.setItem;
+  var nativeStorageRemoveItem = Storage.prototype.removeItem;
   var syncTimers = {};
   var knownFreightIds = {};
   var initialFreights = Array.isArray(sharedStorage[syncConfig.freightStorageKey]) ? sharedStorage[syncConfig.freightStorageKey] : [];
   initialFreights.forEach(function(item) {
     if (item && item.id) knownFreightIds[String(item.id)] = true;
+  });
+  var knownStockOrderIds = {};
+  var initialStockState = sharedStorage[syncConfig.stockStateKey] && typeof sharedStorage[syncConfig.stockStateKey] === "object"
+    ? sharedStorage[syncConfig.stockStateKey]
+    : {};
+  var initialStockOrders = Array.isArray(initialStockState.orders) ? initialStockState.orders : [];
+  initialStockOrders.forEach(function(item) {
+    if (item && item.id) knownStockOrderIds[String(item.id)] = true;
+  });
+  var knownEvaluationIds = {};
+  var initialEvaluationDb = sharedStorage[syncConfig.evaluationDbKey] && typeof sharedStorage[syncConfig.evaluationDbKey] === "object"
+    ? sharedStorage[syncConfig.evaluationDbKey]
+    : {};
+  var initialEvaluations = Array.isArray(initialEvaluationDb.evaluations) ? initialEvaluationDb.evaluations : [];
+  initialEvaluations.forEach(function(item) {
+    if (item && item.id) knownEvaluationIds[String(item.id)] = true;
   });
 
   function parseStoragePayload(value) {
@@ -367,6 +392,59 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     };
   }
 
+  function stableRecordId(prefix, item, index) {
+    if (item && item.id !== undefined && item.id !== null && String(item.id).trim()) return String(item.id);
+    var source = "";
+    try {
+      source = JSON.stringify(item || {});
+    } catch (err) {
+      source = String(Date.now()) + "_" + String(index || 0);
+    }
+    var hash = 0;
+    for (var i = 0; i < source.length; i++) {
+      hash = ((hash << 5) - hash + source.charCodeAt(i)) | 0;
+    }
+    return prefix + "_" + Math.abs(hash) + "_" + String(index || 0);
+  }
+
+  function stockOrderRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var payload = Object.assign({}, item);
+    var hostEmail = String(hostUser.email || "").trim();
+    if (!canManage && hostEmail) {
+      payload.requesterEmail = hostEmail;
+      payload.requester = hostEmail;
+      if (hostUser.nome) payload.requesterName = hostUser.nome;
+    }
+    var requesterEmail = String(payload.requesterEmail || payload.requester || "").trim();
+    if (!canManage && hostEmail && requesterEmail.toLowerCase() !== hostEmail.toLowerCase()) return null;
+    return {
+      id: stableRecordId("estoque_pedido", payload, index),
+      payload: payload,
+      requester_email: requesterEmail,
+      obra: String(payload.worksite || payload.obra || ""),
+      status: String(payload.status || "")
+    };
+  }
+
+  function supplierEvaluationRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var payload = Object.assign({}, item);
+    var hostEmail = String(hostUser.email || "").trim();
+    var evaluatorEmail = String(payload.avaliadorEmail || payload.evaluatorEmail || payload.emailAvaliador || hostEmail || "").trim();
+    if (!canManage && hostEmail && evaluatorEmail.toLowerCase() !== hostEmail.toLowerCase()) return null;
+    payload.avaliadorEmail = evaluatorEmail;
+    return {
+      id: stableRecordId("avaliacao", payload, index),
+      payload: payload,
+      cycle_id: String(payload.cycleId || payload.cycle_id || ""),
+      supplier_id: String(payload.supplierId || payload.supplier_id || ""),
+      obra: String(payload.obra || ""),
+      fornecedor: String(payload.fornecedor || ""),
+      avaliador_email: evaluatorEmail
+    };
+  }
+
   function deleteFreightRecord(id) {
     return postgrestRequest("/rest/v1/fretes_solicitacoes?id=eq." + encodeURIComponent(id), {
       method: "DELETE",
@@ -408,6 +486,107 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function deleteStockOrderRecord(id) {
+    return postgrestRequest("/rest/v1/estoque_obras_pedidos?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncStockState(state) {
+    if (!state || typeof state !== "object") {
+      if (canManage) syncSharedState(syncConfig.stockStateKey, null);
+      return;
+    }
+
+    var orders = Array.isArray(state.orders) ? state.orders : [];
+    var stateWithoutOrders = Object.assign({}, state, { orders: [] });
+    if (canManage) syncSharedState(syncConfig.stockStateKey, stateWithoutOrders);
+
+    var records = orders.map(stockOrderRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/estoque_obras_pedidos?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownStockOrderIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteStockOrderRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownStockOrderIds = nextIds; });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) { return !knownStockOrderIds[record.id]; });
+    if (!newRecords.length) return;
+    postgrestRequest("/rest/v1/estoque_obras_pedidos", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(newRecords)
+    }).then(function(ok) {
+      if (!ok) return;
+      newRecords.forEach(function(record) { knownStockOrderIds[record.id] = true; });
+    });
+  }
+
+  function deleteSupplierEvaluationRecord(id) {
+    return postgrestRequest("/rest/v1/avaliacao_fornecedores_avaliacoes?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncSupplierEvaluationDb(db) {
+    if (!db || typeof db !== "object") {
+      if (canManage) {
+        syncSharedState(syncConfig.evaluationDbKey, null);
+        Object.keys(knownEvaluationIds).forEach(deleteSupplierEvaluationRecord);
+        knownEvaluationIds = {};
+      }
+      return;
+    }
+
+    var evaluations = Array.isArray(db.evaluations) ? db.evaluations : [];
+    var dbWithoutEvaluations = Object.assign({}, db, { evaluations: [] });
+    if (canManage) syncSharedState(syncConfig.evaluationDbKey, dbWithoutEvaluations);
+
+    var records = evaluations.map(supplierEvaluationRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/avaliacao_fornecedores_avaliacoes?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownEvaluationIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteSupplierEvaluationRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownEvaluationIds = nextIds; });
+      return;
+    }
+
+    if (!records.length) return;
+    postgrestRequest("/rest/v1/avaliacao_fornecedores_avaliacoes?on_conflict=cycle_id,supplier_id,avaliador_email", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(records)
+    }).then(function(ok) {
+      if (!ok) return;
+      records.forEach(function(record) { knownEvaluationIds[record.id] = true; });
+    });
+  }
+
   function syncSharedState(key, payload) {
     if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return;
     postgrestRequest("/rest/v1/embedded_app_state?on_conflict=storage_key", {
@@ -422,11 +601,15 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   }
 
   function syncStorageWrite(key, value) {
-    if (moduleKey !== "fretes") return;
+    var isSharedStateKey = Array.isArray(syncConfig.sharedStateKeys) && syncConfig.sharedStateKeys.indexOf(key) >= 0;
+    var isDedicatedRowKey = key === syncConfig.freightStorageKey || key === syncConfig.stockStateKey || key === syncConfig.evaluationDbKey;
+    if (!isSharedStateKey && !isDedicatedRowKey) return;
     window.clearTimeout(syncTimers[key]);
     syncTimers[key] = window.setTimeout(function() {
       var payload = parseStoragePayload(value);
       if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
+      else if (key === syncConfig.stockStateKey) syncStockState(payload);
+      else if (key === syncConfig.evaluationDbKey) syncSupplierEvaluationDb(payload);
       else syncSharedState(key, payload);
     }, 350);
   }
@@ -434,6 +617,11 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   Storage.prototype.setItem = function(key, value) {
     nativeStorageSetItem.call(this, key, value);
     if (this === window.localStorage) syncStorageWrite(String(key), String(value));
+  };
+
+  Storage.prototype.removeItem = function(key) {
+    nativeStorageRemoveItem.call(this, key);
+    if (this === window.localStorage) syncStorageWrite(String(key), "null");
   };
 
   function syncTheme() {
@@ -682,7 +870,9 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         supabaseAnonKey: supabaseAnonKey || "",
         accessToken: session?.access_token || "",
         freightStorageKey: FRETES_STORAGE_KEY,
-        sharedStateKeys: moduleKey === "fretes" ? [FRETES_FORM_STORAGE_KEY] : [],
+        stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
+        evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
+        sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter((key) => key !== FRETES_STORAGE_KEY),
       },
     });
   }, [html, moduleKey, obras, profile, session, sharedStorage]);

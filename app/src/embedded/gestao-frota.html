@@ -5107,7 +5107,7 @@
     let fines = readStoredJson(STORAGE_FINES, []);
     let measurements = readStoredJson(STORAGE_MEASUREMENTS, []);
     let fleetManager = readStoredJson(STORAGE_MANAGER, {});
-    let apiSettings = sanitizeApiSettings(readStoredJson(STORAGE_API_SETTINGS, {}));
+    let apiSettings = {};
     let apiSessionTokens = { aldToken: "", arvalToken: "" };
 
     if (!Array.isArray(vehicles)) vehicles = [];
@@ -5115,7 +5115,7 @@
     if (!Array.isArray(measurements)) measurements = [];
     if (!fleetManager || typeof fleetManager !== "object" || Array.isArray(fleetManager)) fleetManager = {};
     if (!apiSettings || typeof apiSettings !== "object" || Array.isArray(apiSettings)) apiSettings = {};
-    localStorage.setItem(STORAGE_API_SETTINGS, JSON.stringify(sanitizeApiSettings(apiSettings)));
+    try { localStorage.removeItem(STORAGE_API_SETTINGS); } catch (error) {}
 
     const vehicleForm = document.getElementById("vehicleForm");
     const fineForm = document.getElementById("fineForm");
@@ -6107,7 +6107,6 @@
         arvalToken: document.getElementById("arvalToken")?.value.trim() || ""
       };
 
-      localStorage.setItem(STORAGE_API_SETTINGS, JSON.stringify(sanitizeApiSettings(apiSettings)));
       renderApiSettings();
       alert("Configurações de API salvas. Tokens ficam ativos apenas nesta sessão.");
     }
