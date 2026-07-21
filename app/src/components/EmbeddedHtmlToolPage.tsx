@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { LoadingState } from "./States";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
+import { FRETES_FORM_STORAGE_KEY, FRETES_STORAGE_KEY, loadEmbeddedStorageSnapshot } from "../services/embeddedSync";
+import { supabaseAnonKey, supabaseUrl } from "../services/supabase";
 import type { ModuleKey } from "../types";
 
 type EmbeddedHtmlToolPageProps = {
@@ -268,6 +270,14 @@ type EmbeddedContext = {
     codigo: string | null;
     centro_custo: string | null;
   }>;
+  sharedStorage: Record<string, unknown>;
+  sync: {
+    supabaseUrl: string;
+    supabaseAnonKey: string;
+    accessToken: string;
+    freightStorageKey: string;
+    sharedStateKeys: string[];
+  };
 };
 
 function withEmbeddedShell(html: string, baseHref: string, context: EmbeddedContext) {
@@ -286,8 +296,145 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var ctx = window.SUPPLY_FLOW_CONTEXT || {};
   var moduleKey = ctx.module || "";
   var canManage = !!ctx.canManage;
+  var sharedStorage = ctx.sharedStorage || {};
+  var syncConfig = ctx.sync || {};
   var applying = false;
   var stockLogged = false;
+  var hostUser = ctx.user || {};
+  window.SEEL_CURRENT_USER = {
+    name: hostUser.nome || "",
+    nome: hostUser.nome || "",
+    email: hostUser.email || "",
+    userEmail: hostUser.email || ""
+  };
+  window.currentUser = window.SEEL_CURRENT_USER;
+  window.supplyFlowUser = window.SEEL_CURRENT_USER;
+
+  Object.keys(sharedStorage).forEach(function(key) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(sharedStorage[key]));
+    } catch (err) {}
+  });
+
+  var nativeStorageSetItem = Storage.prototype.setItem;
+  var syncTimers = {};
+  var knownFreightIds = {};
+  var initialFreights = Array.isArray(sharedStorage[syncConfig.freightStorageKey]) ? sharedStorage[syncConfig.freightStorageKey] : [];
+  initialFreights.forEach(function(item) {
+    if (item && item.id) knownFreightIds[String(item.id)] = true;
+  });
+
+  function parseStoragePayload(value) {
+    try {
+      return JSON.parse(value);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function syncHeaders(extra) {
+    if (!syncConfig.supabaseUrl || !syncConfig.supabaseAnonKey || !syncConfig.accessToken) return null;
+    return Object.assign({
+      apikey: syncConfig.supabaseAnonKey,
+      Authorization: "Bearer " + syncConfig.accessToken,
+      "Content-Type": "application/json"
+    }, extra || {});
+  }
+
+  function syncUrl(path) {
+    return String(syncConfig.supabaseUrl || "").replace(/\\/$/, "") + path;
+  }
+
+  function postgrestRequest(path, options) {
+    var headers = syncHeaders(options && options.headers);
+    if (!headers) return Promise.resolve(false);
+    return fetch(syncUrl(path), Object.assign({}, options, { headers: headers })).then(function(response) {
+      if (!response.ok) throw new Error("Falha ao sincronizar dados: " + response.status);
+      return true;
+    }).catch(function(error) {
+      console.warn(error.message || error);
+      return false;
+    });
+  }
+
+  function freightRecord(item) {
+    if (!item || typeof item !== "object" || !item.id) return null;
+    return {
+      id: String(item.id),
+      payload: item,
+      email_solicitante: String(item.emailSolicitante || item.email_solicitante || ""),
+      status: String(item.status || "")
+    };
+  }
+
+  function deleteFreightRecord(id) {
+    return postgrestRequest("/rest/v1/fretes_solicitacoes?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncFreightRows(rows) {
+    if (!Array.isArray(rows) || !syncConfig.freightStorageKey) return;
+    var records = rows.map(freightRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/fretes_solicitacoes?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownFreightIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteFreightRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownFreightIds = nextIds; });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) { return !knownFreightIds[record.id]; });
+    if (!newRecords.length) return;
+    postgrestRequest("/rest/v1/fretes_solicitacoes", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(newRecords)
+    }).then(function(ok) {
+      if (!ok) return;
+      newRecords.forEach(function(record) { knownFreightIds[record.id] = true; });
+    });
+  }
+
+  function syncSharedState(key, payload) {
+    if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return;
+    postgrestRequest("/rest/v1/embedded_app_state?on_conflict=storage_key", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        storage_key: key,
+        module_key: moduleKey,
+        payload: payload
+      })
+    });
+  }
+
+  function syncStorageWrite(key, value) {
+    if (moduleKey !== "fretes") return;
+    window.clearTimeout(syncTimers[key]);
+    syncTimers[key] = window.setTimeout(function() {
+      var payload = parseStoragePayload(value);
+      if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
+      else syncSharedState(key, payload);
+    }, 350);
+  }
+
+  Storage.prototype.setItem = function(key, value) {
+    nativeStorageSetItem.call(this, key, value);
+    if (this === window.localStorage) syncStorageWrite(String(key), String(value));
+  };
 
   function syncTheme() {
     var theme = "dark";
@@ -393,17 +540,24 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   function applyFretesRules() {
     if (canManage) return;
 
-    hide("button[onclick*='dashboard'], button[onclick*='history']");
+    hide("button[onclick*='dashboard'], button[onclick*='history'], button[onclick*='editor']");
     hide(".header-actions, button[onclick*='editBasic'], button[onclick*='deleteFreight'], button[onclick*='addQuote'], button[onclick*='selectBestQuote'], button[onclick*='deleteQuote']");
-    hide("#dashboard, #history, .quotation-actions, .quotation-form-card");
-    disable(".phase-select, select[onchange*='changePhase']");
+    hide("#dashboard, #history, #editor, .quotation-actions, .quotation-form-card, .form-editor-tools, .form-editor-actions, .freight-form-error-check, [data-action='edit'], [data-action='email-quote'], [data-action='email-correction']");
+    disable(".phase-select, .form-error-checkbox, select[onchange*='changePhase']");
 
     guard("changePhase", "Apenas super_admin pode mudar fases de frete.");
     guard("editBasic", "Apenas super_admin pode editar fretes.");
+    guard("startFreightEdit", "Apenas super_admin pode editar fretes.");
     guard("deleteFreight", "Apenas super_admin pode excluir fretes.");
+    guard("toggleFreightFormError", "Apenas super_admin pode marcar formulario com erro.");
     guard("addQuoteToSelectedFreight", "Apenas super_admin pode gerenciar cotacoes.");
     guard("selectBestQuote", "Apenas super_admin pode aprovar cotacoes.");
     guard("deleteQuote", "Apenas super_admin pode excluir cotacoes.");
+    guard("addFreightFormSection", "Apenas super_admin pode editar o formulario.");
+    guard("addFreightFormField", "Apenas super_admin pode editar o formulario.");
+    guard("moveFreightFormItem", "Apenas super_admin pode editar o formulario.");
+    guard("deleteFreightFormItem", "Apenas super_admin pode editar o formulario.");
+    guard("restoreDefaultFreightForm", "Apenas super_admin pode editar o formulario.");
     guard("clearAllData", "Apenas super_admin pode limpar dados.");
     guard("loadDemoData", "Apenas super_admin pode carregar exemplos.");
   }
@@ -480,17 +634,21 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
 
 export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtmlToolPageProps) {
   const [html, setHtml] = useState<string | null>(null);
+  const [sharedStorage, setSharedStorage] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { profile, obras } = useAuth();
+  const { session, profile, obras } = useAuth();
 
   useEffect(() => {
     let active = true;
     setHtml(null);
+    setSharedStorage(null);
     setError(null);
 
-    loadHtml()
-      .then((content) => {
-        if (active) setHtml(content);
+    Promise.all([loadHtml(), loadEmbeddedStorageSnapshot(moduleKey)])
+      .then(([content, snapshot]) => {
+        if (!active) return;
+        setHtml(content);
+        setSharedStorage(snapshot);
       })
       .catch(() => {
         if (active) setError("Nao foi possivel carregar este modulo.");
@@ -499,10 +657,10 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
     return () => {
       active = false;
     };
-  }, [loadHtml]);
+  }, [loadHtml, moduleKey]);
 
   const srcDoc = useMemo(() => {
-    if (!html) return undefined;
+    if (!html || !sharedStorage) return undefined;
     const baseHref = new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString();
     return withEmbeddedShell(html, baseHref, {
       module: moduleKey,
@@ -518,8 +676,16 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         codigo: obra.codigo,
         centro_custo: obra.centro_custo,
       })),
+      sharedStorage,
+      sync: {
+        supabaseUrl: supabaseUrl || "",
+        supabaseAnonKey: supabaseAnonKey || "",
+        accessToken: session?.access_token || "",
+        freightStorageKey: FRETES_STORAGE_KEY,
+        sharedStateKeys: moduleKey === "fretes" ? [FRETES_FORM_STORAGE_KEY] : [],
+      },
     });
-  }, [html, moduleKey, obras, profile]);
+  }, [html, moduleKey, obras, profile, session, sharedStorage]);
 
   if (error) {
     return (

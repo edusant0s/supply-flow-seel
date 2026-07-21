@@ -26,6 +26,7 @@ import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
 import { formatCurrency, normalizeText, parseMoney } from "../../lib/format";
 import { useAsyncData, useSessionState } from "../../hooks";
+import { listFretePayloads } from "../../services/embeddedSync";
 import { listEntities } from "../../services/entities";
 import type { Contrato, Fornecedor, Orcamento, Requisicao } from "../../types";
 
@@ -89,13 +90,14 @@ const familyLabels: Record<DashboardFamily, string> = {
 export function DashboardPage() {
   const [processFilter, setProcessFilter] = useSessionState<ProcessKey>("supply-flow:dashboard:process-filter", "todos");
   const { data, loading, error, refresh } = useAsyncData(async () => {
-    const [requisicoes, orcamentos, contratos, fornecedores] = await Promise.all([
+    const [requisicoes, orcamentos, contratos, fornecedores, fretes] = await Promise.all([
       listEntities("requisicoes"),
       listEntities("orcamentos"),
       listEntities("contratos"),
       listEntities("fornecedores"),
+      listFretePayloads(),
     ]);
-    return { requisicoes, orcamentos, contratos, fornecedores };
+    return { requisicoes, orcamentos, contratos, fornecedores, fretes: fretes || [] };
   }, [], { cacheKey: "dashboard:summary" });
 
   const rows = useMemo(() => {
@@ -190,8 +192,9 @@ function buildDashboardRows(data: {
   orcamentos: Orcamento[];
   contratos: Contrato[];
   fornecedores: Fornecedor[];
+  fretes: Array<Record<string, unknown>>;
 }): DashboardRow[] {
-  const fretes = safeLocalArray("gestao_fretes_solicitacoes_v1");
+  const fretes = data.fretes.length ? data.fretes : safeLocalArray("gestao_fretes_solicitacoes_v1");
   const frota = safeLocalArray("frota_veiculos_v4_importacao_inicial");
   const multasFrota = safeLocalArray("frota_multas_v4_importacao_inicial");
   const estoque = safeLocalObject("obrastock_clean_state_v1");
