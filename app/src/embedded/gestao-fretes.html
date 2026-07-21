@@ -11874,7 +11874,7 @@
 
     #report .freight-report-table {
       width: 100%;
-      min-width: 2250px;
+      min-width: 2400px;
       border-collapse: separate;
       border-spacing: 0;
       background: #fff;
@@ -11997,6 +11997,16 @@
       #report .freight-report-clear { width: 100%; }
     }
 
+
+    .google-cloud-key-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
 </style>
 
 <style id="freight-oc-card-style">
@@ -12056,7 +12066,606 @@
   .freight-report-table td:nth-child(3) {
     min-width: 125px;
   }
+  .freight-report-table th:nth-child(4),
+  .freight-report-table td:nth-child(4) {
+    min-width: 150px;
+  }
+  #report .freight-cte-input-wrap {
+    display: grid;
+    grid-template-columns: minmax(105px, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    min-width: 145px;
+  }
+  #report .freight-cte-input {
+    width: 100%;
+    min-width: 0;
+    height: 31px;
+    padding: 0 8px;
+    border: 1px solid #b8cad5;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #07324d;
+    font-size: 10px;
+    font-weight: 850;
+    box-shadow: none;
+  }
+  #report .freight-cte-input:focus {
+    border-color: #155a82;
+    box-shadow: 0 0 0 3px rgba(255,225,25,.24);
+    outline: none;
+  }
+  #report .freight-cte-save-status {
+    min-width: 36px;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  #report .freight-cte-save-status.saved { color: #15803d; }
+  #report .freight-cte-save-status.pending { color: #a16207; }
 </style>
+
+
+
+<style id="google-places-config-styles">
+  #freightForm .google-places-config{
+    display:grid;
+    grid-template-columns:minmax(240px,.8fr) minmax(420px,1.2fr);
+    gap:10px 14px;
+    align-items:center;
+    padding:13px 14px;
+    border:1px solid rgba(21,90,130,.22);
+    border-left:5px solid var(--seel-yellow);
+    border-radius:15px;
+    background:linear-gradient(135deg,rgba(223,240,248,.62),rgba(255,255,255,.96));
+  }
+  #freightForm .google-places-config-copy{display:grid;gap:3px;min-width:0}
+  #freightForm .google-places-config-copy strong{color:var(--seel-blue-dark);font-size:13px;font-weight:950}
+  #freightForm .google-places-config-copy span{color:#5b7486;font-size:11px;line-height:1.35;font-weight:700}
+  #freightForm .google-places-config-actions{
+    display:grid;
+    grid-template-columns:minmax(220px,1fr) auto auto;
+    gap:8px;
+    align-items:center;
+    min-width:0;
+  }
+  #freightForm .google-places-config-actions input{height:39px;min-width:0}
+  #freightForm .google-places-config-actions button{height:39px;padding:0 12px;white-space:nowrap;font-size:11px}
+  #freightForm .google-places-config-status{
+    grid-column:1/-1;
+    padding:8px 10px;
+    border-radius:10px;
+    background:#f8fafc;
+    border:1px solid rgba(100,116,139,.18);
+    color:#475569;
+    font-size:11px;
+    font-weight:850;
+  }
+  #freightForm .google-places-config-status.active{background:#ecfdf5;border-color:#86efac;color:#166534}
+  #freightForm .google-places-config-status.loading{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8}
+  #freightForm .google-places-config-status.error{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
+  #freightForm .google-places-config small{grid-column:1/-1;color:#708797;font-size:10px;line-height:1.35}
+  #freightForm .address-suggestion-copy span.google-source{color:#1d4ed8;font-weight:900}
+  @media(max-width:980px){
+    #freightForm .google-places-config{grid-template-columns:1fr}
+    #freightForm .google-places-config-actions{grid-template-columns:1fr 1fr}
+    #freightForm .google-places-config-actions input{grid-column:1/-1}
+  }
+  @media(max-width:560px){
+    #freightForm .google-places-config-actions{grid-template-columns:1fr}
+    #freightForm .google-places-config-actions input{grid-column:auto}
+  }
+</style>
+<style id="freight-address-autocomplete-styles">
+  #freightForm .address-autocomplete-host {
+    position: relative !important;
+    z-index: 4;
+  }
+
+  #freightForm .address-autocomplete-host:focus-within {
+    z-index: 1200;
+  }
+
+  #freightForm .address-autocomplete-input {
+    padding-right: 42px !important;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #64748b 50%),
+      linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+      calc(100% - 19px) calc(50% - 2px),
+      calc(100% - 14px) calc(50% - 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  #freightForm .address-autocomplete-input.address-selected {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .12) !important;
+  }
+
+  #freightForm .address-autocomplete-helper {
+    min-height: 15px;
+    margin-top: 5px;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.35;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  #freightForm .address-autocomplete-helper.searching {
+    color: #155a82;
+  }
+
+  #freightForm .address-autocomplete-helper.success {
+    color: #15803d;
+  }
+
+  #freightForm .address-autocomplete-helper.error {
+    color: #b91c1c;
+  }
+
+  #freightForm .address-autocomplete-suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 13px);
+    z-index: 1300;
+    max-height: 290px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .99);
+    box-shadow: 0 20px 42px rgba(15, 23, 42, .20);
+  }
+
+  #freightForm .address-autocomplete-suggestions[hidden] {
+    display: none !important;
+  }
+
+  #freightForm .address-suggestion-button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 9px;
+    align-items: start;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #0f3550;
+    text-align: left;
+    box-shadow: none;
+  }
+
+  #freightForm .address-suggestion-button:hover,
+  #freightForm .address-suggestion-button.active {
+    transform: none;
+    background: #eef6fb;
+    box-shadow: none;
+  }
+
+  #freightForm .address-suggestion-icon {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d7e2e9;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #155a82;
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  #freightForm .address-suggestion-copy {
+    min-width: 0;
+  }
+
+  #freightForm .address-suggestion-copy strong {
+    display: block;
+    color: #0f3550;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 850;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  #freightForm .address-suggestion-copy span {
+    display: block;
+    margin-top: 2px;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.25;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .pac-container {
+    z-index: 99999 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 13px !important;
+    box-shadow: 0 20px 42px rgba(15, 23, 42, .20) !important;
+    font-family: Inter, "Segoe UI", Arial, sans-serif !important;
+    overflow: hidden !important;
+  }
+
+  .pac-item {
+    padding: 8px 10px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+  }
+
+  .pac-item:hover,
+  .pac-item-selected {
+    background: #eef6fb !important;
+  }
+
+  @media (max-width: 760px) {
+    #freightForm .address-autocomplete-suggestions {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      top: auto;
+      bottom: 14px;
+      max-height: 46vh;
+      border-radius: 16px;
+    }
+  }
+</style>
+
+
+<style id="freight-responsible-note-editor-style">
+  #kanbanBoard .freight-responsible-note-editor{
+    display:grid;
+    gap:5px;
+    margin-top:8px;
+    padding:8px;
+    border:1px solid rgba(21,90,130,.22);
+    border-left:4px solid var(--seel-yellow);
+    border-radius:11px;
+    background:linear-gradient(135deg,rgba(255,225,25,.13),rgba(255,255,255,.98));
+  }
+  #kanbanBoard .freight-responsible-note-editor label{
+    margin:0;
+    color:#375d73;
+    font-size:8px;
+    line-height:1.1;
+    font-weight:950;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+  #kanbanBoard .freight-responsible-note-input{
+    width:100%;
+    min-width:0;
+    min-height:58px;
+    max-height:120px;
+    padding:8px 9px;
+    resize:vertical;
+    border:1px solid #b9cad5;
+    border-radius:9px;
+    background:#fff;
+    color:#07324d;
+    font-size:10px;
+    line-height:1.35;
+    font-weight:750;
+    box-shadow:none;
+  }
+  #kanbanBoard .freight-responsible-note-input:focus{
+    border-color:#155a82;
+    box-shadow:0 0 0 3px rgba(255,225,25,.22);
+    outline:none;
+  }
+  #kanbanBoard .freight-responsible-note-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+  #kanbanBoard .freight-responsible-note-status,
+  #kanbanBoard .freight-responsible-note-counter{
+    color:#64748b;
+    font-size:8px;
+    line-height:1;
+    font-weight:900;
+    white-space:nowrap;
+  }
+  #kanbanBoard .freight-responsible-note-status.saved{color:#15803d}
+  #kanbanBoard .freight-responsible-note-status.pending{color:#a16207}
+  #kanbanBoard .freight-responsible-note-counter.near-limit{color:#a16207}
+  #kanbanBoard .freight-responsible-note-counter.at-limit{color:#b91c1c}
+  .logged-user-field .login-fixed-field{
+    background:#eef6fa !important;
+    border-color:rgba(21,90,130,.28) !important;
+    color:#0e4a6e !important;
+    font-weight:850 !important;
+    cursor:not-allowed !important;
+  }
+</style>
+
+
+  <style>
+    /* Ajuste final: ícones executivos nos cards e OBS somente no modal de detalhes */
+    #kanbanBoard .freight-ui-icon {
+      width: 12px !important;
+      height: 12px !important;
+      min-width: 12px !important;
+      display: inline-block !important;
+      vertical-align: middle !important;
+      stroke: currentColor !important;
+      fill: none !important;
+      stroke-width: 2 !important;
+      stroke-linecap: round !important;
+      stroke-linejoin: round !important;
+    }
+
+    #kanbanBoard .freight-line-icon {
+      width: 18px !important;
+      height: 18px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 6px !important;
+      background: #e9f3f8 !important;
+      color: #075985 !important;
+    }
+
+    #kanbanBoard .freight-line-icon .freight-ui-icon {
+      width: 10px !important;
+      height: 10px !important;
+      min-width: 10px !important;
+    }
+
+    #kanbanBoard .freight-compact-lines > div {
+      grid-template-columns: 18px minmax(0,1fr) !important;
+      gap: 6px !important;
+      align-items: center !important;
+      min-height: 20px !important;
+    }
+
+    #kanbanBoard .freight-compact-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+    }
+
+    #kanbanBoard .freight-compact-title .freight-ui-icon {
+      width: 13px !important;
+      height: 13px !important;
+      min-width: 13px !important;
+      color: #075985 !important;
+    }
+
+    #kanbanBoard .freight-priority-bubble {
+      display: inline-flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 1px !important;
+    }
+
+    #kanbanBoard .freight-priority-bubble .freight-ui-icon {
+      width: 10px !important;
+      height: 10px !important;
+      min-width: 10px !important;
+    }
+
+    #kanbanBoard .freight-compact-description {
+      display: grid !important;
+      grid-template-columns: 18px minmax(0, 1fr) !important;
+      gap: 6px !important;
+      align-items: start !important;
+      max-height: none !important;
+      min-height: 26px !important;
+      padding: 5px 6px !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      background: #f8fafc !important;
+    }
+
+    #kanbanBoard .freight-description-icon {
+      width: 18px !important;
+      height: 18px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 6px !important;
+      background: #ffffff !important;
+      color: #075985 !important;
+      border: 1px solid #d7e1e8 !important;
+    }
+
+    #kanbanBoard .freight-description-icon .freight-ui-icon {
+      width: 10px !important;
+      height: 10px !important;
+      min-width: 10px !important;
+    }
+
+    #kanbanBoard .freight-description-text {
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+    }
+
+    #kanbanBoard .freight-mini-badge,
+    #kanbanBoard .freight-compact-meta > span,
+    #kanbanBoard .freight-timer-label,
+    #kanbanBoard .freight-phase-selector-wrap label,
+    #kanbanBoard .freight-form-error-check span,
+    #kanbanBoard .freight-compact-actions a,
+    #kanbanBoard .freight-compact-actions button {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+    }
+
+    #kanbanBoard .freight-mini-badge .freight-ui-icon,
+    #kanbanBoard .freight-compact-meta .freight-ui-icon,
+    #kanbanBoard .freight-timer-label .freight-ui-icon,
+    #kanbanBoard .freight-phase-selector-wrap label .freight-ui-icon,
+    #kanbanBoard .freight-form-error-check .freight-ui-icon,
+    #kanbanBoard .freight-compact-actions .freight-ui-icon {
+      width: 9px !important;
+      height: 9px !important;
+      min-width: 9px !important;
+    }
+
+    #kanbanBoard .freight-compact-meta > span:first-child {
+      min-width: 0 !important;
+    }
+
+    #kanbanBoard .freight-compact-timer > div {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+
+    #kanbanBoard .freight-timer-label {
+      min-width: 0 !important;
+    }
+
+    #kanbanBoard .freight-responsible-note-editor,
+    #kanbanBoard [data-responsible-note-field] {
+      display: none !important;
+    }
+
+    #detailsModal .responsible-note-detail-panel {
+      margin: 0 0 18px !important;
+      padding: 17px !important;
+      border: 1px solid #d5e2ea !important;
+      border-left: 6px solid #f2c400 !important;
+      border-radius: 18px !important;
+      background: linear-gradient(135deg, #fffdf1, #ffffff) !important;
+      box-shadow: 0 8px 20px rgba(14,74,110,.07) !important;
+    }
+
+    #detailsModal .responsible-note-detail-heading {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin-bottom: 10px !important;
+    }
+
+    #detailsModal .responsible-note-detail-title {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 9px !important;
+      color: #0e4a6e !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+    }
+
+    #detailsModal .responsible-note-detail-title .freight-ui-icon {
+      width: 19px !important;
+      height: 19px !important;
+      min-width: 19px !important;
+      color: #0e4a6e !important;
+    }
+
+    #detailsModal .responsible-note-detail-status {
+      padding: 5px 9px !important;
+      border-radius: 999px !important;
+      background: #e2e8f0 !important;
+      color: #475569 !important;
+      font-size: 10px !important;
+      font-weight: 900 !important;
+      white-space: nowrap !important;
+    }
+
+    #detailsModal .responsible-note-detail-status.saved {
+      background: #dcfce7 !important;
+      color: #166534 !important;
+    }
+
+    #detailsModal .responsible-note-detail-status.pending {
+      background: #fef3c7 !important;
+      color: #92400e !important;
+    }
+
+    #detailsModal .responsible-note-detail-help {
+      margin: 0 0 9px !important;
+      color: #64748b !important;
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+      font-weight: 700 !important;
+    }
+
+    #detailsModal .responsible-note-detail-input {
+      width: 100% !important;
+      min-height: 112px !important;
+      max-height: 240px !important;
+      padding: 12px 13px !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 13px !important;
+      background: #ffffff !important;
+      color: #0f3550 !important;
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      font-weight: 650 !important;
+      resize: vertical !important;
+    }
+
+    #detailsModal .responsible-note-detail-input:focus {
+      border-color: #0e4a6e !important;
+      box-shadow: 0 0 0 4px rgba(255,225,25,.22) !important;
+    }
+
+    #detailsModal .responsible-note-detail-footer {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin-top: 9px !important;
+    }
+
+    #detailsModal .responsible-note-detail-counter {
+      color: #64748b !important;
+      font-size: 11px !important;
+      font-weight: 850 !important;
+    }
+
+    #detailsModal .responsible-note-detail-counter.near-limit { color: #b45309 !important; }
+    #detailsModal .responsible-note-detail-counter.at-limit { color: #dc2626 !important; }
+
+    #detailsModal .responsible-note-save-button {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 7px !important;
+      min-height: 36px !important;
+      padding: 8px 13px !important;
+      border-radius: 10px !important;
+      background: #0e4a6e !important;
+      color: #ffffff !important;
+      border: 1px solid #0e4a6e !important;
+      font-size: 11px !important;
+      font-weight: 900 !important;
+    }
+
+    #detailsModal .responsible-note-save-button .freight-ui-icon {
+      width: 13px !important;
+      height: 13px !important;
+      min-width: 13px !important;
+    }
+
+    @media (max-width: 620px) {
+      #detailsModal .responsible-note-detail-heading,
+      #detailsModal .responsible-note-detail-footer {
+        align-items: stretch !important;
+        flex-direction: column !important;
+      }
+
+      #detailsModal .responsible-note-save-button {
+        width: 100% !important;
+      }
+    }
+  </style>
 
 </head>
 <body>
@@ -12084,8 +12693,8 @@
             <div class="form-section-title">Informações iniciais</div>
             <div><label>Número da RM *</label><input id="numeroRM" required placeholder="Ex.: 17901" /></div>
             <div><label>Número da Obra / Departamento *</label><input id="numeroObra" required placeholder="Ex.: 949" /></div>
-            <div class="logged-user-field"><label>Solicitante conectado *</label><input id="solicitante" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando usuário conectado..." autocomplete="off" /></div>
-            <div class="logged-user-field"><label>E-mail do solicitante conectado *</label><input id="emailSolicitante" type="email" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando e-mail do usuário..." autocomplete="off" /></div>
+            <div class="logged-user-field"><label>Solicitante *</label><input id="solicitante" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando usuário conectado..." autocomplete="off" /></div>
+            <div class="logged-user-field"><label>E-mail *</label><input id="emailSolicitante" type="email" required readonly aria-readonly="true" class="login-fixed-field" placeholder="Carregando e-mail do usuário..." autocomplete="off" /></div>
             <div><label>Telefone do Solicitante</label><input id="telefoneSolicitante" placeholder="Ex.: 21980931551" /></div>
             <div id="loggedUserHint" class="full logged-user-hint">Identificando automaticamente o nome e o e-mail do usuário conectado no aplicativo principal.</div>
             <div><label>Urgência *</label><select id="urgencia" required><option value="NORMAL">NORMAL</option><option value="URGENTE">URGENTE</option></select></div>
@@ -12095,6 +12704,20 @@
             <div><label>Tipo de movimentação *</label><select id="tipoMovimentacao" required><option value="">Selecione</option><option>Movimentação entre obras</option><option>Coleta em fornecedor</option><option>Entrega em obra</option><option>Devolução</option><option>Transferência interna</option><option>Outro</option></select></div>
             <div><label>Particularidade da Obra</label><input id="particularidadeObra" placeholder="Ex.: RODOVIA" /></div>
             <div class="form-section-title">Endereços</div>
+            <div class="full google-places-config" id="googlePlacesConfig">
+              <div class="google-places-config-copy">
+                <strong>Pesquisa de endereços e locais pelo Google Maps</strong>
+                <span>Ative uma vez para pesquisar fornecedores, empresas, obras, estabelecimentos e endereços reais enquanto digita.</span>
+              </div>
+              <div class="google-places-config-actions">
+                <input id="googlePlacesApiKeyInput" type="password" placeholder="Cole a chave alfanumérica (normalmente começa com AIza...)" autocomplete="off" spellcheck="false" />
+                <button id="activateGooglePlacesButton" class="btn-primary" type="button">Ativar Google Maps</button>
+                <button id="clearGooglePlacesKeyButton" class="btn-secondary" type="button">Remover chave</button>
+                <a id="openGoogleCloudKeyButton" class="btn-secondary google-cloud-key-link" href="https://console.cloud.google.com/google/maps-apis/credentials" target="_blank" rel="noopener noreferrer">Criar chave no Google Cloud</a>
+              </div>
+              <div id="googlePlacesConfigStatus" class="google-places-config-status">Aguardando configuração do Google Maps.</div>
+              <small>Use uma chave alfanumérica da Google Maps Platform — não cole links do Google Maps. A chave fica salva somente neste navegador. Habilite Maps JavaScript API e Places API (New), associe faturamento e restrinja a chave ao domínio onde o aplicativo será publicado.</small>
+            </div>
             <div class="full"><label>Como deseja informar o local de coleta? *</label><select id="modoLocalColeta" required><option value="">Selecione</option><option value="ENDERECO">Endereço</option><option value="LINK_MAPS">Link do Maps</option></select></div>
             <div><label>Endereço de coleta</label><input id="enderecoColeta" placeholder="Rua, número, bairro, cidade/UF" /></div>
             <div><label>CEP da coleta</label><input id="cepColeta" placeholder="Ex.: 25010-000" /></div>
@@ -12570,7 +13193,7 @@
     <section id="report" class="section">
       <div class="freight-report-shell">
         <section class="freight-report-filters">
-          <label class="freight-report-search"><span>Pesquisa</span><input id="freightReportSearch" type="search" placeholder="Solicitação, RM, obra, solicitante, rota ou transportadora"></label>
+          <label class="freight-report-search"><span>Pesquisa</span><input id="freightReportSearch" type="search" placeholder="Solicitação, RM, OC, CTE, obra, solicitante, rota ou transportadora"></label>
           <label><span>Urgência</span><select id="freightReportUrgency"><option value="">Normal ou urgente</option><option value="NORMAL">Normal</option><option value="URGENTE">Urgente</option></select></label>
           <label><span>Tipo de movimentação</span><select id="freightReportMovement"><option value="">Todos os tipos</option></select></label>
           <label><span>Obra / departamento</span><select id="freightReportObra"><option value="">Todas</option></select></label>
@@ -12597,6 +13220,7 @@
                   <th>Solicitação</th>
                   <th>Nº RM</th>
                   <th>Nº da OC</th>
+                  <th>Nº do CTE</th>
                   <th>Obra / departamento</th>
                   <th>Solicitante</th>
                   <th>Urgência</th>
@@ -12613,7 +13237,7 @@
                   <th>Data da entrega</th>
                   <th>SLA total</th>
                   <th>Qualidade</th>
-                  <th>Observações</th>
+                  <th>OBS do Responsável</th>
                 </tr>
               </thead>
               <tbody id="freightReportBody"></tbody>
@@ -12748,7 +13372,16 @@
       - Directions API
       Importante: restrinja a chave ao domínio/URL onde o app será hospedado.
     */
-    const GOOGLE_MAPS_API_KEY = "COLE_SUA_CHAVE_DO_GOOGLE_MAPS_AQUI";
+    const GOOGLE_MAPS_API_KEY_STORAGE = "gestao_fretes_google_maps_api_key_v1";
+    const GOOGLE_MAPS_API_KEY_FALLBACK = "COLE_SUA_CHAVE_DO_GOOGLE_MAPS_AQUI";
+    const GOOGLE_MAPS_EMBED_FALLBACK_URL = "https://www.google.com/maps?q=Brasil&output=embed";
+    let GOOGLE_MAPS_API_KEY = (() => {
+      try {
+        return String(localStorage.getItem(GOOGLE_MAPS_API_KEY_STORAGE) || GOOGLE_MAPS_API_KEY_FALLBACK).trim();
+      } catch (error) {
+        return GOOGLE_MAPS_API_KEY_FALLBACK;
+      }
+    })();
 
     let googleMapInstance = null;
     let googleDirectionsService = null;
@@ -13123,6 +13756,9 @@
       }
       if (typeof value !== "object") return null;
       if (value.data && typeof value.data === "object") value = { ...value, ...value.data };
+      if (value.payload && typeof value.payload === "object") value = { ...value, ...value.payload };
+      if (value.detail && typeof value.detail === "object") value = { ...value, ...value.detail };
+      if (value.auth && typeof value.auth === "object") value = { ...value, ...value.auth };
       if (value.session && typeof value.session === "object") value = { ...value, ...value.session };
       if (value.account && typeof value.account === "object") value = { ...value, ...value.account };
       if (value.user && typeof value.user === "object") value = { ...value, ...value.user };
@@ -13165,7 +13801,8 @@
     function resolveLoggedRequesterIdentity() {
       const directCandidates = [
         window.SEEL_CURRENT_USER, window.currentUser, window.loggedUser,
-        window.authUser, window.usuarioLogado, window.supplyFlowUser
+        window.authUser, window.usuarioLogado, window.supplyFlowUser,
+        window.user, window.appUser, window.userProfile, window.sessionUser
       ];
       for (const candidate of directCandidates) {
         const user = normalizeLoggedUser(candidate);
@@ -13179,7 +13816,8 @@
         if (window.parent && window.parent !== window) {
           const parentCandidates = [
             window.parent.SEEL_CURRENT_USER, window.parent.currentUser, window.parent.loggedUser,
-            window.parent.authUser, window.parent.usuarioLogado, window.parent.supplyFlowUser
+            window.parent.authUser, window.parent.usuarioLogado, window.parent.supplyFlowUser,
+            window.parent.user, window.parent.appUser, window.parent.userProfile, window.parent.sessionUser
           ];
           for (const candidate of parentCandidates) {
             const user = normalizeLoggedUser(candidate);
@@ -13234,8 +13872,10 @@
       applyRequesterIdentity(loggedRequesterIdentity, true);
       try {
         if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: "REQUEST_CURRENT_USER", source: "gestao-fretes" }, "*");
-          window.parent.postMessage({ type: "GET_LOGGED_USER", source: "gestao-fretes" }, "*");
+          window.parent.postMessage({ type: "REQUEST_CURRENT_USER", source: "gestao-fretes", action: "getCurrentUser" }, "*");
+          window.parent.postMessage({ type: "GET_CURRENT_USER", source: "gestao-fretes", action: "getCurrentUser" }, "*");
+          window.parent.postMessage({ type: "GET_LOGGED_USER", source: "gestao-fretes", action: "getLoggedUser" }, "*");
+          window.parent.postMessage({ type: "REQUEST_USER_SESSION", source: "gestao-fretes", action: "getUserSession" }, "*");
         }
       } catch (error) {}
     }
@@ -13252,7 +13892,7 @@
       const payload = event?.data;
       if (!payload || typeof payload !== "object") return;
       const type = String(payload.type || "").toUpperCase();
-      if (!["CURRENT_USER", "AUTH_USER", "SEEL_USER", "LOGGED_USER", "USER_SESSION", "CURRENT_USER_RESPONSE", "LOGGED_USER_RESPONSE"].includes(type)) return;
+      if (!["CURRENT_USER", "AUTH_USER", "SEEL_USER", "LOGGED_USER", "USER_SESSION", "CURRENT_USER_RESPONSE", "LOGGED_USER_RESPONSE", "USER_DATA", "USER_INFO", "APP_USER", "USER_PROFILE", "AUTH_STATE", "SESSION_USER", "LOGIN_USER"].includes(type)) return;
       window.setFreightLoggedUser(payload.user || payload.usuario || payload.account || payload.profile || payload.data || payload);
     });
 
@@ -13260,6 +13900,12 @@
       if (!event.key || LOGGED_USER_STORAGE_KEYS.includes(event.key) || /user|usuario|email|profile|account|session/i.test(event.key)) {
         setupLoggedRequesterFromHost(true);
       }
+    });
+
+
+    window.addEventListener("focus", () => setupLoggedRequesterFromHost(true));
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) setupLoggedRequesterFromHost(true);
     });
 
     let loggedRequesterSyncAttempts = 0;
@@ -13276,10 +13922,12 @@
     setupInitialDateUrgencyLogic(false);
     setupGoogleMapsLinkFields();
     setupLocationInputModes(false);
+    setupFreightAddressAutocomplete();
     setupLoggedRequesterFromHost(true);
 
     document.getElementById("freightForm").addEventListener("submit", function(event) {
       event.preventDefault();
+      setupLoggedRequesterFromHost(true);
       const requesterName = document.getElementById("solicitante")?.value.trim();
       const requesterEmail = document.getElementById("emailSolicitante")?.value.trim();
       if (!requesterName || !requesterEmail) {
@@ -13298,6 +13946,7 @@
         setupInitialDateUrgencyLogic(false);
         setupGoogleMapsLinkFields();
         setupLocationInputModes(false);
+        setupFreightAddressAutocomplete();
         setupLoggedRequesterFromHost(true);
       }, 0);
     });
@@ -13314,6 +13963,8 @@
     bindDashboardFilters();
     bindFreightReportControls();
     bindSupplyFlowSearch();
+    setupGooglePlacesConfiguration();
+    activateGoogleMapsIfConfigured();
 
     function showTab(id, button) {
       document.querySelectorAll(".section").forEach(section => {
@@ -13518,47 +14169,61 @@
         freightFormSchema[initialSectionIndex].visible = true;
       }
 
-      const urgencyTemplate = {
-        key: "field:urgencia", kind: "field", id: "urgencia", label: "Urgência",
-        type: "select", placeholder: "", required: true, full: false, visible: true,
-        options: [{ value: "NORMAL", text: "NORMAL" }, { value: "URGENTE", text: "URGENTE" }],
-        min: "", step: "", custom: false
-      };
-      const requestDateTemplate = {
-        key: "field:dataSolicitacao", kind: "field", id: "dataSolicitacao", label: "Data da solicitação",
-        type: "date", placeholder: "", required: true, full: false, visible: true,
-        options: [], min: "", step: "", custom: false
-      };
-      const collectionTemplate = {
-        key: "field:dataColetaMaterial", kind: "field", id: "dataColetaMaterial", label: "Data da Coleta do Material",
-        type: "date", placeholder: "", required: true, full: false, visible: true,
-        options: [], min: "", step: "", custom: false
-      };
-      const collectionTimeTemplate = {
-        key: "field:horarioColeta", kind: "field", id: "horarioColeta", label: "Horário da coleta",
-        type: "time", placeholder: "", required: true, full: false, visible: true,
-        options: [], min: "", step: "", custom: false
-      };
+      const initialTemplates = [
+        {
+          key: "field:numeroRM", kind: "field", id: "numeroRM", label: "Número da RM",
+          type: "text", placeholder: "Ex.: 17901", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:numeroObra", kind: "field", id: "numeroObra", label: "Número da Obra / Departamento",
+          type: "text", placeholder: "Ex.: 949", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:solicitante", kind: "field", id: "solicitante", label: "Solicitante",
+          type: "text", placeholder: "Carregando usuário conectado...", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false, loginManaged: true
+        },
+        {
+          key: "field:emailSolicitante", kind: "field", id: "emailSolicitante", label: "E-mail",
+          type: "email", placeholder: "Carregando e-mail do usuário...", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false, loginManaged: true
+        },
+        {
+          key: "field:telefoneSolicitante", kind: "field", id: "telefoneSolicitante", label: "Telefone do Solicitante",
+          type: "tel", placeholder: "Ex.: 21980931551", required: false, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:urgencia", kind: "field", id: "urgencia", label: "Urgência",
+          type: "select", placeholder: "", required: true, full: false, visible: true,
+          options: [{ value: "NORMAL", text: "NORMAL" }, { value: "URGENTE", text: "URGENTE" }],
+          min: "", step: "", custom: false
+        },
+        {
+          key: "field:dataSolicitacao", kind: "field", id: "dataSolicitacao", label: "Data da solicitação",
+          type: "date", placeholder: "", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:dataColetaMaterial", kind: "field", id: "dataColetaMaterial", label: "Data da Coleta do Material",
+          type: "date", placeholder: "", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:horarioColeta", kind: "field", id: "horarioColeta", label: "Horário da coleta",
+          type: "time", placeholder: "", required: true, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        }
+      ];
 
-      const controlledIds = new Set(["urgencia", "dataSolicitacao", "dataColetaMaterial", "horarioColeta"]);
+      const controlledIds = new Set(initialTemplates.map(item => item.id));
       freightFormSchema = freightFormSchema.filter(item => !(item.kind === "field" && controlledIds.has(item.id)));
       initialSectionIndex = freightFormSchema.findIndex(item => item.kind === "section" && item.title === "Informações iniciais");
-
-      let insertIndex = freightFormSchema.findIndex((item, index) => index > initialSectionIndex && item.kind === "field" && item.id === "telefoneSolicitante");
-      if (insertIndex >= 0) insertIndex += 1;
-      else insertIndex = initialSectionIndex + 1;
-
-      freightFormSchema.splice(
-        insertIndex,
-        0,
-        deepClone(urgencyTemplate),
-        deepClone(requestDateTemplate),
-        deepClone(collectionTemplate),
-        deepClone(collectionTimeTemplate)
-      );
+      freightFormSchema.splice(initialSectionIndex + 1, 0, ...initialTemplates.map(deepClone));
       saveFreightFormSchema(false);
     }
-
 
     function ensureGoogleMapsLinkFieldsInSchema() {
       const modeTemplates = [
@@ -13796,8 +14461,11 @@
         return `<select id="${escapeHtml(item.id)}"${required}>${normalizedEditorOptions(item).map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.text)}</option>`).join("")}</select>`;
       }
       const safeType = ["text","number","date","time","datetime-local","email","tel","url"].includes(item.type) ? item.type : "text";
-      const readonly = item.id === "dataSolicitacao" ? " readonly aria-readonly=\"true\"" : "";
-      return `<input id="${escapeHtml(item.id)}" type="${safeType}"${required}${placeholder}${min}${step}${readonly} />`;
+      const loginManaged = item.id === "solicitante" || item.id === "emailSolicitante";
+      const readonly = item.id === "dataSolicitacao" || loginManaged ? " readonly aria-readonly=\"true\"" : "";
+      const className = loginManaged ? " class=\"login-fixed-field\"" : "";
+      const autocomplete = loginManaged ? " autocomplete=\"off\"" : "";
+      return `<input id="${escapeHtml(item.id)}" type="${safeType}"${required}${placeholder}${min}${step}${readonly}${className}${autocomplete} />`;
     }
 
     function renderFreightFormFromSchema(preserveValues = true) {
@@ -13806,8 +14474,14 @@
       const values = preserveValues ? currentFreightFormValues() : {};
       grid.innerHTML = freightFormSchema.filter(item => item.visible !== false).map(item => {
         if (item.kind === "section") return `<div class="form-section-title" data-form-key="${escapeHtml(item.key)}">${escapeHtml(item.title || "Nova seção")}</div>`;
-        const full = item.full ? " class=\"full\"" : "";
-        return `<div${full} data-form-key="${escapeHtml(item.key)}"><label>${escapeHtml(item.label || "Campo")}${item.required ? " *" : ""}</label>${freightFormControlHtml(item)}</div>`;
+        const wrapperClasses = [];
+        if (item.full) wrapperClasses.push("full");
+        if (item.id === "solicitante" || item.id === "emailSolicitante") wrapperClasses.push("logged-user-field");
+        const classAttr = wrapperClasses.length ? ` class="${wrapperClasses.join(" ")}"` : "";
+        const identityHint = item.id === "emailSolicitante"
+          ? '<div id="loggedUserHint" class="full logged-user-hint">Identificando automaticamente o nome e o e-mail do usuário conectado no aplicativo principal.</div>'
+          : "";
+        return `<div${classAttr} data-form-key="${escapeHtml(item.key)}"><label>${escapeHtml(item.label || "Campo")}${item.required ? " *" : ""}</label>${freightFormControlHtml(item)}</div>${identityHint}`;
       }).join("");
       Object.entries(values).forEach(([id, value]) => {
         const element = document.getElementById(id);
@@ -13818,6 +14492,8 @@
       setupInitialDateUrgencyLogic(preserveValues);
       setupGoogleMapsLinkFields();
       setupLocationInputModes(preserveValues);
+      setupFreightAddressAutocomplete();
+      setupLoggedRequesterFromHost(false);
     }
 
     function editorTypeOptions(selected) {
@@ -14056,6 +14732,7 @@
       normalized.dataSolicitacao = String(normalized.dataSolicitacao || normalized.formData?.dataSolicitacao?.value || dateToInputValue(new Date(createdAt))).slice(0, 10);
       normalized.observacoes = String(normalized.observacoes || "").slice(0, 240);
       normalized.numeroOC = String(normalized.numeroOC || normalized.numeroOc || normalized.ordemCompra || "").trim().slice(0, 40);
+      normalized.numeroCTE = String(normalized.numeroCTE || normalized.numeroCte || normalized.cte || "").trim().slice(0, 60);
       if (!Array.isArray(normalized.history) || !normalized.history.length) {
         normalized.history = [{ phase: normalized.status, enteredAt: createdAt, exitedAt: null }];
       }
@@ -14230,6 +14907,7 @@
         ...formValues,
         status: "Não iniciado",
         formularioErrado: false,
+        observacoesResponsavel: "",
         history: [{ phase: "Não iniciado", enteredAt: now, exitedAt: null }]
       };
 
@@ -14764,12 +15442,13 @@
         const trafficBadge = card.querySelector('[data-live="traffic"]');
         const status = card.querySelector('[data-live="status"]');
         if (trafficBadge) {
-          trafficBadge.textContent = traffic.label;
+          trafficBadge.innerHTML = `${freightCardIcon("clock")}${escapeHtml(traffic.label)}`;
           trafficBadge.className = `freight-mini-badge traffic-${traffic.key}`;
           trafficBadge.dataset.live = "traffic";
         }
         if (status) {
-          status.textContent = traffic.key === "red" ? "Atrasado" : traffic.key === "yellow" ? "Em alerta" : traffic.key === "green" ? "No prazo" : "Encerrado";
+          const liveStatusText = traffic.key === "red" ? "Atrasado" : traffic.key === "yellow" ? "Em alerta" : traffic.key === "green" ? "No prazo" : "Encerrado";
+          status.innerHTML = `${freightCardIcon(traffic.key === "green" ? "check" : "alert")}${liveStatusText}`;
           status.className = `meta-status ${traffic.key}`;
           status.dataset.live = "status";
         }
@@ -14782,6 +15461,30 @@
         const averageNode = column.querySelector("[data-phase-average]");
         if (averageNode) averageNode.textContent = average ? formatTimerDuration(average, false) : "0d 00h 00m 00s";
       });
+    }
+
+
+    function freightCardIcon(name) {
+      const icons = {
+        building: '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3M9 9h.01M9 13h.01M9 17h.01M16 15h.01M16 18h.01"/>',
+        clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4"/>',
+        truck: '<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',
+        user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+        file: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 13h6M9 17h6"/>',
+        alert: '<path d="M12 3 2.5 20h19z"/><path d="M12 9v4M12 17h.01"/>',
+        check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+        phase: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="10" cy="18" r="2"/>',
+        calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+        timer: '<path d="M9 2h6M12 6a8 8 0 1 0 8 8"/><path d="M12 10v4l3 2M17 5l2 2"/>',
+        mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+        eye: '<path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/>',
+        edit: '<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
+        note: '<path d="M4 4h16v13H8l-4 4z"/><path d="M8 9h8M8 13h6"/>',
+        save: '<path d="M5 3h12l2 2v16H5z"/><path d="M8 3v6h8V3M8 17h8"/>',
+        route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M7.5 16.5 16.5 7.5M9 6H5v4"/>'
+      };
+      return `<svg class="freight-ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${icons[name] || icons.file}</svg>`;
     }
 
     function createFreightCard(freight) {
@@ -14809,7 +15512,6 @@
       const rm = freight.numeroRM || "-";
       const movement = freight.tipoMovimentacao || freight.tipoFrete || "Solicitação de frete";
       const description = freight.particularidadeObra || freight.materiais || freight.tipoMaterial || "Sem descrição informada.";
-      const responsibleNote = String(freight.observacoes || freight.responsavelSupply || "").trim();
       const urgency = getFreightUrgency(freight);
       const urgencyShort = urgency === "URGENTE" ? "URG" : "NOR";
       const urgencyLabel = urgency === "URGENTE" ? "URGENTE" : "NORMAL";
@@ -14823,42 +15525,35 @@
         <div class="freight-compact-top">
           <div class="freight-compact-title-wrap">
             <div class="freight-compact-id">${escapeHtml(freight.id)}</div>
-            <div class="freight-compact-title">Obra/Depto ${escapeHtml(obra)}</div>
+            <div class="freight-compact-title">${freightCardIcon("building")}<span>Obra/Depto ${escapeHtml(obra)}</span></div>
           </div>
-          <div class="freight-priority-bubble ${urgency === "URGENTE" ? "urgent" : "normal"}">${urgencyShort}</div>
+          <div class="freight-priority-bubble ${urgency === "URGENTE" ? "urgent" : "normal"}">${freightCardIcon(urgency === "URGENTE" ? "alert" : "check")}<span>${urgencyShort}</span></div>
         </div>
 
         <div class="freight-compact-lines">
-          <div><span class="freight-line-icon">#</span><span>RM ${escapeHtml(rm)}</span></div>
-          <div><span class="freight-line-icon">▣</span><span>${escapeHtml(movement)}</span></div>
-          <div><span class="freight-line-icon">●</span><span>${escapeHtml(solicitante)}</span></div>
+          <div><span class="freight-line-icon">${freightCardIcon("clipboard")}</span><span>RM ${escapeHtml(rm)}</span></div>
+          <div><span class="freight-line-icon">${freightCardIcon("truck")}</span><span>${escapeHtml(movement)}</span></div>
+          <div><span class="freight-line-icon">${freightCardIcon("user")}</span><span>${escapeHtml(solicitante)}</span></div>
         </div>
 
-        <div class="freight-compact-description" title="${escapeHtml(description)}">${escapeHtml(description)}</div>
-
-        ${responsibleNote ? `
-          <div class="freight-responsible-note">
-            <b>Obs. responsável</b>
-            <span>${escapeHtml(responsibleNote.slice(0, 150))}${responsibleNote.length > 150 ? "..." : ""}</span>
-          </div>
-        ` : ""}
+        <div class="freight-compact-description" title="${escapeHtml(description)}"><span class="freight-description-icon">${freightCardIcon("file")}</span><span class="freight-description-text">${escapeHtml(description)}</span></div>
 
         <div class="freight-compact-badges">
-          <span class="freight-mini-badge ${urgency === "URGENTE" ? "urgent" : "normal"}">${urgencyLabel}</span>
-          <span class="freight-mini-badge traffic-${traffic.key}" data-live="traffic">${escapeHtml(traffic.label)}</span>
-          <span class="freight-mini-badge phase">${escapeHtml(freight.status)}</span>
-          <span class="freight-mini-badge form-error-badge">FORMULÁRIO ERRADO</span>
+          <span class="freight-mini-badge ${urgency === "URGENTE" ? "urgent" : "normal"}">${freightCardIcon(urgency === "URGENTE" ? "alert" : "check")}${urgencyLabel}</span>
+          <span class="freight-mini-badge traffic-${traffic.key}" data-live="traffic">${freightCardIcon("clock")}${escapeHtml(traffic.label)}</span>
+          <span class="freight-mini-badge phase">${freightCardIcon("phase")}${escapeHtml(freight.status)}</span>
+          <span class="freight-mini-badge form-error-badge">${freightCardIcon("alert")}FORMULÁRIO ERRADO</span>
         </div>
 
         <div class="freight-compact-meta">
-          <span>Prazo atendimento: <strong>${deadlineText}</strong></span>
-          <span class="meta-status ${traffic.key}" data-live="status">${statusText}</span>
+          <span>${freightCardIcon("calendar")}<span>Prazo: <strong>${deadlineText}</strong></span></span>
+          <span class="meta-status ${traffic.key}" data-live="status">${freightCardIcon(traffic.key === "green" ? "check" : "alert")}${statusText}</span>
         </div>
 
         <div class="freight-compact-timer">
-          <div><span>Na fase agora</span><strong data-live="visit">${formatTimerDuration(getCurrentStageVisitMs(freight), false)}</strong></div>
-          <div><span>Acumulado fase</span><strong data-live="phase">${getCurrentPhaseTime(freight)}</strong></div>
-          <div><span>Total acumulado</span><strong data-live="total">${getTotalProcessTime(freight)}</strong></div>
+          <div><span class="freight-timer-label">${freightCardIcon("timer")}Na fase agora</span><strong data-live="visit">${formatTimerDuration(getCurrentStageVisitMs(freight), false)}</strong></div>
+          <div><span class="freight-timer-label">${freightCardIcon("clock")}Acumulado fase</span><strong data-live="phase">${getCurrentPhaseTime(freight)}</strong></div>
+          <div><span class="freight-timer-label">${freightCardIcon("route")}Total acumulado</span><strong data-live="total">${getTotalProcessTime(freight)}</strong></div>
         </div>
 
         ${showOcField ? `
@@ -14872,7 +15567,7 @@
         ` : ""}
 
         <div class="freight-phase-selector-wrap">
-          <label>Selecionar fase</label>
+          <label>${freightCardIcon("phase")}Selecionar fase</label>
           <select class="phase-select" aria-label="Selecionar fase da solicitação ${escapeHtml(freight.id)}">
             ${phaseOptions}
           </select>
@@ -14880,14 +15575,14 @@
 
         <label class="freight-form-error-check">
           <input class="form-error-checkbox" type="checkbox" ${freight.formularioErrado ? "checked" : ""} />
-          <span>Formulário veio errado</span>
+          <span>${freightCardIcon("alert")}Formulário veio errado</span>
         </label>
 
         <div class="freight-compact-actions">
-          <a class="btn-email btn-small" href="${escapeHtml(buildOutlookComposeUrl(freight))}" target="_blank" rel="noopener noreferrer" data-action="email-quote" title="Abrir cotação no Outlook">✉ Enviar por e-mail</a>
-          <a class="btn-email btn-email-correction btn-small" href="${escapeHtml(buildOutlookCorrectionUrl(freight))}" target="_blank" rel="noopener noreferrer" data-action="email-correction" title="Enviar solicitação de correção ao solicitante">⚠ Enviar e-mail de correção</a>
-          <button class="btn-secondary btn-small" type="button" data-action="details">Ver detalhes</button>
-          <button class="btn-secondary btn-small" type="button" data-action="edit">Editar</button>
+          <a class="btn-email btn-small" href="${escapeHtml(buildOutlookComposeUrl(freight))}" target="_blank" rel="noopener noreferrer" data-action="email-quote" title="Abrir cotação no Outlook">${freightCardIcon("mail")}Enviar por e-mail</a>
+          <a class="btn-email btn-email-correction btn-small" href="${escapeHtml(buildOutlookCorrectionUrl(freight))}" target="_blank" rel="noopener noreferrer" data-action="email-correction" title="Enviar solicitação de correção ao solicitante">${freightCardIcon("alert")}Enviar correção</a>
+          <button class="btn-secondary btn-small" type="button" data-action="details">${freightCardIcon("eye")}Ver detalhes</button>
+          <button class="btn-secondary btn-small" type="button" data-action="edit">${freightCardIcon("edit")}Editar</button>
         </div>
       `;
 
@@ -14999,11 +15694,11 @@
       });
 
       card.addEventListener("click", event => {
-        if (event.target.closest("button, select, option, input, label")) return;
+        if (event.target.closest("button, select, option, input, textarea, label")) return;
         openDetails(freight.id);
       });
       card.addEventListener("keydown", event => {
-        if ((event.key === "Enter" || event.key === " ") && !event.target.closest("button, select, input, label")) {
+        if ((event.key === "Enter" || event.key === " ") && !event.target.closest("button, select, input, textarea, label")) {
           event.preventDefault();
           openDetails(freight.id);
         }
@@ -15189,6 +15884,7 @@
       if (!freight) return;
 
       const traffic = getTrafficStatus(freight);
+      const responsibleNote = String(freight.observacoesResponsavel || "").slice(0, 240);
       document.getElementById("modalTitle").innerText = `${freight.id} - ${freight.obra}`;
 
       const historyRows = freight.history.map(item => `
@@ -15223,6 +15919,19 @@
             <strong class="details-kpi-value details-kpi-value-money" title="${escapeHtml(formatCurrency(freight.valorAprovado))}">${escapeHtml(formatCurrency(freight.valorAprovado))}</strong>
           </article>
         </div>
+
+        <section class="responsible-note-detail-panel" aria-labelledby="responsible-note-detail-title">
+          <div class="responsible-note-detail-heading">
+            <div class="responsible-note-detail-title" id="responsible-note-detail-title">${freightCardIcon("note")}OBS do Responsável pelo frete</div>
+            <span class="responsible-note-detail-status ${responsibleNote.trim() ? "saved" : ""}" id="detailResponsibleNoteStatus">${responsibleNote.trim() ? "Salvo" : "Sem observação"}</span>
+          </div>
+          <p class="responsible-note-detail-help">Campo operacional para preenchimento pelo responsável do frete. Esta observação fica separada das informações enviadas pelo solicitante e aparece no relatório final.</p>
+          <textarea id="detailResponsibleNoteInput" class="responsible-note-detail-input" maxlength="240" placeholder="Insira as observações operacionais do responsável pelo frete...">${escapeHtml(responsibleNote)}</textarea>
+          <div class="responsible-note-detail-footer">
+            <span class="responsible-note-detail-counter ${responsibleNote.length >= 240 ? "at-limit" : responsibleNote.length >= 200 ? "near-limit" : ""}" id="detailResponsibleNoteCounter">${responsibleNote.length}/240</span>
+            <button class="responsible-note-save-button" type="button" id="detailResponsibleNoteSave">${freightCardIcon("save")}Salvar observação</button>
+          </div>
+        </section>
 
         <div class="panel" style="box-shadow:none; border:1px solid #e5e7eb;">
           <h2>Dados da solicitação</h2>
@@ -15272,7 +15981,7 @@
             ${detail("Materiais / Detalhes da carga", freight.materiais || freight.tipoMaterial || "-", "full")}
             ${detail("Dimensões / Informações complementares", freight.dimensoesCarga || "-", "full")}
             ${detail("Formulário veio errado", freight.formularioErrado ? "SIM" : "NÃO")}
-            ${detail("Observações / erros encontrados", freight.observacoes || "-", "full")}
+            ${detail("Observações / informações do formulário", freight.observacoes || "-", "full")}
             ${Object.values(freight.customFields || {}).map(field => detail(field.label || "Campo adicional", field.value || "-", field.type === "textarea" ? "full" : "")).join("")}
           </div>
         </div>
@@ -15295,7 +16004,61 @@
         </div>
       `;
 
+      setupDetailResponsibleNoteEditor(freight);
       document.getElementById("detailsModal").classList.add("active");
+    }
+
+    function setupDetailResponsibleNoteEditor(freight) {
+      const input = document.getElementById("detailResponsibleNoteInput");
+      const status = document.getElementById("detailResponsibleNoteStatus");
+      const counter = document.getElementById("detailResponsibleNoteCounter");
+      const saveButton = document.getElementById("detailResponsibleNoteSave");
+      if (!input || !freight) return;
+
+      let saveTimer = null;
+      const updateCounter = () => {
+        if (input.value.length > 240) input.value = input.value.slice(0, 240);
+        const length = input.value.length;
+        if (counter) {
+          counter.textContent = `${length}/240`;
+          counter.classList.toggle("near-limit", length >= 200 && length < 240);
+          counter.classList.toggle("at-limit", length >= 240);
+        }
+      };
+
+      const markPending = () => {
+        if (!status) return;
+        status.textContent = "Alteração pendente";
+        status.classList.remove("saved");
+        status.classList.add("pending");
+      };
+
+      const persist = () => {
+        window.clearTimeout(saveTimer);
+        const value = String(input.value || "").slice(0, 240);
+        input.value = value;
+        freight.observacoesResponsavel = value;
+        freight.observacoesResponsavelAtualizadaEm = new Date().toISOString();
+        saveFreights();
+        updateCounter();
+        if (status) {
+          status.textContent = value.trim() ? "Salvo" : "Sem observação";
+          status.classList.toggle("saved", Boolean(value.trim()));
+          status.classList.remove("pending");
+        }
+        try { renderFreightReport(); } catch (error) { console.error("Erro ao atualizar a observação do responsável no relatório:", error); }
+      };
+
+      input.addEventListener("input", () => {
+        updateCounter();
+        markPending();
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(persist, 650);
+      });
+      input.addEventListener("change", persist);
+      input.addEventListener("blur", persist);
+      saveButton?.addEventListener("click", persist);
+      updateCounter();
     }
 
     function detail(label, value, cssClass = "") {
@@ -15408,7 +16171,7 @@
         if (mapFreightRemaining) mapFreightRemaining.textContent = "-";
         if (mapFreightPhaseTime) mapFreightPhaseTime.textContent = "-";
         const frame = document.getElementById("googleRouteFrame");
-        if (frame) frame.src = "https://www.google.com/maps?q=Brasil&output=embed";
+        if (frame) frame.src = GOOGLE_MAPS_EMBED_FALLBACK_URL;
         updateMapLocationLinks(null);
         updateDeliveryTracker(null);
         return;
@@ -15490,7 +16253,7 @@
       const destination = getFreightMapLocation(freight, "destination");
 
       if (!origin || !destination) {
-        frame.src = "https://www.google.com/maps?q=Brasil&output=embed";
+        frame.src = GOOGLE_MAPS_EMBED_FALLBACK_URL;
         return;
       }
 
@@ -15776,19 +16539,103 @@
     }
 
 
+    function isValidGoogleMapsApiKey(value) {
+      const key = String(value || "").trim();
+      if (!key || key.includes("COLE_SUA_CHAVE")) return false;
+      if (/^https?:\/\//i.test(key) || key.includes("google.com/maps") || key.includes("output=embed")) return false;
+      if (/\s/.test(key)) return false;
+      return /^AIza[0-9A-Za-z_-]{20,}$/.test(key);
+    }
+
+    function hasConfiguredGoogleMapsKey() {
+      return isValidGoogleMapsApiKey(GOOGLE_MAPS_API_KEY);
+    }
+
+    function setGooglePlacesConfigStatus(message, type = "") {
+      const status = document.getElementById("googlePlacesConfigStatus");
+      if (!status) return;
+      status.textContent = message;
+      status.className = `google-places-config-status ${type}`.trim();
+    }
+
+    function setupGooglePlacesConfiguration() {
+      const keyInput = document.getElementById("googlePlacesApiKeyInput");
+      const activateButton = document.getElementById("activateGooglePlacesButton");
+      const clearButton = document.getElementById("clearGooglePlacesKeyButton");
+      if (!keyInput || !activateButton || !clearButton) return;
+
+      if (hasConfiguredGoogleMapsKey()) {
+        keyInput.value = GOOGLE_MAPS_API_KEY;
+        setGooglePlacesConfigStatus("Chave válida salva. Carregando pesquisa e sugestões do Google Maps...", "loading");
+      } else {
+        if (GOOGLE_MAPS_API_KEY && GOOGLE_MAPS_API_KEY !== GOOGLE_MAPS_API_KEY_FALLBACK) {
+          try { localStorage.removeItem(GOOGLE_MAPS_API_KEY_STORAGE); } catch (error) {}
+          GOOGLE_MAPS_API_KEY = GOOGLE_MAPS_API_KEY_FALLBACK;
+        }
+        keyInput.value = "";
+        setGooglePlacesConfigStatus("Cole uma chave alfanumérica válida da Google Maps Platform. Links como google.com/maps?...&output=embed não funcionam como chave.", "error");
+      }
+
+      if (activateButton.dataset.bound !== "1") {
+        activateButton.dataset.bound = "1";
+        activateButton.addEventListener("click", () => {
+          const key = String(keyInput.value || "").trim();
+          if (/^https?:\/\//i.test(key) || key.includes("google.com/maps") || key.includes("output=embed")) {
+            setGooglePlacesConfigStatus("Esse conteúdo é um link de mapa incorporado, não uma chave de API. Clique em ‘Criar chave no Google Cloud’ e cole aqui a chave alfanumérica gerada.", "error");
+            keyInput.focus();
+            return;
+          }
+          if (!isValidGoogleMapsApiKey(key)) {
+            setGooglePlacesConfigStatus("Informe uma chave válida da Google Maps Platform, normalmente iniciada por AIza.", "error");
+            keyInput.focus();
+            return;
+          }
+          try {
+            localStorage.setItem(GOOGLE_MAPS_API_KEY_STORAGE, key);
+          } catch (error) {
+            setGooglePlacesConfigStatus("Não foi possível salvar a chave neste navegador.", "error");
+            return;
+          }
+          const keyChanged = hasConfiguredGoogleMapsKey() && GOOGLE_MAPS_API_KEY !== key;
+          GOOGLE_MAPS_API_KEY = key;
+          setGooglePlacesConfigStatus("Ativando Google Maps e Places...", "loading");
+          if (keyChanged && googleMapsLoaded) {
+            window.location.reload();
+            return;
+          }
+          activateGoogleMapsIfConfigured();
+        });
+      }
+
+      if (clearButton.dataset.bound !== "1") {
+        clearButton.dataset.bound = "1";
+        clearButton.addEventListener("click", () => {
+          try { localStorage.removeItem(GOOGLE_MAPS_API_KEY_STORAGE); } catch (error) {}
+          GOOGLE_MAPS_API_KEY = GOOGLE_MAPS_API_KEY_FALLBACK;
+          keyInput.value = "";
+          setGooglePlacesConfigStatus("Chave removida. As sugestões online do Google Maps estão desativadas.");
+          if (googleMapsLoaded || document.getElementById("googleMapsScript")) window.location.reload();
+        });
+      }
+    }
+
     function activateGoogleMapsIfConfigured() {
-      if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY.includes("COLE_SUA_CHAVE")) {
-        setGoogleStatus("Google Maps não ativado. Edite a constante GOOGLE_MAPS_API_KEY no HTML para carregar o mapa real.", "error");
+      if (!hasConfiguredGoogleMapsKey()) {
+        setGoogleStatus("Google Maps não ativado. Configure a chave na seção Endereços do formulário.", "error");
+        setGooglePlacesConfigStatus("Configure a chave para pesquisar fornecedores, empresas, locais e endereços no Google Maps.");
+        setupFreightAddressAutocomplete();
         return;
       }
+      setGooglePlacesConfigStatus("Carregando pesquisa do Google Maps...", "loading");
       loadGoogleMaps(GOOGLE_MAPS_API_KEY);
     }
 
     function setGoogleStatus(message, type = "") {
       const status = document.getElementById("googleApiStatus");
-      if (!status) return;
-      status.className = `google-api-status ${type}`;
-      status.innerHTML = message;
+      if (status) {
+        status.className = `google-api-status ${type}`;
+        status.innerHTML = message;
+      }
     }
 
     function loadGoogleMaps(apiKey) {
@@ -15796,24 +16643,37 @@
 
       googleMapsLoading = true;
       setGoogleStatus("Carregando Google Maps...", "");
+      setGooglePlacesConfigStatus("Carregando Maps JavaScript API e Places API...", "loading");
 
-      window.initFreightGoogleMap = function() {
+      window.initFreightGoogleMap = async function() {
         googleMapsLoaded = true;
         googleMapsLoading = false;
-        initializeGoogleMap();
-        setGoogleStatus("Google Maps ativo. Rotas reais serão exibidas quando houver fretes no Kanban.", "active");
-        renderMap();
+        try {
+          await google.maps.importLibrary("places");
+          initializeGoogleMap();
+          setupFreightAddressAutocomplete();
+          setGoogleStatus("Google Maps ativo. Rotas reais e sugestões de endereço estão disponíveis.", "active");
+          setGooglePlacesConfigStatus("Google Maps ativo. As sugestões agora vêm do Google Maps e incluem fornecedores, empresas, obras, estabelecimentos e endereços.", "active");
+          renderMap();
+        } catch (error) {
+          googleMapsLoaded = false;
+          setGoogleStatus("Google Maps carregou, mas a Places API não está disponível. Verifique se Places API (New) está habilitada.", "error");
+          setGooglePlacesConfigStatus("Places API (New) não disponível para esta chave.", "error");
+        }
       };
 
+      const existingScript = document.getElementById("googleMapsScript");
+      if (existingScript) existingScript.remove();
       const script = document.createElement("script");
       script.id = "googleMapsScript";
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&callback=initFreightGoogleMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&loading=async&callback=initFreightGoogleMap&libraries=places&language=pt-BR&region=BR&v=weekly`;
       script.async = true;
       script.defer = true;
       script.onerror = function() {
         googleMapsLoading = false;
         googleMapsLoaded = false;
         setGoogleStatus("Erro ao carregar Google Maps. Verifique a chave, faturamento e permissões das APIs.", "error");
+        setGooglePlacesConfigStatus("Não foi possível carregar o Google Maps. Confirme a chave, o faturamento e as APIs habilitadas.", "error");
       };
 
       document.head.appendChild(script);
@@ -16723,6 +17583,7 @@
           freight.id,
           freight.numeroRM,
           freight.numeroOC,
+          freight.numeroCTE,
           getFreightReportObra(freight),
           freight.solicitante,
           freight.emailSolicitante,
@@ -16733,7 +17594,8 @@
           freight.tipoVeiculo,
           getFreightReportCarrier(freight),
           getFreightReportPayment(freight),
-          freight.observacoes
+          freight.observacoes,
+          freight.observacoesResponsavel
         ].join(" ").toLowerCase().includes(search));
       }
       return rows.sort((a, b) => new Date(getFreightDeliveredAt(b) || 0) - new Date(getFreightDeliveredAt(a) || 0));
@@ -16762,6 +17624,12 @@
             <td><span class="freight-report-code">${escapeHtml(freight.id || "-")}</span></td>
             <td><span class="freight-report-main">${escapeHtml(freight.numeroRM || "-")}</span></td>
             <td><span class="freight-report-main">${escapeHtml(freight.numeroOC || "-")}</span></td>
+            <td>
+              <div class="freight-cte-input-wrap">
+                <input class="freight-cte-input" type="text" maxlength="60" value="${escapeHtml(freight.numeroCTE || "")}" placeholder="Inserir Nº do CTE" autocomplete="off" data-freight-cte-id="${escapeHtml(freight.id)}" aria-label="Número do CTE da solicitação ${escapeHtml(freight.id)}">
+                <span class="freight-cte-save-status ${freight.numeroCTE ? "saved" : "pending"}" data-freight-cte-status="${escapeHtml(freight.id)}">${freight.numeroCTE ? "Salvo" : "Pendente"}</span>
+              </div>
+            </td>
             <td><span class="freight-report-main">${escapeHtml(getFreightReportObra(freight))}</span></td>
             <td><span class="freight-report-main">${escapeHtml(freight.solicitante || "Não informado")}</span><span class="freight-report-sub">${escapeHtml(freight.emailSolicitante || "")}</span></td>
             <td><span class="freight-report-badge ${urgency === "URGENTE" ? "urgent" : "normal"}">${urgency}</span></td>
@@ -16778,9 +17646,51 @@
             <td>${escapeHtml(formatDate(getFreightDeliveredAt(freight)))}</td>
             <td><span class="freight-report-sla">${escapeHtml(getTotalProcessTime(freight))}</span></td>
             <td><span class="freight-report-badge ${isWrong ? "error" : "ok"}">${isWrong ? "COM ERRO" : "CORRETA"}</span></td>
-            <td><span class="freight-report-observation">${escapeHtml(freight.observacoes || "-")}</span></td>
+            <td><span class="freight-report-observation">${escapeHtml(freight.observacoesResponsavel || "-")}</span></td>
           </tr>`;
       }).join("");
+      bindFreightReportCteInputs();
+    }
+
+    function updateFreightReportCte(freightId, rawValue, input) {
+      const freight = freights.find(item => String(item.id) === String(freightId));
+      if (!freight) return;
+      const value = String(rawValue || "").trim().slice(0, 60);
+      freight.numeroCTE = value;
+      saveFreights();
+      const status = document.querySelector(`[data-freight-cte-status="${CSS.escape(String(freightId))}"]`);
+      if (status) {
+        status.textContent = value ? "Salvo" : "Pendente";
+        status.className = `freight-cte-save-status ${value ? "saved" : "pending"}`;
+      }
+      if (input && input.value !== value && input.value.trim().length > 60) input.value = value;
+    }
+
+    function bindFreightReportCteInputs() {
+      document.querySelectorAll("#freightReportBody .freight-cte-input").forEach(input => {
+        if (input.dataset.bound === "1") return;
+        input.dataset.bound = "1";
+        let saveTimer = null;
+        const save = () => updateFreightReportCte(input.dataset.freightCteId, input.value, input);
+        input.addEventListener("input", () => {
+          const status = document.querySelector(`[data-freight-cte-status="${CSS.escape(String(input.dataset.freightCteId || ""))}"]`);
+          if (status) {
+            status.textContent = "Salvando";
+            status.className = "freight-cte-save-status pending";
+          }
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(save, 350);
+        });
+        input.addEventListener("change", save);
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            save();
+            input.blur();
+          }
+        });
+      });
     }
 
     function bindFreightReportControls() {
@@ -16819,6 +17729,7 @@
           "Solicitação": freight.id || "",
           "Nº RM": freight.numeroRM || "",
           "Nº da OC": freight.numeroOC || "",
+          "Nº do CTE": freight.numeroCTE || "",
           "Obra / departamento": getFreightReportObra(freight),
           "Solicitante": freight.solicitante || "",
           "E-mail do solicitante": freight.emailSolicitante || "",
@@ -16837,7 +17748,7 @@
           "Data da entrega": formatDate(getFreightDeliveredAt(freight)),
           "SLA total": getTotalProcessTime(freight),
           "Qualidade da solicitação": freight.formularioErrado === true ? "Com erro" : "Correta",
-          "Observações": freight.observacoes || ""
+          "OBS do Responsável": freight.observacoesResponsavel || ""
         };
       });
     }
@@ -17049,6 +17960,486 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
+
+
+    /* Autocomplete de endereços do formulário de fretes */
+    const FREIGHT_ADDRESS_RECENT_KEY = "gestao_fretes_enderecos_recentes_v1";
+    const freightAddressAutocompleteState = {
+      timers: new Map(),
+      controllers: new Map(),
+      activeIndex: new Map(),
+      cache: new Map(),
+      locationBias: null,
+      googleSessionTokens: new Map(),
+      googleRequestIds: new Map()
+    };
+
+    function normalizeAddressSearch(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function getFreightAddressConfigs() {
+      return [
+        { inputId: "enderecoColeta", cepId: "cepColeta", label: "coleta" },
+        { inputId: "enderecoEntrega", cepId: "cepEntrega", label: "entrega" }
+      ];
+    }
+
+    function getAddressHelper(inputId) {
+      return document.getElementById(`${inputId}AddressHelper`);
+    }
+
+    function setAddressHelper(inputId, message, type = "") {
+      const helper = getAddressHelper(inputId);
+      if (!helper) return;
+      helper.textContent = message;
+      helper.className = `address-autocomplete-helper ${type}`.trim();
+    }
+
+    function getAddressSuggestionList(inputId) {
+      return document.getElementById(`${inputId}AddressSuggestions`);
+    }
+
+    function hideAddressSuggestions(inputId) {
+      const input = document.getElementById(inputId);
+      const list = getAddressSuggestionList(inputId);
+      if (list) {
+        list.hidden = true;
+        list.innerHTML = "";
+      }
+      if (input) input.setAttribute("aria-expanded", "false");
+      freightAddressAutocompleteState.activeIndex.set(inputId, -1);
+    }
+
+    function loadRecentFreightAddresses() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(FREIGHT_ADDRESS_RECENT_KEY));
+        return Array.isArray(stored) ? stored : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function rememberFreightAddress(suggestion) {
+      const label = String(suggestion?.label || "").trim();
+      if (!label) return;
+      const recent = loadRecentFreightAddresses().filter(item => normalizeAddressSearch(item.label) !== normalizeAddressSearch(label));
+      recent.unshift({
+        label,
+        postcode: String(suggestion.postcode || ""),
+        lat: Number.isFinite(Number(suggestion.lat)) ? Number(suggestion.lat) : null,
+        lon: Number.isFinite(Number(suggestion.lon)) ? Number(suggestion.lon) : null,
+        source: "recent"
+      });
+      localStorage.setItem(FREIGHT_ADDRESS_RECENT_KEY, JSON.stringify(recent.slice(0, 20)));
+    }
+
+    function localFreightAddressSuggestions(query, config) {
+      const normalizedQuery = normalizeAddressSearch(query);
+      if (!normalizedQuery) return [];
+      const words = normalizedQuery.split(" ").filter(Boolean);
+      const candidates = [];
+
+      const addCandidate = (label, postcode = "", source = "salvo") => {
+        const cleanLabel = String(label || "").trim();
+        if (!cleanLabel) return;
+        const normalizedLabel = normalizeAddressSearch(cleanLabel);
+        const matches = normalizedLabel.includes(normalizedQuery) || words.every(word => normalizedLabel.includes(word));
+        if (!matches) return;
+        candidates.push({ label: cleanLabel, postcode: String(postcode || ""), source });
+      };
+
+      loadRecentFreightAddresses().forEach(item => addCandidate(item.label, item.postcode, "recente"));
+      freights.forEach(freight => {
+        const collectionAddress = freight.enderecoColeta || freight.origem;
+        const deliveryAddress = freight.enderecoEntrega || freight.destino;
+        const supplierName = String(freight.fornecedorNome || freight.transportadora || freight.fornecedor || "").trim();
+        addCandidate(collectionAddress, freight.cepColeta, "histórico de fretes");
+        addCandidate(deliveryAddress, freight.cepEntrega, "histórico de fretes");
+        if (supplierName && collectionAddress) addCandidate(`${supplierName} - ${collectionAddress}`, freight.cepColeta, "fornecedor já utilizado");
+        if (supplierName && deliveryAddress) addCandidate(`${supplierName} - ${deliveryAddress}`, freight.cepEntrega, "fornecedor já utilizado");
+      });
+
+      const seen = new Set();
+      return candidates.filter(item => {
+        const key = normalizeAddressSearch(item.label);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 6);
+    }
+
+    function formatPhotonAddress(feature) {
+      const props = feature?.properties || {};
+      const parts = [];
+      const pushUnique = value => {
+        const clean = String(value || "").trim();
+        if (!clean) return;
+        const normalized = normalizeAddressSearch(clean);
+        if (!parts.some(part => normalizeAddressSearch(part) === normalized)) parts.push(clean);
+      };
+
+      const street = String(props.street || "").trim();
+      const houseNumber = String(props.housenumber || "").trim();
+      const name = String(props.name || "").trim();
+      if (name && normalizeAddressSearch(name) !== normalizeAddressSearch(street)) pushUnique(name);
+      if (street) pushUnique(houseNumber ? `${street}, ${houseNumber}` : street);
+      else if (houseNumber && name) pushUnique(`${name}, ${houseNumber}`);
+      pushUnique(props.district || props.suburb || props.locality);
+      pushUnique(props.city || props.town || props.village || props.municipality || props.county);
+      pushUnique(props.state);
+      pushUnique(props.postcode);
+      pushUnique(props.country || "Brasil");
+
+      const coordinates = Array.isArray(feature?.geometry?.coordinates) ? feature.geometry.coordinates : [];
+      return {
+        label: parts.join(" - ") || name,
+        postcode: String(props.postcode || ""),
+        lat: Number(coordinates[1]),
+        lon: Number(coordinates[0]),
+        source: "sugestão online"
+      };
+    }
+
+    function mergeAddressSuggestions(localItems, remoteItems) {
+      const seen = new Set();
+      return [...localItems, ...remoteItems].filter(item => {
+        const key = normalizeAddressSearch(item?.label);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 8);
+    }
+
+    function selectFreightAddressSuggestion(config, suggestion) {
+      const input = document.getElementById(config.inputId);
+      const cepInput = document.getElementById(config.cepId);
+      if (!input) return;
+
+      input.value = suggestion.label || input.value;
+      input.classList.add("address-selected");
+      input.dataset.selectedAddress = input.value;
+      if (Number.isFinite(Number(suggestion.lat)) && Number.isFinite(Number(suggestion.lon))) {
+        input.dataset.latitude = String(suggestion.lat);
+        input.dataset.longitude = String(suggestion.lon);
+        freightAddressAutocompleteState.locationBias = { lat: Number(suggestion.lat), lon: Number(suggestion.lon) };
+      }
+      if (cepInput && suggestion.postcode) cepInput.value = suggestion.postcode;
+
+      rememberFreightAddress(suggestion);
+      hideAddressSuggestions(config.inputId);
+      setAddressHelper(config.inputId, "Endereço selecionado. Revise o número e o complemento antes de salvar.", "success");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      if (cepInput && suggestion.postcode) cepInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function renderFreightAddressSuggestions(config, suggestions) {
+      const input = document.getElementById(config.inputId);
+      const list = getAddressSuggestionList(config.inputId);
+      if (!input || !list) return;
+      list.innerHTML = "";
+      freightAddressAutocompleteState.activeIndex.set(config.inputId, -1);
+
+      if (!suggestions.length) {
+        hideAddressSuggestions(config.inputId);
+        setAddressHelper(config.inputId, "Nenhuma sugestão encontrada. Tente o nome do fornecedor/local junto com a cidade ou UF.");
+        return;
+      }
+
+      suggestions.forEach((suggestion, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "address-suggestion-button";
+        button.setAttribute("role", "option");
+        button.dataset.suggestionIndex = String(index);
+        button.innerHTML = `
+          <span class="address-suggestion-icon">MAP</span>
+          <span class="address-suggestion-copy">
+            <strong>${escapeHtml(suggestion.label)}</strong>
+            <span class="${suggestion.source === "Google Maps" ? "google-source" : ""}">${escapeHtml(suggestion.source || "endereço sugerido")}${suggestion.postcode ? ` · CEP ${escapeHtml(suggestion.postcode)}` : ""}</span>
+          </span>`;
+        button.addEventListener("mousedown", event => event.preventDefault());
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          if (suggestion.placePrediction) selectGooglePlacePrediction(config, suggestion);
+          else selectFreightAddressSuggestion(config, suggestion);
+        });
+        list.appendChild(button);
+      });
+
+      list.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      setAddressHelper(config.inputId, `${suggestions.length} opção(ões) encontrada(s). Pode ser endereço, fornecedor, empresa ou local. Use as setas e Enter para selecionar.`, "success");
+    }
+
+    function moveFreightAddressSuggestionSelection(config, direction) {
+      const list = getAddressSuggestionList(config.inputId);
+      if (!list || list.hidden) return;
+      const buttons = Array.from(list.querySelectorAll(".address-suggestion-button"));
+      if (!buttons.length) return;
+      let index = Number(freightAddressAutocompleteState.activeIndex.get(config.inputId) ?? -1);
+      index = (index + direction + buttons.length) % buttons.length;
+      freightAddressAutocompleteState.activeIndex.set(config.inputId, index);
+      buttons.forEach((button, buttonIndex) => button.classList.toggle("active", buttonIndex === index));
+      buttons[index].scrollIntoView({ block: "nearest" });
+    }
+
+    async function selectGooglePlacePrediction(config, suggestion) {
+      const prediction = suggestion?.placePrediction;
+      if (!prediction || typeof prediction.toPlace !== "function") {
+        selectFreightAddressSuggestion(config, suggestion);
+        return;
+      }
+      setAddressHelper(config.inputId, "Carregando dados completos do local no Google Maps...", "searching");
+      try {
+        const place = prediction.toPlace();
+        await place.fetchFields({ fields: ["displayName", "formattedAddress", "location", "addressComponents"] });
+        const placeName = String(place.displayName || "").trim();
+        const formattedAddress = String(place.formattedAddress || "").trim();
+        const label = placeName && formattedAddress && normalizeAddressSearch(placeName) !== normalizeAddressSearch(formattedAddress)
+          ? `${placeName} - ${formattedAddress}`
+          : String(formattedAddress || placeName || suggestion.label || "").trim();
+        const postal = Array.isArray(place.addressComponents)
+          ? place.addressComponents.find(component => Array.isArray(component.types) && component.types.includes("postal_code"))
+          : null;
+        const postcode = String(postal?.longText || postal?.shortText || "").trim();
+        const location = place.location;
+        selectFreightAddressSuggestion(config, {
+          label,
+          postcode,
+          lat: typeof location?.lat === "function" ? location.lat() : Number(location?.lat),
+          lon: typeof location?.lng === "function" ? location.lng() : Number(location?.lng),
+          source: "Google Maps"
+        });
+        const placesLibrary = await google.maps.importLibrary("places");
+        if (placesLibrary?.AutocompleteSessionToken) {
+          freightAddressAutocompleteState.googleSessionTokens.set(config.inputId, new placesLibrary.AutocompleteSessionToken());
+        }
+      } catch (error) {
+        setAddressHelper(config.inputId, "O Google Maps encontrou o local, mas não conseguiu carregar os detalhes. Tente selecionar novamente.", "error");
+      }
+    }
+
+    async function fetchFreightAddressSuggestions(config, query) {
+      const normalizedQuery = normalizeAddressSearch(query);
+      if (normalizedQuery.length < 3) {
+        hideAddressSuggestions(config.inputId);
+        setAddressHelper(config.inputId, "Digite pelo menos 3 caracteres para pesquisar no Google Maps.");
+        return;
+      }
+
+      const localItems = localFreightAddressSuggestions(query, config);
+      if (!hasConfiguredGoogleMapsKey()) {
+        if (localItems.length) {
+          renderFreightAddressSuggestions(config, localItems);
+          setAddressHelper(config.inputId, "Exibindo locais já utilizados. Configure a chave acima para pesquisar no Google Maps.");
+        } else {
+          hideAddressSuggestions(config.inputId);
+          setAddressHelper(config.inputId, "Configure a chave acima para pesquisar fornecedores, empresas, locais e endereços no Google Maps.", "error");
+        }
+        return;
+      }
+
+      if (!googleMapsLoaded || !window.google?.maps?.importLibrary) {
+        if (localItems.length) renderFreightAddressSuggestions(config, localItems);
+        setAddressHelper(config.inputId, "Carregando pesquisa do Google Maps...", "searching");
+        activateGoogleMapsIfConfigured();
+        return;
+      }
+
+      const requestId = Number(freightAddressAutocompleteState.googleRequestIds.get(config.inputId) || 0) + 1;
+      freightAddressAutocompleteState.googleRequestIds.set(config.inputId, requestId);
+      setAddressHelper(config.inputId, "Pesquisando no Google Maps por endereços, fornecedores, empresas, obras e locais...", "searching");
+
+      try {
+        const { AutocompleteSessionToken, AutocompleteSuggestion } = await google.maps.importLibrary("places");
+        if (!AutocompleteSuggestion?.fetchAutocompleteSuggestions) throw new Error("Google Place Autocomplete indisponível");
+        let token = freightAddressAutocompleteState.googleSessionTokens.get(config.inputId);
+        if (!token && AutocompleteSessionToken) {
+          token = new AutocompleteSessionToken();
+          freightAddressAutocompleteState.googleSessionTokens.set(config.inputId, token);
+        }
+        const request = {
+          input: query,
+          language: "pt-BR",
+          region: "br",
+          includedRegionCodes: ["br"],
+          sessionToken: token
+        };
+        const bias = freightAddressAutocompleteState.locationBias;
+        if (bias && Number.isFinite(bias.lat) && Number.isFinite(bias.lon)) {
+          request.origin = { lat: bias.lat, lng: bias.lon };
+        }
+        const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+        if (freightAddressAutocompleteState.googleRequestIds.get(config.inputId) !== requestId) return;
+        const googleItems = (Array.isArray(suggestions) ? suggestions : [])
+          .map(item => item?.placePrediction)
+          .filter(Boolean)
+          .map(prediction => ({
+            label: prediction.text?.toString?.() || "Local encontrado",
+            source: "Google Maps",
+            postcode: "",
+            placePrediction: prediction
+          }));
+        const finalItems = googleItems.length ? googleItems : localItems;
+        renderFreightAddressSuggestions(config, finalItems);
+        if (googleItems.length) {
+          setAddressHelper(config.inputId, `${googleItems.length} sugestão(ões) encontrada(s) no Google Maps. Selecione uma opção para preencher o endereço completo.`, "success");
+        }
+      } catch (error) {
+        if (localItems.length) {
+          renderFreightAddressSuggestions(config, localItems);
+          setAddressHelper(config.inputId, "A pesquisa do Google Maps não respondeu. Exibindo locais já utilizados.", "error");
+        } else {
+          hideAddressSuggestions(config.inputId);
+          setAddressHelper(config.inputId, "Não foi possível pesquisar no Google Maps. Verifique a chave e se Places API (New) está habilitada.", "error");
+        }
+      }
+    }
+
+    function scheduleFreightAddressSuggestions(config) {
+      const input = document.getElementById(config.inputId);
+      if (!input) return;
+      const previousTimer = freightAddressAutocompleteState.timers.get(config.inputId);
+      if (previousTimer) window.clearTimeout(previousTimer);
+      const timer = window.setTimeout(() => fetchFreightAddressSuggestions(config, input.value.trim()), 360);
+      freightAddressAutocompleteState.timers.set(config.inputId, timer);
+    }
+
+    async function bindGooglePlacesAddressInput(config, input) {
+      if (!input || !googleMapsLoaded || !window.google?.maps?.importLibrary) return false;
+      try {
+        const placesLibrary = await google.maps.importLibrary("places");
+        if (!placesLibrary?.AutocompleteSuggestion?.fetchAutocompleteSuggestions) return false;
+        input.dataset.googlePlacesBound = "1";
+        input.dataset.addressProvider = "google-maps-new";
+        if (!freightAddressAutocompleteState.googleSessionTokens.get(config.inputId) && placesLibrary.AutocompleteSessionToken) {
+          freightAddressAutocompleteState.googleSessionTokens.set(config.inputId, new placesLibrary.AutocompleteSessionToken());
+        }
+        setAddressHelper(config.inputId, "Digite endereço, fornecedor, empresa, obra ou local. As sugestões serão pesquisadas no Google Maps.", "success");
+        return true;
+      } catch (error) {
+        input.dataset.googlePlacesBound = "0";
+        return false;
+      }
+    }
+
+    function setupFreightCepLookup(config) {
+      const cepInput = document.getElementById(config.cepId);
+      const addressInput = document.getElementById(config.inputId);
+      if (!cepInput || !addressInput || cepInput.dataset.cepLookupBound === "1") return;
+      cepInput.dataset.cepLookupBound = "1";
+      let timer = null;
+      let controller = null;
+
+      const lookup = () => {
+        const digits = cepInput.value.replace(/\D/g, "");
+        if (digits.length !== 8) return;
+        if (timer) window.clearTimeout(timer);
+        timer = window.setTimeout(async () => {
+          if (controller) controller.abort();
+          controller = new AbortController();
+          try {
+            const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`, { signal: controller.signal });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data?.erro) return;
+            const filledAddress = [data.logradouro, data.bairro, data.localidade, data.uf].filter(Boolean).join(" - ");
+            if (filledAddress && (!addressInput.value.trim() || addressInput.dataset.filledByCep === "1")) {
+              addressInput.value = filledAddress;
+              addressInput.dataset.filledByCep = "1";
+              addressInput.classList.add("address-selected");
+              setAddressHelper(config.inputId, "Endereço preenchido pelo CEP. Acrescente o número e o complemento.", "success");
+              addressInput.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          } catch (error) {
+            if (error?.name !== "AbortError") console.warn("Não foi possível consultar o CEP.", error);
+          }
+        }, 350);
+      };
+
+      cepInput.addEventListener("input", lookup);
+      cepInput.addEventListener("blur", lookup);
+    }
+
+    function setupFreightAddressAutocomplete() {
+      getFreightAddressConfigs().forEach(config => {
+        const input = document.getElementById(config.inputId);
+        if (!input) return;
+        const host = input.closest("[data-form-key]") || input.parentElement;
+        if (!host) return;
+        host.classList.add("address-autocomplete-host");
+        input.classList.add("address-autocomplete-input");
+        input.placeholder = "Digite rua, fornecedor, empresa, obra ou nome do local";
+        input.setAttribute("autocomplete", "off");
+        input.setAttribute("spellcheck", "false");
+        input.setAttribute("role", "combobox");
+        input.setAttribute("aria-autocomplete", "list");
+        input.setAttribute("aria-expanded", "false");
+
+        let helper = getAddressHelper(config.inputId);
+        if (!helper) {
+          helper = document.createElement("div");
+          helper.id = `${config.inputId}AddressHelper`;
+          helper.className = "address-autocomplete-helper";
+          helper.textContent = "Digite pelo menos 3 caracteres para pesquisar no Google Maps.";
+          host.appendChild(helper);
+        }
+
+        let suggestions = getAddressSuggestionList(config.inputId);
+        if (!suggestions) {
+          suggestions = document.createElement("div");
+          suggestions.id = `${config.inputId}AddressSuggestions`;
+          suggestions.className = "address-autocomplete-suggestions";
+          suggestions.hidden = true;
+          suggestions.setAttribute("role", "listbox");
+          host.appendChild(suggestions);
+        }
+        input.setAttribute("aria-controls", suggestions.id);
+
+        if (input.dataset.addressAutocompleteBound !== "1") {
+          input.dataset.addressAutocompleteBound = "1";
+          input.addEventListener("input", () => {
+            if (input.dataset.selectedAddress !== input.value) input.classList.remove("address-selected");
+            scheduleFreightAddressSuggestions(config);
+          });
+          input.addEventListener("focus", () => {
+            if (input.value.trim().length >= 3) scheduleFreightAddressSuggestions(config);
+          });
+          input.addEventListener("blur", () => window.setTimeout(() => hideAddressSuggestions(config.inputId), 180));
+          input.addEventListener("keydown", event => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              moveFreightAddressSuggestionSelection(config, 1);
+            } else if (event.key === "ArrowUp") {
+              event.preventDefault();
+              moveFreightAddressSuggestionSelection(config, -1);
+            } else if (event.key === "Enter") {
+              const list = getAddressSuggestionList(config.inputId);
+              const active = list?.querySelector(".address-suggestion-button.active");
+              if (active) {
+                event.preventDefault();
+                active.click();
+              }
+            } else if (event.key === "Escape") {
+              hideAddressSuggestions(config.inputId);
+            }
+          });
+        }
+
+        void bindGooglePlacesAddressInput(config, input);
+        setupFreightCepLookup(config);
+      });
+    }
+
 
     function checkAppTabsHealth() {
       const sections = ["form", "kanban", "dashboard", "report", "mapa", "cotacao", "history", "editor"];
