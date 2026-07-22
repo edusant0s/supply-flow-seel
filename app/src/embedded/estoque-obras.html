@@ -2147,6 +2147,257 @@ window.renderApp = function(){
     toast('Erro tratado automaticamente.');
   }
 };
+
+/* === Supply Flow: frete automatico e cadastro de tamanhos === */
+const SUPPLY_FREIGHT_STORAGE_KEY='gestao_fretes_solicitacoes_v1';
+const DEFAULT_UNIFORM_SIZES=['PP','P','M','G','GG','XG','XXG'];
+
+function jsString(value){
+  return String(value??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
+function normalizePlainText(value){
+  return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+function parseItemSizes(value){
+  const raw=Array.isArray(value)?value:String(value??'').split(',');
+  return raw.map(v=>String(v??'').trim()).filter(Boolean);
+}
+
+function itemSizesArray(item){
+  return parseItemSizes(item?.sizes || item?.tamanhos || item?.uniformSizes || '');
+}
+
+function itemSizesText(item){
+  return itemSizesArray(item).join(', ');
+}
+
+function isUniformItem(item){
+  const text=normalizePlainText(`${item?.category||''} ${item?.name||''}`);
+  return text.includes('uniforme') || text.includes('uniformes') || text.includes('camisa') || text.includes('calca');
+}
+
+function ensureUniformSizes(){
+  let changed=false;
+  (state.items||[]).forEach(item=>{
+    if(!isUniformItem(item) || itemSizesArray(item).length) return;
+    item.sizes=[...DEFAULT_UNIFORM_SIZES];
+    item.tamanhos=[...DEFAULT_UNIFORM_SIZES];
+    changed=true;
+  });
+  if(changed) saveState();
+}
+
+fulfillmentLabel = window.fulfillmentLabel = function(type){
+  return type==='entrega_obra'?'Frete para obra':'Retirada na sede';
+};
+
+toggleDeliveryFields = window.toggleDeliveryFields = function(){
+  const type=document.querySelector('input[name="fulfillmentType"]:checked')?.value||'retirada_sede';
+  document.getElementById('deliveryBox')?.classList.toggle('active',type==='entrega_obra');
+  const label=document.getElementById('rqDateLabel');
+  if(label) label.textContent=type==='entrega_obra'?'Data desejada para o frete':'Data desejada para retirada';
+  if(type==='entrega_obra') setTimeout(()=>{ensureRequestMap();updateMap();},120);
+};
+
+openRequest = window.openRequest = function(id){
+  const item=getItem(id);
+  if(!item||item.qty<=0) return toast('Item indisponivel.');
+  const today=nowDate();
+  const sizes=itemSizesText(item);
+  openModal(`<div class="modal-head"><div><h2>Solicitar material</h2><div class="muted">${esc(item.name)} • Disponivel: ${item.qty} ${esc(item.unit)}${sizes?` • Tamanhos: ${esc(sizes)}`:''}</div></div><button class="btn-light" onclick="closeModal()">Fechar</button></div><div class="row-2"><div class="field"><label>Quantidade</label><input id="rqQty" type="number" min="1" max="${item.qty}" value="1"></div><div class="field"><label id="rqDateLabel">Data desejada para retirada</label><input id="rqDate" type="date" min="${today}" value="${today}"></div></div><div class="field"><label>Forma de atendimento</label><div class="fulfillment-options"><label class="fulfillment-card"><input type="radio" name="fulfillmentType" value="retirada_sede" checked onchange="toggleDeliveryFields()"><div class="fulfillment-title">Retirar</div><div class="fulfillment-desc">Solicitante retira os materiais na sede.</div></label><label class="fulfillment-card"><input type="radio" name="fulfillmentType" value="entrega_obra" onchange="toggleDeliveryFields()"><div class="fulfillment-title">Frete</div><div class="fulfillment-desc">Criar solicitacao ativa no Kanban de fretes.</div></label></div></div><div id="deliveryBox" class="delivery-box"><div class="route-point"><b>Origem fixa - Sede SEEL</b><span>${SEEL_SEDE_ADDRESS}</span></div><div class="field"><label>Endereco de entrega do frete</label><textarea id="rqDeliveryAddress" oninput="updateMap()" placeholder="Rua, numero, bairro, cidade, CEP e referencia"></textarea></div><div class="map-box"><div id="mapInfo" class="map-info">Informe o endereco de entrega para carregar a rota.</div><div class="google-map-fluid-wrap"><iframe id="mapFrame" class="google-map-fluid" src="${gmapsEmbed(SEEL_SEDE_ADDRESS,'')}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div><div class="map-hint">Use o mapa apenas como apoio de rota.</div><div class="map-actions-row"><a class="gmaps-link" target="_blank" href="${gmapsRoute(SEEL_SEDE_ADDRESS,'')}">Abrir Google Maps</a></div></div></div><div class="field"><label>Observacao</label><textarea id="rqNote" placeholder="Horario, responsavel, ponto de referencia ou urgencia"></textarea></div><button class="btn-primary" style="width:100%" onclick="addCart(${Number(id) || `'${jsString(id)}'`})">Adicionar ao carrinho</button>`);
+};
+
+card = window.card = function(item){
+  const unavailable=item.qty<=0||item.active===false;
+  const low=item.qty<=item.min&&item.qty>0;
+  const cls=unavailable?'unavailable':low?'low':'available';
+  const sizes=itemSizesText(item);
+  return `<div class="card"><div class="card-img">${item.image?`<img src="${esc(item.image)}">`:`<div class="placeholder">${item.emoji||'📦'}</div>`}</div><div class="card-body"><div class="card-top"><span class="status ${cls}">${unavailable?'Indisponivel':low?'Estoque baixo':'Disponivel'}</span><div class="qty"><strong>${item.qty}</strong><span>${esc(item.unit)}</span></div></div><div class="name">${esc(item.name)}</div><div class="code">Codigo ${esc(item.code)} • ${esc(item.location||'Sede')}</div><div class="chips"><span class="chip">${esc(item.category)}</span><span class="chip">${unavailable?'Consultar':'Retirada/frete'}</span>${sizes?`<span class="chip">Tam.: ${esc(sizes)}</span>`:''}</div><div class="avail"><span class="dot"></span><div><b>${unavailable?'Sem saldo':'Pronto para solicitacao'}</b><br>${unavailable?'Este item esta indisponivel.':`Ha ${item.qty} ${esc(item.unit)} disponiveis.`}</div></div><div class="card-footer"><button class="btn-primary" ${unavailable?'disabled':''} onclick="openRequest(${Number(item.id) || `'${jsString(item.id)}'`})">${unavailable?'Item indisponivel':'Solicitar material'}</button><div class="muted">Escolha retirada ou frete.</div></div></div></div>`;
+};
+
+estoque = window.estoque = function(){
+  ensureUniformSizes();
+  const q=(adminSearch||'').toLowerCase();
+  const items=state.items.filter(item=>!q||item.name.toLowerCase().includes(q)||item.code.toLowerCase().includes(q)||item.category.toLowerCase().includes(q));
+  return `<div class="section-head"><div><h2>Controle de estoque</h2><div class="muted">Cadastre imagens, quantidades, disponibilidade e tamanhos de uniformes.</div></div><button class="btn-primary" onclick="openItem()">Cadastrar item</button></div><div class="table-wrap"><table><thead><tr><th>Imagem</th><th>Item</th><th>Codigo</th><th>Categoria</th><th>Tamanhos</th><th>Qtd.</th><th>Min.</th><th>Local</th><th>Status</th><th>Acoes</th></tr></thead><tbody>${items.map(item=>`<tr><td>${item.image?`<img class="thumb" src="${esc(item.image)}">`:`<div class="thumb">${item.emoji||'📦'}</div>`}</td><td><b>${esc(item.name)}</b></td><td>${esc(item.code)}</td><td>${esc(item.category)}</td><td>${esc(itemSizesText(item)||'-')}</td><td class="${item.qty<=item.min?'danger':''}">${item.qty} ${esc(item.unit)}</td><td>${item.min}</td><td>${esc(item.location||'-')}</td><td>${item.active!==false?'Ativo':'Inativo'}</td><td><button class="btn-light" onclick="openItem(${Number(item.id) || `'${jsString(item.id)}'`})">Editar</button> <button class="btn-light" onclick="quickQty(${Number(item.id) || `'${jsString(item.id)}'`})">Qtd.</button></td></tr>`).join('')}</tbody></table></div>`;
+};
+
+openItem = window.openItem = function(id=null){
+  const item=id?getItem(id):{id:null,name:'',code:'',category:'',unit:'unidade',qty:0,min:0,location:'Sede',emoji:'📦',image:'',active:true,sizes:[]};
+  const saveArg=id?`'${jsString(id)}'`:'null';
+  openModal(`<div class="modal-head"><div><h2>${id?'Editar item':'Cadastrar item'}</h2></div><button class="btn-light" onclick="closeModal()">Fechar</button></div><div class="row-2"><div class="field"><label>Nome</label><input id="itName" value="${esc(item.name)}"></div><div class="field"><label>Codigo</label><input id="itCode" value="${esc(item.code)}"></div></div><div class="row-3"><div class="field"><label>Categoria</label><input id="itCat" value="${esc(item.category)}"></div><div class="field"><label>Unidade</label><input id="itUnit" value="${esc(item.unit)}"></div><div class="field"><label>Emoji</label><input id="itEmoji" value="${esc(item.emoji)}"></div></div><div class="row-3"><div class="field"><label>Qtd.</label><input id="itQty" type="number" value="${item.qty}"></div><div class="field"><label>Minimo</label><input id="itMin" type="number" value="${item.min}"></div><div class="field"><label>Local</label><input id="itLoc" value="${esc(item.location||'')}"></div></div><div class="field"><label>Tamanhos de uniforme</label><input id="itSizes" value="${esc(itemSizesText(item))}" placeholder="PP, P, M, G, GG, XG"><div class="muted">Opcional. Use para uniformes e separe por virgula.</div></div><div class="field"><label>URL da imagem</label><input id="itImage" value="${esc(item.image||'')}"></div><div class="field"><label>Status</label><select id="itActive"><option value="true" ${item.active!==false?'selected':''}>Ativo</option><option value="false" ${item.active===false?'selected':''}>Inativo</option></select></div><button class="btn-primary" style="width:100%" onclick="saveItem(${saveArg})">Salvar cadastro</button>`);
+};
+
+saveItem = window.saveItem = function(id){
+  const sizes=parseItemSizes(document.getElementById('itSizes')?.value||'');
+  const obj={id:id||Date.now(),name:itName.value.trim(),code:itCode.value.trim(),category:itCat.value.trim(),unit:itUnit.value.trim()||'unidade',qty:Number(itQty.value||0),min:Number(itMin.value||0),location:itLoc.value.trim(),emoji:itEmoji.value.trim()||'📦',image:itImage.value.trim(),active:itActive.value==='true',sizes,tamanhos:sizes};
+  if(!obj.name||!obj.code||!obj.category) return toast('Preencha nome, codigo e categoria.');
+  const idx=state.items.findIndex(item=>String(item.id)===String(obj.id));
+  if(idx>=0) state.items[idx]=obj; else state.items.unshift(obj);
+  saveState();
+  closeModal();
+  renderApp();
+  toast('Item salvo.');
+};
+
+const SUPPLY_FREIGHT_STATUSES=['Solicitado','Coleta','Em rota','Entregue'];
+
+function supplyAdminHeader(title,subtitle){
+  return `<div class="section-head"><div><h2>${title}</h2><div class="muted">${subtitle}</div></div></div>`;
+}
+
+function supplyIsFreightOrder(order){
+  return order && order.fulfillmentType==='entrega_obra';
+}
+
+function supplyFreightOrderStatus(order){
+  if(!order) return 'Solicitado';
+  if(order.deliveryStatus && SUPPLY_FREIGHT_STATUSES.includes(order.deliveryStatus)) return order.deliveryStatus;
+  if(SUPPLY_FREIGHT_STATUSES.includes(order.status)) return order.status;
+  if(order.status==='Retirado/Entregue' || order.status==='Entregue') return 'Entregue';
+  return 'Solicitado';
+}
+
+function supplyFreightOrderCard(order){
+  const status=supplyFreightOrderStatus(order);
+  const idArg=Number(order.id)||`'${jsString(order.id)}'`;
+  return `<div class="kcard">
+    <div class="kcard-title">${esc(order.number)} • ${esc(order.requesterName||'-')}</div>
+    <div class="muted">Frete • ${esc(order.worksite||'-')}<br>Data desejada: ${fmtDate(order.desiredDate)}${order.freightRequestId?`<br>Chamado frete: ${esc(order.freightRequestId)}`:''}</div>
+    ${typeof truckTrackerHTML==='function'?truckTrackerHTML(order):''}
+    <div class="kactions">
+      <select onchange="setDeliveryStatusAdmin(${idArg},this.value)">
+        ${SUPPLY_FREIGHT_STATUSES.map(item=>`<option ${status===item?'selected':''}>${item}</option>`).join('')}
+      </select>
+      <button class="btn-light" onclick="openOrder(${idArg})">Abrir</button>
+      ${status!=='Entregue'?`<button class="btn-green" onclick="deliver(${idArg})">Confirmar entrega</button>`:''}
+    </div>
+  </div>`;
+}
+
+kanbanEntregaPedidos = window.kanbanEntregaPedidos = function(){
+  const pedidos=(state.orders||[]).filter(order=>supplyIsFreightOrder(order));
+  return `${supplyAdminHeader('Kanban de pedidos - Frete','Acompanhe solicitacoes de material com frete por status.')}
+    <div class="kanban">
+      ${SUPPLY_FREIGHT_STATUSES.map(status=>{
+        const filtered=pedidos.filter(order=>supplyFreightOrderStatus(order)===status);
+        return `<div class="kcol"><h3>${status} <span class="badge">${filtered.length}</span></h3>${filtered.length?filtered.map(supplyFreightOrderCard).join(''):'<div class="empty">Sem fretes</div>'}</div>`;
+      }).join('')}
+    </div>`;
+};
+
+kanbanPedidosComAbas = window.kanbanPedidosComAbas = function(){
+  const retiradaCount=(state.orders||[]).filter(order=>!supplyIsFreightOrder(order)).length;
+  const freteCount=(state.orders||[]).filter(order=>supplyIsFreightOrder(order)).length;
+  const current=window.adminKanbanTab||'retirada';
+  const content=current==='entrega'?kanbanEntregaPedidos():kanbanRetiradaPedidos();
+  return `
+    <div class="section-head" style="margin-bottom:10px">
+      <div>
+        <h2>Kanban de pedidos</h2>
+        <div class="muted">Acompanhe solicitacoes por status, separadas por retirada ou frete.</div>
+      </div>
+    </div>
+    <div class="tabs admin-subtabs" style="margin-bottom:16px;gap:12px;flex-wrap:wrap">
+      <button class="${current==='retirada'?'active':''}" onclick="adminKanbanTab='retirada';renderApp()">Retirada <span class='badge' style='margin-left:8px'>${retiradaCount}</span></button>
+      <button class="${current==='entrega'?'active':''}" onclick="adminKanbanTab='entrega';renderApp()">Frete <span class='badge' style='margin-left:8px'>${freteCount}</span></button>
+    </div>
+    ${content}
+  `;
+};
+
+function safeArrayFromStorage(key){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(key)||'[]');
+    return Array.isArray(parsed)?parsed:[];
+  }catch(e){
+    return [];
+  }
+}
+
+function stockOrderItemsSummary(order){
+  return (order.items||[]).map(entry=>{
+    const item=getItem(entry.itemId)||{};
+    const sizes=itemSizesText(item);
+    return `${entry.qty||0} ${item.unit||'un'} - ${item.name||'Item'}${sizes?` (Tam.: ${sizes})`:''}`;
+  }).join('; ');
+}
+
+function stockFreightId(order){
+  const raw=String(order.number||order.id||Date.now()).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9-]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase();
+  return `FRT-ESTOQUE-${raw}`;
+}
+
+function upsertFreightFromStockOrder(order){
+  if(!order || order.fulfillmentType!=='entrega_obra' || !order.deliveryAddress) return '';
+  const now=new Date().toISOString();
+  const createdAt=order.createdAt||now;
+  const id=stockFreightId(order);
+  const materials=stockOrderItemsSummary(order);
+  const current=safeArrayFromStorage(SUPPLY_FREIGHT_STORAGE_KEY);
+  const existingIndex=current.findIndex(item=>String(item.id)===id || String(item.estoqueOrderId||'')===String(order.id));
+  const existing=existingIndex>=0?current[existingIndex]:{};
+  const freight={
+    ...existing,
+    id,
+    sourceModule:'estoque_obras',
+    origemSolicitacao:'Estoque de obras',
+    estoqueOrderId:String(order.id),
+    estoqueOrderNumber:order.number||'',
+    createdAt:existing.createdAt||createdAt,
+    updatedAt:now,
+    dataSolicitacao:String(createdAt).slice(0,10),
+    numeroRM:order.number||'',
+    numeroOC:existing.numeroOC||'',
+    numeroObra:order.worksite||'',
+    obra:order.worksite||'',
+    centroCusto:order.worksite||'',
+    solicitante:order.requesterName||order.requester||'',
+    emailSolicitante:order.requesterEmail||order.requester||'',
+    telefoneSolicitante:order.requesterPhone||'',
+    urgencia:existing.urgencia||'NORMAL',
+    prioridade:existing.prioridade||existing.urgencia||'NORMAL',
+    tipoMovimentacao:'Material de estoque',
+    tipoFrete:'Frete de material solicitado na loja',
+    tipoMaterial:'Materiais de estoque',
+    materiais:materials,
+    observacoes:[order.adminNote, order.items?.map(i=>i.note).filter(Boolean).join('; ')].filter(Boolean).join(' | ').slice(0,240),
+    origem:order.deliveryOrigin||SEEL_SEDE_ADDRESS,
+    destino:order.deliveryAddress,
+    enderecoColeta:order.deliveryOrigin||SEEL_SEDE_ADDRESS,
+    enderecoEntrega:order.deliveryAddress,
+    dataColetaMaterial:order.desiredDate||'',
+    dataColetaDesejada:order.desiredDate?`${order.desiredDate}T08:00`:'',
+    dataLimiteEntrega:order.desiredDate||'',
+    responsavelRecebimento:`${order.requesterName||''} ${order.requesterPhone||''}`.trim(),
+    linkGoogleMaps:order.deliveryRouteUrl||gmapsRoute(order.deliveryOrigin||SEEL_SEDE_ADDRESS,order.deliveryAddress),
+    status:existing.status||'Não iniciado',
+    history:Array.isArray(existing.history)&&existing.history.length?existing.history:[{phase:'Não iniciado',enteredAt:createdAt,exitedAt:null}]
+  };
+  if(existingIndex>=0) current[existingIndex]=freight; else current.unshift(freight);
+  localStorage.setItem(SUPPLY_FREIGHT_STORAGE_KEY,JSON.stringify(current));
+  return id;
+}
+
+const previousConfirmSubmitOrderSupplyFlow=window.confirmSubmitOrder||confirmSubmitOrder;
+confirmSubmitOrder = window.confirmSubmitOrder = function(){
+  const before=new Set((state.orders||[]).map(order=>String(order.id)));
+  previousConfirmSubmitOrderSupplyFlow();
+  const created=(state.orders||[]).find(order=>!before.has(String(order.id)));
+  if(!created || created.fulfillmentType!=='entrega_obra') return;
+  const freightId=upsertFreightFromStockOrder(created);
+  if(!freightId) return;
+  created.freightRequestId=freightId;
+  created.freightIntegratedAt=created.freightIntegratedAt||new Date().toISOString();
+  created.deliveryStatus=created.deliveryStatus||'Solicitado';
+  saveState();
+  renderApp();
+  toast(`Solicitacao enviada ao almoxarife e ao Kanban de fretes (${freightId}).`);
+};
+
+ensureUniformSizes();
 /* === fim patch === */
 </script>
 </body>

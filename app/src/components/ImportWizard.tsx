@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CheckCircle2, FileUp, Trash2, XCircle } from "lucide-react";
-import type { ImportKind } from "../types";
+import type { ImportKind, ModuleKey } from "../types";
 import { mapRowsForImport, readSpreadsheet, type RawRow } from "../lib/spreadsheet";
 import { clearEntityTable, upsertImportedRows } from "../services/entities";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +11,15 @@ const labels: Record<ImportKind, string> = {
   orcamentos: "Orçamentos",
   contratos: "Contratos",
   fornecedores: "Fornecedores",
+  frota: "Frota",
+};
+
+const importKindModules: Record<ImportKind, ModuleKey> = {
+  requisicoes: "requisicoes",
+  orcamentos: "orcamentos",
+  contratos: "contratos",
+  fornecedores: "fornecedores",
+  frota: "frota",
 };
 
 export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplete: () => void }) {
@@ -24,7 +33,8 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
   const mapped = useMemo(() => mapRowsForImport(kind, rawRows, obras), [kind, obras, rawRows]);
   const preview = mapped.records.slice(0, 6);
   const headers = Object.keys(preview[0] || {}).filter((key) => key !== "payload").slice(0, 8);
-  const canClearPurchases = kind === "requisicoes" && canManage(profile?.role, "requisicoes");
+  const canImportKind = canManage(profile?.role, importKindModules[kind]);
+  const canClearPurchases = kind === "requisicoes" && canImportKind;
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -41,6 +51,10 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
   }
 
   async function confirmImport() {
+    if (!canImportKind) {
+      setMessage("Seu perfil nao pode importar esta base.");
+      return;
+    }
     setLoading(true);
     setMessage("");
     try {
@@ -83,13 +97,14 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
           <span className="eyebrow">Importação segura</span>
           <h2>{labels[kind]}</h2>
         </div>
-        <label className="secondary-button">
+        <label className={`secondary-button ${!canImportKind ? "is-disabled" : ""}`}>
           <FileUp size={18} />
           Selecionar planilha
           <input
             hidden
             type="file"
             accept=".xlsx,.xls,.csv"
+            disabled={!canImportKind}
             onChange={(event) => handleFile(event.target.files?.[0]).finally(() => (event.currentTarget.value = ""))}
           />
         </label>
@@ -118,7 +133,11 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
           </span>
         </div>
       ) : (
-        <div className="muted-box">Aceita .xlsx, .xls e .csv. A gravação só acontece depois da confirmação.</div>
+        <div className="muted-box">
+          {canImportKind
+            ? "Aceita .xlsx, .xls e .csv. A gravacao so acontece depois da confirmacao."
+            : "Seu perfil nao tem permissao para alimentar esta base."}
+        </div>
       )}
 
       {preview.length ? (
@@ -171,7 +190,7 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
       ) : null}
 
       <div className="form-actions">
-        <button className="primary-button" type="button" disabled={!mapped.records.length || loading || clearing} onClick={confirmImport}>
+        <button className="primary-button" type="button" disabled={!canImportKind || !mapped.records.length || loading || clearing} onClick={confirmImport}>
           {loading ? "Processando..." : "Confirmar e gravar"}
         </button>
       </div>

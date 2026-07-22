@@ -61,6 +61,10 @@ function findHeaderRow(rows: unknown[][]) {
     "numeroproposta",
     "proposta",
     "solicitante",
+    "placadoveiculo",
+    "codigoveiculo",
+    "statusdocarro",
+    "condutor",
   ]);
 
   for (let index = 0; index < Math.min(rows.length, 20); index += 1) {
@@ -183,6 +187,52 @@ export function mapRowsForImport(kind: ImportKind, rows: RawRow[], obras: Obra[]
       }
 
       const codigo = text(pick(row, ["código", "codigo", "cod"]));
+      if (kind === "frota") {
+        const placaVeiculo = text(pick(row, ["placa do veiculo", "placa do veículo", "placa veiculo", "placa veículo", "placa"])).toUpperCase();
+        const codigoVeiculo = text(pick(row, ["codigo veiculo", "código veículo", "codigo do veiculo", "codigo", "cod", "id"]));
+        const modeloVeiculo = text(pick(row, ["modelo do veiculo", "modelo do veículo", "modelo veiculo", "modelo veículo", "modelo"]));
+
+        if (!placaVeiculo && !codigoVeiculo && !modeloVeiculo) {
+          errors.push({ row: index + 2, message: "Linha sem placa, codigo ou modelo do veiculo.", payload: row });
+          return null;
+        }
+
+        const terminoContrato = toIsoDate(pick(row, ["termino do contrato", "término do contrato", "fim do contrato", "vencimento contrato"])) || "";
+        const inicioContrato = toIsoDate(pick(row, ["inicio do contrato", "início do contrato", "data inicio contrato", "data início contrato"])) || "";
+        const valoresPraticados = parseMoney(pick(row, ["valores praticados", "valor praticado", "valor mensal", "valor"]));
+
+        return {
+          id: stableFleetVehicleId(placaVeiculo || codigoVeiculo || modeloVeiculo, index),
+          foto: "",
+          statusCarro: text(pick(row, ["status do carro", "status carro", "status", "situacao", "situação"])) || "Disponivel",
+          liderAdm: text(pick(row, ["lider adm", "líder adm", "lider", "responsavel frota", "responsável frota"])),
+          centroCusto: text(pick(row, ["centro de custo", "centro custo", "cc", "obra"])),
+          placaVeiculo,
+          locadora: text(pick(row, ["locadora", "fornecedor", "empresa"])),
+          codigoVeiculo,
+          condutor: text(pick(row, ["condutor", "motorista", "usuario", "usuário"])),
+          cpfCondutor: text(pick(row, ["cpf condutor", "cpf do condutor", "cpf"])),
+          funcao: text(pick(row, ["funcao", "função", "cargo"])),
+          modeloVeiculo,
+          categoriaVeiculo: text(pick(row, ["categoria veiculo", "categoria veículo", "categoria", "tipo veiculo", "tipo veículo"])),
+          valoresPraticados: valoresPraticados ? String(valoresPraticados) : "",
+          inicioContrato,
+          terminoContrato,
+          prazoContrato: text(pick(row, ["prazo de contrato", "prazo contrato", "prazo"])),
+          anoModelo: text(pick(row, ["ano modelo", "ano/modelo", "ano"])),
+          franquiaMensal: text(pick(row, ["franquia mensal", "km mensal"])),
+          franquiaTotal: text(pick(row, ["franquia total", "km total"])),
+          diasFinalContrato: daysUntil(terminoContrato),
+          mesesFimContrato: monthsUntil(terminoContrato),
+          situacaoContrato: contractExpiryStatus(terminoContrato),
+          contrato: text(pick(row, ["contrato", "numero contrato", "n contrato"])),
+          cartaoCombustivel: text(pick(row, ["n cartao combustivel", "n° cartão combustivel", "nº cartão combustível", "cartao combustivel", "cartão combustível"])),
+          cobli: text(pick(row, ["cobli", "rastreador"])),
+          observacoes: text(pick(row, ["observacoes", "observações", "obs"])),
+          payload: row,
+        };
+      }
+
       const emailValue = text(pick(row, ["email", "e-mail"]));
       const emailLooksValid = emailValue.includes("@");
       const nome = text(pick(row, ["nome do fornecedor", "nome", "fornecedor", "razão social", "razao social"])) || (!emailLooksValid ? emailValue : "");
@@ -210,4 +260,31 @@ export function mapRowsForImport(kind: ImportKind, rows: RawRow[], obras: Obra[]
     .filter(Boolean) as RawRow[];
 
   return { records, errors };
+}
+
+function stableFleetVehicleId(source: string, index: number) {
+  const normalized = headerKey(source);
+  return `frota_${normalized || `linha_${index + 1}`}`;
+}
+
+function daysUntil(value: string | null | undefined) {
+  if (!value) return "";
+  const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((date.getTime() - today.getTime()) / 86400000);
+}
+
+function monthsUntil(value: string | null | undefined) {
+  const days = daysUntil(value);
+  return days === "" ? "" : Math.round((Number(days) / 30) * 10) / 10;
+}
+
+function contractExpiryStatus(value: string | null | undefined) {
+  const days = daysUntil(value);
+  if (days === "") return "Sem termino informado";
+  if (Number(days) < 0) return `Vencido ha ${Math.abs(Number(days))} dia(s)`;
+  if (Number(days) === 0) return "Vence hoje";
+  return `Vence em ${days} dia(s)`;
 }

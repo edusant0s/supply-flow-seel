@@ -119,7 +119,7 @@ export type Fornecedor = {
 
 export type Importacao = {
   id: string;
-  tipo: "requisicoes" | "orcamentos" | "contratos" | "fornecedores";
+  tipo: "requisicoes" | "orcamentos" | "contratos" | "fornecedores" | "frota";
   arquivo_nome: string;
   usuario_id: string | null;
   total_linhas: number;

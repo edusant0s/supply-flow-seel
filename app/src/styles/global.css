@@ -405,6 +405,12 @@ textarea:focus {
   background: var(--soft);
 }
 
+.secondary-button.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .buyer-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
