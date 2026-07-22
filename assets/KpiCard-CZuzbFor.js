@@ -1,0 +1,1 @@
+import{c as e}from"./index-CYps1W0I.js";var t=e();function n({title:e,value:n,tone:r=`neutral`,icon:i}){return(0,t.jsxs)(`article`,{className:`kpi-card kpi-card--${r}`,children:[(0,t.jsxs)(`div`,{children:[(0,t.jsx)(`span`,{children:e}),(0,t.jsx)(`strong`,{children:n})]}),i?(0,t.jsx)(i,{size:22}):null]})}export{n as t};

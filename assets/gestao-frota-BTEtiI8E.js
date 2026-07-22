@@ -1,0 +1,7215 @@
+var e=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Frota - Obras</title>
+  <style>
+    :root {
+      --green-950: #003c71;
+      --green-900: #00518f;
+      --green-800: #0069b4;
+      --green-600: #0079c8;
+      --lime: #ffd900;
+      --lime-soft: #fff4b8;
+      --bg: #eef3f8;
+
+      --seel-blue-dark: #003c71;
+      --seel-blue: #00518f;
+      --seel-blue-bright: #0069b4;
+      --seel-yellow: #ffd900;
+      --seel-yellow-soft: #fff4b8;
+      --surface: rgba(255,255,255,.86);
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --muted-2: #98a2b3;
+      --border: #dce3dc;
+      --danger: #d92d20;
+      --warning: #b54708;
+      --success: #027a48;
+      --blue: #175cd3;
+      --shadow-sm: 0 4px 12px rgba(16, 24, 40, 0.06);
+      --shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+      --shadow-lg: 0 28px 70px rgba(0, 75, 37, 0.20);
+      --radius-sm: 10px;
+      --radius: 18px;
+      --radius-lg: 28px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,217,0,.18), transparent 28%),
+        radial-gradient(circle at 92% 6%, rgba(0,122,51,.12), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 42%, #eef3ed 100%);
+      color: var(--text);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,75,37,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,75,37,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.6), transparent 65%);
+      z-index: -1;
+    }
+
+    .topbar {
+      background:
+        linear-gradient(135deg, var(--green-950), var(--green-900) 58%, #073b22);
+      color: white;
+      padding: 18px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 10px 35px rgba(0,40,80,.20);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-content {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      box-shadow: inset 0 -4px 10px rgba(0,60,113,.18), 0 10px 20px rgba(255,217,0,.16);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: rgba(255,255,255,.9);
+    }
+
+    .top-actions span:nth-child(2) {
+      color: var(--seel-yellow);
+    }
+
+    .hero {
+      padding: 44px 24px 34px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72)),
+        radial-gradient(circle at 50% 0%, rgba(255,217,0,.20), transparent 38%);
+      border-bottom: 1px solid rgba(0,60,113,.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -140px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.14);
+      filter: blur(2px);
+    }
+
+    .hero-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: var(--green-950);
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.04;
+      letter-spacing: -1.4px;
+    }
+
+    .hero p {
+      margin: 14px auto 30px;
+      font-size: 16px;
+      max-width: 780px;
+      color: #3b4a3f;
+      line-height: 1.55;
+    }
+
+    .booking-bar {
+      background:
+        linear-gradient(135deg, var(--green-950), var(--green-900));
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr auto;
+      gap: 14px;
+      text-align: left;
+      align-items: stretch;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .booking-field {
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 18px;
+      padding: 13px 16px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    .booking-field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin-bottom: 7px;
+    }
+
+    .booking-field input, .booking-field select {
+      border: 0;
+      outline: 0;
+      font-size: 16px;
+      padding: 0;
+      background: transparent;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .booking-button {
+      min-width: 180px;
+      min-height: 70px;
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      border: 0;
+      border-radius: 18px;
+      font-size: 14px;
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(255,217,0,.22);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .booking-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(255,217,0,.30);
+    }
+
+    main {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 30px 24px 58px;
+    }
+
+    .breadcrumb {
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .breadcrumb strong {
+      color: var(--green-900);
+    }
+
+    .section-title-row {
+      display: block;
+      margin-bottom: 22px;
+      padding: 22px;
+      background: var(--surface);
+      border: 1px solid rgba(220,227,220,.85);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(18px);
+    }
+
+    .section-title-row h2 {
+      margin: 0 0 16px;
+      color: var(--green-950);
+      font-size: clamp(28px, 3vw, 40px);
+      letter-spacing: -.8px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.6fr) repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .filter-field label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+    }
+
+    .filters input, .filters select {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      width: 100%;
+      background: white;
+      outline: none;
+      font-weight: 700;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .filters input:focus, .filters select:focus,
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green-600);
+      box-shadow: 0 0 0 4px rgba(0,105,180,.12);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .stat {
+      background:
+        linear-gradient(180deg, #ffffff, #fbfdf9);
+      border: 1px solid rgba(220,227,220,.9);
+      border-radius: 22px;
+      padding: 18px 18px 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -28px;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.22);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      font-size: 11px;
+    }
+
+    .stat strong {
+      color: var(--green-950);
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .import-panel {
+      background: var(--surface);
+      border: 1px solid rgba(220,227,220,.9);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(16px);
+    }
+
+    .import-panel h2 {
+      color: var(--green-950);
+      margin: 0 0 8px;
+      font-size: 25px;
+      letter-spacing: -.3px;
+    }
+
+    .import-panel p {
+      color: var(--muted);
+      margin: 0 0 18px;
+      line-height: 1.55;
+      max-width: 980px;
+    }
+
+    .import-grid {
+      display: grid;
+      grid-template-columns: 1.5fr auto auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .import-status {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--green-900);
+      font-weight: 800;
+    }
+
+    .locked-import {
+      background: #f2f4f3;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+      align-items: stretch;
+    }
+
+    .vehicle-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.96);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      min-height: 500px;
+      position: relative;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,105,180,.25);
+    }
+
+    .vehicle-card-top {
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.08), rgba(255,217,0,.20));
+      padding: 11px 16px;
+      text-align: center;
+      color: var(--green-950);
+      font-size: 12px;
+      font-weight: 900;
+      border-bottom: 1px solid rgba(220,227,220,.75);
+      letter-spacing: .2px;
+    }
+
+    .vehicle-content {
+      padding: 16px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .vehicle-content h3 {
+      color: var(--green-950);
+      margin: 0 0 8px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      font-size: 16px;
+      line-height: 1.22;
+      letter-spacing: -.3px;
+    }
+
+    .vehicle-content .subtitle {
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: #3b4a3f;
+      background: var(--lime-soft);
+      border: 1px solid rgba(255,217,0,.34);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      max-width: 100%;
+    }
+
+    .vehicle-image-wrap {
+      width: 100%;
+      height: 130px;
+      display: grid;
+      place-items: center;
+      margin: 6px 0 10px;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(0,60,113,.08), transparent 45%),
+        linear-gradient(180deg, #f9fbf8, #ffffff);
+      border-radius: 16px;
+      border: 1px solid #edf1ec;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vehicle-image-wrap::before {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 22px;
+      background: rgba(0,0,0,.08);
+      filter: blur(14px);
+      border-radius: 50%;
+      bottom: 22px;
+      left: 11%;
+    }
+
+    .vehicle-image {
+      max-width: 92%;
+      max-height: 118px;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 18px 18px rgba(16,24,40,.16));
+    }
+
+    .image-placeholder {
+      width: 190px;
+      height: 95px;
+      border-radius: 14px;
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,.72);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .plate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+      background: linear-gradient(135deg, var(--green-950), var(--green-800));
+      color: white;
+      border-radius: 9px;
+      padding: 5px 10px;
+      font-weight: 1000;
+      margin-bottom: 8px;
+      letter-spacing: 1.2px;
+      box-shadow: 0 8px 18px rgba(0,40,80,.24);
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 1000;
+      margin: 4px 0 10px;
+      border: 1px solid rgba(255,255,255,.8);
+    }
+
+    .disponivel, .ativo { background: #e6f4ff; color: var(--seel-blue-dark); }
+    .locado, .emuso { background: #fff4b8; color: #8a6d00; }
+    .manutencao, .inativo, .vencido { background: #fee4e2; color: var(--danger); }
+
+    .vehicle-meta {
+      width: 100%;
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #344054;
+      margin-top: 4px;
+      display: grid;
+      gap: 4px;
+      background: #fbfcfa;
+      border: 1px solid #eef2ed;
+      border-radius: 14px;
+      padding: 9px;
+    }
+
+    .vehicle-meta div {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 8px;
+      align-items: start;
+      border-bottom: 1px solid #eef1f4;
+      padding-bottom: 4px;
+    }
+
+    .vehicle-meta div:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .vehicle-meta strong {
+      color: var(--green-900);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .15px;
+    }
+
+    .vehicle-meta span {
+      text-align: right;
+      font-weight: 700;
+      color: #27364a;
+      overflow-wrap: anywhere;
+    }
+
+    .card-actions {
+      padding: 0 16px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    button, .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 1000;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .reserve-btn {
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      width: 100%;
+      box-shadow: 0 10px 22px rgba(255,217,0,.20);
+    }
+
+    .outline-btn {
+      background: white;
+      border: 1px solid rgba(0,105,180,.45);
+      color: var(--green-900);
+    }
+
+    .outline-btn:hover {
+      border-color: var(--green-600);
+      box-shadow: 0 8px 18px rgba(0,105,180,.10);
+    }
+
+    .secondary-btn {
+      background: linear-gradient(135deg, #475467, #344054);
+      color: white;
+    }
+
+    .danger-btn {
+      background: linear-gradient(135deg, var(--danger), #b42318);
+      color: white;
+    }
+
+    .admin-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(360px, .72fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-card h2 {
+      color: var(--green-950);
+      margin: 0 0 18px;
+      font-size: 26px;
+      letter-spacing: -.4px;
+    }
+
+    .form-section-title {
+      grid-column: 1 / -1;
+      color: var(--green-950);
+      font-weight: 1000;
+      padding: 16px 0 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      letter-spacing: -.2px;
+      font-size: 15px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(170px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-size: 14px;
+      background: white;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 84px;
+      line-height: 1.45;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .photo-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .photo-preview img {
+      width: 138px;
+      height: 92px;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #f8faf9;
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #edf1ec;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: linear-gradient(180deg, #f4f8f2, #eef4ec);
+      color: var(--green-950);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr:hover td {
+      background: #fbfdf9;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 16px;
+    }
+
+    .export-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .floating-help {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-800), var(--green-950));
+      color: var(--seel-yellow);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-lg);
+      font-size: 30px;
+      font-weight: 1000;
+      z-index: 10;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .empty {
+      background: rgba(255,255,255,.9);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
+    }
+
+
+    .vehicle-meta div:nth-child(n+9) {
+      display: none;
+    }
+
+    .vehicle-card.compact-open .vehicle-meta div {
+      display: grid;
+    }
+
+    .vehicle-card.compact-open {
+      min-height: 620px;
+    }
+
+
+    .tabs-shell {
+      margin-bottom: 24px;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 88px;
+      z-index: 15;
+      backdrop-filter: blur(16px);
+    }
+
+    .tab-button {
+      width: auto;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--green-900);
+      border: 1px solid transparent;
+      padding: 12px 16px;
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+    .tab-button:hover {
+      background: #f4f8f2;
+      border-color: rgba(0,105,180,.18);
+    }
+
+    .tab-button.active {
+      background: linear-gradient(135deg, var(--green-950), var(--green-800));
+      color: white;
+      box-shadow: 0 10px 24px rgba(0,60,113,.18);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeInTab .22s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-heading h2 {
+      margin: 0;
+      color: var(--green-950);
+      font-size: clamp(26px, 3vw, 38px);
+      letter-spacing: -.8px;
+    }
+
+    .tab-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .single-column-panel {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+
+    .fleet-manager-card {
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.96), rgba(0,81,143,.94)),
+        radial-gradient(circle at 90% 10%, rgba(255,217,0,.30), transparent 30%);
+      color: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .fleet-manager-card h2 {
+      margin: 0 0 8px;
+      color: white;
+      font-size: 24px;
+    }
+
+    .fleet-manager-card p {
+      margin: 0 0 16px;
+      color: rgba(255,255,255,.82);
+      line-height: 1.5;
+    }
+
+    .manager-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+    }
+
+    .manager-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .manager-fields label {
+      color: rgba(255,255,255,.82);
+    }
+
+    .manager-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 1000;
+      border: 0;
+      min-width: 145px;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .outlook-btn {
+      background: #0078d4;
+      color: white;
+      box-shadow: 0 10px 22px rgba(0,120,212,.22);
+    }
+
+    .whatsapp-btn {
+      background: #25d366;
+      color: #063b1c;
+      box-shadow: 0 10px 22px rgba(37,211,102,.22);
+    }
+
+    .save-manager-btn {
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      box-shadow: 0 10px 22px rgba(255,217,0,.20);
+    }
+
+    .manager-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,.82);
+      font-weight: 700;
+    }
+
+
+    .dashboard-filter-panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-filter-panel h2 {
+      margin: 0 0 14px;
+      color: var(--green-950);
+      font-size: 22px;
+    }
+
+    .dashboard-filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 22px 0;
+    }
+
+    .chart-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      min-height: 330px;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 4px;
+      color: var(--green-950);
+      font-size: 20px;
+    }
+
+    .chart-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chart-card canvas {
+      width: 100%;
+      max-height: 250px;
+    }
+
+    .indicator-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .indicator-card {
+      background: linear-gradient(180deg, #ffffff, #fbfdf9);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .indicator-card small {
+      display: block;
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .indicator-card strong {
+      color: var(--green-950);
+      font-size: 27px;
+      letter-spacing: -.6px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .bar-item {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #344054;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #edf2ec;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green-800), var(--lime));
+      transition: width .25s ease;
+    }
+
+
+    .powerbi-dashboard {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,217,0,.20), transparent 24%),
+        radial-gradient(circle at 90% 10%, rgba(0,105,180,.18), transparent 28%),
+        linear-gradient(135deg, #061b34 0%, #082d52 48%, #031326 100%);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 30px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0, 40, 80, .36);
+      margin-bottom: 28px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .powerbi-dashboard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      opacity: .55;
+    }
+
+    .powerbi-dashboard > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .powerbi-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .powerbi-header h2 {
+      margin: 0;
+      color: white;
+      font-size: clamp(28px, 3vw, 42px);
+      letter-spacing: -.9px;
+    }
+
+    .powerbi-header p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.72);
+      line-height: 1.5;
+      max-width: 780px;
+    }
+
+    .powerbi-badge {
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+      border: 1px solid rgba(255,217,0,.38);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      white-space: nowrap;
+    }
+
+    .dashboard-filter-panel.powerbi-filters {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: none;
+      backdrop-filter: blur(12px);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters h2 {
+      color: white;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .powerbi-filters label {
+      color: rgba(255,255,255,.72);
+    }
+
+    .powerbi-filters select,
+    .powerbi-filters input {
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .powerbi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .powerbi-kpi {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.07));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      padding: 16px;
+      min-height: 122px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.18);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .powerbi-kpi::after {
+      content: "";
+      position: absolute;
+      right: -34px;
+      top: -34px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.14);
+    }
+
+    .powerbi-kpi small {
+      display: block;
+      color: rgba(255,255,255,.68);
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi strong {
+      display: block;
+      color: white;
+      font-size: 29px;
+      line-height: 1;
+      letter-spacing: -.8px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--seel-yellow);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .powerbi-main-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .powerbi-secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .powerbi-visual {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.16);
+      backdrop-filter: blur(14px);
+      min-height: 360px;
+      overflow: hidden;
+    }
+
+    .powerbi-visual.large {
+      min-height: 430px;
+    }
+
+    .powerbi-visual h3 {
+      margin: 0;
+      color: white;
+      font-size: 18px;
+      letter-spacing: -.25px;
+    }
+
+    .powerbi-visual p {
+      margin: 5px 0 16px;
+      color: rgba(255,255,255,.62);
+      font-size: 13px;
+    }
+
+    .powerbi-visual canvas {
+      width: 100%;
+      height: 300px !important;
+      max-height: 300px;
+    }
+
+    .powerbi-visual.large canvas {
+      height: 360px !important;
+      max-height: 360px;
+    }
+
+    .powerbi-bars {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .powerbi-bar-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .powerbi-bar-label {
+      color: rgba(255,255,255,.84);
+      font-weight: 850;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .powerbi-bar-value {
+      color: white;
+      font-weight: 1000;
+      font-size: 13px;
+    }
+
+    .powerbi-bar-track {
+      grid-column: 1 / -1;
+      height: 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .powerbi-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--lime), #ffe94a);
+      box-shadow: 0 0 18px rgba(255,217,0,.28);
+    }
+
+    .contract-risk-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .risk-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      color: white;
+      font-size: 13px;
+    }
+
+    .risk-item strong {
+      color: var(--seel-yellow);
+    }
+
+    .risk-item.danger strong {
+      color: #ffb4ab;
+    }
+
+    .risk-item.warning strong {
+      color: #ffd666;
+    }
+
+
+    .seel-logo {
+      height: 54px;
+      width: auto;
+      display: block;
+      border-radius: 4px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.20);
+      background: var(--seel-blue-dark);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 1000;
+      letter-spacing: -.4px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--seel-yellow);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin-top: 4px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(238,243,248,.86)),
+        radial-gradient(circle at 50% 0%, rgba(255,217,0,.22), transparent 38%);
+    }
+
+    .topbar {
+      border-bottom: 4px solid var(--seel-yellow);
+    }
+
+    .powerbi-badge {
+      background: rgba(255,217,0,.14);
+      color: var(--seel-yellow);
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    .seel-logo-hero {
+      height: 76px;
+      width: auto;
+      margin: 0 auto 18px;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 18px 34px rgba(0,60,113,.25);
+    }
+
+
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .api-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .api-card h2 {
+      color: var(--seel-blue-dark);
+      margin: 0 0 8px;
+      font-size: 23px;
+    }
+
+    .api-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .api-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .api-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .api-status {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: #eef3f8;
+      color: var(--seel-blue-dark);
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid rgba(0,60,113,.12);
+    }
+
+    .measure-filter-panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .measure-filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .measure-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .measure-kpi {
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .measure-kpi small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .measure-kpi strong {
+      color: var(--seel-blue-dark);
+      font-size: 27px;
+      letter-spacing: -.6px;
+    }
+
+    .measurement-source {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-weight: 1000;
+      font-size: 11px;
+      background: var(--seel-yellow-soft);
+      color: var(--seel-blue-dark);
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    .api-note {
+      background: #fff8cf;
+      border: 1px solid rgba(255,217,0,.55);
+      border-radius: 18px;
+      padding: 14px;
+      color: #4c3f00;
+      font-weight: 750;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+
+    .link-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .linked-ok {
+      background: #e6f4ff;
+      color: var(--seel-blue-dark);
+      border: 1px solid rgba(0,60,113,.18);
+    }
+
+    .linked-warning {
+      background: #fff4b8;
+      color: #6a5300;
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    @media (max-width: 1100px) {
+      .api-grid,
+      .measure-filters,
+      .measure-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    .hero-visual-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      max-width: 1180px;
+      margin: 0 auto 26px;
+      text-align: left;
+    }
+
+    .hero-copy {
+      min-width: 0;
+    }
+
+    .fleet-illustration {
+      width: min(360px, 34vw);
+      min-width: 240px;
+      filter: drop-shadow(0 24px 32px rgba(0,60,113,.22));
+    }
+
+    .icon-badge {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--seel-yellow), #ffe94a);
+      color: var(--seel-blue-dark);
+      font-size: 22px;
+      box-shadow: 0 12px 24px rgba(255,217,0,.22);
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .tab-button .tab-icon {
+      margin-right: 7px;
+      font-size: 16px;
+    }
+
+    .visual-empty {
+      display: grid;
+      place-items: center;
+      gap: 10px;
+      padding: 34px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .visual-empty svg {
+      width: 120px;
+      height: auto;
+      opacity: .9;
+      filter: drop-shadow(0 12px 20px rgba(0,60,113,.14));
+    }
+
+    .card-visual-accent {
+      height: 5px;
+      background: linear-gradient(90deg, var(--seel-blue-dark), var(--seel-blue-bright), var(--seel-yellow));
+    }
+
+    .vehicle-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--seel-blue-dark), var(--seel-blue-bright), var(--seel-yellow));
+      z-index: 2;
+    }
+
+    .vehicle-image-wrap {
+      background:
+        radial-gradient(circle at 50% 58%, rgba(0,60,113,.10), transparent 44%),
+        radial-gradient(circle at 18% 14%, rgba(255,217,0,.18), transparent 30%),
+        linear-gradient(180deg, #f9fbff, #ffffff);
+    }
+
+    .image-placeholder {
+      border: 0;
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.08), rgba(255,217,0,.18));
+      color: var(--seel-blue-dark);
+      font-weight: 1000;
+    }
+
+    .image-placeholder::before {
+      content: "🚗";
+      display: block;
+      font-size: 34px;
+      margin-bottom: 4px;
+    }
+
+    .section-visual-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .api-card,
+    .panel-card,
+    .import-panel,
+    .section-title-row,
+    .fleet-manager-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-card::after,
+    .panel-card::after,
+    .import-panel::after,
+    .section-title-row::after {
+      content: "";
+      position: absolute;
+      right: -44px;
+      top: -44px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.10);
+      pointer-events: none;
+    }
+
+    .metric-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+      display: inline-flex;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+    }
+
+    .powerbi-kpi .metric-icon {
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+      margin-bottom: 9px;
+    }
+
+    .measure-kpi::before,
+    .indicator-card::before,
+    .stat::before {
+      content: "◆";
+      color: var(--seel-yellow);
+      font-size: 18px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .decorative-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    .decorative-tile {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      padding: 14px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .decorative-tile span {
+      font-size: 26px;
+    }
+
+    .decorative-tile strong {
+      display: block;
+      font-size: 13px;
+      color: white;
+    }
+
+    .decorative-tile small {
+      color: rgba(255,255,255,.65);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .hero-visual-wrap {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .fleet-illustration {
+        width: min(320px, 86vw);
+        margin: 0 auto;
+      }
+
+      .decorative-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    .powerbi-dashboard {
+      background: linear-gradient(180deg, #f3f5f7, #eef2f6);
+      border: 1px solid #d8dee7;
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 18px 36px rgba(12, 31, 58, .08);
+      color: #0f2744;
+      margin-bottom: 28px;
+    }
+
+    .powerbi-dashboard::before,
+    .powerbi-dashboard::after {
+      display: none;
+    }
+
+    .powerbi-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .powerbi-header h2 {
+      margin: 0;
+      color: var(--seel-blue-dark);
+      font-size: clamp(24px, 2.4vw, 34px);
+      letter-spacing: -.7px;
+    }
+
+    .powerbi-header p {
+      margin: 8px 0 0;
+      color: #5f6f82;
+      max-width: 780px;
+      line-height: 1.5;
+    }
+
+    .powerbi-badge {
+      background: #ffffff;
+      color: var(--seel-blue-dark);
+      border: 1px solid #d8dee7;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .05);
+      font-size: 12px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      margin-bottom: 14px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters h2 {
+      color: var(--seel-blue-dark);
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .powerbi-filters label {
+      color: #4f6074;
+      font-weight: 900;
+    }
+
+    .dashboard-chip-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dashboard-chip {
+      border: 1px solid #d8dee7;
+      background: #ffffff;
+      color: #527090;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    .dashboard-chip.active {
+      background: var(--seel-blue);
+      color: white;
+      border-color: var(--seel-blue);
+    }
+
+    .powerbi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .powerbi-kpi {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-top: 4px solid var(--seel-blue-bright);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      min-height: 112px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .powerbi-kpi:nth-child(2) { border-top-color: #00a6d6; }
+    .powerbi-kpi:nth-child(3) { border-top-color: #ffd900; }
+    .powerbi-kpi:nth-child(4) { border-top-color: #2f80ed; }
+    .powerbi-kpi:nth-child(5) { border-top-color: #8ec5ff; }
+    .powerbi-kpi:nth-child(6) { border-top-color: #00518f; }
+
+    .powerbi-kpi::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      width: 74px;
+      height: 18px;
+      background: linear-gradient(180deg, rgba(0,105,180,.08), rgba(255,217,0,.10));
+      border-radius: 999px;
+    }
+
+    .powerbi-kpi small {
+      display: block;
+      color: #5f6f82;
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi strong {
+      display: block;
+      color: #102846;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.6px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--seel-blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .powerbi-kpi .metric-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .dashboard-bi-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .bi-span-3 { grid-column: span 3; }
+    .bi-span-4 { grid-column: span 4; }
+    .bi-span-6 { grid-column: span 6; }
+    .bi-span-12 { grid-column: span 12; }
+
+    .powerbi-visual {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-top: 4px solid var(--seel-blue-bright);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      min-height: 290px;
+      overflow: hidden;
+    }
+
+    .powerbi-visual.large {
+      min-height: 320px;
+    }
+
+    .powerbi-visual h3 {
+      margin: 0;
+      color: #17365d;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+    }
+
+    .powerbi-visual p {
+      margin: 4px 0 12px;
+      color: #66788b;
+      font-size: 12px;
+    }
+
+    .visual-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+
+    .visual-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: inline-grid;
+      place-items: center;
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .powerbi-visual canvas {
+      width: 100%;
+      height: 230px !important;
+      max-height: 230px;
+    }
+
+    .powerbi-visual.large canvas {
+      height: 250px !important;
+      max-height: 250px;
+    }
+
+    .powerbi-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .powerbi-bar-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .powerbi-bar-label {
+      color: #334a67;
+      font-weight: 850;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .powerbi-bar-value {
+      color: #17365d;
+      font-weight: 1000;
+      font-size: 12px;
+    }
+
+    .powerbi-bar-track {
+      grid-column: 1 / -1;
+      height: 10px;
+      border-radius: 999px;
+      background: #ebf0f6;
+      overflow: hidden;
+    }
+
+    .powerbi-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--seel-blue), var(--seel-yellow));
+    }
+
+    .contract-risk-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .risk-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #f8fbff;
+      border: 1px solid #dde6ef;
+      border-radius: 12px;
+      color: #334a67;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .risk-item strong {
+      color: var(--seel-blue-dark);
+    }
+
+    .risk-item.danger {
+      background: #fff7da;
+      border-color: #ffe27b;
+    }
+
+    .risk-item.warning {
+      background: #eef6ff;
+      border-color: #c9dff6;
+    }
+
+    .risk-item.danger strong {
+      color: #8a6d00;
+    }
+
+    .risk-item.warning strong {
+      color: var(--seel-blue-dark);
+    }
+
+    @media (max-width: 1220px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+      }
+
+      .bi-span-6,
+      .bi-span-4,
+      .bi-span-3 {
+        grid-column: span 12;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1220px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+      }
+
+      .powerbi-main-grid,
+      .powerbi-secondary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-dashboard {
+        padding: 16px;
+        border-radius: 22px;
+      }
+
+      .powerbi-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .powerbi-visual,
+      .powerbi-visual.large {
+        min-height: 330px;
+      }
+
+      .powerbi-visual canvas,
+      .powerbi-visual.large canvas {
+        height: 250px !important;
+        max-height: 250px;
+      }
+    }
+
+    @media (max-width: 1220px) {
+      .filters {
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+      }
+
+      .admin-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar-content {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .booking-bar, .stats, .fleet-grid, .admin-panel, form, .import-grid, .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .booking-button {
+        width: 100%;
+      }
+
+      .fleet-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vehicle-card {
+        min-height: auto;
+      }
+
+      .vehicle-meta div {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .vehicle-meta span {
+        text-align: left;
+      }
+
+      main {
+        padding: 22px 14px 50px;
+      }
+
+      .hero {
+        padding: 34px 14px 24px;
+      }
+
+      .topbar {
+        padding: 16px 14px;
+      }
+
+      .floating-help {
+        width: 54px;
+        height: 54px;
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .tabs-nav {
+        top: 78px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .manager-layout, .manager-fields, .dashboard-filters, .chart-grid, .indicator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .manager-actions {
+        justify-content: stretch;
+      }
+
+      .contact-btn, .manager-actions button {
+        width: 100%;
+      }
+    }
+
+    /* Ajuste compacto dos cards da aba Frota */
+    .fleet-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+
+    .vehicle-card {
+      min-height: 390px;
+      border-radius: 16px;
+    }
+
+    .vehicle-card-top {
+      padding: 8px 12px;
+      font-size: 11px;
+    }
+
+    .vehicle-content {
+      padding: 12px 12px 8px;
+    }
+
+    .vehicle-content h3 {
+      font-size: 14px;
+      min-height: 36px;
+      margin-bottom: 6px;
+      line-height: 1.18;
+    }
+
+    .vehicle-content .subtitle {
+      font-size: 10px;
+      padding: 4px 8px;
+      margin-bottom: 6px;
+    }
+
+    .vehicle-image-wrap {
+      height: 96px;
+      margin: 4px 0 8px;
+      border-radius: 12px;
+    }
+
+    .vehicle-image {
+      max-height: 86px;
+      max-width: 92%;
+    }
+
+    .image-placeholder {
+      width: 150px;
+      height: 72px;
+      font-size: 11px;
+      border-radius: 12px;
+    }
+
+    .image-placeholder::before {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+
+    .plate {
+      min-width: 92px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-bottom: 5px;
+      border-radius: 7px;
+    }
+
+    .status {
+      padding: 4px 8px;
+      font-size: 10px;
+      margin: 3px 0 8px;
+    }
+
+    .vehicle-meta {
+      font-size: 11px;
+      gap: 3px;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .vehicle-meta div {
+      grid-template-columns: 82px 1fr;
+      gap: 6px;
+      padding-bottom: 3px;
+    }
+
+    .vehicle-meta strong {
+      font-size: 9px;
+    }
+
+    .vehicle-meta div:nth-child(n+7) {
+      display: none;
+    }
+
+    .vehicle-card.compact-open .vehicle-meta div {
+      display: grid;
+    }
+
+    .vehicle-card.compact-open {
+      min-height: 520px;
+    }
+
+    .card-actions {
+      padding: 0 12px 12px;
+      gap: 6px;
+    }
+
+    .card-actions button {
+      padding: 8px 9px;
+      font-size: 11px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .fleet-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+
+    .photo-input-hidden {
+      display: none;
+    }
+
+    .photo-upload-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px dashed var(--seel-blue-bright);
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      cursor: pointer;
+      font-weight: 1000;
+      text-align: center;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .photo-upload-button:hover {
+      transform: translateY(-1px);
+      background: #e3f0ff;
+      box-shadow: 0 10px 18px rgba(0,60,113,.08);
+    }
+
+    #vehicleForm button {
+      min-height: 44px;
+    }
+
+    #vehicleForm .danger-btn {
+      grid-column: auto;
+    }
+
+    .form-action-note {
+      grid-column: 1 / -1;
+      background: #eef3f8;
+      border: 1px solid rgba(0,60,113,.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--seel-blue-dark);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+
+
+    /* Dashboard da Frota - gráficos dimensionados para ocupar toda a área útil */
+    .powerbi-dashboard {
+      width: 100%;
+    }
+
+    .dashboard-bi-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+      grid-auto-flow: row dense;
+      grid-auto-rows: minmax(350px, auto);
+      gap: 16px !important;
+      align-items: stretch;
+    }
+
+    .bi-span-5 { grid-column: span 5; }
+    .bi-span-7 { grid-column: span 7; }
+    .bi-span-8 { grid-column: span 8; }
+
+    .powerbi-visual,
+    .powerbi-visual.large {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 350px !important;
+      padding: 16px !important;
+    }
+
+    .powerbi-visual.large {
+      min-height: 390px !important;
+    }
+
+    .visual-title-row {
+      flex: 0 0 auto;
+      min-height: 52px;
+      align-items: flex-start;
+    }
+
+    .powerbi-visual > p,
+    .visual-title-row + p {
+      flex: 0 0 auto;
+    }
+
+    .dashboard-chart-stage {
+      position: relative;
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 285px;
+      margin-top: 4px;
+    }
+
+    .dashboard-chart-stage-large {
+      min-height: 320px;
+    }
+
+    .dashboard-chart-stage canvas,
+    .powerbi-visual canvas,
+    .powerbi-visual.large canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    .dashboard-visual-status .dashboard-chart-stage {
+      min-height: 320px;
+    }
+
+    .dashboard-visual-category .dashboard-chart-stage,
+    .dashboard-visual-locadora .dashboard-chart-stage {
+      min-height: 300px;
+    }
+
+    .dashboard-visual-contract .dashboard-chart-stage {
+      min-height: 300px;
+    }
+
+    .dashboard-visual-centers .powerbi-bars {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      gap: 10px;
+      min-height: 285px;
+      margin-top: 4px;
+    }
+
+    .dashboard-visual-centers .powerbi-bar-item {
+      flex: 0 0 auto;
+    }
+
+    .dashboard-visual-alerts {
+      min-height: 220px !important;
+    }
+
+    .dashboard-visual-alerts .contract-risk-list {
+      flex: 1 1 auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: stretch;
+      gap: 10px;
+    }
+
+    .dashboard-visual-alerts .risk-item {
+      min-height: 64px;
+      align-items: center;
+    }
+
+    @media (max-width: 1220px) {
+      .bi-span-5,
+      .bi-span-7,
+      .bi-span-8 {
+        grid-column: span 12;
+      }
+
+      .dashboard-bi-grid {
+        grid-auto-rows: auto;
+      }
+
+      .dashboard-visual-alerts .contract-risk-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-visual,
+      .powerbi-visual.large {
+        min-height: 340px !important;
+      }
+
+      .dashboard-chart-stage,
+      .dashboard-chart-stage-large {
+        min-height: 270px;
+      }
+
+      .dashboard-visual-alerts .contract-risk-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+
+    /* ===== Layout alinhado aos apps de Cadastro, Contratos e Fretes ===== */
+    :root {
+      --page-bg: #eef3f8;
+      --line: #d5dfeb;
+      --text-main: #19324d;
+      --text-soft: #5f7388;
+      --brand-dark: #003c71;
+      --brand-mid: #00518f;
+      --brand-bright: #0069b4;
+      --accent: #ffd900;
+      --panel-bg: #ffffff;
+      --shadow-soft: 0 12px 30px rgba(0, 60, 113, 0.10);
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f6f9fc 0%, var(--page-bg) 45%, #edf2f7 100%);
+      color: var(--text-main);
+    }
+
+    body::before {
+      display: none;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand-mid) 72%);
+      border-bottom: 5px solid var(--accent);
+      padding: 14px 0;
+      box-shadow: 0 14px 36px rgba(0, 40, 80, 0.22);
+      backdrop-filter: none;
+      z-index: 40;
+    }
+
+    .topbar-content,
+    .hero-inner,
+    .tabs-shell,
+    main {
+      width: min(1320px, calc(100% - 28px));
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .topbar-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      gap: 14px;
+      align-items: center;
+    }
+
+    .seel-logo {
+      width: 140px;
+      height: 68px;
+      object-fit: contain;
+      padding: 8px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .brand-title {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: #ffffff;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.82);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #dceaf7;
+    }
+
+    .top-actions span:first-child {
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .top-actions span:nth-child(2) {
+      opacity: .55;
+    }
+
+    .contact-btn,
+    .booking-button,
+    .save-manager-btn,
+    .secondary-btn,
+    .outline-btn,
+    .danger-btn,
+    .photo-upload-button,
+    .api-actions button,
+    .card-actions button,
+    .filter-actions button,
+    .manager-actions button,
+    .export-row button,
+    .import-panel button {
+      border-radius: 12px !important;
+      font-weight: 800;
+      box-shadow: none !important;
+    }
+
+    .hero {
+      padding: 20px 0 0;
+      background: transparent;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-visual-wrap,
+    .booking-bar,
+    .tabs-shell,
+    .panel-card,
+    .api-card,
+    .import-panel,
+    .powerbi-dashboard,
+    .powerbi-visual,
+    .vehicle-image-wrap,
+    .fleet-manager-card,
+    .dashboard-filter-panel,
+    .measure-filter-panel,
+    .table-wrap,
+    .floating-help {
+      background: var(--panel-bg) !important;
+      border: 1px solid var(--line) !important;
+      box-shadow: var(--shadow-soft) !important;
+      border-radius: 22px !important;
+      backdrop-filter: none !important;
+    }
+
+    .hero-visual-wrap {
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .hero-copy {
+      max-width: 700px;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.1;
+      color: var(--brand-dark);
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 640px;
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .seel-logo-hero {
+      display: none;
+    }
+
+    .fleet-illustration {
+      width: min(100%, 300px);
+      flex: 0 0 300px;
+    }
+
+    .booking-bar {
+      margin-top: 0;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    .booking-field label,
+    .filter-field label,
+    .manager-fields label,
+    .api-form label {
+      font-weight: 700;
+      color: var(--brand-dark);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .booking-field input,
+    .booking-field select,
+    .filter-field input,
+    .filter-field select,
+    .manager-fields input,
+    .manager-fields select,
+    .manager-fields textarea,
+    .api-form input,
+    .api-form select,
+    .api-form textarea {
+      border-radius: 12px !important;
+      border: 1px solid #c8d6e5 !important;
+      background: #fbfdff !important;
+      color: var(--text-main) !important;
+      min-height: 44px;
+    }
+
+    .booking-field input:focus,
+    .booking-field select:focus,
+    .filter-field input:focus,
+    .filter-field select:focus,
+    .manager-fields input:focus,
+    .manager-fields select:focus,
+    .manager-fields textarea:focus,
+    .api-form input:focus,
+    .api-form select:focus,
+    .api-form textarea:focus {
+      outline: none;
+      border-color: var(--brand-bright) !important;
+      box-shadow: 0 0 0 3px rgba(0,105,180,.14) !important;
+    }
+
+    .tabs-shell {
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .tab-heading {
+      margin-bottom: 14px;
+    }
+
+    .tab-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--brand-dark);
+      font-weight: 800;
+    }
+
+    .tab-heading p,
+    .subtitle,
+    .api-note,
+    .manager-note,
+    .form-action-note,
+    .import-status,
+    .link-status,
+    .visual-badge,
+    .powerbi-badge,
+    .breadcrumb {
+      color: var(--text-soft) !important;
+    }
+
+    .tabs-nav {
+      background: #eef4f9 !important;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 5px;
+      gap: 6px;
+    }
+
+    .tab-button {
+      min-height: 48px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--brand-dark);
+      font-weight: 800;
+      border: none;
+    }
+
+    .tab-button.active {
+      background: var(--accent) !important;
+      color: var(--brand-dark) !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    main {
+      padding: 24px 0 48px;
+    }
+
+    .powerbi-kpi,
+    .measure-kpi,
+    .stat,
+    .dashboard-visual-alerts,
+    .dashboard-visual-category,
+    .dashboard-visual-centers,
+    .dashboard-visual-contract,
+    .dashboard-visual-locadora,
+    .dashboard-visual-status,
+    .dashboard-visual-year,
+    .measurement-source,
+    .metric-card,
+    .quick-actions > *,
+    .stats > * {
+      background: #ffffff !important;
+      border: 1px solid var(--line) !important;
+      border-top: 5px solid var(--accent) !important;
+      border-radius: 18px !important;
+      box-shadow: none !important;
+    }
+
+    .powerbi-dashboard,
+    .powerbi-visual,
+    .dashboard-chart-stage,
+    .dashboard-chart-stage-large,
+    .chart-card,
+    canvas {
+      border-radius: 18px;
+    }
+
+    .section-title-row,
+    .powerbi-header,
+    .visual-title-row {
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-title-row h3,
+    .powerbi-header h3,
+    .visual-title-row h3,
+    .form-section-title,
+    .manager-layout h3,
+    .api-card h3,
+    .import-panel h3 {
+      margin: 0;
+      color: var(--brand-dark);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .vehicle-card-top {
+      background: linear-gradient(135deg, #f7fbff, #eef5fb) !important;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .vehicle-content,
+    .manager-layout,
+    .dashboard-filters,
+    .measure-filters,
+    .api-grid,
+    .import-grid,
+    .fleet-grid,
+    .dashboard-bi-grid,
+    .powerbi-kpi-grid,
+    .measure-kpi-grid {
+      gap: 14px;
+    }
+
+    .api-status,
+    .status,
+    .risk-item,
+    .measurement-source {
+      border-radius: 14px !important;
+    }
+
+    .floating-help {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .fleet-illustration {
+        width: min(100%, 360px);
+        flex-basis: auto;
+      }
+
+      .booking-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .topbar-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-content,
+      .hero-inner,
+      .tabs-shell,
+      main {
+        width: min(100%, calc(100% - 20px));
+      }
+
+      .brand-title {
+        font-size: 24px;
+      }
+
+      .hero-copy h1 {
+        font-size: 28px;
+      }
+
+      .booking-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs-shell,
+      .hero-visual-wrap,
+      .booking-bar,
+      .panel-card,
+      .api-card,
+      .import-panel,
+      .powerbi-dashboard,
+      .powerbi-visual,
+      .vehicle-image-wrap,
+      .fleet-manager-card,
+      .dashboard-filter-panel,
+      .measure-filter-panel,
+      .table-wrap {
+        border-radius: 18px !important;
+      }
+    }
+
+
+
+    /* ===== ADAPTACAO COMPLETA: PADRAO CADASTRO | CONTRATOS | FRETES ===== */
+    :root{
+      --app-blue:#005383;
+      --app-blue-dark:#003d63;
+      --app-blue-soft:#e9f2f7;
+      --app-yellow:#ffdd00;
+      --app-bg:#eaf1f5;
+      --app-card:#ffffff;
+      --app-text:#102333;
+      --app-muted:#667b88;
+      --app-border:#d5e2e9;
+      --app-shadow:0 12px 28px rgba(0,62,95,.12);
+      --app-radius:18px;
+    }
+
+    html{scroll-padding-top:150px}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--app-bg)!important;
+      color:var(--app-text)!important;
+    }
+
+    .hero{display:none!important}
+    .breadcrumb{display:none!important}
+    .tabs-shell{display:none!important}
+
+    .topbar{
+      position:sticky!important;
+      top:0!important;
+      z-index:100!important;
+      padding:0!important;
+      background:linear-gradient(135deg,var(--app-blue-dark),var(--app-blue))!important;
+      border-bottom:6px solid var(--app-yellow)!important;
+      box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+    }
+
+    .topbar-content{
+      width:min(1360px,calc(100% - 28px))!important;
+      max-width:none!important;
+      margin:auto!important;
+      padding:12px 0 10px!important;
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) auto!important;
+      align-items:center!important;
+      gap:12px 18px!important;
+    }
+
+    .brand{
+      display:flex!important;
+      align-items:center!important;
+      gap:15px!important;
+      min-width:0!important;
+    }
+
+    .seel-logo{
+      width:132px!important;
+      height:62px!important;
+      padding:7px 10px!important;
+      object-fit:contain!important;
+      border-radius:12px!important;
+      background:#00324f!important;
+      border:2px solid rgba(255,221,0,.72)!important;
+      box-shadow:none!important;
+      flex:0 0 auto!important;
+    }
+
+    .brand-text{min-width:0!important}
+    .brand-title{
+      color:#fff!important;
+      font-size:clamp(22px,2.3vw,30px)!important;
+      font-weight:900!important;
+      line-height:1.08!important;
+      letter-spacing:-.4px!important;
+      white-space:nowrap!important;
+    }
+    .brand-subtitle{
+      margin-top:5px!important;
+      color:#dceef7!important;
+      font-size:12px!important;
+      font-weight:700!important;
+      text-transform:none!important;
+      letter-spacing:.15px!important;
+    }
+
+    .top-actions{
+      display:flex!important;
+      align-items:center!important;
+      justify-content:flex-end!important;
+      gap:8px!important;
+      padding:0!important;
+      background:transparent!important;
+      border:0!important;
+    }
+    .top-actions>span{display:none!important}
+    .top-actions .contact-btn{
+      width:auto!important;
+      min-width:108px!important;
+      min-height:38px!important;
+      padding:0 14px!important;
+      border-radius:12px!important;
+      font-size:12px!important;
+      font-weight:900!important;
+      border:1px solid rgba(255,255,255,.24)!important;
+    }
+    .top-actions .outlook-btn{background:#fff!important;color:var(--app-blue-dark)!important}
+    .top-actions .whatsapp-btn{background:var(--app-yellow)!important;color:var(--app-blue-dark)!important}
+
+    .topbar .tabs-nav{
+      grid-column:1/-1!important;
+      width:100%!important;
+      position:static!important;
+      top:auto!important;
+      z-index:auto!important;
+      display:flex!important;
+      flex-wrap:wrap!important;
+      gap:6px!important;
+      padding:5px!important;
+      border-radius:16px!important;
+      background:rgba(255,255,255,.12)!important;
+      border:1px solid rgba(255,255,255,.14)!important;
+      box-shadow:none!important;
+      backdrop-filter:none!important;
+      overflow-x:auto!important;
+      scrollbar-width:thin!important;
+    }
+
+    .topbar .tab-button{
+      width:auto!important;
+      min-height:42px!important;
+      padding:0 13px!important;
+      border:0!important;
+      border-radius:12px!important;
+      background:transparent!important;
+      color:#dceef7!important;
+      box-shadow:none!important;
+      font-size:12px!important;
+      font-weight:800!important;
+      white-space:nowrap!important;
+    }
+    .topbar .tab-button:hover{background:rgba(255,255,255,.11)!important;color:#fff!important}
+    .topbar .tab-button.active{
+      background:var(--app-yellow)!important;
+      color:var(--app-blue-dark)!important;
+      box-shadow:none!important;
+    }
+    .topbar .tab-icon{font-size:15px!important}
+
+    main{
+      width:min(1360px,calc(100% - 28px))!important;
+      max-width:none!important;
+      margin:auto!important;
+      padding:24px 0 46px!important;
+    }
+
+    .tab-content{animation:none!important}
+    .tab-heading{
+      display:flex!important;
+      justify-content:space-between!important;
+      align-items:flex-start!important;
+      gap:16px!important;
+      margin:0 0 16px!important;
+      padding:20px!important;
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:var(--app-shadow)!important;
+    }
+    .tab-heading h2{
+      margin:0!important;
+      color:var(--app-blue-dark)!important;
+      font-size:25px!important;
+      font-weight:900!important;
+      letter-spacing:-.3px!important;
+    }
+    .tab-heading p{
+      margin:5px 0 0!important;
+      color:var(--app-muted)!important;
+      font-size:14px!important;
+      line-height:1.45!important;
+    }
+    .icon-badge{
+      display:inline-grid!important;
+      place-items:center!important;
+      width:38px!important;
+      height:38px!important;
+      margin-right:9px!important;
+      border-radius:12px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      border:2px solid var(--app-yellow)!important;
+      vertical-align:middle!important;
+    }
+
+    .panel-card,.import-panel,.api-card,.powerbi-dashboard,.fleet-manager-card,
+    .dashboard-filter-panel,.measure-filter-panel,.section-title-row,.table-wrap,
+    .powerbi-visual,.vehicle-card,.api-note{
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:var(--app-shadow)!important;
+      backdrop-filter:none!important;
+    }
+
+    .panel-card,.import-panel,.api-card,.powerbi-dashboard,.fleet-manager-card,
+    .dashboard-filter-panel,.measure-filter-panel{
+      padding:18px!important;
+      margin-bottom:16px!important;
+    }
+
+    .panel-card::after,.import-panel::after,.section-title-row::after,
+    .powerbi-dashboard::before,.powerbi-dashboard::after,.powerbi-kpi::after,
+    .vehicle-card::before{display:none!important}
+
+    .panel-card h2,.import-panel h2,.api-card h2,.fleet-manager-card h2,
+    .dashboard-filter-panel h2,.measure-filter-panel h2,.powerbi-header h2{
+      margin:0 0 8px!important;
+      color:var(--app-blue-dark)!important;
+      font-size:22px!important;
+      font-weight:900!important;
+      letter-spacing:-.2px!important;
+    }
+    .panel-card p,.import-panel p,.api-card p,.fleet-manager-card p,
+    .powerbi-header p,.visual-title-row p{
+      color:var(--app-muted)!important;
+      line-height:1.45!important;
+    }
+
+    .quick-actions{display:flex!important;gap:8px!important;flex-wrap:wrap!important}
+    button,.reserve-btn,.outline-btn,.secondary-btn,.danger-btn,.save-manager-btn,
+    .photo-upload-button,.api-actions button,.card-actions button,.filter-actions button{
+      min-height:40px!important;
+      border-radius:12px!important;
+      padding:0 15px!important;
+      font-family:inherit!important;
+      font-size:12px!important;
+      font-weight:900!important;
+      letter-spacing:.1px!important;
+      box-shadow:none!important;
+      cursor:pointer!important;
+    }
+    .reserve-btn,.save-manager-btn,.booking-button{
+      background:var(--app-blue)!important;
+      color:#fff!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+    }
+    .outline-btn,.secondary-btn{
+      background:#fff!important;
+      color:var(--app-blue-dark)!important;
+      border:1px solid var(--app-border)!important;
+    }
+    .danger-btn{background:#dc2626!important;color:#fff!important;border:0!important}
+
+    label{
+      color:#263d4b!important;
+      font-size:12px!important;
+      font-weight:800!important;
+      text-transform:none!important;
+      letter-spacing:0!important;
+      margin-bottom:6px!important;
+    }
+    input,select,textarea{
+      width:100%!important;
+      min-height:42px!important;
+      padding:10px 11px!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:10px!important;
+      background:#fff!important;
+      color:var(--app-text)!important;
+      font-family:inherit!important;
+      font-size:13px!important;
+      box-shadow:none!important;
+    }
+    textarea{min-height:88px!important}
+    input:focus,select:focus,textarea:focus{
+      outline:none!important;
+      border-color:var(--app-blue)!important;
+      box-shadow:0 0 0 3px rgba(0,83,131,.14)!important;
+    }
+
+    form{gap:14px!important}
+    .form-section-title{
+      grid-column:1/-1!important;
+      margin:10px 0 0!important;
+      padding:13px 16px!important;
+      color:#fff!important;
+      background:var(--app-blue)!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+      border-radius:12px!important;
+      font-size:14px!important;
+      font-weight:900!important;
+    }
+    .photo-upload-button{
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      width:auto!important;
+      background:#fff!important;
+      color:var(--app-blue-dark)!important;
+      border:1px dashed #8eafc0!important;
+    }
+    .photo-preview img{border-radius:12px!important;border:1px solid var(--app-border)!important}
+
+    .fleet-manager-card{
+      color:var(--app-text)!important;
+      border-top:5px solid var(--app-yellow)!important;
+    }
+    .fleet-manager-card h2{color:var(--app-blue-dark)!important}
+    .fleet-manager-card p,.manager-note{color:var(--app-muted)!important}
+    .manager-fields label{color:#263d4b!important}
+    .manager-actions .outlook-btn{background:#0078d4!important;color:#fff!important}
+    .manager-actions .whatsapp-btn{background:#25d366!important;color:#063b1c!important}
+
+    .powerbi-dashboard{
+      color:var(--app-text)!important;
+      overflow:visible!important;
+    }
+    .powerbi-header{
+      margin:0 0 14px!important;
+      padding-bottom:13px!important;
+      border-bottom:1px solid var(--app-border)!important;
+    }
+    .powerbi-badge{
+      background:var(--app-blue)!important;
+      color:#fff!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+      border-radius:12px!important;
+      padding:9px 12px!important;
+      font-size:11px!important;
+      font-weight:900!important;
+    }
+    .dashboard-filter-panel.powerbi-filters{
+      background:#f6fafc!important;
+      border:1px solid var(--app-border)!important;
+      box-shadow:none!important;
+      padding:14px!important;
+    }
+    .dashboard-filter-panel.powerbi-filters h2{color:var(--app-blue-dark)!important}
+    .powerbi-filters label{color:#263d4b!important}
+
+    .powerbi-kpi-grid{
+      display:grid!important;
+      grid-template-columns:repeat(6,minmax(145px,1fr))!important;
+      gap:12px!important;
+      margin-bottom:16px!important;
+    }
+    .powerbi-kpi,.measure-kpi,.stat{
+      min-height:112px!important;
+      padding:14px!important;
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-top:5px solid var(--app-yellow)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:none!important;
+      color:var(--app-text)!important;
+    }
+    .powerbi-kpi small,.measure-kpi small,.stat small{
+      color:var(--app-muted)!important;
+      font-size:11px!important;
+      font-weight:800!important;
+    }
+    .powerbi-kpi strong,.measure-kpi strong,.stat strong{
+      color:var(--app-blue-dark)!important;
+      font-size:25px!important;
+      font-weight:900!important;
+    }
+    .powerbi-kpi span,.measure-kpi span{
+      color:var(--app-muted)!important;
+      font-size:11px!important;
+      font-weight:700!important;
+    }
+    .metric-icon{
+      width:34px!important;
+      height:34px!important;
+      border-radius:11px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      font-size:18px!important;
+    }
+
+    .dashboard-bi-grid{
+      display:grid!important;
+      grid-template-columns:repeat(12,minmax(0,1fr))!important;
+      gap:14px!important;
+      align-items:stretch!important;
+    }
+    .powerbi-visual,.powerbi-visual.large{
+      min-height:350px!important;
+      padding:16px!important;
+      box-shadow:none!important;
+      color:var(--app-text)!important;
+      overflow:hidden!important;
+    }
+    .visual-title-row{
+      display:flex!important;
+      gap:10px!important;
+      align-items:flex-start!important;
+      margin-bottom:10px!important;
+    }
+    .visual-title-row h3{
+      margin:0!important;
+      color:var(--app-blue-dark)!important;
+      font-size:18px!important;
+      font-weight:900!important;
+    }
+    .visual-title-row p{margin:3px 0 0!important;font-size:12px!important}
+    .visual-badge{
+      width:36px!important;
+      height:36px!important;
+      display:grid!important;
+      place-items:center!important;
+      flex:0 0 auto!important;
+      border-radius:11px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      font-size:17px!important;
+    }
+    .dashboard-chart-stage,.dashboard-chart-stage-large{
+      height:285px!important;
+      min-height:285px!important;
+    }
+    .powerbi-visual canvas,.powerbi-visual.large canvas{
+      width:100%!important;
+      height:100%!important;
+      max-height:none!important;
+    }
+    .dashboard-visual-alerts{min-height:auto!important}
+    .contract-risk-list{color:var(--app-text)!important}
+    .risk-item{
+      background:#f7fafc!important;
+      border:1px solid var(--app-border)!important;
+      color:var(--app-text)!important;
+      box-shadow:none!important;
+    }
+    .risk-item strong{color:var(--app-blue-dark)!important}
+
+    .stats{
+      display:grid!important;
+      grid-template-columns:repeat(5,minmax(145px,1fr))!important;
+      gap:12px!important;
+      margin:0 0 16px!important;
+    }
+
+    .filters,.dashboard-filters,.measure-filters{
+      gap:12px!important;
+    }
+    .section-title-row{
+      padding:18px!important;
+      margin-bottom:14px!important;
+      box-shadow:var(--app-shadow)!important;
+    }
+    .section-title-row h2{
+      color:var(--app-blue-dark)!important;
+      font-size:22px!important;
+      margin:0 0 12px!important;
+    }
+
+    .fleet-grid{
+      display:grid!important;
+      grid-template-columns:repeat(auto-fit,minmax(270px,1fr))!important;
+      gap:14px!important;
+      align-items:start!important;
+    }
+    .vehicle-card{
+      min-height:0!important;
+      overflow:hidden!important;
+      border-left:6px solid var(--app-blue)!important;
+      box-shadow:0 10px 24px rgba(0,83,131,.10)!important;
+      transition:.15s ease!important;
+    }
+    .vehicle-card:hover{
+      transform:translateY(-2px)!important;
+      box-shadow:0 14px 30px rgba(0,83,131,.15)!important;
+    }
+    .vehicle-card-top{
+      padding:10px 12px!important;
+      background:#eef5f9!important;
+      color:var(--app-blue-dark)!important;
+      border-bottom:1px solid var(--app-border)!important;
+      text-align:left!important;
+      font-size:11px!important;
+    }
+    .vehicle-content{
+      padding:13px!important;
+      align-items:stretch!important;
+      text-align:left!important;
+    }
+    .vehicle-content h3{
+      min-height:auto!important;
+      justify-content:flex-start!important;
+      color:var(--app-blue-dark)!important;
+      font-size:15px!important;
+      margin-bottom:6px!important;
+    }
+    .vehicle-content .subtitle{
+      display:inline-flex!important;
+      width:max-content!important;
+      max-width:100%!important;
+      padding:5px 9px!important;
+      border-radius:999px!important;
+      background:#eef7fb!important;
+      color:var(--app-blue-dark)!important;
+      border:1px solid var(--app-border)!important;
+      font-size:11px!important;
+    }
+    .vehicle-image-wrap{
+      min-height:150px!important;
+      padding:8px!important;
+      margin:8px 0 10px!important;
+      box-shadow:none!important;
+    }
+    .vehicle-image{height:145px!important;object-fit:contain!important}
+    .vehicle-meta{font-size:11px!important;gap:7px!important}
+    .card-actions{gap:7px!important;margin-top:10px!important}
+    .card-actions button{min-height:34px!important;padding:0 10px!important;font-size:10px!important}
+
+    table{border:0!important;border-radius:14px!important}
+    th{
+      padding:11px!important;
+      background:#eef5f9!important;
+      color:var(--app-blue-dark)!important;
+      font-size:10px!important;
+      font-weight:900!important;
+    }
+    td{padding:11px!important;font-size:12px!important;color:var(--app-text)!important}
+    tr:hover td{background:#f8fbfd!important}
+
+    .api-note{
+      padding:14px!important;
+      color:var(--app-muted)!important;
+      border-left:5px solid var(--app-yellow)!important;
+      box-shadow:none!important;
+    }
+    .api-grid{gap:14px!important}
+    .api-card{box-shadow:none!important;border-top:5px solid var(--app-yellow)!important}
+    .api-status,.link-status,.import-status,.form-action-note{
+      border-radius:10px!important;
+      background:#f2f8fb!important;
+      border:1px solid var(--app-border)!important;
+      color:var(--app-muted)!important;
+      padding:9px 11px!important;
+    }
+
+    .floating-help{
+      display:none!important;
+    }
+
+    footer{
+      width:min(1360px,calc(100% - 28px))!important;
+      color:var(--app-muted)!important;
+      font-size:12px!important;
+    }
+
+    @media(max-width:1180px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(3,minmax(150px,1fr))!important}
+      .stats{grid-template-columns:repeat(3,minmax(150px,1fr))!important}
+      .topbar-content{grid-template-columns:1fr!important}
+      .top-actions{justify-content:flex-start!important}
+    }
+    @media(max-width:900px){
+      .dashboard-bi-grid{grid-template-columns:1fr!important}
+      .dashboard-bi-grid>.powerbi-visual{grid-column:1/-1!important}
+      .powerbi-visual,.powerbi-visual.large{min-height:330px!important}
+      .manager-layout,.manager-fields,.dashboard-filters,.measure-filters,.api-grid{
+        grid-template-columns:1fr!important;
+      }
+    }
+    @media(max-width:680px){
+      .topbar-content,main,footer{width:min(100%,calc(100% - 18px))!important}
+      .brand-title{white-space:normal!important}
+      .seel-logo{width:104px!important;height:54px!important}
+      .top-actions{width:100%!important}
+      .top-actions .contact-btn{flex:1!important}
+      .powerbi-kpi-grid,.stats{grid-template-columns:repeat(2,minmax(130px,1fr))!important}
+      .tab-heading{padding:16px!important}
+      .fleet-grid{grid-template-columns:1fr!important}
+      form{grid-template-columns:1fr!important}
+      .full,.form-section-title{grid-column:1!important}
+    }
+
+
+
+    /* Compactação extra dos cards de veículos */
+    .fleet-grid{
+      grid-template-columns:repeat(auto-fit,minmax(235px,1fr))!important;
+      gap:12px!important;
+    }
+    .vehicle-card{
+      border-left-width:5px!important;
+      border-radius:16px!important;
+      box-shadow:0 8px 18px rgba(0,83,131,.09)!important;
+    }
+    .vehicle-card-top{
+      padding:8px 10px!important;
+      font-size:10px!important;
+    }
+    .vehicle-content{
+      padding:10px!important;
+      gap:8px!important;
+    }
+    .vehicle-content h3{
+      font-size:14px!important;
+      margin-bottom:4px!important;
+      line-height:1.2!important;
+    }
+    .vehicle-content .subtitle{
+      padding:4px 8px!important;
+      font-size:10px!important;
+      line-height:1.1!important;
+    }
+    .vehicle-image-wrap{
+      min-height:120px!important;
+      padding:6px!important;
+      margin:6px 0 8px!important;
+      border-radius:14px!important;
+    }
+    .vehicle-image{height:112px!important;object-fit:contain!important}
+    .plate{
+      padding:5px 8px!important;
+      font-size:11px!important;
+      border-radius:10px!important;
+    }
+    .vehicle-meta{
+      gap:5px!important;
+      font-size:10px!important;
+    }
+    .vehicle-meta div{
+      padding:0!important;
+      gap:4px!important;
+      grid-template-columns:76px 1fr!important;
+    }
+    .vehicle-meta strong{
+      font-size:10px!important;
+      line-height:1.15!important;
+    }
+    .vehicle-meta span{
+      font-size:10px!important;
+      line-height:1.2!important;
+    }
+    .card-actions{
+      gap:6px!important;
+      margin-top:8px!important;
+    }
+    .card-actions button{
+      min-height:30px!important;
+      padding:0 8px!important;
+      font-size:9px!important;
+      border-radius:10px!important;
+    }
+    @media (max-width: 900px){
+      .fleet-grid{
+        grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+      }
+    }
+
+
+
+    /* Redução adicional da altura dos cards de veículos */
+    .fleet-grid{
+      align-items:start!important;
+    }
+    .vehicle-card{
+      min-height:0!important;
+      height:auto!important;
+      max-height:none!important;
+    }
+    .vehicle-card-top{
+      padding:6px 9px!important;
+      min-height:28px!important;
+      line-height:1.15!important;
+    }
+    .vehicle-content{
+      padding:8px 9px!important;
+      gap:5px!important;
+    }
+    .vehicle-content h3{
+      font-size:13px!important;
+      margin:0 0 2px!important;
+      line-height:1.12!important;
+    }
+    .vehicle-content .subtitle{
+      padding:3px 7px!important;
+      font-size:9px!important;
+      margin-bottom:1px!important;
+    }
+    .vehicle-image-wrap{
+      min-height:88px!important;
+      height:88px!important;
+      padding:4px!important;
+      margin:4px 0 6px!important;
+      overflow:hidden!important;
+    }
+    .vehicle-image{
+      height:80px!important;
+      max-height:80px!important;
+      width:100%!important;
+      object-fit:contain!important;
+    }
+    .image-placeholder{
+      min-height:80px!important;
+      height:80px!important;
+      font-size:10px!important;
+    }
+    .image-placeholder::before{
+      font-size:24px!important;
+      margin-bottom:1px!important;
+    }
+    .plate{
+      padding:3px 7px!important;
+      font-size:10px!important;
+      line-height:1.1!important;
+      margin:1px 0!important;
+    }
+    .vehicle-meta{
+      gap:3px!important;
+      margin-top:3px!important;
+      font-size:9px!important;
+    }
+    .vehicle-meta div{
+      min-height:0!important;
+      line-height:1.1!important;
+      grid-template-columns:68px 1fr!important;
+    }
+    .vehicle-meta strong,
+    .vehicle-meta span{
+      font-size:9px!important;
+      line-height:1.12!important;
+    }
+    .vehicle-meta div:nth-child(n+5){
+      display:none!important;
+    }
+    .vehicle-card.compact-open .vehicle-meta div{
+      display:grid!important;
+    }
+    .vehicle-card.compact-open .vehicle-image-wrap{
+      height:112px!important;
+      min-height:112px!important;
+    }
+    .vehicle-card.compact-open .vehicle-image{
+      height:104px!important;
+      max-height:104px!important;
+    }
+    .card-actions{
+      gap:4px!important;
+      margin-top:5px!important;
+    }
+    .card-actions button{
+      min-height:27px!important;
+      height:27px!important;
+      padding:0 7px!important;
+      font-size:8px!important;
+      line-height:1!important;
+    }
+
+
+
+    /* Cards resumidos e modal completo do veículo */
+    .vehicle-meta.vehicle-meta-summary{
+      display:grid!important;
+      gap:5px!important;
+      margin-top:5px!important;
+    }
+    .vehicle-meta.vehicle-meta-summary div{
+      display:grid!important;
+      grid-template-columns:72px minmax(0,1fr)!important;
+      gap:6px!important;
+      align-items:start!important;
+    }
+    .vehicle-meta.vehicle-meta-summary strong,
+    .vehicle-meta.vehicle-meta-summary span{
+      font-size:9px!important;
+      line-height:1.18!important;
+    }
+    .vehicle-card.compact-open .vehicle-meta.vehicle-meta-summary div{
+      display:grid!important;
+    }
+
+    .vehicle-detail-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(7,35,58,.62);
+      backdrop-filter:blur(5px);
+      z-index:9999;
+    }
+    .vehicle-detail-modal.open{display:flex}
+    .vehicle-detail-dialog{
+      width:min(1040px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border:1px solid #cbd9e6;
+      border-radius:24px;
+      box-shadow:0 28px 80px rgba(0,35,70,.30);
+    }
+    .vehicle-detail-header{
+      position:sticky;
+      top:0;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      padding:18px 20px;
+      color:#fff;
+      background:linear-gradient(135deg,#003c71,#00518f);
+      border-bottom:5px solid #ffd900;
+    }
+    .vehicle-detail-header h2{
+      margin:0;
+      color:#fff;
+      font-size:24px;
+    }
+    .vehicle-detail-header p{
+      margin:5px 0 0;
+      color:#dcebf6;
+      font-size:13px;
+    }
+    .vehicle-detail-close{
+      width:40px!important;
+      height:40px!important;
+      min-height:40px!important;
+      padding:0!important;
+      border:1px solid rgba(255,255,255,.35)!important;
+      border-radius:12px!important;
+      background:rgba(255,255,255,.12)!important;
+      color:#fff!important;
+      font-size:24px!important;
+      line-height:1!important;
+      cursor:pointer;
+    }
+    .vehicle-detail-body{padding:20px}
+    .vehicle-detail-overview{
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      gap:20px;
+      align-items:start;
+      margin-bottom:18px;
+    }
+    .vehicle-detail-photo{
+      min-height:190px;
+      display:grid;
+      place-items:center;
+      padding:10px;
+      border:1px solid #d5e2e9;
+      border-radius:18px;
+      background:#f6fafc;
+    }
+    .vehicle-detail-photo .vehicle-image{
+      width:100%!important;
+      height:180px!important;
+      max-height:180px!important;
+      object-fit:contain!important;
+    }
+    .vehicle-detail-photo .image-placeholder{
+      width:100%;
+      min-height:180px!important;
+      height:180px!important;
+    }
+    .vehicle-detail-highlight{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+    .vehicle-detail-highlight-card{
+      padding:12px;
+      border:1px solid #d5e2e9;
+      border-top:4px solid #ffd900;
+      border-radius:14px;
+      background:#fff;
+    }
+    .vehicle-detail-highlight-card small{
+      display:block;
+      margin-bottom:5px;
+      color:#667b88;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+    }
+    .vehicle-detail-highlight-card strong{
+      color:#003c71;
+      font-size:14px;
+      overflow-wrap:anywhere;
+    }
+    .vehicle-detail-section{
+      margin-top:14px;
+      overflow:hidden;
+      border:1px solid #d5e2e9;
+      border-radius:18px;
+      background:#fff;
+    }
+    .vehicle-detail-section-title{
+      padding:11px 15px;
+      color:#fff;
+      background:#00518f;
+      border-bottom:4px solid #ffd900;
+      font-size:14px;
+      font-weight:900;
+    }
+    .vehicle-detail-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:0;
+    }
+    .vehicle-detail-item{
+      min-height:66px;
+      padding:12px 14px;
+      border-right:1px solid #e2eaf0;
+      border-bottom:1px solid #e2eaf0;
+    }
+    .vehicle-detail-item:nth-child(3n){border-right:0}
+    .vehicle-detail-item small{
+      display:block;
+      margin-bottom:5px;
+      color:#667b88;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    .vehicle-detail-item strong{
+      color:#16344a;
+      font-size:13px;
+      line-height:1.35;
+      overflow-wrap:anywhere;
+    }
+    .vehicle-detail-item.full{grid-column:1/-1;border-right:0}
+    .vehicle-detail-footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      flex-wrap:wrap;
+      padding:16px 20px 20px;
+    }
+    .vehicle-detail-footer button{
+      min-height:38px!important;
+      height:auto!important;
+      padding:0 14px!important;
+      font-size:11px!important;
+    }
+    @media(max-width:760px){
+      .vehicle-detail-overview{grid-template-columns:1fr}
+      .vehicle-detail-highlight,.vehicle-detail-grid{grid-template-columns:1fr}
+      .vehicle-detail-item,.vehicle-detail-item:nth-child(3n){border-right:0}
+      .vehicle-detail-dialog{max-height:95vh;border-radius:18px}
+    }
+
+
+
+    /* ===== Cabeçalho padrão Supply Flow: Cadastro | Contratos | Fretes ===== */
+    .sf-topbar{
+      width:min(1360px,calc(100% - 28px));
+      margin:14px auto 0;
+      min-height:74px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      position:sticky;
+      top:10px;
+      z-index:120;
+      background:rgba(255,255,255,.96);
+      border:1px solid #d5e2e9;
+      border-radius:20px;
+      box-shadow:0 12px 30px rgba(0,62,95,.13);
+      backdrop-filter:blur(14px);
+    }
+    .sf-topbar-left,.sf-topbar-actions,.sf-module-brand,.sf-breadcrumb,.sf-user-chip,.sf-global-search{display:flex;align-items:center}
+    .sf-topbar-left{gap:20px;min-width:0}
+    .sf-module-brand{gap:11px;min-width:max-content}
+    .sf-module-mark{
+      width:46px;height:46px;display:grid;place-items:center;flex:0 0 auto;
+      border-radius:14px;background:#005383;color:#ffdd00;border:3px solid #ffdd00;
+      box-shadow:0 8px 18px rgba(0,83,131,.18)
+    }
+    .sf-module-mark svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .sf-module-brand strong{display:block;color:#003d63;font-size:15px;line-height:1.1;letter-spacing:.08em}
+    .sf-module-brand small{display:block;margin-top:3px;color:#667b88;font-size:12px;font-weight:700}
+    .sf-breadcrumb{gap:8px;color:#8196a4;font-size:12px;font-weight:700;white-space:nowrap}
+    .sf-breadcrumb strong{color:#005383}.sf-breadcrumb b{color:#b6c5cf}
+    .sf-topbar-actions{gap:9px;justify-content:flex-end;min-width:0}
+    .sf-global-search{
+      width:min(310px,28vw);height:42px;gap:8px;padding:0 12px;
+      border:1px solid #d5e2e9;border-radius:13px;background:#f6fafc;
+      transition:border-color .15s,box-shadow .15s,background .15s
+    }
+    .sf-global-search:focus-within{background:#fff;border-color:#005383;box-shadow:0 0 0 3px rgba(0,83,131,.12)}
+    .sf-global-search svg,.sf-icon-btn svg,.sf-primary-action svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .sf-global-search svg{width:18px;height:18px;color:#668091;flex:0 0 auto}
+    .sf-global-search input{
+      min-height:0!important;height:auto!important;padding:0!important;margin:0!important;border:0!important;
+      border-radius:0!important;background:transparent!important;box-shadow:none!important;color:#18354a!important;
+      font-size:13px!important;font-weight:600!important
+    }
+    .sf-global-search input:focus{box-shadow:none!important}
+    .sf-icon-btn{
+      position:relative;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+      padding:0!important;display:grid!important;place-items:center;border-radius:13px!important;
+      border:1px solid #d5e2e9!important;background:#fff!important;color:#005383!important;box-shadow:none!important
+    }
+    .sf-icon-btn:hover{background:#eef6fa!important;border-color:#aac2d0!important}
+    .sf-icon-btn svg{width:19px;height:19px}
+    .sf-whatsapp-btn{color:#128c4a!important}
+    .sf-notification span{position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:50%;background:#ffdd00;border:1px solid #fff}
+    .sf-user-chip{gap:9px;padding:4px 8px 4px 5px;border-left:1px solid #dbe5eb;min-width:max-content}
+    .sf-user-avatar{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#003d63;color:#ffdd00;font-size:12px;font-weight:900}
+    .sf-user-chip strong{display:block;color:#18354a;font-size:12px;line-height:1.15}.sf-user-chip span{display:block;margin-top:2px;color:#78909f;font-size:10px;font-weight:700}
+
+    .sf-page-head{
+      width:min(1360px,calc(100% - 28px));margin:18px auto 0;padding:22px 24px;
+      display:flex;align-items:center;justify-content:space-between;gap:20px;
+      background:linear-gradient(135deg,#003d63,#005383);color:#fff;
+      border-radius:22px;border-bottom:5px solid #ffdd00;box-shadow:0 14px 32px rgba(0,62,95,.18)
+    }
+    .sf-eyebrow{margin-bottom:6px;color:#ffdd00;font-size:11px;font-weight:900;letter-spacing:.13em}
+    .sf-page-head h1{margin:0;font-size:clamp(25px,3vw,34px);line-height:1.1;letter-spacing:-.035em}
+    .sf-page-head p{margin:7px 0 0;max-width:760px;color:#dceef7;font-size:14px;line-height:1.45}
+    .sf-primary-action{
+      min-height:44px!important;padding:0 17px!important;display:inline-flex!important;align-items:center!important;gap:9px!important;
+      white-space:nowrap;border:0!important;border-radius:13px!important;background:#ffdd00!important;color:#003d63!important;
+      font-size:12px!important;font-weight:900!important;box-shadow:0 10px 22px rgba(0,0,0,.16)!important
+    }
+    .sf-primary-action svg{width:18px;height:18px}
+
+    .tabs-shell{
+      display:block!important;width:100%!important;margin:0 0 18px!important;padding:0!important;
+      background:transparent!important;border:0!important;box-shadow:none!important
+    }
+    .tabs-shell .tabs-nav{
+      position:static!important;top:auto!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;
+      padding:5px!important;background:#fff!important;border:1px solid #d5e2e9!important;border-radius:18px!important;
+      box-shadow:0 9px 22px rgba(0,62,95,.08)!important;overflow-x:auto!important
+    }
+    .tabs-shell .tab-button{
+      width:auto!important;min-height:43px!important;padding:0 13px!important;border:0!important;border-radius:13px!important;
+      background:transparent!important;color:#536d7c!important;box-shadow:none!important;font-size:12px!important;font-weight:800!important;white-space:nowrap!important
+    }
+    .tabs-shell .tab-button:hover{background:#eef5f9!important;color:#003d63!important}
+    .tabs-shell .tab-button.active{background:#ffdd00!important;color:#003d63!important;box-shadow:none!important}
+    .tabs-shell .tab-icon{font-size:14px!important}
+
+    @media(max-width:1040px){
+      .sf-topbar{align-items:flex-start}.sf-breadcrumb{display:none}.sf-global-search{width:230px}.sf-user-chip>div:last-child{display:none}
+    }
+    @media(max-width:760px){
+      .sf-topbar{width:calc(100% - 18px);margin-top:9px;top:6px;flex-direction:column;align-items:stretch;padding:10px}
+      .sf-topbar-left,.sf-topbar-actions{width:100%}.sf-topbar-actions{justify-content:stretch}.sf-global-search{width:auto;flex:1}
+      .sf-user-chip{display:none}.sf-page-head{width:calc(100% - 18px);padding:18px;align-items:flex-start;flex-direction:column}
+      .sf-primary-action{width:100%;justify-content:center!important}
+    }
+
+
+
+    /* Ícones dos KPIs em branco */
+    .metric-icon,
+    .powerbi-kpi .metric-icon,
+    .measure-kpi .metric-icon {
+      color: #ffffff !important;
+    }
+
+
+
+    /* Campos automáticos de vencimento contratual */
+    #diasFinalContrato,
+    #mesesFimContrato,
+    #situacaoContrato {
+      background: #eef5f9 !important;
+      color: #003c71 !important;
+      font-weight: 800 !important;
+      cursor: not-allowed !important;
+    }
+
+
+
+    /* Ações simplificadas nos cards da frota */
+    .vehicle-card-actions{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:6px!important;
+    }
+    .vehicle-card-actions button{
+      width:100%!important;
+      min-width:0!important;
+    }
+
+
+
+    /* Sete indicadores do painel com faixas de vencimento exatas */
+    .powerbi-kpi-grid{
+      grid-template-columns:repeat(7,minmax(135px,1fr))!important;
+    }
+    @media (max-width:1250px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(4,minmax(145px,1fr))!important}
+    }
+    @media (max-width:780px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(2,minmax(130px,1fr))!important}
+    }
+    @media (max-width:480px){
+      .powerbi-kpi-grid{grid-template-columns:1fr!important}
+    }
+
+
+
+    /* Ajuste fino dos textos dos KPIs do dashboard */
+    .powerbi-kpi{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:flex-start!important;
+      justify-content:flex-start!important;
+      gap:6px!important;
+      overflow:hidden!important;
+    }
+    .powerbi-kpi .metric-icon{
+      flex:0 0 auto!important;
+      margin-bottom:2px!important;
+    }
+    .powerbi-kpi small{
+      display:block!important;
+      width:100%!important;
+      min-height:34px!important;
+      font-size:10px!important;
+      line-height:1.18!important;
+      letter-spacing:.35px!important;
+      font-weight:800!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+      text-transform:uppercase!important;
+    }
+    .powerbi-kpi strong{
+      display:block!important;
+      width:100%!important;
+      font-size:22px!important;
+      line-height:1.02!important;
+      letter-spacing:-.3px!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+      white-space:normal!important;
+    }
+    .powerbi-kpi span{
+      display:block!important;
+      width:100%!important;
+      min-height:26px!important;
+      font-size:10px!important;
+      line-height:1.2!important;
+      font-weight:700!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+    }
+    .powerbi-kpi:nth-child(2) strong{
+      font-size:17px!important;
+      line-height:1.06!important;
+      letter-spacing:-.2px!important;
+    }
+    .powerbi-kpi:nth-child(2) span{
+      font-size:9px!important;
+      line-height:1.2!important;
+    }
+    .powerbi-kpi:nth-child(4) small,
+    .powerbi-kpi:nth-child(5) small{
+      min-height:36px!important;
+    }
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"><\/script>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-visual-wrap">
+        <div class="hero-copy">
+          <img class="seel-logo-hero" src="data:image/png;base64,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" alt="Logotipo SEEL - Serviços Especiais de Engenharia" />
+          <h1>Supply Flow | Gestão de Frota SEEL</h1>
+          <p>Controle interno de veículos, contratos, condutores, centros de custo, locadoras, combustível e Cobli.</p>
+        </div>
+
+      <svg class="fleet-illustration" viewBox="0 0 520 360" role="img" aria-label="Ilustração de frota SEEL">
+        <defs>
+          <linearGradient id="seelTruckBody" x1="0" x2="1">
+            <stop offset="0" stop-color="#003c71"/>
+            <stop offset="1" stop-color="#0069b4"/>
+          </linearGradient>
+          <linearGradient id="seelYellow" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffd900"/>
+            <stop offset="1" stop-color="#ffe94a"/>
+          </linearGradient>
+        </defs>
+        <rect x="42" y="256" width="420" height="20" rx="10" fill="#d9e5f0"/>
+        <ellipse cx="250" cy="292" rx="188" ry="22" fill="rgba(0,60,113,.16)"/>
+        <path d="M72 164h246c24 0 45 15 54 37l21 52H72c-22 0-40-18-40-40v-9c0-22 18-40 40-40Z" fill="url(#seelTruckBody)"/>
+        <path d="M326 176h58c17 0 31 10 38 25l23 52h-74l-17-47c-5-14-16-24-28-30Z" fill="#00518f"/>
+        <rect x="86" y="183" width="92" height="42" rx="10" fill="#eaf6ff"/>
+        <rect x="194" y="183" width="92" height="42" rx="10" fill="#eaf6ff"/>
+        <path d="M346 194h42c8 0 15 5 18 13l8 20h-57l-11-33Z" fill="#eaf6ff"/>
+        <rect x="68" y="234" width="300" height="19" rx="9" fill="url(#seelYellow)"/>
+        <rect x="82" y="145" width="100" height="22" rx="11" fill="#ffd900"/>
+        <text x="103" y="161" font-family="Arial" font-size="14" font-weight="900" fill="#003c71">SEEL</text>
+        <circle cx="118" cy="254" r="34" fill="#061b34"/>
+        <circle cx="118" cy="254" r="16" fill="#ffffff"/>
+        <circle cx="118" cy="254" r="8" fill="#0069b4"/>
+        <circle cx="348" cy="254" r="34" fill="#061b34"/>
+        <circle cx="348" cy="254" r="16" fill="#ffffff"/>
+        <circle cx="348" cy="254" r="8" fill="#0069b4"/>
+        <path d="M404 91l38-38 38 38-38 38-38-38Z" fill="#ffd900" opacity=".95"/>
+        <path d="M414 91l28-28 28 28-28 28-28-28Z" fill="#003c71" opacity=".95"/>
+        <circle cx="85" cy="92" r="35" fill="#0069b4" opacity=".14"/>
+        <circle cx="118" cy="72" r="18" fill="#ffd900" opacity=".7"/>
+        <path d="M62 113c26-24 62-25 92 0" fill="none" stroke="#ffd900" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+
+      </div>
+
+      <div class="booking-bar">
+        <div class="booking-field">
+          <label>Centro de custo ou obra</label>
+          <input id="heroCentroCusto" placeholder="Informe o centro de custo" />
+        </div>
+        <div class="booking-field">
+          <label>Condutor</label>
+          <input id="heroCondutor" placeholder="Condutor vinculado" />
+        </div>
+        <div class="booking-field">
+          <label>Início do contrato</label>
+          <input id="heroInicioContrato" type="date" />
+        </div>
+        <button class="booking-button" onclick="openTabById('frotaTab')">CONSULTAR</button>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="breadcrumb"><strong>SEEL</strong> / Frota / Controle de Veículos</div>
+
+    <div class="tabs-shell">
+      <nav class="tabs-nav" aria-label="Navegação do sistema">
+        <button class="tab-button" type="button" onclick="openTab('frotaTab', this)"><span class="tab-icon">🚗</span>Frota</button>
+        <button class="tab-button" type="button" onclick="openTab('cadastroTab', this)"><span class="tab-icon">📝</span>Cadastrar / Editar</button>
+        <button class="tab-button active" type="button" onclick="openTab('dashboardTab', this)"><span class="tab-icon">📊</span>Dashboard</button>
+        <button class="tab-button" type="button" onclick="openTab('importacaoTab', this)"><span class="tab-icon">📥</span>Importar Planilha</button>
+        <button class="tab-button" type="button" onclick="openTab('medicoesTab', this)"><span class="tab-icon">🔗</span>Medições / APIs</button>
+        <button class="tab-button" type="button" onclick="openTab('multasTab', this)"><span class="tab-icon">⚠️</span>Multas / Infrações</button>
+        <button class="tab-button" type="button" onclick="openTab('relatoriosTab', this)"><span class="tab-icon">📄</span>Relatórios</button>
+      </nav>
+    </div>
+
+    <section id="dashboardTab" class="tab-content active">
+      <div class="powerbi-dashboard">
+        <div class="powerbi-header">
+          <div>
+            <h2><span class="icon-badge">📊</span>Painel Gerencial da Frota SEEL</h2>
+            <p>Indicadores da frota em um layout mais visual, no estilo dashboard executivo, com foco em status, custos, contratos, categorias e centros de custo.</p>
+          </div>
+          <div class="powerbi-badge">Dashboard SEEL</div>
+        </div>
+
+        <div class="dashboard-filter-panel powerbi-filters">
+          <h2>Filtros do painel gerencial</h2>
+          <div class="dashboard-filters">
+            <div>
+              <label for="dashStatusFilter">Status</label>
+              <select id="dashStatusFilter">
+                <option value="">Todos</option>
+                <option>Disponível</option>
+                <option>Em uso</option>
+                <option>Manutenção</option>
+                <option>Inativo</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashLocadoraFilter">Locadora</label>
+              <select id="dashLocadoraFilter">
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashCentroCustoFilter">Centro de Custo</label>
+              <select id="dashCentroCustoFilter">
+                <option value="">Todos</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashCategoriaFilter">Categoria</label>
+              <select id="dashCategoriaFilter">
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashContratoFilter">Contrato</label>
+              <select id="dashContratoFilter">
+                <option value="">Todos</option>
+                <option value="vencidos">Vencidos</option>
+                <option value="0-30">Vencendo em até 30 dias</option>
+                <option value="31-60">Vencendo entre 31 e 60 dias</option>
+                <option value="61-90">Vencendo entre 61 e 90 dias</option>
+              </select>
+            </div>
+
+            <button class="outline-btn" type="button" onclick="clearDashboardFilters()">LIMPAR INDICADORES</button>
+          </div>
+        </div>
+<div class="powerbi-kpi-grid">
+          <div class="powerbi-kpi">
+            <div class="metric-icon">🚘</div>
+            <small>Veículos no filtro</small>
+            <strong id="dashTotalFiltrado">0</strong>
+            <span id="dashTotalPercent">0% da frota</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">💰</div>
+            <small>Valor mensal da frota</small>
+            <strong id="dashValorMensal">R$ 0,00</strong>
+            <span id="dashTicketMedio">Média por veículo R$ 0,00</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">⏱️</div>
+            <small>Contratos vencidos</small>
+            <strong id="dashContratosVencidos">0</strong>
+            <span>Ação necessária</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">📆</div>
+            <small>Vencendo em até 30 dias</small>
+            <strong id="dashVencendo30">0</strong>
+            <span>Calculado pela data de término</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">🗓️</div>
+            <small>Vencendo entre 31 e 60 dias</small>
+            <strong id="dashVencendo60">0</strong>
+            <span>Calculado pela data de término</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">👤</div>
+            <small>Sem condutor</small>
+            <strong id="dashSemCondutor">0</strong>
+            <span>Cadastro pendente</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">📈</div>
+            <small>Utilização</small>
+            <strong id="dashUtilizacao">0%</strong>
+            <span>Veículos em uso</span>
+          </div>
+        </div>
+
+        <div class="dashboard-bi-grid">
+          <div class="powerbi-visual large bi-span-7 dashboard-visual-year">
+            <div class="visual-title-row">
+              <span class="visual-badge">📉</span>
+              <div>
+                <h3>Análise por ano modelo</h3>
+                <p>Distribuição dos veículos conforme o ano modelo cadastrado.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage dashboard-chart-stage-large"><canvas id="yearModelChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual large bi-span-5 dashboard-visual-status">
+            <div class="visual-title-row">
+              <span class="visual-badge">🧭</span>
+              <div>
+                <h3>Status da frota</h3>
+                <p>Disponibilidade e situação operacional.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage dashboard-chart-stage-large"><canvas id="statusChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-5 dashboard-visual-category">
+            <div class="visual-title-row">
+              <span class="visual-badge">🏷️</span>
+              <div>
+                <h3>Categorias do veículo</h3>
+                <p>Distribuição por categoria cadastrada.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="categoryChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-7 dashboard-visual-locadora">
+            <div class="visual-title-row">
+              <span class="visual-badge">🏢</span>
+              <div>
+                <h3>Custo por locadora</h3>
+                <p>Valores praticados agrupados por locadora.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="locadoraChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-6 dashboard-visual-contract">
+            <div class="visual-title-row">
+              <span class="visual-badge">📋</span>
+              <div>
+                <h3>Contratos por vencimento</h3>
+                <p>Faixas de vencimento e contratos sem data.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="contratoChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-6 dashboard-visual-centers">
+            <div class="visual-title-row">
+              <span class="visual-badge">📍</span>
+              <div>
+                <h3>Centros de custo</h3>
+                <p>Ranking de veículos por centro de custo.</p>
+              </div>
+            </div>
+            <div id="centroCustoBars" class="powerbi-bars"></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-12 dashboard-visual-alerts">
+            <div class="visual-title-row">
+              <span class="visual-badge">⚠️</span>
+              <div>
+                <h3>Alertas da frota</h3>
+                <p>Pendências contratuais e de cadastro para acompanhamento da operação.</p>
+              </div>
+            </div>
+            <div id="contractRiskList" class="contract-risk-list"></div>
+          </div>
+        </div>
+      </div>
+      <section class="stats">
+      <div class="stat">
+        <small>Total de veículos</small>
+        <strong id="totalVeiculos">0</strong>
+      </div>
+      <div class="stat">
+        <small>Disponíveis</small>
+        <strong id="totalDisponiveis">0</strong>
+      </div>
+      <div class="stat">
+        <small>Em uso</small>
+        <strong id="totalEmUso">0</strong>
+      </div>
+      <div class="stat">
+        <small>Contratos vencendo</small>
+        <strong id="totalVencendo">0</strong>
+      </div>
+      <div class="stat">
+        <small>Multas/infrações</small>
+        <strong id="totalMultas">0</strong>
+      </div>
+    </section>
+      <div class="panel-card">
+        <h2>Resumo dos veículos cadastrados</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Placa</th>
+                <th>Modelo</th>
+                <th>Condutor</th>
+                <th>Centro de Custo</th>
+                <th>Contrato</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardSummaryTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="frotaTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">🚗</span>Consulta da Frota</h2>
+          <p>Consulte os veículos cadastrados, aplique filtros e acompanhe a situação operacional de cada unidade.</p>
+        </div>
+      </div>
+      <section class="section-title-row">
+      <h2>Veículos da Frota</h2>
+
+      <div class="filters">
+        <div class="filter-field">
+          <label for="search">Pesquisar veículo</label>
+          <input id="search" placeholder="Placa, modelo, condutor, centro de custo, contrato ou locadora" />
+        </div>
+
+        <div class="filter-field">
+          <label for="statusFilter">Status do Carro</label>
+          <select id="statusFilter">
+            <option value="">Todos</option>
+            <option>Disponível</option>
+            <option>Em uso</option>
+            <option>Manutenção</option>
+            <option>Inativo</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="liderFilter">Líder ADM</label>
+          <select id="liderFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="centroCustoFilter">Centro de Custo</label>
+          <select id="centroCustoFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="locadoraFilter">Locadora</label>
+          <select id="locadoraFilter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="categoriaFilter">Categoria Veículo</label>
+          <select id="categoriaFilter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="condutorFilter">Condutor</label>
+          <select id="condutorFilter">
+            <option value="">Todos</option>
+            <option value="__SEM_CONDUTOR__">Condutor não vinculado</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="anoFilter">Ano Modelo</label>
+          <select id="anoFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="contratoFilter">Contrato</label>
+          <select id="contratoFilter">
+            <option value="">Todos</option>
+            <option value="vencidos">Contratos vencidos</option>
+            <option value="0-30">Vencendo em até 30 dias</option>
+            <option value="31-60">Vencendo entre 31 e 60 dias</option>
+            <option value="61-90">Vencendo entre 61 e 90 dias</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="outline-btn" type="button" onclick="clearFilters()">LIMPAR FILTROS</button>
+        </div>
+      </div>
+    </section>
+      <section class="fleet-grid" id="vehicleGrid"></section>
+    </section>
+
+    <section id="cadastroTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📝</span>Cadastro e manutenção da frota</h2>
+          <p>Cadastre e atualize os dados oficiais da frota SEEL.</p>
+        </div>
+      </div>
+      <div class="single-column-panel">
+        <div class="panel-card">
+          <h2 id="formTitle">Cadastrar veículo da frota</h2>
+          <form id="vehicleForm">
+            <input type="hidden" id="vehicleId" />
+            <input type="hidden" id="fotoAtual" />
+
+            <div class="form-section-title">Identificação do veículo</div>
+
+            <div>
+              <label for="statusCarro">Status do Carro</label>
+              <select id="statusCarro" required>
+                <option>Disponível</option>
+                <option>Em uso</option>
+                <option>Manutenção</option>
+                <option>Inativo</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="liderAdm">Líder ADM</label>
+              <input id="liderAdm" placeholder="Líder ADM responsável" />
+            </div>
+
+            <div>
+              <label for="centroCusto">Centro de Custo</label>
+              <input id="centroCusto" placeholder="Centro de custo da obra" />
+            </div>
+
+            <div>
+              <label for="placaVeiculo">Placa do Veículo</label>
+              <input id="placaVeiculo" required placeholder="Placa do veículo" />
+            </div>
+
+            <div>
+              <label for="locadora">Locadora</label>
+              <input id="locadora" placeholder="Nome da locadora" />
+            </div>
+
+            <div>
+              <label for="codigoVeiculo">Código Veículo</label>
+              <input id="codigoVeiculo" placeholder="Código do veículo" />
+            </div>
+
+            <div>
+              <label for="modeloVeiculo">Modelo do Veículo</label>
+              <input id="modeloVeiculo" required placeholder="Modelo cadastrado" />
+            </div>
+
+            <div>
+              <label for="categoriaVeiculo">Categoria Veículo</label>
+              <input id="categoriaVeiculo" placeholder="Categoria do veículo" />
+            </div>
+
+            <div>
+              <label for="anoModelo">Ano Modelo</label>
+              <input id="anoModelo" type="number" min="1900" max="2100" placeholder="Ano modelo" />
+            </div>
+
+            <div>
+              <label for="foto">Foto do veículo</label>
+              <label class="photo-upload-button" for="foto">📷 INSERIR / ALTERAR FOTO</label>
+              <input id="foto" class="photo-input-hidden" type="file" accept="image/*" />
+              <div class="photo-preview" id="photoPreview"></div>
+              <small style="display:block;margin-top:6px;color:#667085;font-weight:800;">A foto será gravada ao clicar em Salvar Cadastro.</small>
+            </div>
+
+            <div class="form-section-title">Condutor</div>
+
+            <div>
+              <label for="condutor">Condutor</label>
+              <input id="condutor" placeholder="Condutor vinculado" />
+            </div>
+
+            <div>
+              <label for="cpfCondutor">CPF Condutor</label>
+              <input id="cpfCondutor" placeholder="CPF do condutor" />
+            </div>
+
+            <div>
+              <label for="funcao">Função</label>
+              <input id="funcao" placeholder="Função do condutor" />
+            </div>
+
+            <div class="form-section-title">Contrato, valores e franquia</div>
+
+            <div>
+              <label for="valoresPraticados">Valores Praticados</label>
+              <input id="valoresPraticados" type="number" min="0" step="0.01" placeholder="Valor mensal" />
+            </div>
+
+            <div>
+              <label for="inicioContrato">Início do Contrato</label>
+              <input id="inicioContrato" type="date" />
+            </div>
+
+            <div>
+              <label for="terminoContrato">Término do Contrato</label>
+              <input id="terminoContrato" type="date" />
+            </div>
+
+            <div>
+              <label for="prazoContrato">Prazo de Contrato</label>
+              <input id="prazoContrato" placeholder="Prazo contratual" />
+            </div>
+
+            <div>
+              <label for="franquiaMensal">Franquia Mensal</label>
+              <input id="franquiaMensal" placeholder="Franquia mensal contratada" />
+            </div>
+
+            <div>
+              <label for="franquiaTotal">Franquia Total</label>
+              <input id="franquiaTotal" placeholder="Franquia total contratada" />
+            </div>
+
+            <div>
+              <label for="diasFinalContrato">Dias para o vencimento</label>
+              <input id="diasFinalContrato" type="number" placeholder="Calculado pela data de término" readonly />
+            </div>
+
+            <div>
+              <label for="mesesFimContrato">Meses para o vencimento</label>
+              <input id="mesesFimContrato" type="number" step="0.1" placeholder="Calculado pela data de término" readonly />
+            </div>
+
+            <div>
+              <label for="situacaoContrato">Situação do vencimento</label>
+              <input id="situacaoContrato" placeholder="Informe a data de término" readonly />
+            </div>
+
+            <div>
+              <label for="contrato">Contrato</label>
+              <input id="contrato" placeholder="Número do contrato" />
+            </div>
+
+            <div class="form-section-title">Combustível e rastreamento Cobli</div>
+
+            <div>
+              <label for="cartaoCombustivel">N° Cartão Combustível</label>
+              <input id="cartaoCombustivel" placeholder="Número do cartão combustível" />
+            </div>
+
+            <div>
+              <label for="cobli">Cobli</label>
+              <input id="cobli" placeholder="Identificação Cobli" />
+            </div>
+
+            <div class="full">
+              <label for="observacoes">Observações</label>
+              <textarea id="observacoes" placeholder="Observações internas da gestão de frota"></textarea>
+            </div>
+
+            <div class="form-action-note">
+              Para editar um veículo, clique em <strong>Editar</strong> no card da aba Frota. Para cadastrar um novo, preencha os campos e clique em Salvar Cadastro.
+            </div>
+            <button type="submit" class="reserve-btn" id="saveVehicleButton">SALVAR CADASTRO</button>
+            <button type="button" class="secondary-btn" id="cancelEdit">LIMPAR CAMPOS</button>
+            <button type="button" class="danger-btn" id="deleteSelectedVehicleButton">EXCLUIR VEÍCULO SELECIONADO</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="importacaoTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📥</span>Importação da base da frota</h2>
+          <p>Importe a planilha oficial da frota para carregar ou atualizar os veículos cadastrados.</p>
+        </div>
+      </div>
+      <section class="import-panel" id="importPanel">
+      <h2>Importar planilha da frota</h2>
+      <p>
+        Use a planilha oficial da frota SEEL para carregar ou substituir os veículos cadastrados no sistema.
+      </p>
+
+      <div class="import-grid" id="importGrid">
+        <div>
+          <label for="spreadsheetFile">Selecionar planilha da frota</label>
+          <input id="spreadsheetFile" type="file" accept=".xlsx,.xls,.csv" />
+        </div>
+        <button class="reserve-btn" type="button" onclick="importInitialSpreadsheet()">IMPORTAR BASE</button>
+        <button class="outline-btn" type="button" onclick="downloadTemplate()">BAIXAR MODELO</button>
+      </div>
+
+      <div class="import-status" id="importStatus"></div>
+      <div class="locked-import" id="lockedImport" style="display:none;"></div>
+    </section>
+    </section>
+
+
+    <section id="medicoesTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">🔗</span>Medições por placa e veículo</h2>
+          <p>Central de integração para medições das plataformas ALD e ARVAL. As informações serão vinculadas automaticamente aos veículos já cadastrados pela placa.</p>
+        </div>
+      </div>
+
+      <div class="api-note">
+        As placas devem estar previamente cadastradas na aba Frota. Ao sincronizar ALD ou ARVAL, o aplicativo cruza automaticamente a placa recebida da API com a frota cadastrada. Dados sem placa correspondente ficam marcados como não vinculados para conferência.
+      </div>
+
+      <div class="api-grid">
+        <div class="api-card">
+          <h2>Integração ALD - Medições</h2>
+          <p>Use esta conexão para puxar medições por placa, veículo, período e centro de custo.</p>
+          <div class="api-form">
+            <div>
+              <label for="aldMeasurementsUrl">Endpoint ALD - Medições</label>
+              <input id="aldMeasurementsUrl" placeholder="URL da API de medições ALD" />
+            </div>
+            <div>
+              <label for="aldToken">Token / chave ALD</label>
+              <input id="aldToken" type="password" placeholder="Token de autenticação ALD" />
+            </div>
+            <div class="api-actions">
+              <button class="reserve-btn" type="button" onclick="saveApiSettings()">SALVAR CONFIGURAÇÃO</button>
+              <button class="outline-btn" type="button" onclick="syncMeasurements('ALD')">SINCRONIZAR ALD</button>
+            </div>
+            <div class="api-status" id="aldApiStatus">ALD aguardando sincronização com placas cadastradas.</div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <h2>Integração ARVAL - Medições e multas</h2>
+          <p>Use esta conexão para puxar medições por placa e multas/infrações vinculadas à frota.</p>
+          <div class="api-form">
+            <div>
+              <label for="arvalMeasurementsUrl">Endpoint ARVAL - Medições</label>
+              <input id="arvalMeasurementsUrl" placeholder="URL da API de medições ARVAL" />
+            </div>
+            <div>
+              <label for="arvalFinesUrl">Endpoint ARVAL - Multas</label>
+              <input id="arvalFinesUrl" placeholder="URL da API de multas ARVAL" />
+            </div>
+            <div>
+              <label for="arvalToken">Token / chave ARVAL</label>
+              <input id="arvalToken" type="password" placeholder="Token de autenticação ARVAL" />
+            </div>
+            <div class="api-actions">
+              <button class="reserve-btn" type="button" onclick="saveApiSettings()">SALVAR CONFIGURAÇÃO</button>
+              <button class="outline-btn" type="button" onclick="syncMeasurements('ARVAL')">SINCRONIZAR ARVAL</button>
+              <button class="outline-btn" type="button" onclick="syncArvalFines()">PUXAR MULTAS ARVAL</button>
+            </div>
+            <div class="api-status" id="arvalApiStatus">ARVAL aguardando sincronização com placas cadastradas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="measure-filter-panel">
+        <h2>Filtros das medições</h2>
+        <div class="measure-filters">
+          <div>
+            <label for="measurementSourceFilter">Plataforma</label>
+            <select id="measurementSourceFilter">
+              <option value="">Todas</option>
+              <option>ALD</option>
+              <option>ARVAL</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="measurementPlateFilter">Placa</label>
+            <select id="measurementPlateFilter">
+              <option value="">Todas</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="measurementStartFilter">Data inicial</label>
+            <input id="measurementStartFilter" type="date" />
+          </div>
+
+          <div>
+            <label for="measurementEndFilter">Data final</label>
+            <input id="measurementEndFilter" type="date" />
+          </div>
+
+          <button class="outline-btn" type="button" onclick="clearMeasurementFilters()">LIMPAR FILTROS</button>
+        </div>
+      </div>
+
+      <div class="measure-kpi-grid">
+        <div class="measure-kpi">
+          <small>Total de medições</small>
+          <strong id="measurementTotal">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>KM total medido</small>
+          <strong id="measurementKmTotal">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Valor total</small>
+          <strong id="measurementValueTotal">R$ 0,00</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Não vinculadas</small>
+          <strong id="measurementUnlinked">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Última sincronização</small>
+          <strong id="measurementLastSync">-</strong>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>Medições integradas</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Plataforma</th>
+                <th>Placa</th>
+                <th>Veículo</th>
+                <th>Período</th>
+                <th>KM medido</th>
+                <th>Valor</th>
+                <th>Centro de Custo</th>
+                <th>Vínculo</th>
+                <th>Data sincronização</th>
+              </tr>
+            </thead>
+            <tbody id="measurementsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="multasTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2>Multas e infrações</h2>
+          <p>Registre multas, infrações e pendências vinculadas aos veículos da frota.</p>
+        </div>
+      </div>
+      <div class="quick-actions" style="margin-bottom: 16px;">
+        <button class="reserve-btn" type="button" onclick="syncArvalFines()">PUXAR MULTAS DA ARVAL</button>
+        <button class="outline-btn" type="button" onclick="openTabById('medicoesTab')">CONFIGURAR API ARVAL</button>
+      </div>
+
+      <div class="admin-panel">
+        <div>
+          <div class="panel-card">
+          <h2>Registrar multa/infração</h2>
+          <form id="fineForm">
+            <div>
+              <label for="fineVehicle">Veículo / placa</label>
+              <select id="fineVehicle" required></select>
+            </div>
+
+            <div>
+              <label for="fineDate">Data</label>
+              <input id="fineDate" type="date" required />
+            </div>
+
+            <div>
+              <label for="fineType">Tipo</label>
+              <input id="fineType" required placeholder="Tipo da infração" />
+            </div>
+
+            <div>
+              <label for="fineValue">Valor da multa</label>
+              <input id="fineValue" type="number" min="0" step="0.01" placeholder="Valor mensal" />
+            </div>
+
+            <div>
+              <label for="fineDriver">Condutor/responsável</label>
+              <input id="fineDriver" placeholder="Responsável pela frota" />
+            </div>
+
+            <div>
+              <label for="fineStatus">Status da multa</label>
+              <select id="fineStatus">
+                <option>Pendente</option>
+                <option>Em análise</option>
+                <option>Paga</option>
+                <option>Recorrida</option>
+              </select>
+            </div>
+
+            <div class="full">
+              <label for="fineDescription">Descrição</label>
+              <textarea id="fineDescription" placeholder="Descrição da multa ou infração"></textarea>
+            </div>
+
+            <button type="submit" class="reserve-btn">SALVAR REGISTRO</button>
+          </form>
+        </div>
+        </div>
+        <div>
+          <div class="panel-card">
+          <h2>Multas e infrações</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Veículo</th>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="fineTable"></tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="relatoriosTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📄</span>Relatórios da frota</h2>
+          <p>Consulte a base consolidada da frota e exporte os dados para análise.</p>
+        </div>
+      </div>
+      <div class="panel-card">
+          <h2>Base consolidada da frota</h2>
+          <div class="export-row">
+            <button class="outline-btn" onclick="exportCSV()">EXPORTAR BASE CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Placa</th>
+                  <th>Modelo</th>
+                  <th>Condutor</th>
+                  <th>Centro de Custo</th>
+                  <th>Contrato</th>
+                </tr>
+              </thead>
+              <tbody id="summaryTable"></tbody>
+            </table>
+          </div>
+        </div>
+    </section>
+  </main>
+
+
+  <footer style="max-width:1480px;margin:0 auto 28px;padding:0 24px;color:#667085;text-align:center;font-weight:800;">
+    Sistema interno de gestão de frota SEEL • Veículos, contratos, medições, multas e integrações
+  </footer>
+
+  <div class="floating-help">••</div>
+
+  <div class="vehicle-detail-modal" id="vehicleDetailModal" aria-hidden="true" onclick="handleVehicleDetailBackdrop(event)">
+    <div class="vehicle-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="vehicleDetailTitle">
+      <div class="vehicle-detail-header">
+        <div>
+          <h2 id="vehicleDetailTitle">Detalhes do veículo</h2>
+          <p id="vehicleDetailSubtitle">Informações completas do cadastro selecionado.</p>
+        </div>
+        <button class="vehicle-detail-close" type="button" onclick="closeVehicleDetails()" aria-label="Fechar">×</button>
+      </div>
+      <div class="vehicle-detail-body" id="vehicleDetailBody"></div>
+      <div class="vehicle-detail-footer">
+        <button class="outline-btn" type="button" id="vehicleDetailEditButton">EDITAR VEÍCULO</button>
+        <button class="secondary-btn" type="button" onclick="closeVehicleDetails()">FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const STORAGE_VEHICLES = "frota_veiculos_v4_importacao_inicial";
+    const STORAGE_FINES = "frota_multas_v4_importacao_inicial";
+    const STORAGE_MEASUREMENTS = "frota_medicoes_v4_integracoes";
+    const STORAGE_MANAGER = "frota_responsavel_v4";
+    const STORAGE_API_SETTINGS = "frota_api_settings_v4";
+
+    function readStoredJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch (error) {
+        console.warn(\`Não foi possível carregar \${key}.\`, error);
+        return fallback;
+      }
+    }
+
+    function sanitizeApiSettings(settings) {
+      if (!settings || typeof settings !== "object" || Array.isArray(settings)) return {};
+      const { aldToken, arvalToken, ...safeSettings } = settings;
+      return safeSettings;
+    }
+
+    let vehicles = readStoredJson(STORAGE_VEHICLES, []);
+    let fines = readStoredJson(STORAGE_FINES, []);
+    let measurements = readStoredJson(STORAGE_MEASUREMENTS, []);
+    let fleetManager = readStoredJson(STORAGE_MANAGER, {});
+    let apiSettings = {};
+    let apiSessionTokens = { aldToken: "", arvalToken: "" };
+
+    if (!Array.isArray(vehicles)) vehicles = [];
+    if (!Array.isArray(fines)) fines = [];
+    if (!Array.isArray(measurements)) measurements = [];
+    if (!fleetManager || typeof fleetManager !== "object" || Array.isArray(fleetManager)) fleetManager = {};
+    if (!apiSettings || typeof apiSettings !== "object" || Array.isArray(apiSettings)) apiSettings = {};
+    try { localStorage.removeItem(STORAGE_API_SETTINGS); } catch (error) {}
+
+    const vehicleForm = document.getElementById("vehicleForm");
+    const fineForm = document.getElementById("fineForm");
+    const vehicleGrid = document.getElementById("vehicleGrid");
+    const fineTable = document.getElementById("fineTable");
+    const summaryTable = document.getElementById("summaryTable");
+    const search = document.getElementById("search");
+    const statusFilter = document.getElementById("statusFilter");
+    const liderFilter = document.getElementById("liderFilter");
+    const centroCustoFilter = document.getElementById("centroCustoFilter");
+    const locadoraFilter = document.getElementById("locadoraFilter");
+    const categoriaFilter = document.getElementById("categoriaFilter");
+    const condutorFilter = document.getElementById("condutorFilter");
+    const anoFilter = document.getElementById("anoFilter");
+    const contratoFilter = document.getElementById("contratoFilter");
+    const dashStatusFilter = document.getElementById("dashStatusFilter");
+    const dashLocadoraFilter = document.getElementById("dashLocadoraFilter");
+    const dashCentroCustoFilter = document.getElementById("dashCentroCustoFilter");
+    const dashCategoriaFilter = document.getElementById("dashCategoriaFilter");
+    const dashContratoFilter = document.getElementById("dashContratoFilter");
+
+    let statusChartInstance = null;
+    let locadoraChartInstance = null;
+    let contratoChartInstance = null;
+    let categoryChartInstance = null;
+    let yearModelChartInstance = null;
+
+    const measurementSourceFilter = document.getElementById("measurementSourceFilter");
+    const measurementPlateFilter = document.getElementById("measurementPlateFilter");
+    const measurementStartFilter = document.getElementById("measurementStartFilter");
+    const measurementEndFilter = document.getElementById("measurementEndFilter");
+
+
+    const spreadsheetHeaderMap = {
+      "status do carro": "statusCarro",
+      "líder adm": "liderAdm",
+      "lider adm": "liderAdm",
+      "centro de custo": "centroCusto",
+      "placa do veículo": "placaVeiculo",
+      "placa do veiculo": "placaVeiculo",
+      "locadora": "locadora",
+      "código veículo": "codigoVeiculo",
+      "codigo veiculo": "codigoVeiculo",
+      "condutor": "condutor",
+      "cpf condutor": "cpfCondutor",
+      "função": "funcao",
+      "funcao": "funcao",
+      "modelo do veículo": "modeloVeiculo",
+      "modelo do veiculo": "modeloVeiculo",
+      "categoria veículo": "categoriaVeiculo",
+      "categoria veiculo": "categoriaVeiculo",
+      "valores praticados": "valoresPraticados",
+      "inicio do contrato": "inicioContrato",
+      "início do contrato": "inicioContrato",
+      "término do contrato": "terminoContrato",
+      "termino do contrato": "terminoContrato",
+      "prazo de contrato": "prazoContrato",
+      "ano modelo": "anoModelo",
+      "franquia mensal": "franquiaMensal",
+      "franquia total": "franquiaTotal",
+      "dias final contrato": "diasFinalContrato",
+      "meses fim contrato": "mesesFimContrato",
+      "contrato": "contrato",
+      "n° cartão combustivel": "cartaoCombustivel",
+      "n° cartão combustível": "cartaoCombustivel",
+      "n cartão combustivel": "cartaoCombustivel",
+      "n cartao combustivel": "cartaoCombustivel",
+      "nº cartão combustivel": "cartaoCombustivel",
+      "nº cartão combustível": "cartaoCombustivel",
+      "cobli": "cobli"
+    };
+
+    function normalizeHeader(header) {
+      return String(header || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\\s+/g, " ");
+    }
+
+    function normalizeDateValue(value) {
+      if (!value) return "";
+
+      if (typeof value === "number" && window.XLSX && XLSX.SSF) {
+        const parsed = XLSX.SSF.parse_date_code(value);
+        if (parsed) {
+          return \`\${parsed.y}-\${String(parsed.m).padStart(2, "0")}-\${String(parsed.d).padStart(2, "0")}\`;
+        }
+      }
+
+      const text = String(value).trim();
+
+      if (/^\\d{4}-\\d{2}-\\d{2}$/.test(text)) return text;
+
+      const brDate = text.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);
+      if (brDate) {
+        return \`\${brDate[3]}-\${brDate[2].padStart(2, "0")}-\${brDate[1].padStart(2, "0")}\`;
+      }
+
+      return text;
+    }
+
+    function normalizeMoneyValue(value) {
+      if (value === undefined || value === null || value === "") return "";
+      if (typeof value === "number") return String(value);
+
+      return String(value)
+        .replace(/R\\$/g, "")
+        .replace(/\\./g, "")
+        .replace(",", ".")
+        .trim();
+    }
+
+    function buildVehicleFromSpreadsheetRow(row) {
+      const vehicle = {
+        id: crypto.randomUUID(),
+        foto: "",
+        statusCarro: "Disponível",
+        liderAdm: "",
+        centroCusto: "",
+        placaVeiculo: "",
+        locadora: "",
+        codigoVeiculo: "",
+        condutor: "",
+        cpfCondutor: "",
+        funcao: "",
+        modeloVeiculo: "",
+        categoriaVeiculo: "",
+        valoresPraticados: "",
+        inicioContrato: "",
+        terminoContrato: "",
+        prazoContrato: "",
+        anoModelo: "",
+        franquiaMensal: "",
+        franquiaTotal: "",
+        diasFinalContrato: "",
+        mesesFimContrato: "",
+        contrato: "",
+        cartaoCombustivel: "",
+        cobli: "",
+        observacoes: ""
+      };
+
+      Object.entries(row).forEach(([header, value]) => {
+        const key = spreadsheetHeaderMap[normalizeHeader(header)];
+        if (!key) return;
+
+        if (key === "inicioContrato" || key === "terminoContrato") {
+          vehicle[key] = normalizeDateValue(value);
+        } else if (key === "valoresPraticados") {
+          vehicle[key] = normalizeMoneyValue(value);
+        } else {
+          vehicle[key] = String(value ?? "").trim();
+        }
+      });
+
+      vehicle.diasFinalContrato = calculateContractDays(vehicle.terminoContrato);
+      vehicle.mesesFimContrato = calculateContractMonths(vehicle.terminoContrato);
+      vehicle.situacaoContrato = getContractExpiryStatus(vehicle.terminoContrato);
+
+      return vehicle;
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let current = [];
+      let value = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if ((char === ";" || char === ",") && !inQuotes) {
+          current.push(value);
+          value = "";
+        } else if ((char === "\\n" || char === "\\r") && !inQuotes) {
+          if (char === "\\r" && next === "\\n") i++;
+          current.push(value);
+          rows.push(current);
+          current = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      if (value || current.length) {
+        current.push(value);
+        rows.push(current);
+      }
+
+      const headers = rows.shift() || [];
+      return rows
+        .filter(row => row.some(cell => String(cell || "").trim()))
+        .map(row => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = row[index] || "";
+          });
+          return obj;
+        });
+    }
+
+    async function readSpreadsheetFile(file) {
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (extension === "csv") {
+        const text = await file.text();
+        return parseCSV(text);
+      }
+
+      if (!window.XLSX) {
+        throw new Error("Para importar arquivos Excel (.xlsx/.xls), abra o aplicativo com internet ou salve a planilha como CSV e importe o CSV.");
+      }
+
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array", cellDates: false });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      return XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+    }
+
+    async function importInitialSpreadsheet() {
+      const file = document.getElementById("spreadsheetFile").files[0];
+      if (!file) {
+        alert("Selecione a planilha inicial antes de importar.");
+        return;
+      }
+
+      try {
+        const rows = await readSpreadsheetFile(file);
+        const importedVehicles = rows
+          .map(buildVehicleFromSpreadsheetRow)
+          .filter(v => v.placaVeiculo || v.modeloVeiculo || v.codigoVeiculo);
+
+        if (importedVehicles.length === 0) {
+          alert("Nenhum veículo foi encontrado. Verifique se a planilha possui cabeçalhos iguais aos campos solicitados.");
+          return;
+        }
+
+        if (!confirm(\`Serão importados \${importedVehicles.length} veículos. A importação substituirá a base atual da frota. Deseja continuar?\`)) {
+          return;
+        }
+
+        vehicles = importedVehicles;
+        saveData();
+        renderAll();
+
+        document.getElementById("importStatus").textContent = \`\${importedVehicles.length} veículos importados com sucesso. A base atual foi substituída.\`;
+        updateImportPanel();
+      } catch (error) {
+        alert(error.message || "Não foi possível importar a planilha.");
+      }
+    }
+
+    function updateImportPanel() {
+      const importGrid = document.getElementById("importGrid");
+      const lockedImport = document.getElementById("lockedImport");
+      const importStatus = document.getElementById("importStatus");
+
+      importGrid.style.display = "grid";
+      lockedImport.style.display = "none";
+
+      if (!importStatus.textContent) {
+        importStatus.textContent = vehicles.length
+          ? \`\${vehicles.length} veículos carregados no aplicativo. Você pode importar outra planilha se precisar substituir a base.\`
+          : "Nenhuma base da frota importada até o momento.";
+      }
+    }
+
+    function downloadTemplate() {
+      const headers = [
+        "Status do Carro",
+        "Líder ADM",
+        "Centro de Custo",
+        "Placa do Veículo",
+        "Locadora",
+        "Código Veículo",
+        "Condutor",
+        "CPF Condutor",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria Veículo",
+        "Valores Praticados",
+        "Inicio do Contrato",
+        "Término do Contrato",
+        "Prazo de Contrato",
+        "Ano Modelo",
+        "Franquia Mensal",
+        "Franquia Total",
+        "Dias Final Contrato",
+        "Meses Fim Contrato",
+        "Contrato",
+        "N° Cartão Combustivel",
+        "Cobli"
+      ];
+
+      const sample = [
+        "Disponível",
+        "Nome do Líder",
+        "Centro de Custo / Obra",
+        "ABC1D23",
+        "Localiza",
+        "VEI-001",
+        "Nome do Condutor",
+        "000.000.000-00",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria",
+        "2500,00",
+        "01/01/2026",
+        "31/12/2026",
+        "12 meses",
+        "2026",
+        "3000 km",
+        "36000 km",
+        "",
+        "",
+        "CTR-001",
+        "123456",
+        "COBLI-001"
+      ];
+
+      const csv = headers.join(";") + "\\n" + sample.map(value => \`"\${value}"\`).join(";");
+      const blob = new Blob(["\\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "modelo_importacao_frota.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+
+    function saveFleetManager() {
+      fleetManager = {
+        name: document.getElementById("managerName").value.trim(),
+        email: document.getElementById("managerEmail").value.trim(),
+        whatsapp: document.getElementById("managerWhatsApp").value.trim()
+      };
+
+      localStorage.setItem(STORAGE_MANAGER, JSON.stringify(fleetManager));
+      renderFleetManager();
+      alert("Contato do responsável pela frota salvo com sucesso.");
+    }
+
+    function normalizeWhatsAppNumber(value) {
+      return String(value || "").replace(/\\D/g, "");
+    }
+
+    function openManagerEmail() {
+      const email = fleetManager.email || document.getElementById("managerEmail")?.value.trim();
+
+      if (!email) {
+        alert("Cadastre o e-mail do responsável pela gestão da frota.");
+        openTabById("dashboardTab");
+        document.getElementById("managerEmail")?.focus();
+        return;
+      }
+
+      const subject = encodeURIComponent("Solicitação - Gestão de Frota SEEL");
+      const body = encodeURIComponent("Olá,\\n\\nPreciso tratar sobre um veículo da frota SEEL.\\n\\nObrigado.");
+      window.location.href = \`mailto:\${email}?subject=\${subject}&body=\${body}\`;
+    }
+
+    function openManagerWhatsApp() {
+      const rawNumber = fleetManager.whatsapp || document.getElementById("managerWhatsApp")?.value.trim();
+      const number = normalizeWhatsAppNumber(rawNumber);
+
+      if (!number) {
+        alert("Cadastre o WhatsApp do responsável pela gestão da frota.");
+        openTabById("dashboardTab");
+        document.getElementById("managerWhatsApp")?.focus();
+        return;
+      }
+
+      const message = encodeURIComponent("Olá, preciso tratar sobre um veículo da frota SEEL.");
+      window.open(\`https://wa.me/\${number}?text=\${message}\`, "_blank");
+    }
+
+    function renderFleetManager() {
+      const nameInput = document.getElementById("managerName");
+      const emailInput = document.getElementById("managerEmail");
+      const whatsappInput = document.getElementById("managerWhatsApp");
+      const managerNote = document.getElementById("managerNote");
+
+      if (!nameInput || !emailInput || !whatsappInput || !managerNote) return;
+
+      nameInput.value = fleetManager.name || "";
+      emailInput.value = fleetManager.email || "";
+      whatsappInput.value = fleetManager.whatsapp || "";
+
+      const name = fleetManager.name || "Responsável não cadastrado";
+      const email = fleetManager.email || "e-mail não cadastrado";
+      const whatsapp = fleetManager.whatsapp || "WhatsApp não cadastrado";
+
+      managerNote.textContent = \`\${name} | \${email} | \${whatsapp}\`;
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_VEHICLES, JSON.stringify(vehicles));
+      localStorage.setItem(STORAGE_FINES, JSON.stringify(fines));
+      localStorage.setItem(STORAGE_MEASUREMENTS, JSON.stringify(measurements));
+    }
+
+    function formatDate(date) {
+      if (!date) return "-";
+      const [year, month, day] = date.split("-");
+      return \`\${day}/\${month}/\${year}\`;
+    }
+
+    function formatCurrency(value) {
+      const number = Number(value || 0);
+      return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function calculateContractDays(endDate) {
+      if (!endDate) return "";
+      const parts = String(endDate).split("-").map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return "";
+
+      const [year, month, day] = parts;
+      const endUtc = Date.UTC(year, month - 1, day);
+      const today = new Date();
+      const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+      return Math.round((endUtc - todayUtc) / 86400000);
+    }
+
+    function getContractExpiryBucket(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "sem-data";
+      if (days < 0) return "vencidos";
+      if (days <= 30) return "0-30";
+      if (days <= 60) return "31-60";
+      if (days <= 90) return "61-90";
+      return "+90";
+    }
+
+    function calculateContractMonths(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "";
+      return Math.round((days / 30) * 10) / 10;
+    }
+
+    function getContractExpiryStatus(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "Sem término informado";
+      if (days < 0) {
+        const overdue = Math.abs(days);
+        return \`Vencido há \${overdue} \${overdue === 1 ? "dia" : "dias"}\`;
+      }
+      if (days === 0) return "Vence hoje";
+      if (days === 1) return "Vence amanhã";
+      return \`Vence em \${days} dias\`;
+    }
+
+    function syncContractDeadlineFields(endDate) {
+      const daysInput = document.getElementById("diasFinalContrato");
+      const monthsInput = document.getElementById("mesesFimContrato");
+      const statusInput = document.getElementById("situacaoContrato");
+      const days = calculateContractDays(endDate);
+      const months = calculateContractMonths(endDate);
+
+      if (daysInput) daysInput.value = days === "" ? "" : days;
+      if (monthsInput) monthsInput.value = months === "" ? "" : months;
+      if (statusInput) statusInput.value = getContractExpiryStatus(endDate);
+    }
+
+    function refreshContractCalculatedFields() {
+      vehicles.forEach(vehicle => {
+        vehicle.diasFinalContrato = calculateContractDays(vehicle.terminoContrato);
+        vehicle.mesesFimContrato = calculateContractMonths(vehicle.terminoContrato);
+        vehicle.situacaoContrato = getContractExpiryStatus(vehicle.terminoContrato);
+      });
+    }
+
+    function statusClass(status) {
+      const normalized = (status || "").toLowerCase().replace(/\\s/g, "");
+      if (normalized.includes("dispon")) return "disponivel";
+      if (normalized.includes("uso")) return "emuso";
+      if (normalized.includes("manut")) return "manutencao";
+      if (normalized.includes("inativo")) return "inativo";
+      return "ativo";
+    }
+
+    function renderVehiclePhoto(photo) {
+      if (!photo) {
+        return '<div class="image-placeholder">Foto do veículo</div>';
+      }
+      return \`<img class="vehicle-image" src="\${photo}" alt="Foto do veículo" />\`;
+    }
+
+    function readPhotoAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve("");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function updatePhotoPreview(photo) {
+      const preview = document.getElementById("photoPreview");
+      preview.innerHTML = "";
+
+      if (!photo) return;
+
+      const img = document.createElement("img");
+      img.src = photo;
+      img.alt = "Pré-visualização da foto do veículo";
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "danger-btn";
+      removeButton.textContent = "Remover foto";
+      removeButton.onclick = () => {
+        preview.innerHTML = "";
+        document.getElementById("foto").value = "";
+        document.getElementById("fotoAtual").value = "";
+      };
+
+      preview.appendChild(img);
+      preview.appendChild(removeButton);
+    }
+
+
+    function populateDashboardFilters() {
+      if (!dashLocadoraFilter) return;
+
+      populateSelect(dashLocadoraFilter, uniqueSortedValues("locadora"), "Todas");
+      populateSelect(dashCentroCustoFilter, uniqueSortedValues("centroCusto"), "Todos");
+      populateSelect(dashCategoriaFilter, uniqueSortedValues("categoriaVeiculo"), "Todas");
+    }
+
+    function getDashboardContractMatch(vehicle) {
+      const value = dashContratoFilter?.value || "";
+      if (!value) return true;
+      return getContractExpiryBucket(vehicle.terminoContrato) === value;
+    }
+
+    function getDashboardFilteredVehicles() {
+      return vehicles.filter(v => {
+        return (!dashStatusFilter?.value || v.statusCarro === dashStatusFilter.value)
+          && (!dashLocadoraFilter?.value || v.locadora === dashLocadoraFilter.value)
+          && (!dashCentroCustoFilter?.value || v.centroCusto === dashCentroCustoFilter.value)
+          && (!dashCategoriaFilter?.value || v.categoriaVeiculo === dashCategoriaFilter.value)
+          && getDashboardContractMatch(v);
+      });
+    }
+
+    function groupCount(items, key, fallback = "Não cadastrado") {
+      return items.reduce((acc, item) => {
+        const label = String(item[key] || "").trim() || fallback;
+        acc[label] = (acc[label] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function createGradient(ctx, area, colorStart, colorEnd) {
+      const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+      gradient.addColorStop(0, colorStart);
+      gradient.addColorStop(1, colorEnd);
+      return gradient;
+    }
+
+    function getPowerBiPalette() {
+      return [
+        "#0069b4",
+        "#2f80ed",
+        "#00a6d6",
+        "#ffd900",
+        "#00518f",
+        "#8ec5ff",
+        "#4dabf7",
+        "#d9b800",
+        "#8ab8e8"
+      ];
+    }
+
+
+
+    const seelDataLabelsPlugin = {
+      id: "seelDataLabels",
+      afterDatasetsDraw(chart, args, pluginOptions = {}) {
+        if (pluginOptions.display === false) return;
+        const dataset = chart.data?.datasets?.[0];
+        const meta = chart.getDatasetMeta(0);
+        if (!dataset || !meta || meta.hidden) return;
+
+        const ctx = chart.ctx;
+        const chartArea = chart.chartArea;
+        const indexAxis = chart.options.indexAxis || "x";
+        const type = chart.config.type;
+        const total = (dataset.data || []).reduce((sum, value) => sum + (Number(value) || 0), 0);
+        const fontSize = Number(pluginOptions.fontSize || 11);
+        const fontWeight = pluginOptions.fontWeight || 800;
+        const format = pluginOptions.format || "number";
+        const hideZero = pluginOptions.hideZero !== false;
+
+        const compactCurrency = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          notation: "compact",
+          maximumFractionDigits: 1
+        });
+        const integerFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+
+        function labelFor(value) {
+          if (format === "currency") return compactCurrency.format(value);
+          if (format === "value-percent") {
+            const percent = total ? Math.round((value / total) * 100) : 0;
+            return \`\${integerFormat.format(value)} | \${percent}%\`;
+          }
+          if (format === "percent") return \`\${Math.round(value)}%\`;
+          return integerFormat.format(value);
+        }
+
+        function roundRect(x, y, width, height, radius) {
+          const r = Math.min(radius, width / 2, height / 2);
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + width, y, x + width, y + height, r);
+          ctx.arcTo(x + width, y + height, x, y + height, r);
+          ctx.arcTo(x, y + height, x, y, r);
+          ctx.arcTo(x, y, x + width, y, r);
+          ctx.closePath();
+        }
+
+        ctx.save();
+        ctx.font = \`\${fontWeight} \${fontSize}px Arial, Helvetica, sans-serif\`;
+        ctx.textBaseline = "middle";
+
+        meta.data.forEach((element, index) => {
+          const value = Number(dataset.data[index] || 0);
+          if (!Number.isFinite(value) || (hideZero && value === 0)) return;
+          const label = labelFor(value);
+
+          if (type === "doughnut" || type === "pie") {
+            const props = element.getProps(["x", "y", "startAngle", "endAngle", "innerRadius", "outerRadius"], true);
+            const angle = (props.startAngle + props.endAngle) / 2;
+            const radius = props.innerRadius + (props.outerRadius - props.innerRadius) * 0.58;
+            const x = props.x + Math.cos(angle) * radius;
+            const y = props.y + Math.sin(angle) * radius;
+            const width = ctx.measureText(label).width + 12;
+            const height = fontSize + 8;
+            const boxX = Math.min(Math.max(x - width / 2, chartArea.left + 2), chartArea.right - width - 2);
+            const boxY = Math.min(Math.max(y - height / 2, chartArea.top + 2), chartArea.bottom - height - 2);
+
+            ctx.fillStyle = "rgba(255,255,255,.92)";
+            ctx.strokeStyle = "rgba(0,60,113,.18)";
+            ctx.lineWidth = 1;
+            roundRect(boxX, boxY, width, height, 7);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#17365d";
+            ctx.textAlign = "center";
+            ctx.fillText(label, boxX + width / 2, boxY + height / 2 + .5);
+            return;
+          }
+
+          const props = element.getProps(["x", "y", "base", "width", "height"], true);
+          ctx.textAlign = "center";
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = "rgba(255,255,255,.95)";
+          ctx.fillStyle = "#17365d";
+
+          if (indexAxis === "y") {
+            const barLength = Math.abs(props.x - props.base);
+            const textWidth = ctx.measureText(label).width;
+            let x;
+            if (barLength > textWidth + 24) {
+              x = props.x - textWidth / 2 - 8;
+              ctx.strokeStyle = "rgba(0,60,113,.45)";
+              ctx.fillStyle = "#ffffff";
+            } else {
+              x = Math.min(props.x + textWidth / 2 + 8, chartArea.right - textWidth / 2 - 2);
+            }
+            const y = props.y;
+            ctx.strokeText(label, x, y);
+            ctx.fillText(label, x, y);
+          } else {
+            const x = props.x;
+            const y = Math.max(props.y - 9, chartArea.top + fontSize / 2 + 2);
+            ctx.strokeText(label, x, y);
+            ctx.fillText(label, x, y);
+          }
+        });
+
+        ctx.restore();
+      }
+    };
+
+    function makeChart(canvasId, type, labels, data, existingChart, options = {}) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || !window.Chart) return null;
+
+      if (existingChart) {
+        existingChart.destroy();
+      }
+
+      const ctx = canvas.getContext("2d");
+      const palette = getPowerBiPalette();
+
+      const dataset = {
+        data,
+        label: options.label || "",
+        borderWidth: type === "doughnut" ? 0 : 0,
+        borderRadius: type === "bar" ? 6 : 0,
+        hoverOffset: type === "doughnut" ? 8 : 0,
+        backgroundColor: type === "doughnut"
+          ? labels.map((_, index) => palette[index % palette.length])
+          : data.map((_, index) => palette[index % palette.length]),
+        barPercentage: type === "bar" ? 0.78 : undefined,
+        categoryPercentage: type === "bar" ? 0.82 : undefined,
+        maxBarThickness: type === "bar" ? 46 : undefined
+      };
+
+      return new Chart(canvas, {
+        type,
+        plugins: [seelDataLabelsPlugin],
+        data: {
+          labels,
+          datasets: [dataset]
+        },
+        options: {
+          indexAxis: options.indexAxis || "x",
+          responsive: true,
+          maintainAspectRatio: false,
+          resizeDelay: 80,
+          layout: { padding: { top: 24, right: options.indexAxis === "y" ? 58 : 16, bottom: 8, left: 8 } },
+          radius: type === "doughnut" ? "94%" : undefined,
+          cutout: type === "doughnut" ? "62%" : undefined,
+          plugins: {
+            legend: {
+              display: options.showLegend ?? (type === "doughnut"),
+              position: "bottom",
+              labels: {
+                color: "#38506d",
+                boxWidth: 10,
+                usePointStyle: true,
+                pointStyle: "circle",
+                padding: 14,
+                font: { weight: "bold", size: 11 }
+              }
+            },
+            seelDataLabels: {
+              display: options.showDataLabels !== false,
+              format: options.valueFormat || (type === "doughnut" ? "value-percent" : "number"),
+              fontSize: options.dataLabelFontSize || 11,
+              hideZero: true
+            },
+            tooltip: {
+              backgroundColor: "#ffffff",
+              titleColor: "#17365d",
+              bodyColor: "#17365d",
+              borderColor: "#d8dee7",
+              borderWidth: 1,
+              padding: 10,
+              displayColors: true
+            }
+          },
+          scales: type === "bar" ? {
+            x: {
+              grid: { color: "#edf2f7" },
+              ticks: {
+                color: "#5a6f85",
+                font: { weight: "bold", size: 11 }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: "#edf2f7" },
+              ticks: {
+                precision: 0,
+                color: "#5a6f85",
+                font: { weight: "bold", size: 11 }
+              }
+            }
+          } : {}
+        }
+      });
+    }
+
+    function renderCentroCustoBars(items) {
+      const target = document.getElementById("centroCustoBars");
+      if (!target) return;
+
+      const grouped = groupCount(items, "centroCusto");
+      const entries = Object.entries(grouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      target.innerHTML = "";
+
+      if (entries.length === 0) {
+        target.innerHTML = '<div class="risk-item">Sem dados disponíveis para o filtro selecionado.</div>';
+        return;
+      }
+
+      const max = Math.max(...entries.map(([, value]) => value), 1);
+
+      entries.forEach(([label, value]) => {
+        const percent = Math.round((value / max) * 100);
+        const item = document.createElement("div");
+        item.className = "powerbi-bar-item";
+        item.innerHTML = \`
+          <div class="powerbi-bar-label" title="\${label}">\${label}</div>
+          <div class="powerbi-bar-value">\${value}</div>
+          <div class="powerbi-bar-track">
+            <div class="powerbi-bar-fill" style="width:\${percent}%"></div>
+          </div>
+        \`;
+        target.appendChild(item);
+      });
+    }
+
+    function renderContractRiskList(items) {
+      const target = document.getElementById("contractRiskList");
+      if (!target) return;
+
+      const vencidos = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "vencidos").length;
+      const vencendo30 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "0-30").length;
+      const vencendo60 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "31-60").length;
+      const semTermino = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "sem-data").length;
+      const semCartao = items.filter(v => !String(v.cartaoCombustivel || "").trim()).length;
+      const semCobli = items.filter(v => !String(v.cobli || "").trim()).length;
+
+      target.innerHTML = \`
+        <div class="risk-item danger"><span>Contratos vencidos</span><strong>\${vencidos}</strong></div>
+        <div class="risk-item warning"><span>Vencendo em até 30 dias</span><strong>\${vencendo30}</strong></div>
+        <div class="risk-item warning"><span>Vencendo entre 31 e 60 dias</span><strong>\${vencendo60}</strong></div>
+        <div class="risk-item"><span>Sem término informado</span><strong>\${semTermino}</strong></div>
+        <div class="risk-item"><span>Sem cartão combustível</span><strong>\${semCartao}</strong></div>
+        <div class="risk-item"><span>Sem Cobli</span><strong>\${semCobli}</strong></div>
+      \`;
+    }
+
+    function renderDashboardIndicators() {
+      const filtered = getDashboardFilteredVehicles();
+
+      const valorMensal = filtered.reduce((sum, v) => sum + Number(v.valoresPraticados || 0), 0);
+      const vencidos = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "vencidos").length;
+      const vencendo30 = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "0-30").length;
+      const vencendo60 = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "31-60").length;
+      const semCondutor = filtered.filter(v => !String(v.condutor || "").trim()).length;
+      const emUso = filtered.filter(v => v.statusCarro === "Em uso").length;
+      const utilizacao = filtered.length ? Math.round((emUso / filtered.length) * 100) : 0;
+      const ticketMedio = filtered.length ? valorMensal / filtered.length : 0;
+      const totalPercent = vehicles.length ? Math.round((filtered.length / vehicles.length) * 100) : 0;
+
+      document.getElementById("dashTotalFiltrado").textContent = filtered.length;
+      document.getElementById("dashValorMensal").textContent = formatCurrency(valorMensal);
+      document.getElementById("dashContratosVencidos").textContent = vencidos;
+      document.getElementById("dashVencendo30").textContent = vencendo30;
+      document.getElementById("dashVencendo60").textContent = vencendo60;
+      document.getElementById("dashSemCondutor").textContent = semCondutor;
+      document.getElementById("dashUtilizacao").textContent = \`\${utilizacao}%\`;
+      document.getElementById("dashTicketMedio").textContent = \`Média por veículo \${formatCurrency(ticketMedio)}\`;
+      document.getElementById("dashTotalPercent").textContent = \`\${totalPercent}% da frota\`;
+
+      const statusGrouped = groupCount(filtered, "statusCarro");
+      statusChartInstance = makeChart(
+        "statusChart",
+        "doughnut",
+        Object.keys(statusGrouped),
+        Object.values(statusGrouped),
+        statusChartInstance,
+        { showLegend: true, valueFormat: "value-percent", dataLabelFontSize: 10 }
+      );
+
+      const categoryGrouped = groupCount(filtered, "categoriaVeiculo", "Não cadastrado");
+      const categoryEntries = Object.entries(categoryGrouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      categoryChartInstance = makeChart(
+        "categoryChart",
+        "bar",
+        categoryEntries.map(([label]) => label),
+        categoryEntries.map(([, value]) => value),
+        categoryChartInstance,
+        { label: "Quantidade", indexAxis: "y", showLegend: false }
+      );
+
+      const locadoraValueGrouped = filtered.reduce((acc, v) => {
+        const label = String(v.locadora || "").trim() || "Não cadastrado";
+        acc[label] = (acc[label] || 0) + Number(v.valoresPraticados || 0);
+        return acc;
+      }, {});
+
+      const locadoraEntries = Object.entries(locadoraValueGrouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      locadoraChartInstance = makeChart(
+        "locadoraChart",
+        "bar",
+        locadoraEntries.map(([label]) => label),
+        locadoraEntries.map(([, value]) => value),
+        locadoraChartInstance,
+        { label: "Valor mensal", indexAxis: "y", showLegend: false, valueFormat: "currency" }
+      );
+
+      const contratoBuckets = {
+        "Vencidos": 0,
+        "0-30 dias": 0,
+        "31-60 dias": 0,
+        "61-90 dias": 0,
+        "+90 dias": 0,
+        "Sem data": 0
+      };
+
+      filtered.forEach(v => {
+        const bucket = getContractExpiryBucket(v.terminoContrato);
+        if (bucket === "sem-data") contratoBuckets["Sem data"] += 1;
+        else if (bucket === "vencidos") contratoBuckets["Vencidos"] += 1;
+        else if (bucket === "0-30") contratoBuckets["0-30 dias"] += 1;
+        else if (bucket === "31-60") contratoBuckets["31-60 dias"] += 1;
+        else if (bucket === "61-90") contratoBuckets["61-90 dias"] += 1;
+        else contratoBuckets["+90 dias"] += 1;
+      });
+
+      contratoChartInstance = makeChart(
+        "contratoChart",
+        "bar",
+        Object.keys(contratoBuckets),
+        Object.values(contratoBuckets),
+        contratoChartInstance,
+        { label: "Contratos", showLegend: false }
+      );
+
+      const yearGrouped = filtered.reduce((acc, v) => {
+        const raw = String(v.anoModelo || "").trim() || "Não informado";
+        acc[raw] = (acc[raw] || 0) + 1;
+        return acc;
+      }, {});
+
+      const yearEntries = Object.entries(yearGrouped).sort((a, b) => {
+        const na = Number(a[0]);
+        const nb = Number(b[0]);
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+        if (!Number.isNaN(na)) return -1;
+        if (!Number.isNaN(nb)) return 1;
+        return a[0].localeCompare(b[0], "pt-BR");
+      });
+
+      yearModelChartInstance = makeChart(
+        "yearModelChart",
+        "bar",
+        yearEntries.map(([label]) => label),
+        yearEntries.map(([, value]) => value),
+        yearModelChartInstance,
+        { label: "Veículos", showLegend: false }
+      );
+
+      renderCentroCustoBars(filtered);
+      renderContractRiskList(filtered);
+    }
+
+    function clearDashboardFilters() {
+      dashStatusFilter.value = "";
+      dashLocadoraFilter.value = "";
+      dashCentroCustoFilter.value = "";
+      dashCategoriaFilter.value = "";
+      dashContratoFilter.value = "";
+      renderDashboardIndicators();
+    }
+
+
+    function saveApiSettings() {
+      apiSettings = {
+        aldMeasurementsUrl: document.getElementById("aldMeasurementsUrl")?.value.trim() || "",
+        arvalMeasurementsUrl: document.getElementById("arvalMeasurementsUrl")?.value.trim() || "",
+        arvalFinesUrl: document.getElementById("arvalFinesUrl")?.value.trim() || ""
+      };
+      apiSessionTokens = {
+        aldToken: document.getElementById("aldToken")?.value.trim() || "",
+        arvalToken: document.getElementById("arvalToken")?.value.trim() || ""
+      };
+
+      renderApiSettings();
+      alert("Configurações de API salvas. Tokens ficam ativos apenas nesta sessão.");
+    }
+
+    function renderApiSettings() {
+      const fields = [
+        "aldMeasurementsUrl",
+        "arvalMeasurementsUrl",
+        "arvalFinesUrl"
+      ];
+
+      fields.forEach(field => {
+        const el = document.getElementById(field);
+        if (el) el.value = apiSettings[field] || "";
+      });
+
+      const aldTokenField = document.getElementById("aldToken");
+      const arvalTokenField = document.getElementById("arvalToken");
+      if (aldTokenField) aldTokenField.value = apiSessionTokens.aldToken || "";
+      if (arvalTokenField) arvalTokenField.value = apiSessionTokens.arvalToken || "";
+    }
+
+    function getVehicleByPlate(plate) {
+      const normalizedPlate = String(plate || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (!normalizedPlate) return null;
+
+      return vehicles.find(v => {
+        const vehiclePlate = String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        return vehiclePlate && vehiclePlate === normalizedPlate;
+      }) || null;
+    }
+
+    function normalizeMeasurement(source, item) {
+      const plate = item.placa || item.plate || item.placaVeiculo || item.vehiclePlate || "";
+      const vehicle = getVehicleByPlate(plate);
+      const linked = Boolean(vehicle);
+
+      return {
+        id: item.id || \`\${source}-\${plate}-\${item.periodo || item.period || item.data || Date.now()}-\${crypto.randomUUID()}\`,
+        source,
+        plate: String(plate || "").toUpperCase(),
+        vehicleId: vehicle?.id || "",
+        linked,
+        vehicleCode: vehicle?.codigoVeiculo || item.codigoVeiculo || item.vehicleCode || "",
+        vehicleModel: vehicle?.modeloVeiculo || item.modeloVeiculo || item.vehicleModel || "",
+        period: item.periodo || item.period || item.competencia || "",
+        date: normalizeDateValue(item.data || item.date || item.syncDate || ""),
+        km: Number(item.km || item.kmMedido || item.measuredKm || item.odometer || 0),
+        value: Number(item.valor || item.value || item.amount || 0),
+        costCenter: vehicle?.centroCusto || item.centroCusto || item.costCenter || "",
+        locadora: vehicle?.locadora || "",
+        contrato: vehicle?.contrato || "",
+        syncedAt: new Date().toLocaleString("pt-BR")
+      };
+    }
+
+    function normalizeFineFromArval(item) {
+      const plate = item.placa || item.plate || item.placaVeiculo || item.vehiclePlate || "";
+      const vehicle = getVehicleByPlate(plate);
+
+      return {
+        id: item.id || \`ARVAL-FINE-\${plate}-\${item.data || item.date || Date.now()}-\${crypto.randomUUID()}\`,
+        vehicleId: vehicle?.id || "",
+        linked: Boolean(vehicle),
+        date: normalizeDateValue(item.data || item.date || item.infractionDate || ""),
+        type: item.tipo || item.type || item.description || item.infracao || "Multa ARVAL",
+        value: Number(item.valor || item.value || item.amount || 0),
+        driver: vehicle?.condutor || item.condutor || item.driver || "",
+        status: item.status || "Pendente",
+        description: item.descricao || item.description || item.observacao || "Registro importado da plataforma ARVAL",
+        source: "ARVAL",
+        plate: String(plate || "").toUpperCase()
+      };
+    }
+
+    async function fetchApiJson(url, token, payload = {}) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? \`Bearer \${token}\` : ""
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(\`Erro na API: \${response.status} \${response.statusText}\`);
+      }
+
+      return await response.json();
+    }
+
+    function buildApiPayload(source) {
+      return {
+        source,
+        vehicles: vehicles.map(v => ({
+          id: v.id,
+          placa: v.placaVeiculo,
+          codigoVeiculo: v.codigoVeiculo,
+          modeloVeiculo: v.modeloVeiculo,
+          centroCusto: v.centroCusto,
+          contrato: v.contrato,
+          locadora: v.locadora
+        }))
+      };
+    }
+
+    async function syncMeasurements(source) {
+      const isAld = source === "ALD";
+      const url = isAld ? apiSettings.aldMeasurementsUrl : apiSettings.arvalMeasurementsUrl;
+      const token = isAld ? apiSessionTokens.aldToken : apiSessionTokens.arvalToken;
+      const statusEl = document.getElementById(isAld ? "aldApiStatus" : "arvalApiStatus");
+
+      if (!url) {
+        alert(\`Configure o endpoint de medições \${source} antes de sincronizar.\`);
+        openTabById("medicoesTab");
+        return;
+      }
+
+      try {
+        if (statusEl) statusEl.textContent = \`Sincronizando medições \${source}...\`;
+
+        const data = await fetchApiJson(url, token, buildApiPayload(source));
+        const rows = Array.isArray(data) ? data : (data.measurements || data.medicoes || data.data || []);
+        const normalized = rows.map(item => normalizeMeasurement(source, item));
+        const linkedCount = normalized.filter(item => item.linked).length;
+        const unlinkedCount = normalized.length - linkedCount;
+
+        const existingOtherSources = measurements.filter(m => m.source !== source);
+        measurements = [...existingOtherSources, ...normalized];
+
+        saveData();
+        renderMeasurements();
+
+        if (statusEl) statusEl.textContent = \`\${normalized.length} medições \${source} sincronizadas. \${linkedCount} vinculadas automaticamente por placa e \${unlinkedCount} sem placa cadastrada.\`;
+      } catch (error) {
+        if (statusEl) statusEl.textContent = \`Falha ao sincronizar \${source}: \${error.message}\`;
+        alert(\`Não foi possível sincronizar medições \${source}. \${error.message}\`);
+      }
+    }
+
+    async function syncArvalFines() {
+      const url = apiSettings.arvalFinesUrl;
+      const token = apiSessionTokens.arvalToken;
+      const statusEl = document.getElementById("arvalApiStatus");
+
+      if (!url) {
+        alert("Configure o endpoint de multas da ARVAL antes de sincronizar.");
+        openTabById("medicoesTab");
+        return;
+      }
+
+      try {
+        if (statusEl) statusEl.textContent = "Sincronizando multas ARVAL...";
+
+        const data = await fetchApiJson(url, token, buildApiPayload("ARVAL_FINES"));
+        const rows = Array.isArray(data) ? data : (data.fines || data.multas || data.infracoes || data.data || []);
+        const normalized = rows.map(normalizeFineFromArval);
+        const linkedCount = normalized.filter(item => item.linked).length;
+        const unlinkedCount = normalized.length - linkedCount;
+
+        const existingNonArvalFines = fines.filter(f => f.source !== "ARVAL");
+        fines = [...existingNonArvalFines, ...normalized];
+
+        saveData();
+        renderAll();
+
+        if (statusEl) statusEl.textContent = \`\${normalized.length} multas ARVAL sincronizadas. \${linkedCount} vinculadas automaticamente por placa e \${unlinkedCount} sem placa cadastrada.\`;
+        openTabById("multasTab");
+      } catch (error) {
+        if (statusEl) statusEl.textContent = \`Falha ao puxar multas ARVAL: \${error.message}\`;
+        alert(\`Não foi possível puxar multas da ARVAL. \${error.message}\`);
+      }
+    }
+
+    function getFilteredMeasurements() {
+      const source = measurementSourceFilter?.value || "";
+      const plate = measurementPlateFilter?.value || "";
+      const start = measurementStartFilter?.value || "";
+      const end = measurementEndFilter?.value || "";
+
+      return measurements.filter(item => {
+        const matchesSource = !source || item.source === source;
+        const matchesPlate = !plate || item.plate === plate;
+        const itemDate = item.date || "";
+        const matchesStart = !start || !itemDate || itemDate >= start;
+        const matchesEnd = !end || !itemDate || itemDate <= end;
+        return matchesSource && matchesPlate && matchesStart && matchesEnd;
+      });
+    }
+
+    function renderMeasurementFilters() {
+      if (!measurementPlateFilter) return;
+
+      const current = measurementPlateFilter.value;
+      const plates = [...new Set(measurements.map(m => m.plate).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+      measurementPlateFilter.innerHTML = '<option value="">Todas</option>';
+      plates.forEach(plate => {
+        const option = document.createElement("option");
+        option.value = plate;
+        option.textContent = plate;
+        measurementPlateFilter.appendChild(option);
+      });
+
+      if (plates.includes(current)) measurementPlateFilter.value = current;
+    }
+
+    function renderMeasurements() {
+      renderMeasurementFilters();
+
+      const table = document.getElementById("measurementsTable");
+      const filtered = getFilteredMeasurements();
+
+      const totalKm = filtered.reduce((sum, item) => sum + Number(item.km || 0), 0);
+      const totalValue = filtered.reduce((sum, item) => sum + Number(item.value || 0), 0);
+      const unlinked = filtered.filter(item => !item.linked).length;
+      const lastSync = filtered[0]?.syncedAt || measurements[0]?.syncedAt || "-";
+
+      if (document.getElementById("measurementTotal")) document.getElementById("measurementTotal").textContent = filtered.length;
+      if (document.getElementById("measurementKmTotal")) document.getElementById("measurementKmTotal").textContent = totalKm.toLocaleString("pt-BR");
+      if (document.getElementById("measurementValueTotal")) document.getElementById("measurementValueTotal").textContent = formatCurrency(totalValue);
+      if (document.getElementById("measurementUnlinked")) document.getElementById("measurementUnlinked").textContent = unlinked;
+      if (document.getElementById("measurementLastSync")) document.getElementById("measurementLastSync").textContent = lastSync;
+
+      if (!table) return;
+
+      table.innerHTML = "";
+
+      if (filtered.length === 0) {
+        table.innerHTML = '<tr><td colspan="9">Nenhuma medição integrada encontrada.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td><span class="measurement-source">\${item.source || "-"}</span></td>
+          <td><strong>\${item.plate || "-"}</strong></td>
+          <td>\${item.vehicleModel || item.vehicleCode || "-"}</td>
+          <td>\${item.period || formatDate(item.date)}</td>
+          <td>\${Number(item.km || 0).toLocaleString("pt-BR")}</td>
+          <td>\${formatCurrency(item.value)}</td>
+          <td>\${item.costCenter || "-"}</td>
+          <td>\${item.linked ? '<span class="link-status linked-ok">Vinculado</span>' : '<span class="link-status linked-warning">Sem placa cadastrada</span>'}</td>
+          <td>\${item.syncedAt || "-"}</td>
+        \`;
+        table.appendChild(row);
+      });
+    }
+
+    function clearMeasurementFilters() {
+      if (measurementSourceFilter) measurementSourceFilter.value = "";
+      if (measurementPlateFilter) measurementPlateFilter.value = "";
+      if (measurementStartFilter) measurementStartFilter.value = "";
+      if (measurementEndFilter) measurementEndFilter.value = "";
+      renderMeasurements();
+    }
+
+
+    function renderStats() {
+      const vencendo = vehicles.filter(v => {
+        const dias = calculateContractDays(v.terminoContrato);
+        return dias !== "" && dias >= 0 && dias <= 60;
+      }).length;
+
+      document.getElementById("totalVeiculos").textContent = vehicles.length;
+      document.getElementById("totalDisponiveis").textContent = vehicles.filter(v => v.statusCarro === "Disponível").length;
+      document.getElementById("totalEmUso").textContent = vehicles.filter(v => v.statusCarro === "Em uso").length;
+      document.getElementById("totalVencendo").textContent = vencendo;
+      document.getElementById("totalMultas").textContent = fines.length;
+    }
+
+    function uniqueSortedValues(key) {
+      return [...new Set(
+        vehicles
+          .map(v => String(v[key] || "").trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+
+    function populateSelect(select, values, defaultText) {
+      const currentValue = select.value;
+      select.innerHTML = \`<option value="">\${defaultText}</option>\`;
+
+      values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+
+      if (values.includes(currentValue)) {
+        select.value = currentValue;
+      }
+    }
+
+    function renderFilterOptions() {
+      populateSelect(liderFilter, uniqueSortedValues("liderAdm"), "Todos");
+      populateSelect(centroCustoFilter, uniqueSortedValues("centroCusto"), "Todos");
+      populateSelect(locadoraFilter, uniqueSortedValues("locadora"), "Todas");
+      populateSelect(categoriaFilter, uniqueSortedValues("categoriaVeiculo"), "Todas");
+      populateSelect(anoFilter, uniqueSortedValues("anoModelo"), "Todos");
+
+      const currentCondutor = condutorFilter.value;
+      condutorFilter.innerHTML = \`
+        <option value="">Todos</option>
+        <option value="__SEM_CONDUTOR__">Condutor não vinculado</option>
+      \`;
+
+      uniqueSortedValues("condutor").forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        condutorFilter.appendChild(option);
+      });
+
+      if ([...condutorFilter.options].some(option => option.value === currentCondutor)) {
+        condutorFilter.value = currentCondutor;
+      }
+    }
+
+    function getContractFilterMatch(vehicle) {
+      const value = contratoFilter.value;
+      if (!value) return true;
+      return getContractExpiryBucket(vehicle.terminoContrato) === value;
+    }
+
+    function getFilteredVehicles() {
+      const term = search.value.toLowerCase().trim();
+
+      return vehicles.filter(v => {
+        const text = Object.values(v).join(" ").toLowerCase();
+        const matchesText = text.includes(term);
+        const matchesStatus = !statusFilter.value || v.statusCarro === statusFilter.value;
+        const matchesLider = !liderFilter.value || v.liderAdm === liderFilter.value;
+        const matchesCentroCusto = !centroCustoFilter.value || v.centroCusto === centroCustoFilter.value;
+        const matchesLocadora = !locadoraFilter.value || v.locadora === locadoraFilter.value;
+        const matchesCategoria = !categoriaFilter.value || v.categoriaVeiculo === categoriaFilter.value;
+        const matchesAno = !anoFilter.value || String(v.anoModelo || "") === anoFilter.value;
+
+        let matchesCondutor = true;
+        if (condutorFilter.value === "__SEM_CONDUTOR__") {
+          matchesCondutor = !String(v.condutor || "").trim();
+        } else if (condutorFilter.value) {
+          matchesCondutor = v.condutor === condutorFilter.value;
+        }
+
+        const matchesContrato = getContractFilterMatch(v);
+
+        return matchesText
+          && matchesStatus
+          && matchesLider
+          && matchesCentroCusto
+          && matchesLocadora
+          && matchesCategoria
+          && matchesAno
+          && matchesCondutor
+          && matchesContrato;
+      });
+    }
+
+    function clearFilters() {
+      search.value = "";
+      statusFilter.value = "";
+      liderFilter.value = "";
+      centroCustoFilter.value = "";
+      locadoraFilter.value = "";
+      categoriaFilter.value = "";
+      condutorFilter.value = "";
+      anoFilter.value = "";
+      contratoFilter.value = "";
+      renderVehicles();
+    }
+
+    function renderVehicles() {
+      const filtered = getFilteredVehicles();
+      vehicleGrid.innerHTML = "";
+
+      if (filtered.length === 0) {
+        vehicleGrid.innerHTML = '<div class="empty">Nenhum veículo encontrado.</div>';
+        return;
+      }
+
+      filtered.forEach(v => {
+        const dias = calculateContractDays(v.terminoContrato);
+        const meses = calculateContractMonths(v.terminoContrato);
+
+        const card = document.createElement("article");
+        card.className = "vehicle-card";
+
+        card.innerHTML = \`
+          <div class="vehicle-card-top">
+            \${v.locadora || "Locadora não cadastrada"} • \${v.codigoVeiculo || "código não cadastrado"}
+          </div>
+
+          <div class="vehicle-content">
+            <h3>\${v.modeloVeiculo || "-"}</h3>
+            <div class="subtitle">\${v.categoriaVeiculo || "-"}</div>
+
+            <div class="vehicle-image-wrap">
+              \${renderVehiclePhoto(v.foto)}
+            </div>
+
+            <div class="plate">\${v.placaVeiculo || "-"}</div>
+            <span class="status \${statusClass(v.statusCarro)}">\${v.statusCarro || "-"}</span>
+
+            <div class="vehicle-meta vehicle-meta-summary">
+              <div><strong>Condutor:</strong> <span>\${v.condutor || "Condutor não vinculado"}</span></div>
+              <div><strong>Centro Custo:</strong> <span>\${v.centroCusto || "-"}</span></div>
+            </div>
+          </div>
+
+          <div class="card-actions vehicle-card-actions">
+            <button class="outline-btn" type="button" data-vehicle-details>Ver detalhes</button>
+            <button class="outline-btn" onclick="editVehicle('\${v.id}')">Editar</button>
+          </div>
+        \`;
+
+        const detailsButton = card.querySelector("[data-vehicle-details]");
+        if (detailsButton) {
+          detailsButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            openVehicleDetails(v.id);
+          });
+        }
+
+        vehicleGrid.appendChild(card);
+      });
+    }
+
+    function renderVehicleOptions() {
+      const fineVehicle = document.getElementById("fineVehicle");
+      fineVehicle.innerHTML = '<option value="">Selecione um veículo</option>';
+      vehicles.forEach(vehicle => {
+        const option = document.createElement("option");
+        option.value = vehicle.id;
+        option.textContent = \`\${vehicle.modeloVeiculo} - \${vehicle.placaVeiculo}\`;
+        fineVehicle.appendChild(option);
+      });
+    }
+
+    function renderFines() {
+      fineTable.innerHTML = "";
+
+      if (fines.length === 0) {
+        fineTable.innerHTML = '<tr><td colspan="6">Nenhuma multa ou infração cadastrada.</td></tr>';
+        return;
+      }
+
+      fines.forEach(f => {
+        const vehicle = vehicles.find(v => v.id === f.vehicleId);
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${vehicle ? \`\${vehicle.modeloVeiculo}<br><strong>\${vehicle.placaVeiculo}</strong>\` : \`\${f.plate || "Placa não vinculada"}<br><span class="link-status linked-warning">Sem placa cadastrada</span>\`}</td>
+          <td>\${formatDate(f.date)}</td>
+          <td>\${f.type}</td>
+          <td>\${formatCurrency(f.value)}</td>
+          <td>\${f.status}</td>
+          <td><button class="danger-btn" onclick="deleteFine('\${f.id}')">Excluir</button></td>
+        \`;
+        fineTable.appendChild(row);
+      });
+    }
+
+    function renderSummaryTable() {
+      summaryTable.innerHTML = "";
+
+      if (vehicles.length === 0) {
+        summaryTable.innerHTML = '<tr><td colspan="6">Nenhum veículo cadastrado na base da frota.</td></tr>';
+        return;
+      }
+
+      vehicles.forEach(v => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${v.statusCarro || "-"}</td>
+          <td><strong>\${v.placaVeiculo || "-"}</strong></td>
+          <td>\${v.modeloVeiculo || "-"}</td>
+          <td>\${v.condutor || "-"}</td>
+          <td>\${v.centroCusto || "-"}</td>
+          <td>\${v.contrato || "-"}</td>
+        \`;
+        summaryTable.appendChild(row);
+      });
+    }
+
+
+    function renderDashboardSummaryTable() {
+      const dashboardSummaryTable = document.getElementById("dashboardSummaryTable");
+      if (!dashboardSummaryTable) return;
+
+      dashboardSummaryTable.innerHTML = "";
+
+      const latestVehicles = vehicles.slice(0, 8);
+
+      if (latestVehicles.length === 0) {
+        dashboardSummaryTable.innerHTML = '<tr><td colspan="6">Nenhum veículo cadastrado na base da frota.</td></tr>';
+        return;
+      }
+
+      latestVehicles.forEach(v => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${v.statusCarro || "-"}</td>
+          <td><strong>\${v.placaVeiculo || "-"}</strong></td>
+          <td>\${v.modeloVeiculo || "-"}</td>
+          <td>\${v.condutor || "-"}</td>
+          <td>\${v.centroCusto || "-"}</td>
+          <td>\${v.contrato || "-"}</td>
+        \`;
+        dashboardSummaryTable.appendChild(row);
+      });
+    }
+
+    function renderAll() {
+      refreshContractCalculatedFields();
+      renderStats();
+      renderVehicleOptions();
+      renderFilterOptions();
+      populateDashboardFilters();
+      renderVehicles();
+      renderFines();
+      renderSummaryTable();
+      renderDashboardSummaryTable();
+      renderFleetManager();
+      renderApiSettings();
+      renderMeasurements();
+      renderDashboardIndicators();
+      updateImportPanel();
+    }
+
+
+    function openTab(tabId, button) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add("active");
+
+      if (button) {
+        button.classList.add("active");
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openTabById(tabId) {
+      const button = [...document.querySelectorAll(".tab-button")]
+        .find(btn => btn.getAttribute("onclick") && btn.getAttribute("onclick").includes(tabId));
+
+      openTab(tabId, button);
+    }
+
+    function fillQuickReservation() {
+      document.getElementById("centroCusto").value = document.getElementById("heroCentroCusto").value;
+      document.getElementById("condutor").value = document.getElementById("heroCondutor").value;
+      document.getElementById("inicioContrato").value = document.getElementById("heroInicioContrato").value;
+      document.getElementById("statusCarro").value = "Em uso";
+      openTabById("cadastroTab");
+      document.getElementById("formTitle").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function escapeVehicleDetail(value) {
+      return String(value ?? "-")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function vehicleDetailValue(value, fallback = "-") {
+      const normalized = String(value ?? "").trim();
+      return escapeVehicleDetail(normalized || fallback);
+    }
+
+    function vehicleDetailItem(label, value, full = false) {
+      return \`<div class="vehicle-detail-item\${full ? " full" : ""}"><small>\${escapeVehicleDetail(label)}</small><strong>\${value}</strong></div>\`;
+    }
+
+    function openVehicleDetails(id) {
+      const normalizedId = String(id ?? "");
+      const v = vehicles.find(vehicle => String(vehicle.id ?? "") === normalizedId);
+      if (!v) {
+        alert("Não foi possível localizar os dados deste veículo.");
+        return;
+      }
+
+      const modal = document.getElementById("vehicleDetailModal");
+      const body = document.getElementById("vehicleDetailBody");
+      const title = document.getElementById("vehicleDetailTitle");
+      const subtitle = document.getElementById("vehicleDetailSubtitle");
+      const editButton = document.getElementById("vehicleDetailEditButton");
+      if (!modal || !body || !title || !subtitle || !editButton) return;
+
+      const dias = calculateContractDays(v.terminoContrato);
+      const meses = calculateContractMonths(v.terminoContrato);
+      const situacaoVencimento = getContractExpiryStatus(v.terminoContrato);
+      const vehicleFines = fines.filter(f => f.vehicleId === v.id);
+      const vehiclePlate = String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const vehicleMeasurements = (Array.isArray(measurements) ? measurements : []).filter(m => {
+        const measurementPlate = String(m.placa || m.plate || m.placaVeiculo || m.vehiclePlate || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, "");
+        return m.vehicleId === v.id || (vehiclePlate && measurementPlate === vehiclePlate);
+      });
+      const fineTotal = vehicleFines.reduce((total, fine) => total + Number(fine.valor || fine.fineValue || 0), 0);
+
+      title.textContent = \`\${v.modeloVeiculo || "Veículo"} • \${v.placaVeiculo || "Sem placa"}\`;
+      subtitle.textContent = \`\${v.locadora || "Locadora não cadastrada"} • \${v.codigoVeiculo || "Código não cadastrado"}\`;
+
+      body.innerHTML = \`
+        <div class="vehicle-detail-overview">
+          <div class="vehicle-detail-photo">\${renderVehiclePhoto(v.foto)}</div>
+          <div class="vehicle-detail-highlight">
+            <div class="vehicle-detail-highlight-card"><small>Status</small><strong>\${vehicleDetailValue(v.statusCarro)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Condutor</small><strong>\${vehicleDetailValue(v.condutor, "Não vinculado")}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Centro de Custo</small><strong>\${vehicleDetailValue(v.centroCusto)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Contrato</small><strong>\${vehicleDetailValue(v.contrato)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Medições vinculadas</small><strong>\${vehicleMeasurements.length}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Multas / Infrações</small><strong>\${vehicleFines.length} • \${escapeVehicleDetail(formatCurrency(fineTotal))}</strong></div>
+          </div>
+        </div>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Identificação do veículo</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Placa", vehicleDetailValue(v.placaVeiculo))}
+            \${vehicleDetailItem("Modelo", vehicleDetailValue(v.modeloVeiculo))}
+            \${vehicleDetailItem("Categoria", vehicleDetailValue(v.categoriaVeiculo))}
+            \${vehicleDetailItem("Ano modelo", vehicleDetailValue(v.anoModelo))}
+            \${vehicleDetailItem("Código do veículo", vehicleDetailValue(v.codigoVeiculo))}
+            \${vehicleDetailItem("Locadora", vehicleDetailValue(v.locadora))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Condutor e responsáveis</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Condutor", vehicleDetailValue(v.condutor, "Não vinculado"))}
+            \${vehicleDetailItem("CPF do condutor", vehicleDetailValue(v.cpfCondutor))}
+            \${vehicleDetailItem("Função", vehicleDetailValue(v.funcao))}
+            \${vehicleDetailItem("Líder ADM", vehicleDetailValue(v.liderAdm))}
+            \${vehicleDetailItem("Centro de Custo", vehicleDetailValue(v.centroCusto))}
+            \${vehicleDetailItem("Status do carro", vehicleDetailValue(v.statusCarro))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Contrato e valores</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Contrato", vehicleDetailValue(v.contrato))}
+            \${vehicleDetailItem("Valor praticado", escapeVehicleDetail(formatCurrency(v.valoresPraticados)))}
+            \${vehicleDetailItem("Prazo do contrato", vehicleDetailValue(v.prazoContrato))}
+            \${vehicleDetailItem("Início do contrato", escapeVehicleDetail(formatDate(v.inicioContrato)))}
+            \${vehicleDetailItem("Término do contrato", escapeVehicleDetail(formatDate(v.terminoContrato)))}
+            \${vehicleDetailItem("Situação do vencimento", escapeVehicleDetail(situacaoVencimento))}
+            \${vehicleDetailItem("Dias até o vencimento", dias === "" ? "-" : escapeVehicleDetail(dias))}
+            \${vehicleDetailItem("Meses até o vencimento", meses === "" ? "-" : escapeVehicleDetail(meses))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Franquias e controles</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Franquia mensal", vehicleDetailValue(v.franquiaMensal))}
+            \${vehicleDetailItem("Franquia total", vehicleDetailValue(v.franquiaTotal))}
+            \${vehicleDetailItem("Cartão combustível", vehicleDetailValue(v.cartaoCombustivel))}
+            \${vehicleDetailItem("Cobli", vehicleDetailValue(v.cobli))}
+            \${vehicleDetailItem("Medições vinculadas", escapeVehicleDetail(vehicleMeasurements.length))}
+            \${vehicleDetailItem("Multas / Infrações", \`\${escapeVehicleDetail(vehicleFines.length)} registro(s) • \${escapeVehicleDetail(formatCurrency(fineTotal))}\`)}
+            \${vehicleDetailItem("Observações", vehicleDetailValue(v.observacoes), true)}
+          </div>
+        </section>
+      \`;
+
+      editButton.onclick = () => {
+        closeVehicleDetails();
+        editVehicle(id);
+      };
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeVehicleDetails() {
+      const modal = document.getElementById("vehicleDetailModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    function handleVehicleDetailBackdrop(event) {
+      if (event.target?.id === "vehicleDetailModal") closeVehicleDetails();
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeVehicleDetails();
+    });
+
+    function quickReserve(id) {
+      const v = vehicles.find(vehicle => vehicle.id === id);
+      if (!v) return;
+
+      editVehicle(id);
+      if (v.statusCarro === "Disponível") {
+        document.getElementById("statusCarro").value = "Em uso";
+      }
+    }
+
+    vehicleForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const placaInput = document.getElementById("placaVeiculo");
+      const modeloInput = document.getElementById("modeloVeiculo");
+
+      if (!placaInput || !modeloInput) {
+        alert("Campos de placa/modelo não encontrados. Recarregue o aplicativo.");
+        return;
+      }
+
+      const placa = placaInput.value.trim().toUpperCase();
+      const modelo = modeloInput.value.trim();
+
+      if (!placa || !modelo) {
+        alert("Informe pelo menos a placa e o modelo do veículo antes de salvar.");
+        return;
+      }
+
+      const selectedId = document.getElementById("vehicleId").value;
+      const existingById = selectedId ? vehicles.find(v => v.id === selectedId) : null;
+      const existingByPlate = vehicles.find(v =>
+        String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "") === placa.replace(/[^A-Z0-9]/g, "")
+      );
+
+      const targetVehicle = existingById || existingByPlate || null;
+      const id = targetVehicle?.id || selectedId || crypto.randomUUID();
+
+      const photoInput = document.getElementById("foto");
+      const photoFile = photoInput?.files?.[0];
+      const currentPhoto = document.getElementById("fotoAtual").value || targetVehicle?.foto || "";
+      const photo = photoFile ? await readPhotoAsBase64(photoFile) : currentPhoto;
+
+      const terminoContrato = document.getElementById("terminoContrato").value;
+      const diasCalculados = calculateContractDays(terminoContrato);
+      const mesesCalculados = calculateContractMonths(terminoContrato);
+
+      const vehicle = {
+        id,
+        foto: photo,
+        statusCarro: document.getElementById("statusCarro").value,
+        liderAdm: document.getElementById("liderAdm").value.trim(),
+        centroCusto: document.getElementById("centroCusto").value.trim(),
+        placaVeiculo: placa,
+        locadora: document.getElementById("locadora").value.trim(),
+        codigoVeiculo: document.getElementById("codigoVeiculo").value.trim(),
+        condutor: document.getElementById("condutor").value.trim(),
+        cpfCondutor: document.getElementById("cpfCondutor").value.trim(),
+        funcao: document.getElementById("funcao").value.trim(),
+        modeloVeiculo: modelo,
+        categoriaVeiculo: document.getElementById("categoriaVeiculo").value.trim(),
+        valoresPraticados: document.getElementById("valoresPraticados").value,
+        inicioContrato: document.getElementById("inicioContrato").value,
+        terminoContrato: terminoContrato,
+        prazoContrato: document.getElementById("prazoContrato").value.trim(),
+        anoModelo: document.getElementById("anoModelo").value,
+        franquiaMensal: document.getElementById("franquiaMensal").value.trim(),
+        franquiaTotal: document.getElementById("franquiaTotal").value.trim(),
+        diasFinalContrato: diasCalculados,
+        mesesFimContrato: mesesCalculados,
+        situacaoContrato: getContractExpiryStatus(terminoContrato),
+        contrato: document.getElementById("contrato").value.trim(),
+        cartaoCombustivel: document.getElementById("cartaoCombustivel").value.trim(),
+        cobli: document.getElementById("cobli").value.trim(),
+        observacoes: document.getElementById("observacoes").value.trim()
+      };
+
+      const index = vehicles.findIndex(v => v.id === id);
+      if (index >= 0) {
+        vehicles[index] = vehicle;
+      } else {
+        vehicles.push(vehicle);
+      }
+
+      saveData();
+
+      // Atualiza imediatamente cards, filtros, dashboard, tabelas e prévia da foto.
+      renderAll();
+
+      // Mantém o formulário sincronizado com o registro salvo antes de limpar.
+      document.getElementById("vehicleId").value = id;
+      document.getElementById("fotoAtual").value = photo;
+      updatePhotoPreview(photo);
+
+      alert("Cadastro atualizado com sucesso. Dados e foto foram salvos.");
+
+      resetVehicleForm();
+      renderAll();
+      openTabById("frotaTab");
+    });
+
+    fineForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      fines.push({
+        id: crypto.randomUUID(),
+        vehicleId: document.getElementById("fineVehicle").value,
+        date: document.getElementById("fineDate").value,
+        type: document.getElementById("fineType").value.trim(),
+        value: document.getElementById("fineValue").value,
+        driver: document.getElementById("fineDriver").value.trim(),
+        status: document.getElementById("fineStatus").value,
+        description: document.getElementById("fineDescription").value.trim()
+      });
+
+      saveData();
+      fineForm.reset();
+      renderAll();
+    });
+
+    function editVehicle(id) {
+      const v = vehicles.find(vehicle => vehicle.id === id);
+      if (!v) return;
+
+      openTabById("cadastroTab");
+
+      const title = document.getElementById("formTitle");
+      if (title) title.textContent = "Editar veículo da frota";
+
+      document.getElementById("vehicleId").value = v.id;
+      document.getElementById("fotoAtual").value = v.foto || "";
+      updatePhotoPreview(v.foto || "");
+
+      const fields = [
+        "statusCarro", "liderAdm", "centroCusto", "placaVeiculo", "locadora", "codigoVeiculo",
+        "condutor", "cpfCondutor", "funcao", "modeloVeiculo", "categoriaVeiculo", "valoresPraticados",
+        "inicioContrato", "terminoContrato", "prazoContrato", "anoModelo", "franquiaMensal",
+        "franquiaTotal", "diasFinalContrato", "mesesFimContrato", "contrato", "cartaoCombustivel",
+        "cobli", "observacoes"
+      ];
+
+      fields.forEach(field => {
+        const el = document.getElementById(field);
+        if (el) el.value = v[field] || "";
+      });
+      syncContractDeadlineFields(v.terminoContrato);
+
+      const photoInput = document.getElementById("foto");
+      if (photoInput) photoInput.value = "";
+
+      document.getElementById("formTitle").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetVehicleForm() {
+      vehicleForm.reset();
+      document.getElementById("vehicleId").value = "";
+      document.getElementById("fotoAtual").value = "";
+      const photoInput = document.getElementById("foto");
+      if (photoInput) photoInput.value = "";
+      const preview = document.getElementById("photoPreview");
+      if (preview) preview.innerHTML = "";
+      syncContractDeadlineFields("");
+      document.getElementById("formTitle").textContent = "Cadastrar veículo da frota";
+    }
+
+    function makeAvailable(id) {
+      const v = vehicles.find(vehicle => vehicle.id === id);
+      if (!v) return;
+
+      v.statusCarro = "Disponível";
+      v.condutor = "";
+      v.cpfCondutor = "";
+      v.funcao = "";
+      saveData();
+      renderAll();
+    }
+
+    function deleteCurrentVehicle() {
+      const id = document.getElementById("vehicleId").value;
+      if (!id) {
+        alert("Selecione um veículo para editar antes de excluir.");
+        return;
+      }
+      deleteVehicle(id);
+      resetVehicleForm();
+    }
+
+    function deleteVehicle(id) {
+      const hasFine = fines.some(f => f.vehicleId === id);
+      const message = hasFine
+        ? "Este veículo possui multas/infrações vinculadas. Deseja excluir mesmo assim?"
+        : "Deseja excluir este veículo?";
+
+      if (!confirm(message)) return;
+
+      vehicles = vehicles.filter(v => v.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    function deleteFine(id) {
+      if (!confirm("Deseja excluir esta multa/infração?")) return;
+      fines = fines.filter(f => f.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    function exportCSV() {
+      refreshContractCalculatedFields();
+      const headers = [
+        "Status do Carro",
+        "Líder ADM",
+        "Centro de Custo",
+        "Placa do Veículo",
+        "Locadora",
+        "Código Veículo",
+        "Condutor",
+        "CPF Condutor",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria Veículo",
+        "Valores Praticados",
+        "Inicio do Contrato",
+        "Término do Contrato",
+        "Prazo de Contrato",
+        "Ano Modelo",
+        "Franquia Mensal",
+        "Franquia Total",
+        "Dias Final Contrato",
+        "Meses Fim Contrato",
+        "Contrato",
+        "N° Cartão Combustivel",
+        "Cobli"
+      ];
+
+      const keys = [
+        "statusCarro",
+        "liderAdm",
+        "centroCusto",
+        "placaVeiculo",
+        "locadora",
+        "codigoVeiculo",
+        "condutor",
+        "cpfCondutor",
+        "funcao",
+        "modeloVeiculo",
+        "categoriaVeiculo",
+        "valoresPraticados",
+        "inicioContrato",
+        "terminoContrato",
+        "prazoContrato",
+        "anoModelo",
+        "franquiaMensal",
+        "franquiaTotal",
+        "diasFinalContrato",
+        "mesesFimContrato",
+        "contrato",
+        "cartaoCombustivel",
+        "cobli"
+      ];
+
+      const rows = vehicles.map(v => keys.map(k => \`"\${String(v[k] || "").replace(/"/g, '""')}"\`).join(";"));
+      const csv = [headers.join(";"), ...rows].join("\\n");
+      const blob = new Blob(["\\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "controle_frota.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function bindEvent(element, eventName, handler) {
+      if (element) {
+        element.addEventListener(eventName, handler);
+      }
+    }
+
+    bindEvent(document.getElementById("foto"), "change", event => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert("Selecione um arquivo de imagem válido.");
+        event.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const currentPhotoInput = document.getElementById("fotoAtual");
+        if (currentPhotoInput) currentPhotoInput.value = reader.result;
+        updatePhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    bindEvent(document.getElementById("terminoContrato"), "change", event => {
+      syncContractDeadlineFields(event.target.value);
+    });
+    bindEvent(document.getElementById("terminoContrato"), "input", event => {
+      syncContractDeadlineFields(event.target.value);
+    });
+
+    bindEvent(document.getElementById("cancelEdit"), "click", resetVehicleForm);
+    bindEvent(document.getElementById("deleteSelectedVehicleButton"), "click", deleteCurrentVehicle);
+    bindEvent(search, "input", renderVehicles);
+
+    [
+      statusFilter,
+      liderFilter,
+      centroCustoFilter,
+      locadoraFilter,
+      categoriaFilter,
+      condutorFilter,
+      anoFilter,
+      contratoFilter
+    ].forEach(filter => bindEvent(filter, "change", renderVehicles));
+
+    [
+      dashStatusFilter,
+      dashLocadoraFilter,
+      dashCentroCustoFilter,
+      dashCategoriaFilter,
+      dashContratoFilter
+    ].forEach(filter => bindEvent(filter, "change", renderDashboardIndicators));
+
+    [
+      measurementSourceFilter,
+      measurementPlateFilter,
+      measurementStartFilter,
+      measurementEndFilter
+    ].forEach(filter => bindEvent(filter, "change", renderMeasurements));
+
+    renderAll();
+  <\/script>
+
+<script>
+(function(){
+  function applyUnifiedShell(){
+    const nav = document.querySelector('.tabs-nav');
+    const headerContent = document.querySelector('.topbar-content');
+    const shell = document.querySelector('.tabs-shell');
+    if(nav && headerContent && nav.parentElement !== headerContent){
+      headerContent.appendChild(nav);
+    }
+    if(shell) shell.style.display = 'none';
+
+    const tabLabels = {
+      dashboardTab:'Dashboard',
+      frotaTab:'Frota',
+      cadastroTab:'Cadastrar / Editar',
+      importacaoTab:'Importar Planilha',
+      medicoesTab:'Medições / APIs',
+      multasTab:'Multas / Infrações',
+      relatoriosTab:'Relatórios'
+    };
+    document.querySelectorAll('.tab-button').forEach(btn=>{
+      const match = (btn.getAttribute('onclick')||'').match(/'(\\w+Tab)'/);
+      if(match && tabLabels[match[1]]){
+        const icon = btn.querySelector('.tab-icon');
+        btn.innerHTML = (icon ? icon.outerHTML : '') + tabLabels[match[1]];
+      }
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyUnifiedShell);
+  else applyUnifiedShell();
+})();
+<\/script>
+
+
+<script>
+(function(){
+  function bindFleetHeader(){
+    const globalSearch=document.getElementById('sfFleetSearch');
+    const fleetSearch=document.getElementById('search');
+    if(globalSearch && fleetSearch && !globalSearch.dataset.bound){
+      globalSearch.dataset.bound='1';
+      globalSearch.addEventListener('input',function(){
+        fleetSearch.value=this.value;
+        fleetSearch.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+      globalSearch.addEventListener('keydown',function(event){
+        if(event.key==='Enter'){
+          event.preventDefault();
+          openTabById('frotaTab');
+          setTimeout(()=>fleetSearch.focus(),80);
+        }
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindFleetHeader);
+  else bindFleetHeader();
+})();
+<\/script>
+
+</body>
+</html>
+`;export{e as default};

@@ -1,0 +1,4402 @@
+var e=`<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>SEEL | Solicitação de Contratos</title>
+<style>
+:root{--blue:#005383;--blue2:#003d63;--yellow:#ffdd00;--bg:#eaf1f5;--card:#fff;--text:#102333;--muted:#667b88;--border:#d5e2e9;--red:#dc2626;--green:#059669;--orange:#ea580c;--shadow:0 12px 28px rgba(0,62,95,.12);--r:18px}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}header{background:linear-gradient(135deg,var(--blue2),var(--blue));border-bottom:6px solid var(--yellow);position:sticky;top:0;z-index:10;box-shadow:0 8px 22px rgba(0,0,0,.22)}.container{width:min(1280px,calc(100% - 28px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 0}.brand{display:flex;align-items:center;gap:16px;color:#fff}.logo{width:145px;height:70px;border-radius:12px;background:#00324f;border:2px solid rgba(255,221,0,.7);display:flex;align-items:center;justify-content:center;padding:8px}.logo img{width:100%;height:100%;object-fit:contain}h1,h2,h3,p{margin:0}h1{font-size:clamp(22px,3vw,31px)}.sub{color:#dceef7;margin-top:4px}.tabs{display:flex;gap:8px;background:rgba(255,255,255,.12);padding:5px;border-radius:18px}.tab{border:0;border-radius:14px;padding:11px 15px;background:transparent;color:#dceef7;font-weight:700;cursor:pointer}.tab.active{background:var(--yellow);color:var(--blue2)}main{padding:24px 0 46px}.panel,.section,.stat,.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:20px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}h2{font-size:25px;color:var(--blue2)}.hint{color:var(--muted);margin-top:5px}.pill{background:var(--blue);border-bottom:4px solid var(--yellow);color:#fff;border-radius:14px;padding:10px 13px;font-size:13px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.stat{padding:14px;border-top:5px solid var(--yellow)}.stat small{display:block;color:var(--muted);font-weight:700;font-size:12px}.stat strong{display:block;margin-top:4px;font-size:22px;color:var(--blue2)}.section{margin-bottom:14px;overflow:hidden;box-shadow:none}.section-title{background:var(--blue);color:#fff;padding:14px 18px;font-weight:900;border-bottom:4px solid var(--yellow)}.section-body{padding:18px}.desc{font-size:14px;color:var(--muted);margin-bottom:15px;line-height:1.4}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.field.full{grid-column:1/-1}label{display:block;font-size:14px;font-weight:800;color:#263d4b}.req{color:var(--red)}input,select,textarea{width:100%;margin-top:7px;border:1px solid var(--border);border-radius:10px;padding:11px;font:inherit;background:#fff;outline:none}textarea{min-height:90px;resize:vertical}input[readonly]{background:#f1f7fa;color:var(--muted);cursor:not-allowed}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,83,131,.14)}.note{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.35;background:#f7fbfd;border-left:3px solid var(--yellow);padding:6px 8px;border-radius:8px}.file{display:flex;align-items:center;gap:8px;margin-top:7px;border:1px dashed #99b5c3;background:#f2f8fb;border-radius:10px;padding:11px;color:var(--muted);cursor:pointer;font-weight:700}.file input{display:none}.checkwrap{display:grid;gap:8px;margin-top:8px}.check{display:flex;align-items:center;gap:8px;background:#f6fafc;border:1px solid var(--border);padding:9px;border-radius:10px}.check input{width:auto;margin:0}.actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}button{border:0;cursor:pointer;font:inherit;font-weight:800;border-radius:12px;min-height:40px;padding:0 16px;background:var(--blue);color:#fff}.secondary{background:#fff;color:var(--blue2);border:1px solid var(--border)}.primary{border-bottom:4px solid var(--yellow)}.hidden{display:none!important}.toast{position:fixed;right:18px;bottom:18px;background:var(--blue);color:#fff;border-bottom:4px solid var(--yellow);border-radius:12px;padding:12px 14px;font-weight:700;box-shadow:var(--shadow);z-index:999;display:none}.toast.show{display:block}.editor-row{display:grid;grid-template-columns:1fr 100px 100px 110px;gap:8px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:#f8fbfd}.editor-row b{color:var(--blue2)}.editor-row small{color:var(--muted)}.kanban{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:10px;overflow-x:auto}.col{background:#edf6fa;border:1px solid var(--border);border-top:5px solid var(--yellow);border-radius:16px;padding:10px}.col h3{font-size:15px;color:var(--blue2);margin-bottom:8px}.card{padding:10px;border-left:5px solid var(--blue);margin-bottom:8px;box-shadow:0 5px 12px rgba(0,83,131,.1)}.card b{color:var(--blue2)}.card p{font-size:12px;color:var(--muted);margin-top:5px}.card .btns{display:flex;gap:6px;margin-top:8px}.card button{font-size:12px;min-height:28px;padding:0 8px}.mini{font-size:12px;color:var(--muted)}@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.top,.head{flex-direction:column;align-items:stretch}}@media(max-width:650px){.container{width:calc(100% - 18px)}.stats,.grid,.editor-row{grid-template-columns:1fr}.tabs,button{width:100%}}
+
+.editor-toolbar-full{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.editor-layout{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:14px;
+  align-items:start;
+}
+.editor-side,.editor-main{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  box-shadow:var(--shadow);
+  padding:14px;
+}
+.editor-side h3,.editor-main h3{
+  color:var(--blue2);
+  margin:0 0 10px;
+}
+.editor-section-list{
+  display:grid;
+  gap:8px;
+  max-height:620px;
+  overflow:auto;
+  padding-right:4px;
+}
+.editor-section-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+  background:#f8fbfd;
+  cursor:pointer;
+}
+.editor-section-card.active{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(0,83,131,.14);
+  background:#eef7fb;
+}
+.editor-section-card b{
+  display:block;
+  color:var(--blue2);
+  font-size:13px;
+}
+.editor-section-card small{
+  display:block;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.35;
+}
+.editor-form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.editor-form-grid .full{
+  grid-column:1/-1;
+}
+.editor-question-list{
+  display:grid;
+  gap:9px;
+  margin-top:12px;
+}
+.editor-question-card{
+  display:grid;
+  grid-template-columns:1fr 120px 250px;
+  gap:10px;
+  align-items:center;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#f8fbfd;
+  padding:10px;
+}
+.editor-question-card b{
+  color:var(--blue2);
+  display:block;
+}
+.editor-question-card small{
+  color:var(--muted);
+  display:block;
+  margin-top:3px;
+}
+.editor-actions-mini{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.editor-actions-mini button{
+  min-height:28px;
+  padding:0 8px;
+  font-size:11px;
+}
+.editor-badge{
+  display:inline-flex;
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  background:#dbeafe;
+  color:#1d4ed8;
+  margin-right:4px;
+}
+.editor-badge.required{
+  background:#ffedd5;
+  color:#c2410c;
+}
+.editor-condition-box{
+  background:#fff8c7;
+  border:1px solid #facc15;
+  border-radius:12px;
+  padding:10px;
+  font-size:12px;
+  color:#6b4e00;
+  margin-top:10px;
+}
+.editor-json-box{
+  display:none;
+  width:100%;
+  min-height:180px;
+  margin-top:12px;
+  font-family:Consolas,monospace;
+  font-size:12px;
+}
+.editor-json-box.show{display:block}
+.editor-help{
+  background:#eef7fb;
+  border:1px solid var(--border);
+  border-left:4px solid var(--yellow);
+  border-radius:12px;
+  padding:12px;
+  color:#315466;
+  margin-bottom:14px;
+  font-size:13px;
+  line-height:1.4;
+}
+@media(max-width:980px){
+  .editor-layout{grid-template-columns:1fr}
+  .editor-question-card{grid-template-columns:1fr}
+  .editor-form-grid{grid-template-columns:1fr}
+  .editor-form-grid .full{grid-column:auto}
+}
+
+
+.process-board{
+  margin-top:18px;
+}
+.process-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:18px 0 10px;
+}
+.process-icon{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  background:var(--blue);
+  color:var(--yellow);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  border:2px solid var(--yellow);
+}
+.process-head h3{
+  color:var(--blue2);
+  margin:0;
+}
+.process-head p{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+.kanban.process1{
+  grid-template-columns:repeat(5,minmax(220px,1fr));
+}
+.kanban.process2{
+  grid-template-columns:repeat(2,minmax(220px,1fr));
+}
+.col-count{
+  background:#fff;
+  border-radius:999px;
+  padding:4px 8px;
+  color:var(--blue2);
+  font-size:11px;
+  font-weight:900;
+  float:right;
+}
+.card .stage-actions{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+.card .stage-actions button{
+  flex:1;
+}
+
+
+.sla-box{
+  background:rgba(255,255,255,.9);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:8px;
+  font-size:11px;
+  display:grid;
+  gap:5px;
+  margin-bottom:8px;
+}
+.sla-row,.timer-row{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+}
+.sla-row strong,.timer-row strong{
+  color:var(--blue2);
+  font-variant-numeric:tabular-nums;
+}
+.card{
+  padding:10px;
+  border-left:5px solid var(--blue);
+  margin-bottom:8px;
+  box-shadow:0 5px 12px rgba(0,83,131,.1);
+}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+.card-id{
+  font-size:10px;
+  color:#8ca4b1;
+  font-weight:900;
+}
+.card-title{
+  font-size:13px;
+  color:var(--blue2);
+  font-weight:900;
+  line-height:1.25;
+}
+.card-info{
+  display:grid;
+  gap:4px;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:11px;
+}
+.card-desc{
+  font-size:11px;
+  line-height:1.3;
+  margin-top:7px;
+  color:#34495a;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.badges{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-top:7px;
+}
+.badge{
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+}
+.badge.orange{background:#ffedd5;color:var(--orange)}
+.badge.green{background:#dcfce7;color:var(--green)}
+.badge.blue{background:#dbeafe;color:#2563eb}
+.badge.red{background:#fee2e2;color:var(--red)}
+.card-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:7px;
+  font-size:10px;
+  color:var(--muted);
+}
+.timer{
+  background:#f2f8fb;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:7px;
+  display:grid;
+  gap:5px;
+  margin-top:7px;
+  font-size:10px;
+}
+.stage-actions{
+  display:flex;
+  gap:6px;
+  margin-top:7px;
+}
+.stage-actions button{
+  flex:1;
+  min-height:28px;
+  padding:0 8px;
+  font-size:12px;
+}
+.empty-col{
+  border:1px dashed #9db8c5;
+  border-radius:12px;
+  padding:18px;
+  text-align:center;
+  color:#7893a0;
+  background:rgba(255,255,255,.55);
+  font-size:12px;
+}
+
+
+.kanban-shell{display:grid;gap:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.kpi-card{background:#fff;border:1px solid var(--border);border-top:5px solid var(--yellow);border-radius:24px;padding:18px 18px 16px;box-shadow:0 10px 26px rgba(0,83,131,.08)}
+.kpi-card small{display:block;color:#5a7685;font-size:14px;font-weight:700;margin-bottom:8px}.kpi-card strong{font-size:24px;color:var(--blue2);line-height:1.1}
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.analytics-card,.toolbar-panel{background:#fff;border:1px solid var(--border);border-top:5px solid var(--yellow);border-radius:24px;padding:18px 20px;box-shadow:0 12px 28px rgba(0,83,131,.08)}
+.analytics-card h3,.toolbar-copy h3{margin:0 0 8px;color:var(--blue2);font-size:20px}.analytics-card p,.toolbar-copy p{margin:0;color:#688091}.bar-list{display:grid;gap:12px;margin-top:12px}.bar-row{display:grid;grid-template-columns:180px 1fr 110px;gap:14px;align-items:center}.bar-row label{font-weight:800;color:var(--blue2)}.bar-track{height:14px;border-radius:999px;background:#dfeaf0;overflow:hidden;border:1px solid #c8d9e2}.bar-fill{height:100%;border-radius:999px}.bar-fill.blue{background:#0b5b8f}.bar-fill.green{background:#16a085}.bar-fill.orange{background:#f97316}.bar-fill.red{background:#ef4444}.bar-metric{text-align:right;font-weight:800;color:var(--blue2)}
+.toolbar-panel{display:grid;grid-template-columns:1.2fr 1.8fr;gap:22px;align-items:center}.toolbar-controls{display:grid;gap:12px}.toolbar-controls input,.toolbar-controls select{width:100%}.toolbar-actions{display:flex;gap:10px;flex-wrap:wrap}.toolbar-actions button{min-width:160px}
+.process-board{margin-top:2px}.process-head{display:flex;align-items:flex-start;gap:14px;margin:6px 0 10px}.process-icon{width:44px;height:44px;border-radius:14px;background:var(--blue);color:var(--yellow);display:grid;place-items:center;font-size:18px;font-weight:900;border:3px solid var(--yellow);box-shadow:0 8px 18px rgba(0,83,131,.18)}.process-head h3{margin:0;color:var(--blue2);font-size:22px}.process-head p{margin:4px 0 0;color:#688091;font-size:15px}
+.kanban{display:grid;gap:12px;align-items:start}.kanban.process1{grid-template-columns:repeat(5,minmax(240px,1fr))}.kanban.process2{grid-template-columns:repeat(2,minmax(280px,1fr))}
+.col{background:#eef5f9;border:1px solid #c9d8e2;border-radius:24px;padding:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.col-head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;margin-bottom:12px}.col-icon{width:38px;height:38px;border-radius:14px;background:var(--blue);color:var(--yellow);display:grid;place-items:center;border:2px solid var(--yellow);font-size:18px}.col-title{margin:0;color:var(--blue2);font-size:18px;line-height:1.08;font-weight:900}.col-subtitle{margin:2px 0 0;color:#688091;font-size:12px;line-height:1.15}.col-count{min-width:34px;height:52px;border-radius:16px;background:#f3f1eb;color:var(--blue2);display:grid;place-items:center;font-weight:900;font-size:18px;padding:0 8px}
+.sla-box{background:#fff;border:1px solid #d6e2ea;border-radius:18px;padding:12px 12px 10px;display:grid;gap:6px;margin-bottom:12px;box-shadow:none}.sla-row,.timer-row{display:flex;justify-content:space-between;gap:12px;color:#5f7888;font-size:12px}.sla-row strong,.timer-row strong{color:var(--blue2);font-weight:900;font-size:12px}
+.empty-col{border:1px dashed #9eb8c7;border-radius:18px;padding:26px 16px;text-align:center;color:#6d8797;background:rgba(255,255,255,.45);font-size:14px;min-height:148px;display:grid;place-items:center}
+.card{background:#fff;border:1px solid #d7e1e8;border-left:6px solid var(--blue);border-radius:22px;padding:12px 12px 10px;box-shadow:0 10px 24px rgba(0,83,131,.1);margin-bottom:12px}.card-top{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.card-id{font-size:11px;color:#7a95a8;font-weight:900;margin-bottom:2px}.card-title{font-size:15px;color:var(--blue2);font-weight:900;line-height:1.15;text-transform:uppercase}.priority-pill{min-width:40px;height:40px;border-radius:16px;display:grid;place-items:center;font-size:13px;font-weight:900}.priority-pill.p1{background:#f9e8cf;color:#f97316}.priority-pill.p2{background:#dce9fb;color:#2563eb}
+.card-lines{display:grid;gap:4px;margin-top:10px}.card-line{display:flex;gap:8px;align-items:flex-start;color:#5f7888;font-size:12px;line-height:1.25}.card-line .ic{width:14px;display:inline-block;text-align:center}.card-desc{font-size:12px;line-height:1.28;margin-top:10px;color:#173248;min-height:32px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.badge{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;line-height:1}.badge.orange{background:#ffe3cf;color:#f97316}.badge.green{background:#ddf7e5;color:#14905b}.badge.blue{background:#dbeafe;color:#2563eb}.badge.red{background:#ffe1e1;color:#ef4444}
+.card-meta{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;font-size:12px;color:#5f7888}.card-meta strong{color:var(--blue2)}
+.timer{background:#f3f7fa;border:1px solid #cfdde7;border-radius:16px;padding:10px 12px;display:grid;gap:5px;margin-top:10px}.stage-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.stage-actions button{min-height:34px;border-radius:14px;font-size:14px}.stage-actions .secondary{background:#fff}
+@media(max-width:1280px){.kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics-grid{grid-template-columns:1fr}.toolbar-panel{grid-template-columns:1fr}.bar-row{grid-template-columns:150px 1fr 95px}}
+@media(max-width:980px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kanban.process1,.kanban.process2{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}.bar-metric{text-align:left}}
+
+
+.detail-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,32,50,.58);
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.detail-modal.show{display:flex}
+.detail-box{
+  width:min(1050px,96vw);
+  max-height:90vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:26px;
+  box-shadow:0 24px 70px rgba(0,0,0,.32);
+  border-top:7px solid var(--yellow);
+}
+.detail-header{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:linear-gradient(135deg,var(--blue2),var(--blue));
+  color:#fff;
+  padding:18px 22px;
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+}
+.detail-header h2{
+  color:#fff;
+  margin:0;
+  font-size:24px;
+}
+.detail-header p{
+  color:#dceef7;
+  margin-top:5px;
+}
+.detail-close{
+  background:var(--yellow);
+  color:var(--blue2);
+  min-width:42px;
+  height:42px;
+  padding:0;
+  border-radius:14px;
+  font-size:20px;
+}
+.detail-body{
+  padding:18px 22px 24px;
+}
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.detail-kv{
+  background:#f4f9fb;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px;
+}
+.detail-kv small{
+  display:block;
+  color:var(--muted);
+  font-weight:800;
+  margin-bottom:5px;
+}
+.detail-kv strong{
+  color:var(--blue2);
+  font-size:14px;
+  word-break:break-word;
+}
+.detail-section{
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:12px;
+  background:#fff;
+}
+.detail-section-title{
+  background:#edf6fa;
+  border-bottom:1px solid var(--border);
+  padding:12px 14px;
+  color:var(--blue2);
+  font-weight:900;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.detail-section-content{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:14px;
+}
+.detail-answer{
+  background:#fbfdfe;
+  border:1px solid #dce8ef;
+  border-radius:14px;
+  padding:10px;
+}
+.detail-answer.full{
+  grid-column:1/-1;
+}
+.detail-answer small{
+  display:block;
+  color:#5c7888;
+  font-weight:900;
+  margin-bottom:6px;
+  line-height:1.25;
+}
+.detail-answer div{
+  color:#122f42;
+  line-height:1.35;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.card{
+  cursor:pointer;
+}
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(0,83,131,.16);
+}
+.stage-actions button{
+  cursor:pointer;
+}
+@media(max-width:900px){
+  .detail-grid{grid-template-columns:repeat(2,1fr)}
+  .detail-section-content{grid-template-columns:1fr}
+  .detail-answer.full{grid-column:auto}
+}
+@media(max-width:560px){
+  .detail-grid{grid-template-columns:1fr}
+  .detail-modal{padding:10px}
+}
+
+
+
+/* =========================================================
+   SUPPLY FLOW SEEL - APP SHELL E IDENTIDADE DO MODULO
+   ========================================================= */
+:root{
+  --sf-navy:#0b3553;
+  --sf-navy-2:#082a43;
+  --sf-blue:#075985;
+  --sf-blue-2:#0a6d9e;
+  --sf-yellow:#f5c400;
+  --sf-bg:#f4f7fa;
+  --sf-surface:#ffffff;
+  --sf-line:#dfe7ed;
+  --sf-text:#173247;
+  --sf-muted:#6d8291;
+  --sf-shadow:0 12px 32px rgba(15,53,80,.08);
+  --blue:var(--sf-blue);
+  --blue2:var(--sf-navy);
+  --yellow:var(--sf-yellow);
+  --bg:var(--sf-bg);
+  --border:var(--sf-line);
+  --text:var(--sf-text);
+  --muted:var(--sf-muted);
+  --shadow:var(--sf-shadow);
+  --r:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--sf-bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--sf-text);min-height:100vh}
+button,input,select,textarea{font-family:inherit}
+.sf-app{min-height:100vh;display:flex}
+.sf-sidebar{position:fixed;inset:0 auto 0 0;width:248px;background:linear-gradient(180deg,var(--sf-navy-2),var(--sf-navy));color:#fff;padding:20px 14px 16px;display:flex;flex-direction:column;z-index:60;box-shadow:12px 0 32px rgba(3,28,45,.12);transition:transform .25s ease,width .25s ease}
+.sf-sidebar-brand{display:flex;align-items:center;gap:12px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sf-brand-logo{width:48px;height:48px;border-radius:12px;background:#fff;display:grid;place-items:center;overflow:hidden;padding:4px;box-shadow:0 6px 18px rgba(0,0,0,.16)}
+.sf-brand-logo img{width:100%;height:100%;object-fit:contain}
+.sf-brand-copy{display:grid;gap:2px}.sf-brand-copy strong{font-size:15px;letter-spacing:.08em}.sf-brand-copy span{font-size:11px;color:#b9d1df}
+.sf-nav-label{font-size:10px;letter-spacing:.15em;color:#82a6ba;font-weight:800;padding:22px 14px 10px}
+.sf-side-nav{display:grid;gap:6px}.sf-side-link{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;color:#cbdce6;text-decoration:none;border-radius:12px;font-size:14px;font-weight:700;transition:.18s ease;position:relative}.sf-side-link svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}.sf-side-link i{margin-left:auto;display:grid}.sf-side-link i svg{width:15px;height:15px}.sf-side-link:hover{background:rgba(255,255,255,.08);color:#fff}.sf-side-link.active{background:linear-gradient(90deg,rgba(245,196,0,.2),rgba(245,196,0,.07));color:#fff}.sf-side-link.active:before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--sf-yellow)}
+.sf-sidebar-spacer{flex:1}.sf-side-nav-bottom{padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+.sf-sidebar-footer{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px}.sf-sidebar-avatar,.sf-user-avatar{display:grid;place-items:center;border-radius:50%;font-weight:900}.sf-sidebar-avatar{width:36px;height:36px;background:var(--sf-yellow);color:var(--sf-navy)}.sf-sidebar-footer div:last-child{display:grid;gap:2px}.sf-sidebar-footer strong{font-size:12px}.sf-sidebar-footer span{font-size:10px;color:#adc6d4}
+.sf-workspace{width:calc(100% - 248px);margin-left:248px;min-height:100vh}
+.sf-topbar{height:68px;background:#fff;border-bottom:1px solid var(--sf-line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:45;box-shadow:0 3px 16px rgba(15,53,80,.04)}
+.sf-topbar-left,.sf-topbar-actions,.sf-user-chip{display:flex;align-items:center}.sf-topbar-left{gap:14px}.sf-topbar-actions{gap:12px}.sf-breadcrumb{display:flex;align-items:center;gap:9px;font-size:13px}.sf-breadcrumb span{color:var(--sf-muted)}.sf-breadcrumb b{color:#b8c6cf}.sf-breadcrumb strong{color:var(--sf-navy)}
+.sf-icon-btn{width:40px;height:40px;min-height:40px;padding:0;border-radius:12px;background:#f5f8fa;color:var(--sf-navy);border:1px solid var(--sf-line);display:grid;place-items:center}.sf-icon-btn svg,.sf-primary-action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.sf-menu-btn{display:none}.sf-notification{position:relative}.sf-notification span{position:absolute;right:8px;top:7px;width:7px;height:7px;background:#ef4444;border:2px solid #fff;border-radius:50%}
+.sf-global-search{height:40px;min-width:270px;border:1px solid var(--sf-line);border-radius:12px;background:#f7f9fb;display:flex;align-items:center;gap:9px;padding:0 12px}.sf-global-search svg{width:18px;height:18px;fill:none;stroke:#7b909e;stroke-width:2}.sf-global-search input{border:0;background:transparent;padding:0;margin:0;box-shadow:none;font-size:13px}.sf-global-search input:focus{box-shadow:none}
+.sf-user-chip{gap:9px;padding-left:4px}.sf-user-avatar{width:38px;height:38px;background:var(--sf-navy);color:#fff;font-size:12px}.sf-user-chip>div:last-child{display:grid;gap:1px}.sf-user-chip strong{font-size:12px;color:var(--sf-navy)}.sf-user-chip span{font-size:10px;color:var(--sf-muted)}
+.sf-page-head{padding:30px 34px 24px;display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.sf-eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--sf-blue-2);margin-bottom:7px}.sf-page-head h1{font-size:30px;color:var(--sf-navy);letter-spacing:-.025em}.sf-page-head p{color:var(--sf-muted);font-size:14px;margin-top:7px;line-height:1.45}.sf-primary-action{min-height:44px;padding:0 17px;background:var(--sf-navy);border-radius:12px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 20px rgba(11,53,83,.18);border-bottom:3px solid var(--sf-yellow)}
+.sf-module-tabs{margin:0 34px;background:#fff;border:1px solid var(--sf-line);border-radius:14px;padding:5px;display:flex;gap:4px;box-shadow:0 6px 20px rgba(15,53,80,.05)}
+.sf-module-tabs .tab{min-height:40px;border-radius:10px;color:#617989;padding:0 16px;background:transparent;display:flex;align-items:center;gap:8px;font-size:13px}.sf-module-tabs .tab:hover{background:#f4f7f9;color:var(--sf-navy)}.sf-module-tabs .tab.active{background:#eaf3f8;color:var(--sf-blue);box-shadow:inset 0 -2px 0 var(--sf-blue)}.sf-tab-dot{width:7px;height:7px;border-radius:50%;background:#b7c6cf}.sf-module-tabs .tab.active .sf-tab-dot{background:var(--sf-yellow);box-shadow:0 0 0 3px rgba(245,196,0,.2)}
+.sf-workspace>main.container{width:auto;max-width:none;margin:0;padding:22px 34px 46px}
+.panel,.analytics-card,.toolbar-panel,.kpi-card{border:1px solid var(--sf-line);box-shadow:var(--sf-shadow)}
+.panel{padding:24px;border-radius:18px}.head{padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--sf-line);align-items:center}.head h2{font-size:22px}.head .hint{font-size:13px}.pill{background:#eef5f8;color:var(--sf-blue);border:1px solid #d8e8f0;border-bottom:0;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
+.stats{gap:14px}.stat{border-top:0;border-left:4px solid var(--sf-yellow);border-radius:14px;padding:14px 15px;box-shadow:none;background:#f9fbfc}.stat strong{font-size:20px}.section{border-radius:15px;border:1px solid var(--sf-line);box-shadow:none;margin-bottom:16px}.section-title{background:#f0f5f8;color:var(--sf-navy);border-bottom:1px solid var(--sf-line);padding:13px 16px;font-size:14px;letter-spacing:.01em}.section-title:before{content:"";display:inline-block;width:4px;height:16px;background:var(--sf-yellow);border-radius:3px;vertical-align:-3px;margin-right:9px}.section-body{padding:18px 18px 20px}
+label{font-size:12px;color:#365166}.grid{gap:15px 16px}input,select,textarea{border-radius:10px;border-color:#cedbe3;background:#fff;padding:10px 11px;font-size:13px}input:hover,select:hover,textarea:hover{border-color:#aebfca}input:focus,select:focus,textarea:focus{border-color:var(--sf-blue);box-shadow:0 0 0 3px rgba(7,89,133,.1)}.note{background:#f8fafb;border-left-color:var(--sf-yellow)}
+.actions{padding-top:16px;border-top:1px solid var(--sf-line)}button{border-radius:10px;font-size:13px}.primary{background:var(--sf-navy);border-bottom:3px solid var(--sf-yellow)}.secondary{color:var(--sf-navy);background:#fff}
+.kpi-grid{gap:12px}.kpi-card{border-top:0;border-left:4px solid var(--sf-yellow);border-radius:16px;padding:16px}.kpi-card small{font-size:11px;text-transform:uppercase;letter-spacing:.04em}.kpi-card strong{font-size:23px}.analytics-grid{gap:14px}.analytics-card,.toolbar-panel{border-top:0;border-radius:16px;padding:18px}.analytics-card h3,.toolbar-copy h3{font-size:17px}.analytics-card p,.toolbar-copy p{font-size:13px}
+.toolbar-panel{grid-template-columns:1fr 2fr}.toolbar-controls{grid-template-columns:minmax(180px,1.2fr) repeat(2,minmax(150px,.8fr)) auto;align-items:end}.toolbar-actions{flex-wrap:nowrap}.toolbar-actions button{min-width:auto;white-space:nowrap}
+.process-head{margin:18px 0 10px}.process-icon{background:var(--sf-navy);width:40px;height:40px;border-radius:11px;border:0;box-shadow:none}.process-head h3{font-size:18px}.process-head p{font-size:12px}.col{border-radius:15px;padding:10px;background:#edf3f6}.col-head{margin-bottom:9px}.col-icon{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--sf-blue);border:1px solid var(--sf-line)}.col-title{font-size:14px}.col-count{height:34px;min-width:32px;border-radius:10px;font-size:13px;background:#fff;border:1px solid var(--sf-line)}.sla-box{border-radius:12px;padding:9px;margin-bottom:9px}.card{border-radius:14px;padding:10px;border-left:4px solid var(--sf-blue);box-shadow:0 5px 14px rgba(15,53,80,.08);margin-bottom:9px}.card:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(15,53,80,.13)}.card-title{font-size:12px}.priority-pill{min-width:34px;height:34px;border-radius:10px}.card-line,.card-desc,.card-meta{font-size:10.5px}.badge{font-size:9px;padding:4px 7px}.timer{border-radius:11px;padding:8px}.stage-actions button{border-radius:9px;font-size:11px;min-height:30px}
+.detail-modal{background:rgba(4,29,46,.62);backdrop-filter:blur(3px)}.detail-box{border-radius:18px;border-top:0}.detail-header{background:var(--sf-navy);padding:17px 20px}.detail-header:after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--sf-yellow)}.detail-close{background:#fff;color:var(--sf-navy);border:0}
+.editor-side,.editor-main{border-radius:15px;box-shadow:none}.editor-section-card,.editor-question-card{border-radius:11px}.editor-section-card.active{background:#edf5f8}
+.toast{background:var(--sf-navy);border-bottom-color:var(--sf-yellow)}
+@media(max-width:1180px){.sf-global-search{display:none}.toolbar-controls{grid-template-columns:1fr 1fr}.toolbar-actions{grid-column:1/-1}.sf-user-chip>div:last-child{display:none}}
+@media(max-width:920px){.sf-sidebar{transform:translateX(-100%)}.sf-app.sidebar-open .sf-sidebar{transform:translateX(0)}.sf-workspace{width:100%;margin-left:0}.sf-menu-btn{display:grid}.sf-page-head,.sf-workspace>main.container{padding-left:18px;padding-right:18px}.sf-module-tabs{margin-left:18px;margin-right:18px;overflow-x:auto}.sf-module-tabs .tab{white-space:nowrap}.sf-page-head{padding-top:22px}.toolbar-panel{grid-template-columns:1fr}.toolbar-controls{grid-template-columns:1fr}.toolbar-actions{grid-column:auto}.sf-app.sidebar-open:after{content:"";position:fixed;inset:0;background:rgba(3,25,40,.45);z-index:50}}
+@media(max-width:640px){.sf-topbar{padding:0 14px}.sf-breadcrumb span,.sf-breadcrumb b{display:none}.sf-page-head{flex-direction:column}.sf-primary-action{width:100%;justify-content:center}.sf-page-head h1{font-size:25px}.sf-user-chip{display:none}.sf-module-tabs{border-radius:12px}.sf-module-tabs .tab{padding:0 12px}.panel{padding:15px}.head{align-items:flex-start}.pill{align-self:flex-start}.toolbar-actions{display:grid;grid-template-columns:1fr 1fr}.toolbar-actions button{width:100%}}
+
+/* Standalone Contracts module: no unrelated Supply Flow modules are rendered. */
+.sf-workspace{margin-left:0!important;width:100%!important}
+.sf-menu-btn{display:none!important}
+.sf-topbar{padding-left:clamp(18px,3vw,38px);padding-right:clamp(18px,3vw,38px)}
+.sf-page-head,.sf-workspace>main.container{max-width:1600px;margin-left:auto;margin-right:auto}
+.sf-module-tabs{max-width:calc(1600px - 76px);margin-left:auto;margin-right:auto}
+@media(max-width:920px){.sf-page-head,.sf-workspace>main.container{padding-left:18px;padding-right:18px}.sf-module-tabs{margin-left:18px;margin-right:18px}}
+
+.sf-contract-brand{display:flex;align-items:center;gap:10px;padding-right:18px;margin-right:4px;border-right:1px solid var(--sf-line)}
+.sf-contract-mark{width:36px;height:36px;border-radius:10px;background:var(--sf-navy);color:var(--sf-yellow);display:grid;place-items:center;border:2px solid var(--sf-yellow)}
+.sf-contract-mark svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sf-contract-brand div{display:grid;line-height:1.05}.sf-contract-brand strong{font-size:12px;letter-spacing:.08em;color:var(--sf-navy)}.sf-contract-brand small{font-size:10px;color:#69808e;margin-top:3px}
+@media(max-width:700px){.sf-contract-brand div{display:none}.sf-contract-brand{padding-right:10px}.sf-breadcrumb span,.sf-breadcrumb b{display:none}}
+
+
+/* Importacao do controle antigo */
+.import-layout{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(0,1.65fr);gap:18px;align-items:start}
+.import-card{background:#fff;border:1px solid var(--sf-line);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(15,53,80,.05)}
+.import-card h3{font-size:16px;color:var(--sf-navy);margin:0 0 6px}.import-card>p{font-size:12px;color:var(--sf-muted);line-height:1.5;margin:0 0 14px}
+.import-drop{min-height:168px;border:2px dashed #aac0cc;border-radius:15px;background:#f7fafb;display:grid;place-items:center;text-align:center;padding:22px;cursor:pointer;transition:.18s ease}
+.import-drop:hover,.import-drop.dragover{border-color:var(--sf-blue);background:#eef6fa}.import-drop input{display:none}.import-drop-icon{width:48px;height:48px;border-radius:14px;background:var(--sf-navy);color:var(--sf-yellow);display:grid;place-items:center;margin:0 auto 10px;font-size:23px}.import-drop strong{display:block;color:var(--sf-navy);font-size:14px}.import-drop span{display:block;color:var(--sf-muted);font-size:11px;margin-top:5px}
+.import-file-meta{display:none;margin-top:12px;padding:11px 12px;border:1px solid #d9e5eb;background:#f6fafc;border-radius:12px}.import-file-meta.show{display:flex;justify-content:space-between;gap:10px;align-items:center}.import-file-meta strong{font-size:12px;color:var(--sf-navy);display:block;word-break:break-all}.import-file-meta span{font-size:10px;color:var(--sf-muted)}
+.import-options{display:grid;gap:12px;margin-top:14px}.import-options label,.mapping-field label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#617989;font-weight:900}.import-options select,.mapping-field select{margin-top:6px}
+.import-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.import-summary div{background:#f5f8fa;border:1px solid var(--sf-line);border-radius:12px;padding:10px}.import-summary small{display:block;color:var(--sf-muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.05em}.import-summary strong{display:block;color:var(--sf-navy);font-size:19px;margin-top:3px}
+.import-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.import-actions button{flex:1;min-width:135px}.import-actions button:disabled{opacity:.45;cursor:not-allowed}
+.import-note{margin-top:12px;background:#fff9d9;border:1px solid #f2d86d;border-left:4px solid var(--sf-yellow);border-radius:11px;padding:10px 12px;color:#6b5900;font-size:11px;line-height:1.45}
+.mapping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mapping-field{background:#f8fafb;border:1px solid var(--sf-line);border-radius:12px;padding:10px}.mapping-field small{display:block;color:#8296a3;font-size:9px;margin-top:4px;line-height:1.35}.mapping-required:after{content:' *';color:#dc2626}
+.preview-wrap{margin-top:18px;border:1px solid var(--sf-line);border-radius:15px;overflow:hidden;background:#fff}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:#f1f6f8;border-bottom:1px solid var(--sf-line)}.preview-head h3{font-size:14px;color:var(--sf-navy);margin:0}.preview-head span{font-size:10px;color:var(--sf-muted)}.preview-scroll{overflow:auto;max-height:360px}.import-preview{width:100%;border-collapse:collapse;min-width:760px;font-size:11px}.import-preview th{position:sticky;top:0;background:#f8fafb;color:#526c7c;text-align:left;padding:9px 10px;border-bottom:1px solid var(--sf-line);white-space:nowrap;z-index:1}.import-preview td{padding:9px 10px;border-bottom:1px solid #edf2f5;color:#29465a;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.import-preview tr:hover td{background:#fbfdfe}.import-empty{padding:42px 18px;text-align:center;color:var(--sf-muted);font-size:12px}
+.import-result{display:none;margin-top:14px;border-radius:13px;padding:12px 14px;font-size:12px;line-height:1.5}.import-result.show{display:block}.import-result.success{background:#eaf8ef;border:1px solid #b9e5c7;color:#12683a}.import-result.warning{background:#fff7df;border:1px solid #edd58a;color:#735c00}.import-result.error{background:#fff0f0;border:1px solid #f0c4c4;color:#a52020}
+@media(max-width:1050px){.import-layout{grid-template-columns:1fr}.mapping-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.mapping-grid{grid-template-columns:1fr}.import-summary{grid-template-columns:1fr 1fr 1fr}.import-actions{display:grid;grid-template-columns:1fr}.import-actions button{width:100%}}
+
+/* Filtros exclusivos do Dashboard */
+.dashboard-filter-panel{background:#fff;border:1px solid var(--sf-line);border-radius:16px;padding:18px;box-shadow:var(--sf-shadow)}
+.dashboard-filter-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+.dashboard-filter-head h3{margin:0;color:var(--sf-navy);font-size:17px}
+.dashboard-filter-head p{margin:5px 0 0;color:var(--sf-muted);font-size:12px;line-height:1.4}
+.dashboard-filter-summary{background:#eef5f8;color:var(--sf-blue);border:1px solid #d8e8f0;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900;white-space:nowrap}
+.dashboard-filter-grid{display:grid;grid-template-columns:minmax(220px,1.35fr) repeat(3,minmax(150px,.8fr));gap:12px;align-items:end}
+.dashboard-filter-grid label{display:grid;gap:6px;margin:0}
+.dashboard-filter-grid label span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:900;color:#617989}
+.dashboard-date-range{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dashboard-filter-actions{display:flex;gap:8px;align-items:end}
+.dashboard-filter-actions button{width:100%}
+@media(max-width:1250px){.dashboard-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.dashboard-search-field{grid-column:span 2}}
+@media(max-width:850px){.dashboard-filter-grid{grid-template-columns:1fr 1fr}.dashboard-search-field{grid-column:1/-1}.dashboard-filter-head{flex-direction:column}.dashboard-filter-summary{white-space:normal}}
+@media(max-width:560px){.dashboard-filter-grid{grid-template-columns:1fr}.dashboard-search-field{grid-column:auto}.dashboard-date-range{grid-template-columns:1fr}.dashboard-filter-actions{display:grid}}
+
+
+
+/* =========================================================
+   CONTRATOS - CABEÇALHO E KANBAN NO PADRÃO DOS FRETES
+   ========================================================= */
+body{
+  background:#f3f6f8 !important;
+}
+
+.sf-app,
+.sf-workspace{
+  min-height:100vh !important;
+}
+
+.sf-module-tabs{
+  position:sticky !important;
+  top:0 !important;
+  z-index:50 !important;
+  width:min(1600px,calc(100% - 36px)) !important;
+  max-width:none !important;
+  margin:16px auto 0 !important;
+  padding:7px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  overflow-x:auto !important;
+  background:#fff !important;
+  border:1px solid #dce5eb !important;
+  border-radius:16px !important;
+  box-shadow:0 8px 24px rgba(15,53,80,.07) !important;
+}
+
+.sf-module-tabs::-webkit-scrollbar{height:5px}
+.sf-module-tabs::-webkit-scrollbar-thumb{background:#c8d5dd;border-radius:999px}
+
+.sf-module-tabs .tab{
+  flex:1 0 auto !important;
+  min-width:160px !important;
+  min-height:43px !important;
+  justify-content:center !important;
+  border:0 !important;
+  border-radius:11px !important;
+  padding:0 16px !important;
+  background:transparent !important;
+  color:#617786 !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+}
+
+.sf-module-tabs .tab:hover{
+  background:#f4f7f9 !important;
+  color:#0b3553 !important;
+}
+
+.sf-module-tabs .tab.active{
+  background:#f5c400 !important;
+  color:#0b3553 !important;
+  box-shadow:0 5px 14px rgba(245,196,0,.22) !important;
+}
+
+.sf-module-tabs .tab.active .sf-tab-dot{
+  background:#0b3553 !important;
+  box-shadow:none !important;
+}
+
+.sf-workspace>main.container{
+  padding-top:16px !important;
+}
+
+#kanbanView .kanban-shell{
+  gap:14px !important;
+}
+
+#kanbanView .toolbar-panel{
+  border-radius:16px !important;
+  padding:14px 16px !important;
+  box-shadow:0 7px 20px rgba(15,53,80,.06) !important;
+}
+
+#kanbanView .toolbar-copy h3{
+  font-size:16px !important;
+}
+
+#kanbanView .toolbar-copy p{
+  font-size:11px !important;
+}
+
+#kanbanView .process-board{
+  margin-top:0 !important;
+  min-width:0 !important;
+}
+
+#kanbanView .process-head{
+  align-items:center !important;
+  margin:8px 0 9px !important;
+  gap:10px !important;
+}
+
+#kanbanView .process-icon{
+  width:34px !important;
+  height:34px !important;
+  border-radius:10px !important;
+  background:#0b3553 !important;
+  color:#f5c400 !important;
+  font-size:14px !important;
+}
+
+#kanbanView .process-head h3{
+  font-size:15px !important;
+}
+
+#kanbanView .process-head p{
+  margin-top:2px !important;
+  font-size:10px !important;
+}
+
+#kanbanView .kanban{
+  display:grid !important;
+  justify-content:start !important;
+  align-items:start !important;
+  gap:9px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  padding:0 0 8px !important;
+  scroll-behavior:auto !important;
+  scrollbar-gutter:stable !important;
+}
+
+#kanbanView .kanban.process1{
+  grid-template-columns:repeat(5,minmax(205px,220px)) !important;
+}
+
+#kanbanView .kanban.process2{
+  grid-template-columns:repeat(2,minmax(205px,220px)) !important;
+}
+
+#kanbanView .kanban::-webkit-scrollbar{height:7px}
+#kanbanView .kanban::-webkit-scrollbar-thumb{background:#bdcbd4;border-radius:999px}
+
+#kanbanView .col{
+  width:100% !important;
+  min-width:205px !important;
+  max-width:220px !important;
+  padding:8px !important;
+  border:1px solid #d4e0e7 !important;
+  border-radius:13px !important;
+  background:#eaf1f5 !important;
+  box-shadow:none !important;
+}
+
+#kanbanView .col-head{
+  grid-template-columns:30px minmax(0,1fr) 29px !important;
+  gap:7px !important;
+  align-items:start !important;
+  margin-bottom:7px !important;
+}
+
+#kanbanView .col-icon{
+  width:30px !important;
+  height:30px !important;
+  border-radius:9px !important;
+  font-size:13px !important;
+  background:#fff !important;
+  color:#075985 !important;
+}
+
+#kanbanView .col-title{
+  font-size:11px !important;
+  line-height:1.12 !important;
+  overflow-wrap:anywhere !important;
+}
+
+#kanbanView .col-subtitle{
+  margin-top:2px !important;
+  font-size:8.5px !important;
+  line-height:1.15 !important;
+  overflow-wrap:anywhere !important;
+}
+
+#kanbanView .col-count{
+  min-width:29px !important;
+  width:29px !important;
+  height:29px !important;
+  padding:0 !important;
+  border-radius:9px !important;
+  font-size:11px !important;
+}
+
+#kanbanView .sla-box{
+  gap:4px !important;
+  margin-bottom:7px !important;
+  padding:7px 8px !important;
+  border-radius:10px !important;
+  background:rgba(255,255,255,.86) !important;
+}
+
+#kanbanView .sla-row,
+#kanbanView .timer-row{
+  gap:6px !important;
+  font-size:8.5px !important;
+  line-height:1.15 !important;
+}
+
+#kanbanView .sla-row strong,
+#kanbanView .timer-row strong{
+  font-size:8.5px !important;
+  white-space:nowrap !important;
+}
+
+#kanbanView .card{
+  margin-bottom:7px !important;
+  padding:8px !important;
+  border:1px solid #d6e1e8 !important;
+  border-left:4px solid #075985 !important;
+  border-radius:11px !important;
+  background:#fff !important;
+  box-shadow:0 4px 12px rgba(15,53,80,.07) !important;
+  overflow:visible !important;
+}
+
+#kanbanView .card:hover{
+  transform:none !important;
+  box-shadow:0 7px 16px rgba(15,53,80,.1) !important;
+}
+
+#kanbanView .card-top{
+  grid-template-columns:minmax(0,1fr) 30px !important;
+  gap:6px !important;
+}
+
+#kanbanView .card-id{
+  font-size:8px !important;
+  margin-bottom:1px !important;
+}
+
+#kanbanView .card-title{
+  font-size:10.5px !important;
+  line-height:1.13 !important;
+  text-transform:none !important;
+  overflow-wrap:anywhere !important;
+}
+
+#kanbanView .priority-pill{
+  min-width:30px !important;
+  width:30px !important;
+  height:30px !important;
+  border-radius:9px !important;
+  font-size:9px !important;
+}
+
+#kanbanView .card-lines{
+  gap:3px !important;
+  margin-top:7px !important;
+}
+
+#kanbanView .card-line{
+  gap:5px !important;
+  font-size:8.5px !important;
+  line-height:1.18 !important;
+  overflow-wrap:anywhere !important;
+}
+
+#kanbanView .card-line .ic{
+  width:11px !important;
+  font-size:9px !important;
+}
+
+#kanbanView .card-desc{
+  min-height:0 !important;
+  margin-top:7px !important;
+  font-size:8.5px !important;
+  line-height:1.22 !important;
+  -webkit-line-clamp:2 !important;
+}
+
+#kanbanView .badges{
+  gap:4px !important;
+  margin-top:7px !important;
+}
+
+#kanbanView .badge{
+  padding:4px 6px !important;
+  font-size:7.5px !important;
+}
+
+#kanbanView .card-meta{
+  grid-template-columns:1fr !important;
+  gap:3px !important;
+  margin-top:7px !important;
+  font-size:8px !important;
+  overflow-wrap:anywhere !important;
+}
+
+#kanbanView .timer{
+  gap:4px !important;
+  margin-top:7px !important;
+  padding:7px 8px !important;
+  border-radius:9px !important;
+}
+
+#kanbanView .contract-card-footer{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:6px !important;
+  align-items:end !important;
+  margin-top:7px !important;
+  padding-top:7px !important;
+  border-top:1px solid #e3eaee !important;
+}
+
+#kanbanView .contract-phase-field{
+  display:grid !important;
+  gap:3px !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+#kanbanView .contract-phase-field>span{
+  font-size:7.5px !important;
+  font-weight:900 !important;
+  color:#6b8291 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+}
+
+#kanbanView .contract-phase-select{
+  width:100% !important;
+  min-width:0 !important;
+  height:30px !important;
+  margin:0 !important;
+  padding:0 24px 0 7px !important;
+  border:1px solid #cbd9e2 !important;
+  border-radius:8px !important;
+  background-color:#fff !important;
+  color:#173247 !important;
+  font-size:8.5px !important;
+  font-weight:750 !important;
+}
+
+#kanbanView .contract-detail-btn{
+  min-height:30px !important;
+  height:30px !important;
+  padding:0 8px !important;
+  border-radius:8px !important;
+  font-size:8px !important;
+  white-space:nowrap !important;
+}
+
+#kanbanView .empty-col{
+  min-height:92px !important;
+  padding:16px 10px !important;
+  border-radius:11px !important;
+  font-size:9px !important;
+}
+
+@media(max-width:900px){
+  .sf-module-tabs{
+    width:calc(100% - 20px) !important;
+    margin-top:10px !important;
+  }
+  .sf-module-tabs .tab{
+    min-width:145px !important;
+  }
+  .sf-workspace>main.container{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+}
+
+
+
+/* Cabeçalho das abas no mesmo estilo do módulo de Fretes */
+.sf-workspace{
+  padding-top:0 !important;
+}
+.sf-workspace > main.container{
+  width:min(1360px,calc(100% - 28px)) !important;
+  max-width:none !important;
+  margin:0 auto !important;
+  padding:18px 0 46px !important;
+}
+.tabs.sf-module-tabs,
+.sf-module-tabs{
+  position:static !important;
+  top:auto !important;
+  z-index:auto !important;
+  width:min(1360px,calc(100% - 28px)) !important;
+  max-width:none !important;
+  margin:0 auto 18px !important;
+  padding:5px !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:6px !important;
+  overflow-x:auto !important;
+  background:#ffffff !important;
+  border:1px solid #d5e2e9 !important;
+  border-radius:18px !important;
+  box-shadow:0 9px 22px rgba(0,62,95,.08) !important;
+  backdrop-filter:none !important;
+}
+.tabs.sf-module-tabs::-webkit-scrollbar,
+.sf-module-tabs::-webkit-scrollbar{height:5px}
+.tabs.sf-module-tabs::-webkit-scrollbar-thumb,
+.sf-module-tabs::-webkit-scrollbar-thumb{background:#c8d5dd;border-radius:999px}
+.tabs.sf-module-tabs .tab,
+.sf-module-tabs .tab{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:auto !important;
+  min-height:43px !important;
+  padding:0 13px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  border:0 !important;
+  border-radius:13px !important;
+  background:transparent !important;
+  color:#536d7c !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+.tabs.sf-module-tabs .tab:hover,
+.sf-module-tabs .tab:hover{
+  background:#eef5f9 !important;
+  color:#003d63 !important;
+  transform:none !important;
+  box-shadow:none !important;
+}
+.tabs.sf-module-tabs .tab.active,
+.sf-module-tabs .tab.active{
+  background:#ffdd00 !important;
+  color:#003d63 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.tabs.sf-module-tabs .tab-icon,
+.sf-module-tabs .tab-icon{
+  font-size:14px !important;
+  line-height:1 !important;
+  flex:0 0 auto !important;
+}
+.tabs.sf-module-tabs .sf-tab-dot,
+.sf-module-tabs .sf-tab-dot{
+  display:none !important;
+}
+@media (max-width: 760px){
+  .tabs.sf-module-tabs,
+  .sf-module-tabs{
+    flex-wrap:nowrap !important;
+    width:min(100%,calc(100% - 20px)) !important;
+  }
+  .sf-workspace > main.container{
+    width:min(100%,calc(100% - 20px)) !important;
+    padding-top:16px !important;
+  }
+}
+
+
+
+/* Posicao e estilo exatamente iguais ao cabecalho do modulo de Fretes */
+.sf-workspace {
+  padding-top: 0 !important;
+}
+.sf-workspace > main,
+.sf-workspace > main.container {
+  width: min(1360px, calc(100% - 28px)) !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  padding: 24px 0 46px !important;
+}
+.tabs.sf-module-tabs,
+.sf-module-tabs {
+  position: static !important;
+  top: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 18px !important;
+  padding: 5px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  background: #ffffff !important;
+  border: 1px solid #d5e2e9 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 9px 22px rgba(0,62,95,.08) !important;
+  backdrop-filter: none !important;
+  z-index: auto !important;
+}
+.tabs.sf-module-tabs .tab,
+.sf-module-tabs .tab {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 43px !important;
+  padding: 0 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 7px !important;
+  border: 0 !important;
+  border-radius: 13px !important;
+  background: transparent !important;
+  color: #536d7c !important;
+  box-shadow: none !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+}
+.tabs.sf-module-tabs .tab:hover,
+.sf-module-tabs .tab:hover {
+  background: #eef5f9 !important;
+  color: #003d63 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.tabs.sf-module-tabs .tab.active,
+.sf-module-tabs .tab.active {
+  background: #ffdd00 !important;
+  color: #003d63 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.tabs.sf-module-tabs .tab-icon,
+.sf-module-tabs .tab-icon {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  flex: 0 0 auto !important;
+}
+.tabs.sf-module-tabs .sf-tab-dot,
+.sf-module-tabs .sf-tab-dot {
+  display: none !important;
+}
+@media (max-width: 760px) {
+  .sf-workspace > main,
+  .sf-workspace > main.container {
+    width: min(100%, calc(100% - 20px)) !important;
+    padding-top: 16px !important;
+  }
+  .tabs.sf-module-tabs,
+  .sf-module-tabs {
+    flex-wrap: nowrap !important;
+  }
+}
+
+
+
+/* Solicitante e e-mail herdados do login do aplicativo principal */
+#form input.login-fixed-field,
+#form input[name="solicitante"],
+#form input[name="email"]{
+  background:#eef4f7 !important;
+  color:#173247 !important;
+  border-color:#c7d7e0 !important;
+  font-weight:800 !important;
+  cursor:not-allowed !important;
+  box-shadow:inset 0 0 0 1px rgba(7,89,133,.03) !important;
+}
+#form input.login-fixed-field:focus,
+#form input[name="solicitante"]:focus,
+#form input[name="email"]:focus{
+  border-color:#c7d7e0 !important;
+  box-shadow:inset 0 0 0 1px rgba(7,89,133,.03) !important;
+}
+
+
+
+/* Cabeçalho do formulário no mesmo estilo do módulo de Fretes */
+#formView .contract-form-intro{
+  margin-bottom:18px;
+}
+#formView h2{
+  margin:0 0 6px;
+  font-size:22px;
+  letter-spacing:-0.03em;
+  color:var(--sf-navy, var(--blue2));
+}
+#formView h2::after{
+  content:"";
+  display:block;
+  width:72px;
+  height:5px;
+  margin-top:8px;
+  border-radius:999px;
+  background:var(--yellow);
+  box-shadow:0 5px 14px rgba(255, 221, 0, 0.36);
+}
+#formView > .muted,
+#formView .muted{
+  margin:0 0 18px;
+  color:#587289;
+  font-size:14px;
+  line-height:1.5;
+}
+#formView .head{
+  display:none !important;
+}
+
+
+
+/* Kanban único: Processo 1 e Processo 2 na mesma linha */
+#kanbanView .unified-process-board{
+  margin-top:0 !important;
+  min-width:0 !important;
+}
+#kanbanView .unified-process-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  margin:6px 0 12px;
+  padding:14px 16px;
+  background:#fff;
+  border:1px solid #dbe5eb;
+  border-radius:15px;
+  box-shadow:0 6px 18px rgba(15,53,80,.05);
+}
+#kanbanView .unified-process-head h3{
+  margin:0;
+  color:#0b3553;
+  font-size:17px;
+}
+#kanbanView .unified-process-head p{
+  margin:4px 0 0;
+  color:#6a8190;
+  font-size:11px;
+}
+#kanbanView .process-legend{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+#kanbanView .process-legend-item{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+#kanbanView .process-legend-item i{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  flex:0 0 auto;
+}
+#kanbanView .process-legend-item.process-one{
+  color:#075985;
+  background:#e8f3f9;
+  border-color:#cfe2ec;
+}
+#kanbanView .process-legend-item.process-one i{background:#075985}
+#kanbanView .process-legend-item.process-two{
+  color:#6a5300;
+  background:#fff7cc;
+  border-color:#ecd86a;
+}
+#kanbanView .process-legend-item.process-two i{background:#f5c400}
+#kanbanView .unified-kanban{
+  display:grid !important;
+  grid-template-columns:repeat(7,minmax(205px,220px)) !important;
+  justify-content:start !important;
+  align-items:start !important;
+  gap:9px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  padding:0 0 10px !important;
+  scroll-behavior:auto !important;
+  scrollbar-gutter:stable !important;
+}
+#kanbanView .unified-col{
+  position:relative;
+  width:100% !important;
+  min-width:205px !important;
+  max-width:220px !important;
+  padding:8px !important;
+  border-radius:13px !important;
+  box-shadow:none !important;
+}
+#kanbanView .unified-col.process-one{
+  background:#eaf1f5 !important;
+  border:1px solid #cddde6 !important;
+  border-top:4px solid #075985 !important;
+}
+#kanbanView .unified-col.process-two{
+  background:#fffbea !important;
+  border:1px solid #eadf9f !important;
+  border-top:4px solid #f5c400 !important;
+}
+#kanbanView .unified-col.process-separator{
+  margin-left:16px !important;
+}
+#kanbanView .unified-col.process-separator::before{
+  content:"";
+  position:absolute;
+  left:-13px;
+  top:0;
+  bottom:0;
+  width:2px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#f5c400,#0b3553);
+  opacity:.55;
+}
+#kanbanView .process-column-label{
+  min-height:22px;
+  margin:-2px 0 7px;
+  padding:0 7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.07em;
+  text-align:center;
+}
+#kanbanView .unified-col.process-one .process-column-label{
+  color:#075985;
+  background:#dcecf4;
+}
+#kanbanView .unified-col.process-two .process-column-label{
+  color:#6a5300;
+  background:#fff0a8;
+}
+#kanbanView .unified-col.process-two .col-icon{
+  color:#6a5300 !important;
+  border-color:#ead56e !important;
+  background:#fffdf3 !important;
+}
+#kanbanView .unified-col.process-two .col-count{
+  color:#6a5300 !important;
+  border-color:#ead56e !important;
+  background:#fffdf3 !important;
+}
+@media(max-width:760px){
+  #kanbanView .unified-process-head{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  #kanbanView .process-legend{
+    justify-content:flex-start;
+  }
+}
+
+
+
+/* Espaçamento corrigido entre colunas e cards do Kanban unificado */
+#kanbanView .unified-kanban{
+  grid-template-columns:repeat(7,220px) !important;
+  column-gap:16px !important;
+  row-gap:16px !important;
+  padding:2px 12px 22px !important;
+}
+#kanbanView .unified-col{
+  width:220px !important;
+  min-width:220px !important;
+  max-width:220px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+#kanbanView .unified-col.process-separator{
+  margin-left:0 !important;
+}
+#kanbanView .unified-col.process-separator::before{
+  left:-9px !important;
+}
+#kanbanView .kanban-card-stack{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  align-items:start !important;
+  gap:14px !important;
+  width:100% !important;
+  min-width:0 !important;
+  padding:2px 0 4px !important;
+}
+#kanbanView .kanban-card-stack > .card{
+  position:relative !important;
+  z-index:1 !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  transform:none !important;
+}
+#kanbanView .kanban-card-stack > .card:hover{
+  z-index:2 !important;
+  transform:none !important;
+}
+#kanbanView .kanban-card-stack > .empty-col{
+  width:100% !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+
+
+/* Cards do Kanban de Contratos no padrão visual do módulo de Fretes */
+#kanbanView .kanban-card-stack{
+  display:grid !important;
+  gap:10px !important;
+  align-content:start !important;
+}
+#kanbanView .contract-freight-card{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:9px 9px 8px !important;
+  overflow:hidden !important;
+  border:1px solid #d7e1e8 !important;
+  border-left:5px solid #075985 !important;
+  border-radius:15px !important;
+  background:#fff !important;
+  box-shadow:0 7px 17px rgba(0,83,131,.09) !important;
+  cursor:pointer !important;
+  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease !important;
+}
+#kanbanView .contract-freight-card:hover,
+#kanbanView .contract-freight-card:focus-visible{
+  transform:translateY(-1px) !important;
+  box-shadow:0 11px 24px rgba(0,83,131,.15) !important;
+  outline:none !important;
+}
+#kanbanView .contract-freight-card.red{border-left-color:#ef4444 !important}
+#kanbanView .contract-freight-card.yellow{border-left-color:#facc15 !important}
+#kanbanView .contract-freight-card.green{border-left-color:#22c55e !important}
+#kanbanView .contract-freight-card.gray{border-left-color:#64748b !important}
+
+#kanbanView .contract-compact-top{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:7px !important;
+  align-items:start !important;
+}
+#kanbanView .contract-compact-title-wrap{min-width:0 !important}
+#kanbanView .contract-compact-id{
+  margin-bottom:3px !important;
+  color:#7a95a8 !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.05em !important;
+}
+#kanbanView .contract-compact-title{
+  color:#053451 !important;
+  font-size:11.5px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  text-transform:uppercase !important;
+  overflow-wrap:anywhere !important;
+}
+#kanbanView .contract-top-indicators{
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:5px !important;
+}
+#kanbanView .contract-semaphore{
+  width:18px !important;
+  padding:3px !important;
+  display:grid !important;
+  gap:2px !important;
+  border:1px solid #cbd5df !important;
+  border-radius:8px !important;
+  background:#1f2937 !important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.25) !important;
+}
+#kanbanView .contract-semaphore i{
+  width:10px !important;
+  height:10px !important;
+  display:block !important;
+  border-radius:50% !important;
+  opacity:.18 !important;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.14) !important;
+}
+#kanbanView .contract-semaphore i.red{background:#ef4444 !important}
+#kanbanView .contract-semaphore i.yellow{background:#facc15 !important}
+#kanbanView .contract-semaphore i.green{background:#22c55e !important}
+#kanbanView .contract-semaphore i.active{opacity:1 !important;box-shadow:0 0 7px currentColor !important}
+#kanbanView .contract-priority-bubble{
+  min-width:31px !important;
+  height:31px !important;
+  padding:0 5px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:10px !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+}
+#kanbanView .contract-priority-bubble.urgent{background:#f9e8cf !important;color:#f97316 !important}
+#kanbanView .contract-priority-bubble.normal{background:#dce9fb !important;color:#2563eb !important}
+
+#kanbanView .contract-compact-lines{
+  display:grid !important;
+  gap:3px !important;
+  margin-top:6px !important;
+}
+#kanbanView .contract-compact-lines>div{
+  display:grid !important;
+  grid-template-columns:13px minmax(0,1fr) !important;
+  gap:4px !important;
+  align-items:start !important;
+  color:#5f7888 !important;
+  font-size:8.5px !important;
+  line-height:1.2 !important;
+}
+#kanbanView .contract-line-icon{
+  color:#075985 !important;
+  font-size:8px !important;
+  line-height:1.2 !important;
+  text-align:center !important;
+}
+#kanbanView .contract-compact-description{
+  min-height:19px !important;
+  max-height:22px !important;
+  margin-top:6px !important;
+  color:#173248 !important;
+  font-size:8.5px !important;
+  line-height:1.2 !important;
+  font-weight:700 !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+#kanbanView .contract-compact-badges{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:4px !important;
+  margin-top:6px !important;
+}
+#kanbanView .contract-mini-badge{
+  max-width:100% !important;
+  padding:3px 6px !important;
+  border-radius:999px !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#kanbanView .contract-mini-badge.urgent{background:#ffe3cf !important;color:#f97316 !important}
+#kanbanView .contract-mini-badge.normal{background:#dbeafe !important;color:#2563eb !important}
+#kanbanView .contract-mini-badge.traffic-red{background:#fee2e2 !important;color:#dc2626 !important}
+#kanbanView .contract-mini-badge.traffic-yellow{background:#fef3c7 !important;color:#b45309 !important}
+#kanbanView .contract-mini-badge.traffic-green{background:#dcfce7 !important;color:#16a34a !important}
+#kanbanView .contract-mini-badge.traffic-gray{background:#e2e8f0 !important;color:#475569 !important}
+#kanbanView .contract-mini-badge.process-one{background:#e0f2fe !important;color:#075985 !important}
+#kanbanView .contract-mini-badge.process-two{background:#ede9fe !important;color:#6d28d9 !important}
+
+#kanbanView .contract-compact-meta{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:5px !important;
+  align-items:center !important;
+  margin-top:6px !important;
+  color:#5f7888 !important;
+  font-size:8px !important;
+  line-height:1.15 !important;
+}
+#kanbanView .contract-compact-meta strong{color:#053451 !important}
+#kanbanView .contract-meta-status{font-weight:950 !important;white-space:nowrap !important}
+#kanbanView .contract-meta-status.red{color:#dc2626 !important}
+#kanbanView .contract-meta-status.yellow{color:#b45309 !important}
+#kanbanView .contract-meta-status.green{color:#16a34a !important}
+#kanbanView .contract-meta-status.gray{color:#64748b !important}
+#kanbanView .contract-deadline-detail{
+  margin-top:5px !important;
+  padding:5px 6px !important;
+  border-radius:8px !important;
+  font-size:7.8px !important;
+  line-height:1.15 !important;
+  font-weight:900 !important;
+}
+#kanbanView .contract-deadline-detail.red{background:#fff1f2 !important;color:#b91c1c !important;border:1px solid #fecdd3 !important}
+#kanbanView .contract-deadline-detail.yellow{background:#fffbeb !important;color:#92400e !important;border:1px solid #fde68a !important}
+#kanbanView .contract-deadline-detail.green{background:#f0fdf4 !important;color:#166534 !important;border:1px solid #bbf7d0 !important}
+#kanbanView .contract-deadline-detail.gray{background:#f1f5f9 !important;color:#475569 !important;border:1px solid #cbd5e1 !important}
+
+#kanbanView .contract-compact-timer{
+  display:grid !important;
+  gap:3px !important;
+  margin-top:6px !important;
+  padding:6px 7px !important;
+  border:1px solid #cfdde7 !important;
+  border-radius:9px !important;
+  background:#f3f7fa !important;
+}
+#kanbanView .contract-compact-timer>div{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:5px !important;
+  align-items:center !important;
+  color:#5f7888 !important;
+  font-size:7.5px !important;
+  line-height:1.1 !important;
+}
+#kanbanView .contract-compact-timer strong{
+  color:#053451 !important;
+  font-size:7.5px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+  font-variant-numeric:tabular-nums !important;
+  white-space:nowrap !important;
+}
+#kanbanView .contract-phase-selector-wrap{
+  display:grid !important;
+  gap:3px !important;
+  margin-top:6px !important;
+}
+#kanbanView .contract-phase-selector-wrap label{
+  margin:0 !important;
+  color:#688091 !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase !important;
+}
+#kanbanView .contract-phase-selector-wrap .contract-phase-select{
+  width:100% !important;
+  height:28px !important;
+  min-height:28px !important;
+  margin:0 !important;
+  padding:0 7px !important;
+  border:1px solid #bfcfd9 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#053451 !important;
+  font-size:8.5px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  box-shadow:none !important;
+}
+#kanbanView .contract-compact-actions{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:5px !important;
+  margin-top:6px !important;
+}
+#kanbanView .contract-compact-actions button{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:27px !important;
+  height:27px !important;
+  padding:0 6px !important;
+  border:1px solid #075985 !important;
+  border-radius:8px !important;
+  background:#075985 !important;
+  color:#fff !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+}
+
+
+
+/* Relatório final: tabela direta, filtros e exportação Excel */
+.contract-report-shell{gap:14px !important}
+.contract-report-header,.contract-report-kpis{display:none !important}
+.contract-report-filters{
+  grid-template-columns:minmax(240px,1.4fr) repeat(4,minmax(145px,.75fr)) minmax(245px,1fr) auto !important;
+  gap:10px !important;
+}
+.contract-report-date-filter{min-width:245px}
+.contract-report-date-range{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.contract-report-table-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.contract-report-export{min-width:145px !important;white-space:nowrap !important}
+.contract-report-table{min-width:1750px !important}
+.contract-report-observation{display:block;min-width:220px;max-width:340px;color:#334f61;white-space:pre-wrap;word-break:break-word;line-height:1.35}
+@media(max-width:1450px){
+  .contract-report-filters{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+  .contract-report-search{grid-column:span 2}
+  .contract-report-date-filter{grid-column:span 2}
+}
+@media(max-width:900px){
+  .contract-report-filters{grid-template-columns:1fr 1fr !important}
+  .contract-report-search,.contract-report-date-filter{grid-column:1/-1}
+}
+@media(max-width:620px){
+  .contract-report-filters{grid-template-columns:1fr !important}
+  .contract-report-search,.contract-report-date-filter{grid-column:auto}
+  .contract-report-date-range{grid-template-columns:1fr}
+  .contract-report-table-actions{width:100%;justify-content:stretch}
+  .contract-report-table-actions>*{flex:1}
+  .contract-report-export{width:100%}
+}
+
+
+
+/* Correções de estabilidade do formulário */
+#formView{scroll-margin-top:16px}
+#formView input,
+#formView select,
+#formView textarea{scroll-margin-block:110px}
+#formView .section{contain:layout style}
+html.contract-form-editing{scroll-behavior:auto!important}
+
+</style>
+
+<style id="contracts-fretes-style-override">
+#kanbanView .unified-kanban{
+  grid-template-columns:repeat(7,236px) !important;
+  gap:14px !important;
+  padding:4px 8px 18px !important;
+  align-items:start !important;
+}
+#kanbanView .unified-col{
+  width:236px !important;
+  min-width:236px !important;
+  max-width:236px !important;
+  padding:8px !important;
+  border:1px solid #cfdbe3 !important;
+  border-radius:24px !important;
+  background:#eef3f6 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#kanbanView .unified-col.process-separator::before{
+  content:'' !important;
+  position:absolute !important;
+  left:-7px !important;
+  top:10px !important;
+  bottom:10px !important;
+  width:2px !important;
+  border-radius:999px !important;
+  background:#d1dbe3 !important;
+}
+#kanbanView .process-column-label{
+  margin:0 0 8px !important;
+  padding:0 2px !important;
+  background:none !important;
+  border:none !important;
+  color:#587284 !important;
+  font-size:9px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase !important;
+}
+#kanbanView .col-head{
+  display:grid !important;
+  grid-template-columns:38px minmax(0,1fr) 32px !important;
+  gap:8px !important;
+  align-items:start !important;
+  margin-bottom:9px !important;
+}
+#kanbanView .col-icon{
+  width:38px !important;
+  height:38px !important;
+  border-radius:13px !important;
+  background:#075985 !important;
+  color:#ffd400 !important;
+  border:2px solid #ffd400 !important;
+  display:grid !important;
+  place-items:center !important;
+  font-size:17px !important;
+  box-shadow:0 5px 12px rgba(7,89,133,.15) !important;
+}
+#kanbanView .unified-col.process-two .col-icon{
+  background:#0f5d8f !important;
+  color:#ffd400 !important;
+}
+#kanbanView .col-title{
+  margin:0 !important;
+  color:#0d3756 !important;
+  font-size:14px !important;
+  line-height:1.05 !important;
+  font-weight:900 !important;
+  overflow-wrap:anywhere !important;
+}
+#kanbanView .col-subtitle{
+  margin:2px 0 0 !important;
+  color:#627b8d !important;
+  font-size:11px !important;
+  line-height:1.12 !important;
+}
+#kanbanView .col-count{
+  min-width:32px !important;
+  width:32px !important;
+  height:32px !important;
+  padding:0 !important;
+  border:none !important;
+  border-radius:12px !important;
+  background:#f2efe7 !important;
+  color:#0d3756 !important;
+  display:grid !important;
+  place-items:center !important;
+  font-size:16px !important;
+  font-weight:900 !important;
+}
+#kanbanView .sla-box{
+  display:grid !important;
+  gap:5px !important;
+  margin-bottom:10px !important;
+  padding:10px 11px !important;
+  border:1px solid #d7e2e9 !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.85) !important;
+  box-shadow:none !important;
+}
+#kanbanView .sla-row{
+  display:flex !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  align-items:center !important;
+  color:#587284 !important;
+  font-size:11px !important;
+  line-height:1.15 !important;
+}
+#kanbanView .sla-row strong{
+  color:#0d3756 !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+}
+#kanbanView .contract-queue-lights{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+}
+#kanbanView .contract-queue-lights i{
+  width:11px !important;
+  height:11px !important;
+  display:block !important;
+  border-radius:50% !important;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.1), 0 0 0 2px rgba(255,255,255,.55) !important;
+}
+#kanbanView .contract-queue-lights b{
+  color:#7a93a3 !important;
+  font-size:10px !important;
+  line-height:1 !important;
+}
+#kanbanView .contract-queue-lights .queue-red{background:#ef476f !important}
+#kanbanView .contract-queue-lights .queue-yellow{background:#e0b134 !important}
+#kanbanView .contract-queue-lights .queue-green{background:#52c788 !important}
+#kanbanView .kanban-card-stack{
+  display:grid !important;
+  gap:10px !important;
+  align-content:start !important;
+}
+#kanbanView .kanban-card-stack > .empty-col{
+  min-height:98px !important;
+  border:1px dashed #9fc0d1 !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.35) !important;
+  color:#688091 !important;
+  font-size:12px !important;
+  display:grid !important;
+  place-items:center !important;
+  text-align:center !important;
+}
+#kanbanView .contract-freight-card{
+  padding:10px 10px 9px !important;
+  border:1px solid #d7e1e8 !important;
+  border-left:4px solid #075985 !important;
+  border-radius:15px !important;
+  background:#fff !important;
+  box-shadow:0 7px 16px rgba(0,83,131,.08) !important;
+  cursor:pointer !important;
+}
+#kanbanView .contract-freight-card.red{border-left-color:#ef4444 !important}
+#kanbanView .contract-freight-card.yellow{border-left-color:#f59e0b !important}
+#kanbanView .contract-freight-card.green{border-left-color:#22c55e !important}
+#kanbanView .contract-freight-card.gray{border-left-color:#94a3b8 !important}
+#kanbanView .contract-freight-card:hover{transform:none !important;box-shadow:0 10px 20px rgba(0,83,131,.12) !important}
+#kanbanView .contract-compact-top{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:8px !important;
+  align-items:start !important;
+}
+#kanbanView .contract-compact-id{
+  margin-bottom:3px !important;
+  color:#7a95a8 !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:.04em !important;
+}
+#kanbanView .contract-compact-title{
+  color:#053451 !important;
+  font-size:11.5px !important;
+  line-height:1.08 !important;
+  font-weight:950 !important;
+  text-transform:uppercase !important;
+}
+#kanbanView .contract-priority-bubble{
+  min-width:34px !important;
+  height:34px !important;
+  padding:0 6px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:11px !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+}
+#kanbanView .contract-priority-bubble.urgent{background:#fce7d7 !important;color:#f97316 !important}
+#kanbanView .contract-priority-bubble.normal{background:#dbeafe !important;color:#2563eb !important}
+#kanbanView .contract-compact-lines{
+  display:grid !important;
+  gap:3px !important;
+  margin-top:7px !important;
+}
+#kanbanView .contract-compact-lines > div{
+  display:grid !important;
+  grid-template-columns:12px minmax(0,1fr) !important;
+  gap:5px !important;
+  align-items:start !important;
+  color:#617b8c !important;
+  font-size:10px !important;
+  line-height:1.2 !important;
+}
+#kanbanView .contract-line-icon{color:#075985 !important;font-size:9px !important;text-align:center !important}
+#kanbanView .contract-compact-description{
+  min-height:18px !important;
+  max-height:24px !important;
+  margin-top:7px !important;
+  color:#173248 !important;
+  font-size:10px !important;
+  line-height:1.2 !important;
+  font-weight:800 !important;
+}
+#kanbanView .contract-responsible-note{
+  margin-top:7px !important;
+  padding:6px 8px !important;
+  border:1px solid #e4b700 !important;
+  border-radius:10px !important;
+  background:#f7edbc !important;
+  color:#6b5300 !important;
+  display:grid !important;
+  gap:2px !important;
+}
+#kanbanView .contract-responsible-note b{font-size:9px !important;line-height:1.1 !important}
+#kanbanView .contract-responsible-note span{font-size:10px !important;line-height:1.2 !important}
+#kanbanView .contract-compact-badges{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:4px !important;
+  margin-top:7px !important;
+}
+#kanbanView .contract-mini-badge{
+  padding:3px 6px !important;
+  border-radius:999px !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+}
+#kanbanView .contract-mini-badge.urgent{background:#ffe5d0 !important;color:#f97316 !important}
+#kanbanView .contract-mini-badge.normal{background:#dbeafe !important;color:#2563eb !important}
+#kanbanView .contract-mini-badge.traffic-red{background:#fee2e2 !important;color:#dc2626 !important}
+#kanbanView .contract-mini-badge.traffic-yellow{background:#fef3c7 !important;color:#b45309 !important}
+#kanbanView .contract-mini-badge.traffic-green{background:#dcfce7 !important;color:#16a34a !important}
+#kanbanView .contract-mini-badge.traffic-gray{background:#e2e8f0 !important;color:#475569 !important}
+#kanbanView .contract-mini-badge.process-one{background:#e0f2fe !important;color:#075985 !important}
+#kanbanView .contract-mini-badge.process-two{background:#ede9fe !important;color:#6d28d9 !important}
+#kanbanView .contract-mini-badge.kind{background:#faedcd !important;color:#9a6700 !important}
+#kanbanView .contract-compact-meta{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:6px !important;
+  align-items:center !important;
+  margin-top:7px !important;
+  color:#607988 !important;
+  font-size:9.5px !important;
+  line-height:1.2 !important;
+}
+#kanbanView .contract-compact-meta strong{color:#053451 !important}
+#kanbanView .contract-meta-status{font-weight:950 !important;white-space:nowrap !important}
+#kanbanView .contract-meta-status.red{color:#dc2626 !important}
+#kanbanView .contract-meta-status.yellow{color:#b45309 !important}
+#kanbanView .contract-meta-status.green{color:#16a34a !important}
+#kanbanView .contract-meta-status.gray{color:#64748b !important}
+#kanbanView .contract-compact-timer{
+  display:grid !important;
+  gap:3px !important;
+  margin-top:7px !important;
+  padding:7px 8px !important;
+  border:1px solid #d4e0e7 !important;
+  border-radius:11px !important;
+  background:#f3f7fa !important;
+}
+#kanbanView .contract-compact-timer > div{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:6px !important;
+  align-items:center !important;
+  color:#698191 !important;
+  font-size:9px !important;
+  line-height:1.15 !important;
+}
+#kanbanView .contract-compact-timer strong{
+  color:#053451 !important;
+  font-size:9px !important;
+  line-height:1.15 !important;
+  font-weight:950 !important;
+  font-variant-numeric:tabular-nums !important;
+  white-space:nowrap !important;
+}
+#kanbanView .contract-phase-selector-wrap{display:grid !important;gap:4px !important;margin-top:7px !important}
+#kanbanView .contract-phase-selector-wrap label{
+  color:#698191 !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase !important;
+}
+#kanbanView .contract-phase-selector-wrap .contract-phase-select{
+  width:100% !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 8px !important;
+  border:1px solid #bfcfd9 !important;
+  border-radius:9px !important;
+  background:#fff !important;
+  color:#053451 !important;
+  font-size:10px !important;
+  font-weight:800 !important;
+}
+#kanbanView .contract-compact-actions{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:6px !important;
+  margin-top:8px !important;
+}
+#kanbanView .contract-compact-actions button{
+  width:100% !important;
+  height:29px !important;
+  min-height:29px !important;
+  padding:0 8px !important;
+  border-radius:9px !important;
+  border:1px solid #075985 !important;
+  background:#075985 !important;
+  color:#fff !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+}
+</style>
+
+
+<style id="contract-approved-report-styles">
+.contract-report-shell{display:grid;gap:16px}
+.contract-report-header{padding:22px !important}
+.contract-report-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.contract-report-kicker{margin-bottom:6px;color:#0a6d9e;font-size:10px;font-weight:950;letter-spacing:.14em}
+.contract-report-title-row h2{margin:0;color:#0b3553;font-size:23px;letter-spacing:-.025em}
+.contract-report-title-row h2::after{content:"";display:block;width:70px;height:4px;margin-top:9px;border-radius:999px;background:#ffdd00}
+.contract-report-title-row p{margin:13px 0 0;color:#667f8e;font-size:13px;line-height:1.45}
+.contract-report-export{min-width:150px;white-space:nowrap}
+.contract-report-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:20px}
+.contract-report-kpi{padding:13px 14px;border:1px solid #dce7ed;border-left:4px solid #ffdd00;border-radius:13px;background:#f8fbfc}
+.contract-report-kpi small{display:block;color:#687f8e;font-size:9px;font-weight:900;letter-spacing:.045em;text-transform:uppercase}
+.contract-report-kpi strong{display:block;margin-top:5px;color:#0b3553;font-size:20px;line-height:1.1}
+.contract-report-filters{display:grid;grid-template-columns:minmax(250px,1.5fr) repeat(3,minmax(150px,.75fr)) auto;gap:10px;align-items:end;padding:15px 16px;border:1px solid #dfe7ed;border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(15,53,80,.05)}
+.contract-report-filters label{display:grid;gap:5px;margin:0}
+.contract-report-filters label>span{color:#617989;font-size:9px;font-weight:950;letter-spacing:.05em;text-transform:uppercase}
+.contract-report-filters input,.contract-report-filters select{margin:0;min-height:38px}
+.contract-report-filters button{min-height:38px;white-space:nowrap}
+.contract-report-table-card{overflow:hidden;border:1px solid #dfe7ed;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,53,80,.06)}
+.contract-report-table-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 17px;border-bottom:1px solid #dfe7ed;background:#f7fafb}
+.contract-report-table-head h3{margin:0;color:#0b3553;font-size:16px}
+.contract-report-table-head p{margin:4px 0 0;color:#6a8190;font-size:11px}
+.contract-report-status{padding:6px 10px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:10px;font-weight:900;white-space:nowrap}
+.contract-report-table-wrap{width:100%;overflow:auto}
+.contract-report-table{width:100%;min-width:1550px;border-collapse:collapse;font-size:10.5px}
+.contract-report-table thead th{position:sticky;top:0;z-index:2;padding:11px 10px;background:#edf4f7;color:#456273;text-align:left;font-size:9px;font-weight:950;letter-spacing:.035em;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid #cfdee6}
+.contract-report-table tbody td{padding:10px;border-bottom:1px solid #e8eff3;color:#2a4659;vertical-align:top;line-height:1.3}
+.contract-report-table tbody tr:hover td{background:#f9fcfd}
+.contract-report-table tbody tr:last-child td{border-bottom:0}
+.contract-report-code{color:#075985;font-weight:950;white-space:nowrap}
+.contract-report-main{display:block;color:#14394f;font-weight:850;max-width:240px}
+.contract-report-sub{display:block;margin-top:2px;color:#78909e;font-size:9px}
+.contract-report-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:950;white-space:nowrap}
+.contract-report-badge.doc{background:#e0f2fe;color:#075985}
+.contract-report-badge.normal{background:#dbeafe;color:#2563eb}
+.contract-report-badge.urgent{background:#ffe4d1;color:#ea580c}
+.contract-report-pmp{font-weight:900;color:#0b3553;white-space:nowrap}
+.contract-report-sla{font-weight:900;color:#0b3553;white-space:nowrap;font-variant-numeric:tabular-nums}
+.contract-report-detail-btn{min-height:29px !important;height:29px;padding:0 9px !important;border-radius:8px !important;font-size:9px !important;white-space:nowrap}
+.contract-report-empty{padding:42px 20px;text-align:center;color:#698191;font-size:12px}
+@media(max-width:1150px){.contract-report-kpis{grid-template-columns:repeat(3,1fr)}.contract-report-filters{grid-template-columns:1fr 1fr 1fr}.contract-report-search{grid-column:span 2}}
+@media(max-width:720px){.contract-report-title-row{flex-direction:column}.contract-report-export{width:100%}.contract-report-kpis{grid-template-columns:1fr 1fr}.contract-report-filters{grid-template-columns:1fr}.contract-report-search{grid-column:auto}.contract-report-filters button{width:100%}.contract-report-table-head{align-items:flex-start;flex-direction:column}}
+</style>
+
+
+<style id="contract-report-filter-layout-fix">
+/* Ajuste final dos filtros do relatório: campos sem sobreposição */
+#reportView .contract-report-filters{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:14px !important;
+  align-items:end !important;
+  width:100% !important;
+  padding:16px !important;
+  overflow:visible !important;
+  box-sizing:border-box !important;
+}
+#reportView .contract-report-filters > *{
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+#reportView .contract-report-filters label{
+  display:grid !important;
+  grid-template-rows:auto minmax(40px,auto) !important;
+  gap:6px !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+#reportView .contract-report-filters label > span{
+  display:block !important;
+  min-width:0 !important;
+  white-space:normal !important;
+  line-height:1.25 !important;
+}
+#reportView .contract-report-filters input,
+#reportView .contract-report-filters select{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:40px !important;
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 10px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#reportView .contract-report-search{
+  grid-column:span 2 !important;
+}
+#reportView .contract-report-date-filter{
+  grid-column:span 2 !important;
+  min-width:0 !important;
+}
+#reportView .contract-report-date-range{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:10px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#reportView #clearApprovedReportFilters{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:40px !important;
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 12px !important;
+  box-sizing:border-box !important;
+  white-space:nowrap !important;
+}
+@media(max-width:1180px){
+  #reportView .contract-report-filters{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+  #reportView .contract-report-search{
+    grid-column:span 2 !important;
+  }
+  #reportView .contract-report-date-filter{
+    grid-column:span 2 !important;
+  }
+}
+@media(max-width:820px){
+  #reportView .contract-report-filters{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+  #reportView .contract-report-search,
+  #reportView .contract-report-date-filter{
+    grid-column:1/-1 !important;
+  }
+}
+@media(max-width:540px){
+  #reportView .contract-report-filters{
+    grid-template-columns:minmax(0,1fr) !important;
+    padding:13px !important;
+  }
+  #reportView .contract-report-search,
+  #reportView .contract-report-date-filter{
+    grid-column:auto !important;
+  }
+  #reportView .contract-report-date-range{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  #reportView #clearApprovedReportFilters{
+    width:100% !important;
+  }
+}
+</style>
+
+
+
+<style id="contract-card-observation-styles">
+#kanbanView .contract-card-observation{
+  display:grid !important;
+  gap:5px !important;
+  margin-top:7px !important;
+  padding:7px !important;
+  border:1px solid #e2b900 !important;
+  border-radius:10px !important;
+  background:#fff8cf !important;
+}
+#kanbanView .contract-card-observation label{
+  margin:0 !important;
+  color:#6c5600 !important;
+  font-size:8px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+  letter-spacing:.02em !important;
+}
+#kanbanView .contract-card-observation textarea{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:58px !important;
+  max-height:100px !important;
+  margin:0 !important;
+  padding:6px 7px !important;
+  resize:vertical !important;
+  border:1px solid #d9c15a !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#173248 !important;
+  font-size:9px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  box-shadow:none !important;
+}
+#kanbanView .contract-card-observation textarea:focus{
+  border-color:#075985 !important;
+  box-shadow:0 0 0 2px rgba(7,89,133,.12) !important;
+  outline:none !important;
+}
+#kanbanView .contract-observation-footer{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  gap:7px !important;
+  min-width:0 !important;
+}
+#kanbanView .contract-observation-save-status{
+  color:#816b10 !important;
+  font-size:7.5px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#kanbanView .contract-observation-save-status.saved{color:#15803d !important}
+#kanbanView .contract-observation-counter{
+  flex:0 0 auto !important;
+  color:#6c5600 !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+</style>
+
+
+<style id="contract-request-error-styles">
+#kanbanKpis{
+  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+}
+#kanbanView .contract-freight-card.request-error{
+  background:linear-gradient(180deg,#fff 0%,#fff7f7 100%) !important;
+  box-shadow:0 0 0 2px rgba(220,38,38,.14),0 8px 18px rgba(127,29,29,.10) !important;
+}
+#kanbanView .contract-error-toggle{
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  margin-top:7px !important;
+  padding:7px 8px !important;
+  border:1px solid #d7e1e8 !important;
+  border-radius:10px !important;
+  background:#f8fafc !important;
+  color:#506b7c !important;
+  font-size:9px !important;
+  line-height:1.15 !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+  user-select:none !important;
+}
+#kanbanView .contract-error-toggle:has(input:checked){
+  border-color:#ef4444 !important;
+  background:#fff1f2 !important;
+  color:#b91c1c !important;
+}
+#kanbanView .contract-error-toggle input{
+  width:14px !important;
+  height:14px !important;
+  flex:0 0 auto !important;
+  margin:0 !important;
+  accent-color:#dc2626 !important;
+  cursor:pointer !important;
+}
+#kanbanView .contract-error-toggle-icon{
+  color:#dc2626 !important;
+  font-size:13px !important;
+  line-height:1 !important;
+}
+#kanbanView .request-error-badge{
+  display:none !important;
+  background:#fee2e2 !important;
+  color:#b91c1c !important;
+  border:1px solid #fecaca !important;
+}
+#kanbanView .request-error-badge.show{
+  display:inline-flex !important;
+}
+@media(max-width:1300px){
+  #kanbanKpis{grid-template-columns:repeat(4,minmax(0,1fr)) !important;}
+}
+@media(max-width:760px){
+  #kanbanKpis{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+}
+</style>
+
+
+<style id="contract-card-editing-styles">
+#formView.editing-request{
+  border-top:5px solid #facc15 !important;
+  box-shadow:0 12px 30px rgba(7,89,133,.13) !important;
+}
+#formView.editing-request .contract-form-intro{
+  position:relative !important;
+  padding-right:150px !important;
+}
+#formView.editing-request .contract-form-intro::after{
+  content:'MODO EDIÇÃO' !important;
+  position:absolute !important;
+  top:2px !important;
+  right:0 !important;
+  padding:7px 10px !important;
+  border-radius:999px !important;
+  background:#fff3bf !important;
+  color:#8a6500 !important;
+  border:1px solid #f1cf45 !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.05em !important;
+}
+#formView .actions.edit-actions{
+  justify-content:flex-end !important;
+}
+#formView .actions.edit-actions .cancel-edit-button{
+  background:#fff !important;
+  color:#b42318 !important;
+  border:1px solid #f1b4ae !important;
+}
+#formView .actions.edit-actions .save-edit-button{
+  min-width:190px !important;
+  background:#075985 !important;
+  color:#fff !important;
+  border-bottom:4px solid #facc15 !important;
+}
+#kanbanView .contract-compact-actions{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+}
+#kanbanView .contract-compact-actions .contract-edit-btn{
+  background:#fff !important;
+  color:#075985 !important;
+  border:1px solid #075985 !important;
+}
+#kanbanView .contract-compact-actions .contract-edit-btn:hover{
+  background:#eaf5fb !important;
+}
+.detail-edit-actions{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin:0 0 14px !important;
+}
+.detail-edit-actions button{
+  min-height:36px !important;
+  background:#075985 !important;
+  color:#fff !important;
+  border-bottom:3px solid #facc15 !important;
+}
+@media(max-width:700px){
+  #formView.editing-request .contract-form-intro{padding-right:0 !important;padding-top:38px !important;}
+  #formView.editing-request .contract-form-intro::after{left:0 !important;right:auto !important;}
+  #kanbanView .contract-compact-actions{grid-template-columns:1fr !important;}
+}
+</style>
+
+</head>
+<body>
+<div class="sf-app" id="sfApp">
+<div class="sf-workspace">
+
+<main class="container">
+<nav aria-label="Navegação do módulo" class="tabs sf-module-tabs">
+<button class="tab active" data-tab="form"><span class="tab-icon">📝</span>Nova solicitação</button>
+<button class="tab" data-tab="kanban"><span class="tab-icon">🗂️</span>Kanban</button>
+<button class="tab" data-tab="dashboard"><span class="tab-icon">📊</span>Dashboard</button>
+<button class="tab" data-tab="report"><span class="tab-icon">📋</span>Relatório</button>
+<button class="tab" data-tab="import"><span class="tab-icon">📥</span>Importar controle antigo</button>
+<button class="tab" data-tab="editor"><span class="tab-icon">⚙️</span>Editor do formulário</button>
+</nav>
+
+<section class="panel" id="formView"><div class="contract-form-intro"><h2 id="contractFormTitle">Nova Solicitação de Contrato</h2><p id="contractFormSubtitle" class="muted">Preencha as informações iniciais, dados do contrato e anexos. Ao criar, o card entra no Kanban.</p></div><form id="form"></form></section>
+
+<section class="panel hidden" id="importView">
+  <div class="head">
+    <div><h2>Importar planilha antiga de contratos</h2><p class="hint">Carregue o controle anterior em Excel ou CSV e inclua os registros no Kanban sem apagar as solicitações atuais.</p></div>
+    <div class="pill">Excel, XLS ou CSV</div>
+  </div>
+  <div class="import-layout">
+    <article class="import-card">
+      <h3>1. Selecionar arquivo</h3>
+      <p>O arquivo é processado apenas no navegador. Nenhum dado é enviado para servidores externos.</p>
+      <label class="import-drop" id="importDrop">
+        <input accept=".xlsx,.xls,.csv" id="legacyFileInput" type="file"/>
+        <div><span class="import-drop-icon">⇧</span><strong>Clique ou arraste a planilha aqui</strong><span>Formatos aceitos: .xlsx, .xls e .csv</span></div>
+      </label>
+      <div class="import-file-meta" id="importFileMeta"><div><strong id="importFileName"></strong><span id="importFileSize"></span></div><button class="secondary" id="removeImportFile" type="button">Remover</button></div>
+      <div class="import-options">
+        <label>Planilha / aba<select id="importSheetSelect" disabled><option value="">Selecione um arquivo</option></select></label>
+        <label>Status quando a coluna estiver vazia<select id="importDefaultStatus"><option>Não Iniciado</option><option>Em Elaboração</option><option>Aguardando Validação</option><option>Enviado para Assinatura</option><option>Contrato Assinado</option><option>Em Cadastro no Compor</option><option>Aprovado no Compor</option></select></label>
+        <label>Urgência quando a coluna estiver vazia<select id="importDefaultUrgency"><option value="NORMAL - 5 DIAS ÚTEIS">Normal</option><option value="URGENTE - 3 DIAS ÚTEIS">Urgente</option></select></label>
+        <label>Tratamento de códigos repetidos<select id="importDuplicatePolicy"><option value="skip">Ignorar registros já existentes</option><option value="new">Importar com um novo código</option></select></label>
+      </div>
+      <div class="import-summary"><div><small>Linhas lidas</small><strong id="importRowsCount">0</strong></div><div><small>Prontas</small><strong id="importReadyCount">0</strong></div><div><small>Repetidas</small><strong id="importDuplicateCount">0</strong></div></div>
+      <div class="import-actions"><button class="primary" disabled id="runLegacyImport" type="button">Importar para o Kanban</button><button class="secondary" id="resetLegacyImport" type="button">Limpar seleção</button></div>
+      <div class="import-note">Os registros importados entram na fase indicada na planilha. Quando a fase estiver vazia ou não for reconhecida, será usado o status padrão selecionado acima.</div>
+      <div class="import-result" id="importResult"></div>
+    </article>
+    <article class="import-card">
+      <h3>2. Relacionar colunas</h3>
+      <p>O aplicativo tenta identificar automaticamente os títulos. Ajuste os campos antes de importar.</p>
+      <div class="mapping-grid" id="importMappingGrid"></div>
+      <div class="preview-wrap">
+        <div class="preview-head"><h3>Pré-visualização</h3><span id="importPreviewLabel">Nenhum arquivo carregado</span></div>
+        <div class="preview-scroll" id="importPreview"><div class="import-empty">Selecione uma planilha para visualizar os primeiros registros.</div></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="panel hidden" id="editorView"><div class="head"><div><h2>Configuracao do formulario</h2><p class="hint">Gerencie secoes, perguntas, opcoes, regras condicionais e obrigatoriedade dos campos.</p></div><div class="pill">Acesso administrativo</div></div><div id="editor"></div></section>
+<section class="hidden" id="dashboardView">
+  <div class="kanban-shell">
+    <section class="dashboard-filter-panel">
+      <div class="dashboard-filter-head">
+        <div><h3>Filtros do Dashboard</h3><p>Os indicadores, o semáforo e os gráficos são recalculados automaticamente conforme a seleção.</p></div>
+        <div class="dashboard-filter-summary" id="dashboardFilterSummary">Base completa</div>
+      </div>
+      <div class="dashboard-filter-grid">
+        <label class="dashboard-search-field"><span>Pesquisa</span><input id="dashboardSearch" placeholder="Código, fornecedor, solicitante, obra ou objeto..." type="search"></label>
+        <label><span>Tipo de documento</span><select id="dashboardTypeFilter"><option value="Todas">Todos os tipos</option><option value="CONTRATO">Contratos</option><option value="ADITIVO">Aditivos</option><option value="DISTRATO">Distratos</option><option value="RERRATIFICAÇÃO">Rerratificações</option><option value="PJ">PJ</option></select></label>
+        <label><span>Urgência</span><select id="dashboardUrgencyFilter"><option value="Todas">Normal ou urgente</option><option value="NORMAL">Normal</option><option value="URGENTE">Urgente</option></select></label>
+        <label><span>Status / fase</span><select id="dashboardStatusFilter"><option value="Todas">Todas as fases</option></select></label>
+        <label><span>Obra / centro de custo</span><select id="dashboardCenterFilter"><option value="Todas">Todas as obras e centros</option></select></label>
+        <label><span>Situação do prazo</span><select id="dashboardSlaFilter"><option value="Todas">Todas as situações</option><option value="Em atraso">Em atraso</option><option value="Em alerta">Em alerta</option><option value="No prazo">No prazo</option><option value="Sem prazo">Sem prazo</option></select></label>
+        <label><span>Período da solicitação</span><div class="dashboard-date-range"><input id="dashboardDateFrom" aria-label="Data inicial" type="date"><input id="dashboardDateTo" aria-label="Data final" type="date"></div></label>
+        <div class="dashboard-filter-actions"><button class="secondary" id="clearDashboardFilters" type="button">Limpar filtros</button></div>
+      </div>
+    </section>
+    <section class="panel"><div class="head"><div><h2>Dashboard de Contratos</h2><p class="hint">Visão consolidada das solicitações, prazos, filas e desempenho das etapas.</p></div><div class="pill">Atualização automática</div></div><section class="kpi-grid" id="kanbanKpis"></section></section>
+    <section class="analytics-grid">
+      <article class="analytics-card"><h3>Semáforo de filas</h3><p>Solicitações em aberto classificadas conforme a data limite em dias úteis.</p><div id="queueSemaphoreChart"></div></article>
+      <article class="analytics-card"><h3>Média de tempo por fase</h3><p>Média acumulada dos tempos registrados em cada etapa, incluindo retornos.</p><div id="phaseAverageChart"></div></article>
+      <article class="analytics-card"><h3>Solicitações por urgência</h3><p>Distribuição entre solicitações normais e urgentes.</p><div id="urgencyChart"></div></article>
+      <article class="analytics-card"><h3>Solicitações por tipo de documento</h3><p>Distribuição por contrato, aditivo e distrato.</p><div id="docTypeChart"></div></article>
+      <article class="analytics-card"><h3>Qualidade das solicitações</h3><p>Quantidade e percentual de solicitações marcadas com erro pelo responsável do contrato.</p><div id="requestErrorChart"></div></article>
+    </section>
+  </div>
+</section>
+
+<section class="hidden" id="reportView">
+  <div class="contract-report-shell">
+    <section class="contract-report-filters">
+      <label class="contract-report-search"><span>Pesquisa</span><input id="approvedReportSearch" type="search" placeholder="Nº do contrato, fornecedor, solicitante, obra ou observação..."></label>
+      <label><span>Documento</span><select id="approvedReportType"><option value="Todas">Todos</option><option value="CONTRATO">Contrato</option><option value="ADITIVO">Aditivo</option><option value="DISTRATO">Distrato</option><option value="RERRATIFICAÇÃO">Rerratificação</option><option value="PJ">PJ</option></select></label>
+      <label><span>Tipo de contrato</span><select id="approvedReportContractType"><option value="Todos">Todos os tipos de contrato</option></select></label>
+      <label><span>Urgência</span><select id="approvedReportUrgency"><option value="Todas">Normal ou urgente</option><option value="NORMAL">Normal</option><option value="URGENTE">Urgente</option></select></label>
+      <label><span>Obra / departamento</span><select id="approvedReportCenter"><option value="Todas">Todas as obras e departamentos</option></select></label>
+      <label class="contract-report-date-filter"><span>Data da solicitação</span><div class="contract-report-date-range"><input id="approvedReportDateFrom" aria-label="Data inicial da solicitação" type="date"><input id="approvedReportDateTo" aria-label="Data final da solicitação" type="date"></div></label>
+      <button class="secondary" id="clearApprovedReportFilters" type="button">Limpar filtros</button>
+    </section>
+
+    <section class="contract-report-table-card">
+      <div class="contract-report-table-head">
+        <div><h3>Contratos aprovados no Compor</h3><p id="approvedReportSummary">Nenhum registro aprovado no Compor.</p></div>
+        <div class="contract-report-table-actions">
+          <span class="contract-report-status">Aprovado no Compor</span>
+          <button class="primary contract-report-export" id="exportApprovedReport" type="button">⬇ Exportar Excel</button>
+        </div>
+      </div>
+      <div class="contract-report-table-wrap">
+        <table class="contract-report-table">
+          <thead>
+            <tr>
+              <th>Nº do contrato</th>
+              <th>Documento</th>
+              <th>Obra / departamento</th>
+              <th>Fornecedor</th>
+              <th>Tipo de contrato</th>
+              <th>Solicitante</th>
+              <th>Urgência</th>
+              <th>PMP</th>
+              <th>Data da solicitação</th>
+              <th>Aprovação no Compor</th>
+              <th>SLA total</th>
+              <th>Observações do responsável</th>
+            </tr>
+          </thead>
+          <tbody id="approvedReportBody"></tbody>
+        </table>
+      </div>
+      <div class="contract-report-empty hidden" id="approvedReportEmpty">Nenhum contrato aprovado no Compor corresponde aos filtros selecionados.</div>
+    </section>
+  </div>
+</section>
+
+<section class="hidden" id="kanbanView"><div class="kanban-shell"><section class="toolbar-panel"><div class="toolbar-copy"><h3>Kanban de solicitações</h3><p>Controle por fase, SLA e tipo de solicitação.</p></div><div class="toolbar-controls"><input id="kanbanSearch" placeholder="Buscar..." type="text"/><select id="kanbanTypeFilter"><option value="Todas">Todos os tipos</option><option value="CONTRATO">Contratos</option><option value="ADITIVO">Aditivos</option><option value="DISTRATO">Distratos</option></select><select id="kanbanUrgencyFilter"><option value="Todas">Normal ou urgente</option><option value="NORMAL">Normal</option><option value="URGENTE">Urgente</option></select><select id="kanbanSort"><option value="prazo">Ordenar por prazo</option><option value="recentes">Mais recentes</option><option value="urgencia">Prioridade</option><option value="alfabetica">A-Z</option></select><div class="toolbar-actions"><button class="secondary" id="clearFilters" type="button">Limpar filtros</button><button class="secondary" id="clearData" type="button">Limpar dados</button></div></div></section><section id="kanban"></section></div></section>
+</main></div>
+</div>
+<div class="detail-modal" id="detailModal">
+<div class="detail-box">
+<div class="detail-header">
+<div>
+<h2 id="detailTitle">Detalhes da solicitação</h2>
+<p id="detailSubtitle">Todas as informações preenchidas no formulário.</p>
+</div>
+<button class="detail-close" id="detailClose" type="button">×</button>
+</div>
+<div class="detail-body" id="detailBody"></div>
+</div>
+</div><div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>
+<script>
+const BASE_FORM=[{"title":"SOLICITAÇÃO DE CONTRATOS","description":"Através deste formulário você poderá solicitar a confecção de contratos, distratos, aditivos e rerratificação de contratos ao setor de cadastro.","fields":[{"name":"data_solicitacao","label":"Data da solicitação","type":"date","required":true,"readonly":true,"note":"Preenchida automaticamente na abertura do formulário e salva junto com a solicitação."},{"name":"email","label":"E-mail","type":"email","required":true},{"name":"solicitante","label":"Solicitante","type":"text","required":true,"note":"Favor identificar seu nome."},{"name":"solicitacao","label":"Solicitação","type":"select","required":true,"options":["Obra","Departamentos Administrativos"]},{"name":"prazo_urgencia","label":"PRAZO DE URGÊNCIA","type":"select","required":true,"options":["NORMAL - 5 DIAS ÚTEIS","URGENTE - 3 DIAS ÚTEIS"],"note":"Selecione o prazo logo no início. A data limite será calculada automaticamente em dias úteis a partir da data de preenchimento do formulário."},{"name":"data_limite_atendimento","label":"Data limite de atendimento","type":"date","required":true,"readonly":true,"note":"Urgente: 3 dias úteis. Normal: 5 dias úteis."}],"condition":null},{"title":"Departamentos Administrativos","description":"","fields":[{"name":"centro_departamento","label":"Centro de custo","type":"select","required":true,"options":["SUPPLY CHAIN","EQUIPAMENTOS","COMERCIAL","PESSOAS (RH/DP)","MARKETING","DIRETORIA","FINANÇAS (CONTABILIDADE/FINANCEIRO)","CADASTRO","PLANEJAMENTO & CONTROLE","TI","ENGENHARIA","PLANEJAMENTO ESTRATÉGICO","QSMS","SEDE"]},{"name":"tipo_documento_departamento","label":"Qual tipo de documento você pretende criar?","type":"select","required":true,"options":["CONTRATO","DISTRATO","ADITIVO","RERRATIFICAÇÃO","PJ"]}],"condition":{"field":"solicitacao","values":["Departamentos Administrativos"]}},{"title":"Obra","description":"","fields":[{"name":"centro_obra","label":"Centro de custo","type":"select","required":true,"options":["CIC UN ENERGIA","793 - LAMSA","827 - PETROBRAS TRANSPORTE S.A - TRANSPETRO - SC","852 - POCO FUNDO ENERGIA S/A","857 - ENGETEC CONSTRUCOES E MONTAGENS SA - SP","862 - HOSPITAL NAVAL MARCILIO DIAS - RJ","866 - MJRE CONSTRUTORA LTDA - RJ","868 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO","869 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO","871 - CEMIG GERACAO SUL S.A - MG","874 - CEMIG GERACAO SUL S.A.","875 - AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ","877 - 1 ASSOCIACAO INSTITUTO NACIONAL DE MATEMATICA PURA - RJ","878 - FUND. INST. DE GEOTECNIA DO MUN. DO R.J - GEORIO - RJ","881 - PETRÓLEO BRASILEIRO S/A - PETROBRÁS - RJ","882 - MRS LOGISTICA S/A - RJ","883 - AUTOPISTA LITORAL SUL S.A - SC","884 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO","885 - EMPRESA MUNICIPAL DE MORADIA URBANIZACAO E SANEAME - RJ","886 - EMPRESA MUNICIPAL DE MORADIA URBANIZACAO E SANEAME - RJ","887 - LIGHT - ENERGIA S/A - RJ","889 - DNIT-DEPARTAMENTO NACIONAL DE INFRAEST DE TRANSPOR - SP","890 - GERDAU - MG","891 - SANTA FE ENERGIA S/A - ES","892 - 1 MRS LOGISTICA S/A","892-2 MRS LOGISTICA S/A","892-3 MRS LOGISTICA S/A","892-4 MRS LOGISTICA S/A","892-6 MRS LOGISTICA S/A","892-7 MRS LOGISTICA S/A","892-8 MRS LOGISTICA S/A","892-9 MRS LOGISTICA S/A","892-10 MRS LOGISTICA S/A","892-11 MRS LOGISTICA S/A","892-12 MRS LOGISTICA S/A","893 - AUTOPISTA PLANALTO SUL S.A - SC","894 - PREFEITURA DA CIDADE DO RIO DE JANEIRO","895-1 - AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ","895-2 AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ","896 - CEMIG GERACAO E TRANSMISSAO S.A","897 - CONSORCIO CANDONGA","898 - CONCESSIONARIA DO SISTEMA ANHANGUERA-BANDEIRANTES","900 - FURNAS CENTRAIS ELÉTRICAS S/A","901 - AUTOPISTA LITORAL SUL S.A.","902 - CONCESSIONARIA DAS RODOVIAS INTEGRADAS DO SUL S.A.","903 - AESAN ENGENHARIA E PARTICIPACOES LTDA","904 - MRS LOGISTICA S/A","905 - EMPRESA DE TECNOLOGIA E INFORMACOES DA PREVIDENCIA","906 - AUTOPISTA LITORAL SUL S.A.","907 - MRS LOGISTICA S/A","908 - CEMIG DISTRIBUICAO S.A","909 - CEMIG DISTRIBUICAO S.A","910 - PETROBRAS TRANSPORTE S.A. -TRANSPETRO","911 - ENGIE SOLUCOES DE OPERACAO E MANUTENCAO LTDA.","912 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO","913 - AUTOPISTA LITORAL SUL S.A.","914 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAU","915 - AUTOPISTA PLANALTO SUL S.A","916 - GERDAU ACOS LONGOS S.A","917 - PETROBRAS TRANSPORTE S.A. -TRANSPETRO","918 - MRS","919 - GEORIO","920 - CCR VIACOSTEIRA","921 - SEIC","922 - CEMIG","923 - CCR VIA SUL","924 - CEMIG","925 - ARTERIS","926 - CEEE-G","927 - DNIT-DEPARTAMENTO NACIONAL DE INFRAEST DE TRANSPOR - SP","928 - ARTERIS","929 - ARTERIS","930 - SEIOP","931 - GERDAU","932 - ECORIOMINAS","933 - AEGEA","934 - IGUÁ - RJ","935 - ENGIE - RN","936 - ARTERIS","937 - CCR","938 - AEGEA","939 - AEGEA","940 - CCR","941 - ECORIOMINAS","942 - RUMO","943 - ARTERIS","944 - STATE","945 - CCR","946 - CCR","947 - CCR","948 - G5 ENGENHARIA","949 - DNIT","950 - CSG","951 - ECORIOMINAS","952 - CCR","953 - BRASFELS","954 - AUTOPISTA PLANALTO SUL","955 - RUMO","956 - CORSAN","957 - EPR","958 - AGUAS DO RIO 4 SPE","959 - CCR","960 - VLI","961 - METRO BH","962 - ION EMUSA","OBRA 963 - CSG","OBRA 964 - AUTOPISTA L SUL","966 - SABESP","967 - ARTERIS","968 - RUMO","971 - EMAE"]},{"name":"tipo_documento_obra","label":"Qual tipo de documento você pretende criar?","type":"select","required":true,"options":["CONTRATO","DISTRATO","ADITIVO"]}],"condition":{"field":"solicitacao","values":["Obra"]}},{"title":"Elaboração da minuta","description":"Faz parte do fluxo de CONTRATO. Como o mapa de cotação foi removido, esta seção abre diretamente após selecionar CONTRATO.","fields":[{"name":"minuta_aprovada","label":"A minuta do contrato foi aprovada pelo fornecedor?","type":"select","required":true,"options":["SIM","NÃO"]}],"condition":{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}},{"title":"MODELO DE CONTRATO","description":"","fields":[{"name":"tipo_contrato","label":"Qual seria o tipo de contrato?","type":"select","required":true,"options":["PRESTAÇÃO DE SERVIÇO TERCEIRIZADOS","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PF","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PJ","PRESTAÇÃO DE SERVIÇO DE ALIMENTAÇÃO","PRESTAÇÃO DE SERVIÇO PF - RPA","LOCAÇÃO DE EQUIPAMENTO SEM OPERADOR","LOCAÇÃO DE EQUIPAMENTO COM OPERADOR","FORNECIMENTO DE COMBUSTÍVEL","LOCAÇÃO DE ÁREA DE CANTEIRO","PRESTAÇÃO DE SERVIÇOS DE TRANSPORTES - PJ","PRESTAÇÃO DE SERVIÇOS TERCEIRIZADOS (FATURAMENTO DIRETO)","FORNECIMENTO DE MATERIAL"]}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["SIM"]}]}},{"title":"Dados gerais do contrato","description":"","fields":[{"name":"cnpj_cpf","label":"CNPJ / CPF","type":"text","required":true,"note":"CPF somente para pessoa física."},{"name":"razao_social","label":"RAZÃO SOCIAL","type":"text","required":true},{"name":"objeto_contrato","label":"Objeto do contrato","type":"textarea","required":true,"note":"Obs.: Para contratos de alojamento neste campo deve ser inserido o endereço do imóvel."},{"name":"representante_legal","label":"NOME DO REPRESENTANTE LEGAL OU PROCURADOR","type":"text","required":true},{"name":"rg_orgao","label":"RG E ÓRGÃO EXPEDIDOR","type":"text","required":true},{"name":"cpf_representante","label":"CPF","type":"text","required":true},{"name":"nacionalidade","label":"NACIONALIDADE","type":"text","required":true},{"name":"profissao","label":"PROFISSÃO","type":"text","required":true},{"name":"inicio_vigencia","label":"Favor, informar o início de vigência do contrato.","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"termino_vigencia","label":"Favor, informar o término de vigência do contrato.","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"cnpj_seel","label":"Em qual CNPJ SEEL o contrato será elaborado?","type":"select","required":true,"options":["72.030.927/0001-85 (Rio de Janeiro)","72.030.927/0006-90 (Santa Catarina)","72.030.927/0007-70 (Minas Gerais)"],"note":"O CNPJ do contrato deve ser o mesmo da nota fiscal / fatura."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["SIM"]}]}},{"title":"Forma de pagamento - Contrato / Somente depósito bancário","description":"Esta seção aparece para PRESTAÇÃO DE SERVIÇO TERCEIRIZADOS. Neste tipo de contrato, a forma de pagamento permitida é somente Depósito Bancário.","fields":[{"name":"forma_pagamento_contrato_deposito_only","label":"Qual a forma de pagamento acordada?","type":"select","required":true,"options":["Depósito bancário"]},{"name":"dados_bancarios_contrato_deposito_only","label":"Favor informar os dados bancários","type":"textarea","required":true},{"name":"favorecido_contrato_deposito_only","label":"Favorecido","type":"text","required":true},{"name":"cpf_cnpj_contrato_deposito_only","label":"CPF OU CNPJ","type":"text","required":true,"note":"CPF somente para MEI / Empresário individual."},{"name":"pagamento_dias_contrato_deposito_only","label":"Pagamento quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇO TERCEIRIZADOS"]}]}},{"title":"Forma de pagamento - Contrato / Depósito ou boleto","description":"Esta seção aparece para os demais tipos de contrato. A forma de pagamento pode ser Depósito Bancário ou Boleto Bancário.","fields":[{"name":"forma_pagamento_contrato_demais","label":"Qual a forma de pagamento acordada?","type":"select","required":true,"options":["Depósito bancário","Boleto bancário"]},{"name":"dados_bancarios_contrato_demais","label":"Caso tenha selecionado Depósito Bancário, favor informar os dados bancários","type":"textarea","required":false},{"name":"favorecido_contrato_demais","label":"Favorecido","type":"text","required":false},{"name":"cpf_cnpj_contrato_demais","label":"CPF OU CNPJ","type":"text","required":false,"note":"CPF somente para MEI / Empresário individual."},{"name":"pagamento_dias_contrato_demais","label":"Pagamento quantos dias após a emissão da nota fiscal/boleto?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["LOCAÇÃO DE IMÓVEL POR TEMPORADA - PF","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PJ","PRESTAÇÃO DE SERVIÇO DE ALIMENTAÇÃO","PRESTAÇÃO DE SERVIÇO PF - RPA","LOCAÇÃO DE EQUIPAMENTO SEM OPERADOR","LOCAÇÃO DE EQUIPAMENTO COM OPERADOR","FORNECIMENTO DE COMBUSTÍVEL","LOCAÇÃO DE ÁREA DE CANTEIRO","PRESTAÇÃO DE SERVIÇOS DE TRANSPORTES - PJ","PRESTAÇÃO DE SERVIÇOS TERCEIRIZADOS (FATURAMENTO DIRETO)","FORNECIMENTO DE MATERIAL"]}]}},{"title":"Processo de assinaturas","description":"Favor, informar os dados necessários para seguirmos com o contrato. Os dados deverão ser de quem realmente irá assinar o documento. Esta seção permanece vinculada aos pontos do PDF que pulam para o processo de assinaturas.","fields":[{"name":"forma_assinatura","label":"De que forma ocorrerá as assinaturas?","type":"select","required":true,"options":["Portal Seel","Portal do fornecedor","Física"]},{"name":"email_representante","label":"Email do representante legal do contrato / procurador? (Fornecedor)","type":"email","required":true},{"name":"emails_testemunhas","label":"Favor informar os e-mails das testemunhas","type":"textarea","required":true},{"name":"procuracao","label":"Em caso de procurador do fornecedor, poderia anexar a procuração válida, por favor.","type":"file","required":false},{"name":"minuta","label":"Minuta","type":"file","required":true}],"condition":{"any":[{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇO TERCEIRIZADOS","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PF","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PJ","PRESTAÇÃO DE SERVIÇO DE ALIMENTAÇÃO","PRESTAÇÃO DE SERVIÇO PF - RPA","LOCAÇÃO DE EQUIPAMENTO SEM OPERADOR","LOCAÇÃO DE EQUIPAMENTO COM OPERADOR","FORNECIMENTO DE COMBUSTÍVEL","LOCAÇÃO DE ÁREA DE CANTEIRO","PRESTAÇÃO DE SERVIÇOS DE TRANSPORTES - PJ","PRESTAÇÃO DE SERVIÇOS TERCEIRIZADOS (FATURAMENTO DIRETO)","FORNECIMENTO DE MATERIAL"]}]},{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["NÃO"]},{"field":"motivo_minuta_nao_aprovada","values":["Fornecedor aceita seguir somente com a minuta dele","Fornecedor não aceitou uma cláusula/texto específico do contrato"]}]},{"all":[{"any":[{"field":"tipo_documento_obra","values":["ADITIVO"]},{"field":"tipo_documento_departamento","values":["ADITIVO"]}]},{"field":"tipo_aditivo","values":["ADITIVO DE PRAZO","ALTERAÇÃO DE VALOR","ALTERAÇÃO DE OBJETO CONTRATUAL"]}]},{"all":[{"any":[{"field":"tipo_documento_obra","values":["DISTRATO"]},{"field":"tipo_documento_departamento","values":["DISTRATO"]}]},{"field":"forma_pagamento_distrato","values":["Depósito bancário","Boleto bancário"]}]}]}},{"title":"Minuta não aprovada pelo fornecedor","description":"","fields":[{"name":"motivo_minuta_nao_aprovada","label":"Minuta não aprovada pelo fornecedor","type":"select","required":true,"options":["Fornecedor não aceitou uma cláusula/texto específico do contrato","Fornecedor aceita seguir somente com a minuta dele"]}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"minuta_aprovada","values":["NÃO"]}]}},{"title":"Minuta do fornecedor","description":"","fields":[{"name":"minuta_fornecedor","label":"Encaminhar minuta do fornecedor","type":"file","required":true}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"motivo_minuta_nao_aprovada","values":["Fornecedor aceita seguir somente com a minuta dele"]}]}},{"title":"Com base na resposta: Fornecedor não aceitou uma cláusula/texto específico do contrato","description":"","fields":[{"name":"clausula_nao_aceita","label":"Qual cláusula / texto o fornecedor não concorda?","type":"textarea","required":true},{"name":"nome_parceiro_negocios_contrato","label":"Nome do parceiro de negócios","type":"text","required":true}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"motivo_minuta_nao_aprovada","values":["Fornecedor não aceitou uma cláusula/texto específico do contrato"]}]}},{"title":"De acordo com a resposta \\"ADITIVO\\"","description":"","fields":[{"name":"nome_parceiro_negocios_aditivo","label":"Nome do parceiro de negócios","type":"text","required":true},{"name":"anexo_contrato_aditivo","label":"Anexo do contrato que será realizado o aditivo","type":"file","required":true},{"name":"tipo_aditivo","label":"Qual é o tipo de aditivo?","type":"select","required":true,"options":["ADITIVO DE PRAZO","ALTERAÇÃO DE VALOR","ALTERAÇÃO DE OBJETO CONTRATUAL"]}],"condition":{"any":[{"field":"tipo_documento_obra","values":["ADITIVO"]},{"field":"tipo_documento_departamento","values":["ADITIVO"]}]}},{"title":"ADITIVO DE PRAZO","description":"","fields":[{"name":"motivo_aditivo","label":"Qual é o motivo do aditivo?","type":"textarea","required":true},{"name":"termino_aditivo","label":"Qual o término do ADITIVO? (baseado no prazo da obra)","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"observacao_aditivo_prazo","label":"Observação","type":"textarea","required":false,"note":"Descreva aqui caso for haver mais alterações junto da prorrogação do prazo."},{"name":"anexo_aditivo_prazo","label":"Anexo","type":"file","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["ADITIVO"]},{"field":"tipo_documento_departamento","values":["ADITIVO"]}]},{"field":"tipo_aditivo","values":["ADITIVO DE PRAZO"]}]}},{"title":"ADITIVO - ALTERAÇÃO DE VALOR","description":"","fields":[{"name":"valor_alterado_aditivo","label":"Qual o valor a ser alterado no aditivo?","type":"text","required":true},{"name":"observacao_aditivo_valor","label":"Observação","type":"textarea","required":false,"note":"Adicione imagens em caso de haver tabela referente ao modelo do fornecedor com a descrição dos valores."},{"name":"anexo_alteracao_valor","label":"Anexo","type":"file","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["ADITIVO"]},{"field":"tipo_documento_departamento","values":["ADITIVO"]}]},{"field":"tipo_aditivo","values":["ALTERAÇÃO DE VALOR"]}]}},{"title":"ADITIVO - ALTERAÇÃO DE OBJETO CONTRATUAL","description":"","fields":[{"name":"objeto_alterado_aditivo","label":"Qual objeto do contrato a ser alterado?","type":"textarea","required":true},{"name":"observacao_aditivo_objeto","label":"Observação","type":"textarea","required":false},{"name":"anexo_alteracao_objeto","label":"Anexo","type":"file","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["ADITIVO"]},{"field":"tipo_documento_departamento","values":["ADITIVO"]}]},{"field":"tipo_aditivo","values":["ALTERAÇÃO DE OBJETO CONTRATUAL"]}]}},{"title":"De acordo com a sua resposta \\"DISTRATO\\"","description":"","fields":[{"name":"observacao_distrato","label":"Observação","type":"textarea","required":false},{"name":"nome_parceiro_negocios_distrato","label":"Nome do parceiro de negócios","type":"text","required":true},{"name":"anexo_contrato_distrato","label":"Anexo do contrato que será realizado o distrato","type":"file","required":true},{"name":"data_rescisao_distrato","label":"Qual a data que ambas as partes decidem rescindir o contrato?","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"forma_pagamento_distrato","label":"Qual a forma de pagamento acordada?","type":"select","required":true,"options":["Depósito bancário","Boleto bancário"]}],"condition":{"any":[{"field":"tipo_documento_obra","values":["DISTRATO"]},{"field":"tipo_documento_departamento","values":["DISTRATO"]}]}},{"title":"Forma de pagamento - Distrato / Depósito bancário","description":"Vínculo conforme fluxo de DISTRATO e forma de pagamento Depósito bancário.","fields":[{"name":"dados_bancarios_distrato","label":"Caso tenha selecionado a opção de depósito, favor informar os dados bancários","type":"textarea","required":true},{"name":"favorecido_distrato","label":"Favorecido","type":"text","required":true},{"name":"cpf_cnpj_distrato","label":"CPF OU CNPJ","type":"text","required":true,"note":"CPF somente para MEI/ Empresário individual."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["DISTRATO"]},{"field":"tipo_documento_departamento","values":["DISTRATO"]}]},{"field":"forma_pagamento_distrato","values":["Depósito bancário"]}]}},{"title":"Forma de pagamento - Distrato / Boleto bancário","description":"Vínculo conforme fluxo de DISTRATO e forma de pagamento Boleto bancário.","fields":[{"name":"favorecido_distrato_boleto","label":"Favorecido","type":"text","required":true},{"name":"cpf_cnpj_distrato_boleto","label":"CPF OU CNPJ","type":"text","required":true,"note":"CPF somente para MEI/ Empresário individual."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["DISTRATO"]},{"field":"tipo_documento_departamento","values":["DISTRATO"]}]},{"field":"forma_pagamento_distrato","values":["Boleto bancário"]}]}},{"title":"Departamentos Administrativos","description":"","fields":[{"name":"centro_custo_departamento_final","label":"Favor informar o centro de custo","type":"select","required":true,"options":["SUPPLY CHAIN","EQUIPAMENTOS","COMERCIAL","PESSOAS (RH/DP)","MARKETING","DIRETORIA","FINANÇAS (CONTABILIDADE/FINANCEIRO)","CADASTRO","PLANEJAMENTO & CONTROLE","TI","ENGENHARIA","PLANEJAMENTO ESTRATÉGICO","QSMS","SEDE"]}],"condition":{"field":"tipo_documento_departamento","values":["CONTRATO","DISTRATO","ADITIVO","RERRATIFICAÇÃO","PJ"]}},{"title":"Minuta","description":"","fields":[{"name":"modelo_minuta","label":"A minuta será no padrão Seel ou no modelo do fornecedor?","type":"select","required":true,"options":["Modelo Seel","Modelo Fornecedor"]}],"condition":{"field":"tipo_documento_departamento","values":["CONTRATO"]}},{"title":"Modelo Fornecedor","description":"","fields":[{"name":"minuta_modelo_fornecedor","label":"Encaminhar minuta para análise","type":"file","required":true}],"condition":{"field":"modelo_minuta","values":["Modelo Fornecedor"]}},{"title":"MINUTA - PRESTAÇÃO DE SERVIÇO DE ALIMENTAÇÃO","description":"","fields":[{"name":"fornecimento_alimentacao","label":"Favor informar qual será o fornecimento","type":"checkbox","required":true,"options":["Café da manhã","Almoço","Janta","Lanche"]},{"name":"descricao_valores_alimentacao","label":"Baseado no fornecimento selecionado, favor informar a descrição dos valores para cada.","type":"textarea","required":true},{"name":"medicao_alimentacao","label":"MEDIÇÃO","type":"select","required":true,"options":["Quinzenal","Mensal"]},{"name":"pagamento_dias_nf_alimentacao","label":"Pagamento quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"checklist_alimentacao","label":"Modelo de Checklist Alimentação","type":"file","required":true,"note":"Segue abaixo link de download do checklist para ser encaminhado preenchido junto ao formulário."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇO DE ALIMENTAÇÃO"]}]}},{"title":"PJ","description":"","fields":[{"name":"cnpj_pj","label":"CNPJ","type":"text","required":true},{"name":"cpf_rg_pj","label":"CPF E RG","type":"text","required":true},{"name":"profissao_pj","label":"Profissão","type":"text","required":true},{"name":"objeto_setor_pj","label":"Objeto do contrato e setor","type":"textarea","required":true},{"name":"data_inicio_pj","label":"Data de início","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"valor_contratual_pj","label":"Valor contratual","type":"text","required":true},{"name":"beneficios_pj","label":"Benefícios","type":"textarea","required":true},{"name":"dados_bancarios_pj","label":"Dados bancários","type":"textarea","required":true}],"condition":{"field":"tipo_documento_departamento","values":["PJ"]}},{"title":"DISTRATO - PJ","description":"","fields":[{"name":"contrato_prestacao_pj","label":"Favor informar o contrato de prestação de serviços","type":"text","required":true},{"name":"data_rescisao_pj","label":"Qual a data que ambas as partes decidem rescindir o contrato?","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."},{"name":"valor_acordado_pj","label":"Qual o valor acordado?","type":"text","required":true}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"any":[{"field":"tipo_documento_departamento","values":["PJ"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇOS DE TRANSPORTES - PJ"]}]}]}},{"title":"MINUTA - LOCAÇÃO DE TEMPORADA","description":"","fields":[{"name":"pagamento_dias_nf_locacao","label":"O pagamento será quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"valor_global_locacao","label":"Valor global do contrato","type":"text","required":true},{"name":"quartos_imovel","label":"Quantos quartos há no imóvel (objeto do contrato)?","type":"number","required":true},{"name":"valor_acordado_locacao","label":"Qual o valor acordado?","type":"text","required":true},{"name":"responsavel_iptu_incendio","label":"Valores referentes a taxas de IPTU e taxas de incêndio ficarão de responsabilidade da?","type":"select","required":true,"options":["Locatária","Locador"],"note":"Locatária é Seel."},{"name":"responsavel_agua_energia","label":"Valores referentes a contas de energia, contas de água ficarão de responsabilidade da?","type":"select","required":true,"options":["Locatária","Locador"],"note":"Locatária é Seel."},{"name":"datas_pagamento_locacao","label":"Favor informar as datas de pagamento acordadas","type":"textarea","required":true},{"name":"caucao","label":"CAUÇÃO","type":"select","required":true,"options":["SIM","NÃO"]},{"name":"checklist_alojamento","label":"Modelo de Checklist Alojamento","type":"file","required":true,"note":"Segue abaixo link de download do checklist para ser encaminhado preenchido junto ao formulário."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["LOCAÇÃO DE IMÓVEL POR TEMPORADA - PF","LOCAÇÃO DE IMÓVEL POR TEMPORADA - PJ"]}]}},{"title":"COM CAUÇÃO","description":"","fields":[{"name":"valor_caucao","label":"Favor informar o valor do caução.","type":"text","required":true},{"name":"data_pagamento_caucao","label":"Data de pagamento do caução","type":"date","required":true,"note":"Exemplo: 7 de janeiro de 2019."}],"condition":{"field":"caucao","values":["SIM"]}},{"title":"MINUTA - PRESTAÇÃO DE SERVIÇOS TERCEIRIZADOS","description":"","fields":[{"name":"valores_acordados_terceirizados","label":"Favor informar os valores acordados","type":"textarea","required":true},{"name":"valor_global_terceirizados","label":"Descrever valor global do contrato","type":"textarea","required":true},{"name":"pagamento_dias_nf_terceirizados","label":"Pagamento quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"periodo_medicao_terceirizados","label":"Favor informar o período da medição.","type":"text","required":true,"note":"Ex.: quinzenal ou mensal."},{"name":"codigo_lc116_terceirizados","label":"Qual o código de emissão da nota de acordo com a Lei Complementar nº 116?","type":"text","required":true,"note":"Esse código é necessário para finalizar o cadastro no sistema compor."},{"name":"retencao_terceirizados","label":"RETENÇÃO","type":"select","required":true,"options":["SIM","NÃO"]}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇO TERCEIRIZADOS","PRESTAÇÃO DE SERVIÇOS TERCEIRIZADOS (FATURAMENTO DIRETO)"]}]}},{"title":"CONTRATO COM RETENÇÃO","description":"","fields":[{"name":"percentual_retencao","label":"Quanto de % a CONTRATANTE (Seel) irá reter da CONTRATADA (Fornecedor)?","type":"select","required":true,"options":["3%","4%","5%","6%"],"note":"Obs.: Preferência de 5%."},{"name":"observacao_retencao","label":"Observação","type":"textarea","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"retencao_terceirizados","values":["SIM"]}]}},{"title":"MINUTA - LOCAÇÃO DE EQUIPAMENTO COM OPERADOR","description":"","fields":[{"name":"pagamento_dias_nf_equip_operador","label":"Pagamento quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"valores_equipamento_operador","label":"Descrever valores para cada equipamento","type":"textarea","required":true},{"name":"valores_mao_obra","label":"Descrever valores para a mão de obra","type":"textarea","required":true},{"name":"valor_global_equip_operador","label":"Descrever valor global do contrato","type":"textarea","required":true,"note":"Informar valor previsto para todo o tempo de contrato."},{"name":"minimo_horas","label":"Favor informar o mínimo de horas trabalhadas","type":"text","required":true,"note":"Caso ultrapasse o mínimo informado será cobrado o valor de hora extra."},{"name":"valor_horas_extras","label":"Favor informar o valor das horas extras","type":"text","required":true},{"name":"periodo_prestacao_equip_operador","label":"Qual o período da prestação a ser considerado?","type":"text","required":true,"note":"Ex.: quinzenal ou mensal."},{"name":"codigo_lc116_equip_operador","label":"Qual o código de emissão da nota de acordo com a Lei Complementar nº 116?","type":"text","required":true,"note":"Esse código é necessário para finalizar o cadastro no sistema compor."},{"name":"retencao_equip_operador","label":"RETENÇÃO","type":"select","required":true,"options":["SIM","NÃO"]}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["LOCAÇÃO DE EQUIPAMENTO COM OPERADOR"]}]}},{"title":"CONTRATO COM RETENÇÃO","description":"","fields":[{"name":"percentual_retencao_equip","label":"Quanto de % a CONTRATANTE (Seel) irá reter da CONTRATADA (Fornecedor)?","type":"select","required":true,"options":["3%","4%","5%","6%"],"note":"Obs.: Preferência de 5%."},{"name":"observacao_retencao_equip","label":"Observação","type":"textarea","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"field":"retencao_equip_operador","values":["SIM"]}]}},{"title":"MINUTA - LOCAÇÃO DE EQUIPAMENTO/MÁQUINA (SEM OPERADOR)","description":"","fields":[{"name":"pagamento_dias_nf_equip_sem_operador","label":"Pagamento quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"periodo_medicao_equip_sem_operador","label":"Favor informar o período da medição.","type":"text","required":true,"note":"Ex.: O período de locação a ser considerado é do dia 01 (primeiro) a 30 (trinta) de cada mês."},{"name":"valores_equipamento_sem_operador","label":"Descrever valores para cada equipamento","type":"textarea","required":true},{"name":"valor_global_equip_sem_operador","label":"Valor global do contrato","type":"text","required":true,"note":"Informar o valor previsto considerando todo o tempo de contrato."},{"name":"observacao_equip_sem_operador","label":"Observação","type":"textarea","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["LOCAÇÃO DE EQUIPAMENTO SEM OPERADOR"]}]}},{"title":"MINUTA - FORNECIMENTO DE COMBUSTÍVEL","description":"","fields":[{"name":"pagamento_dias_nf_combustivel","label":"O pagamento será quantos dias após a emissão da nota fiscal?","type":"text","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."},{"name":"valores_unitarios_combustivel","label":"Descrever valores unitários","type":"textarea","required":true,"note":"Os valores de combustíveis não são informados no contrato devido a variação, porém é necessário o valor para ser incluído no sistema compor."},{"name":"valor_global_combustivel","label":"Descrever valor global do contrato","type":"text","required":true}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["FORNECIMENTO DE COMBUSTÍVEL"]}]}},{"title":"MINUTA - LOCAÇÃO DE ÁREA DE CANTEIRO","description":"","fields":[{"name":"valor_acordado_area_canteiro","label":"Qual o valor acordado?","type":"text","required":true},{"name":"valor_global_area_canteiro","label":"Descrever valor global do contrato","type":"text","required":true},{"name":"responsavel_taxas_area","label":"Valores referentes a taxas de IPTU, contas de energia, contas de água, taxas de incêndio ficarão de responsabilidade da?","type":"select","required":true,"options":["LOCATÁRIA","LOCADORA"],"note":"Locatária é Seel."},{"name":"datas_pagamento_area","label":"Favor informar as datas de pagamento acordadas","type":"textarea","required":true},{"name":"caucao_area","label":"CAUÇÃO","type":"select","required":true,"options":["SIM","NÃO"]},{"name":"fins_canteiro","label":"Descrever os fins do canteiro","type":"textarea","required":true},{"name":"observacao_area","label":"Observação","type":"textarea","required":false}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["LOCAÇÃO DE ÁREA DE CANTEIRO"]}]}},{"title":"PRESTAÇÃO DE SERVIÇO PF - RPA","description":"","fields":[{"name":"valor_acordado_rpa","label":"Qual o valor acordado?","type":"text","required":true},{"name":"pagamento_dias_rpa","label":"Pagamento quantos dias após a emissão do recibo de RPA?","type":"number","required":false,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["PRESTAÇÃO DE SERVIÇO PF - RPA"]}]}},{"title":"MINUTA - FORNECIMENTO DE MATERIAL","description":"","fields":[{"name":"especificacao_material","label":"ESPECIFICAÇÃO DO MATERIAL","type":"textarea","required":true},{"name":"quantidade_estimada","label":"QUANTIDADE ESTIMADA?","type":"text","required":true},{"name":"valor_unitario","label":"VALOR UNITÁRIO?","type":"text","required":true},{"name":"valor_total_estimado","label":"VALOR TOTAL DE CONTRATO ESTIMADO?","type":"text","required":true},{"name":"pagamento_dias_boleto","label":"Pagamento quantos dias após a emissão do boleto","type":"number","required":true,"note":"Pagamentos menores que 30 dias após emissão precisarão de liberação do HEAD da UN."}],"condition":{"all":[{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_departamento","values":["CONTRATO"]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]},{"any":[{"field":"tipo_documento_obra","values":["CONTRATO"]},{"field":"tipo_documento_departamento","values":["CONTRATO"]}]}]},{"field":"minuta_aprovada","values":["SIM"]},{"field":"tipo_contrato","values":["FORNECIMENTO DE MATERIAL"]}]}},{"title":"RERRATIFICAÇÃO","description":"","fields":[{"name":"numero_contrato_rerratificacao","label":"Número do contrato da rerratificação","type":"text","required":true},{"name":"razao_social_rerratificacao","label":"Razão social","type":"text","required":true},{"name":"correcao_rerratificacao","label":"Qual correção será realizada? Sinalizar a cláusula.","type":"textarea","required":true},{"name":"objeto_alterado_rerratificacao","label":"Qual objeto do contrato será alterado?","type":"textarea","required":false},{"name":"observacao_rerratificacao","label":"Observação","type":"textarea","required":false}],"condition":{"field":"tipo_documento_departamento","values":["RERRATIFICAÇÃO"]}}];
+const STORAGE_FORM='seel_form_google_forms_v8_sem_mapa_sem_un';
+const STORAGE_REQ='seel_requests_google_forms_exato_v1';
+let formSpec=loadFormSpec();
+let data={};
+let editingRequestId=null;
+let requests=loadRequests();
+let tab='form';
+let importWorkbook=null;
+let importRows=[];
+let importHeaders=[];
+let importFile=null;
+const importMappings=[
+  {key:'id',label:'Código / número',hint:'Código antigo da solicitação ou contrato',required:false,synonyms:['id','codigo','código','numero','número','num','codigo solicitacao','código solicitação','numero solicitacao','número solicitação','numero contrato','número contrato','n contrato']},
+  {key:'supplier',label:'Fornecedor / razão social',hint:'Nome da empresa ou pessoa contratada',required:true,synonyms:['fornecedor','razao social','razão social','empresa','contratada','nome fornecedor','nome do fornecedor','parceiro de negocios','parceiro de negócios']},
+  {key:'type',label:'Tipo de documento',hint:'Contrato, aditivo, distrato ou rerratificação',required:false,synonyms:['tipo','tipo documento','tipo de documento','documento','tipo solicitacao','tipo de solicitacao','tipo solicitação']},
+  {key:'status',label:'Status / fase',hint:'Etapa atual do processo',required:false,synonyms:['status','fase','etapa','situacao','situação','processo','status atual','fase atual']},
+  {key:'requester',label:'Solicitante / responsável',hint:'Pessoa que solicitou ou acompanha',required:false,synonyms:['solicitante','responsavel','responsável','requisitante','usuario','usuário','dono']},
+  {key:'center',label:'Centro de custo / obra',hint:'Obra, departamento ou centro de custo',required:false,synonyms:['centro de custo','centro custo','obra','cc','departamento','unidade','centro']},
+  {key:'urgency',label:'Urgência',hint:'Normal ou urgente',required:false,synonyms:['urgencia','urgência','prioridade','prazo urgencia','prazo de urgencia','prazo de urgência']},
+  {key:'requestDate',label:'Data da solicitação',hint:'Data de abertura do registro',required:false,synonyms:['data solicitacao','data da solicitacao','data solicitação','data da solicitação','data abertura','data de abertura','data pedido','criado em','data cadastro']},
+  {key:'deadline',label:'Data limite',hint:'Prazo ou vencimento',required:false,synonyms:['data limite','prazo','data vencimento','data de vencimento','vencimento','deadline','data final']},
+  {key:'object',label:'Objeto / descrição',hint:'Resumo do serviço, material ou alteração',required:false,synonyms:['objeto','descricao','descrição','escopo','servico','serviço','observacao','observação','objeto contrato','objeto do contrato']},
+  {key:'value',label:'Valor',hint:'Valor global ou total do contrato',required:false,synonyms:['valor','valor contrato','valor do contrato','valor total','valor global','montante']}
+];
+const processGroups=[
+  {title:'Processo 1 - Contratos',className:'process1',icon:'▦',stages:[
+    'Não Iniciado',
+    'Em Elaboração',
+    'Aguardando Validação',
+    'Enviado para Assinatura',
+    'Contrato Assinado'
+  ]},
+  {title:'Processo 2 - Sistema Compor',className:'process2',icon:'▣',stages:[
+    'Em Cadastro no Compor',
+    'Aprovado no Compor'
+  ]}
+];
+const stages=processGroups.flatMap(g=>g.stages);
+
+function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;")}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.id);toast.id=setTimeout(()=>t.classList.remove('show'),2500)}
+function migrateUrgencyRules(spec){
+  const next=JSON.parse(JSON.stringify(Array.isArray(spec)?spec:BASE_FORM));
+  const paymentDaysShortTextFields=new Set([
+    'pagamento_dias_contrato_deposito_only',
+    'pagamento_dias_contrato_demais',
+    'pagamento_dias_nf_alimentacao',
+    'pagamento_dias_nf_locacao',
+    'pagamento_dias_nf_terceirizados',
+    'pagamento_dias_nf_equip_operador',
+    'pagamento_dias_nf_equip_sem_operador',
+    'pagamento_dias_nf_combustivel'
+  ]);
+  for(const section of next){
+    for(const field of section.fields||[]){
+      if(paymentDaysShortTextFields.has(field.name)){
+        field.type='text';
+      }
+      if(field.name==='prazo_urgencia'){
+        field.options=['NORMAL - 5 DIAS ÚTEIS','URGENTE - 3 DIAS ÚTEIS'];
+        field.note='Selecione o prazo logo no início. A data limite será calculada automaticamente em dias úteis a partir da data de preenchimento do formulário.';
+      }
+      if(field.name==='data_limite_atendimento'){
+        field.note='Urgente: 3 dias úteis. Normal: 5 dias úteis.';
+      }
+      if(field.name==='solicitante'){
+        field.label='Solicitante conectado';
+        field.required=true;
+        field.readonly=true;
+        field.note='Preenchido automaticamente com o nome do usuário conectado no aplicativo principal.';
+      }
+      if(field.name==='email'){
+        field.label='E-mail do solicitante conectado';
+        field.required=true;
+        field.readonly=true;
+        field.note='Preenchido automaticamente com o e-mail do usuário conectado no aplicativo principal.';
+      }
+    }
+  }
+  return next;
+}
+function loadFormSpec(){
+  try{
+    const migrated=migrateUrgencyRules(JSON.parse(localStorage.getItem(STORAGE_FORM))||BASE_FORM);
+    localStorage.setItem(STORAGE_FORM,JSON.stringify(migrated));
+    return migrated;
+  }catch(e){return migrateUrgencyRules(BASE_FORM)}
+}
+function saveFormSpec(){localStorage.setItem(STORAGE_FORM,JSON.stringify(formSpec))}
+function loadRequests(){try{return JSON.parse(localStorage.getItem(STORAGE_REQ))||[]}catch(e){return []}}
+function saveRequests(){localStorage.setItem(STORAGE_REQ,JSON.stringify(requests))}
+function localISODate(d){return \`\${d.getFullYear()}-\${String(d.getMonth()+1).padStart(2,'0')}-\${String(d.getDate()).padStart(2,'0')}\`}
+function today(){return localISODate(new Date())}
+function addBiz(days){const d=new Date(\`\${today()}T12:00:00\`);let a=0;while(a<days){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)a++}return localISODate(d)}
+function addCalendarDays(days){const d=new Date(\`\${today()}T12:00:00\`);d.setDate(d.getDate()+days);return localISODate(d)}
+function addBizFrom(baseDate,days){const base=String(baseDate||today()).slice(0,10);const d=new Date(\`\${base}T12:00:00\`);if(Number.isNaN(d.getTime()))return addBiz(days);let added=0;while(added<days){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)added++}return localISODate(d)}
+function calcDeadline(v){const s=String(v||'');const base=data?.data_solicitacao||today();if(s.includes('URGENTE'))return addBizFrom(base,3);if(s.includes('NORMAL'))return addBizFrom(base,5);return ''}
+
+const CONTRACT_LOGGED_USER_STORAGE_KEYS=[
+  'seel_current_user','seelCurrentUser','SEEL_CURRENT_USER','currentUser','current_user',
+  'loggedUser','logged_user','authUser','auth_user','usuarioLogado','usuario_logado',
+  'usuarioAtual','supplyFlowUser','supply_flow_user','sfUser','appUser','userData',
+  'user_data','profile','userProfile','account','sessionUser','userSession','authSession'
+];
+let contractLoggedRequesterIdentity=null;
+
+function normalizeContractLoggedUser(candidate){
+  if(!candidate)return null;
+  let value=candidate;
+  if(typeof value==='string'){
+    const trimmed=value.trim();
+    if(!trimmed)return null;
+    try{value=JSON.parse(trimmed)}catch(error){
+      if(trimmed.includes('@'))return {name:'',email:trimmed};
+      return {name:trimmed,email:''};
+    }
+  }
+  if(typeof value!=='object')return null;
+  for(const nestedKey of ['data','session','account','user','usuario','profile']){
+    if(value[nestedKey]&&typeof value[nestedKey]==='object')value={...value,...value[nestedKey]};
+  }
+  const name=String(
+    value.name||value.nome||value.fullName||value.full_name||value.displayName||
+    value.display_name||value.nomeCompleto||value.nome_completo||value.userName||
+    value.username||value.given_name||''
+  ).trim();
+  const email=String(
+    value.email||value.mail||value.userEmail||value.user_email||value.emailUsuario||
+    value.email_usuario||value.upn||value.userPrincipalName||value.preferred_username||''
+  ).trim();
+  if(!name&&!email)return null;
+  return {name,email};
+}
+
+function readContractLoggedUserFromStorage(storage){
+  if(!storage)return null;
+  for(const key of CONTRACT_LOGGED_USER_STORAGE_KEYS){
+    try{
+      const user=normalizeContractLoggedUser(storage.getItem(key));
+      if(user)return user;
+    }catch(error){}
+  }
+  const nameKeys=['userName','username','nomeUsuario','usuarioNome','loggedUserName','displayName','fullName','nomeCompleto'];
+  const emailKeys=['userEmail','email','emailUsuario','usuarioEmail','loggedUserEmail','mail','upn','userPrincipalName'];
+  let name='';
+  let email='';
+  for(const key of nameKeys){try{name=name||String(storage.getItem(key)||'').trim()}catch(error){}}
+  for(const key of emailKeys){try{email=email||String(storage.getItem(key)||'').trim()}catch(error){}}
+  return normalizeContractLoggedUser({name,email});
+}
+
+function resolveContractLoggedRequesterIdentity(){
+  const directCandidates=[
+    window.SEEL_CURRENT_USER,window.currentUser,window.loggedUser,
+    window.authUser,window.usuarioLogado,window.supplyFlowUser
+  ];
+  for(const candidate of directCandidates){
+    const user=normalizeContractLoggedUser(candidate);
+    if(user)return user;
+  }
+  const localUser=readContractLoggedUserFromStorage(window.localStorage)||readContractLoggedUserFromStorage(window.sessionStorage);
+  if(localUser)return localUser;
+  try{
+    if(window.parent&&window.parent!==window){
+      const parentCandidates=[
+        window.parent.SEEL_CURRENT_USER,window.parent.currentUser,window.parent.loggedUser,
+        window.parent.authUser,window.parent.usuarioLogado,window.parent.supplyFlowUser
+      ];
+      for(const candidate of parentCandidates){
+        const user=normalizeContractLoggedUser(candidate);
+        if(user)return user;
+      }
+      const parentUser=readContractLoggedUserFromStorage(window.parent.localStorage)||readContractLoggedUserFromStorage(window.parent.sessionStorage);
+      if(parentUser)return parentUser;
+    }
+  }catch(error){}
+  const params=new URLSearchParams(window.location.search);
+  return normalizeContractLoggedUser({
+    name:params.get('userName')||params.get('nome')||params.get('solicitante')||'',
+    email:params.get('userEmail')||params.get('email')||params.get('emailSolicitante')||''
+  });
+}
+
+function syncContractLoggedRequester(){
+  const resolved=resolveContractLoggedRequesterIdentity();
+  if(resolved)contractLoggedRequesterIdentity=resolved;
+  if(editingRequestId)return false;
+  const identity=normalizeContractLoggedUser(contractLoggedRequesterIdentity);
+  let changed=false;
+  if(identity?.name&&data.solicitante!==identity.name){data.solicitante=identity.name;changed=true}
+  if(identity?.email&&data.email!==identity.email){data.email=identity.email;changed=true}
+  return changed;
+}
+
+function requestContractLoggedUserFromHost(){
+  try{
+    if(window.parent&&window.parent!==window){
+      window.parent.postMessage({type:'REQUEST_CURRENT_USER',source:'gestao-contratos'},'*');
+      window.parent.postMessage({type:'GET_LOGGED_USER',source:'gestao-contratos'},'*');
+    }
+  }catch(error){}
+}
+
+window.setContractsLoggedUser=function(user){
+  const normalized=normalizeContractLoggedUser(user);
+  if(!normalized)return false;
+  contractLoggedRequesterIdentity=normalized;
+  syncContractLoggedRequester();
+  updateContractLoggedRequesterFieldsInPlace();
+  return true;
+};
+
+window.addEventListener('message',event=>{
+  const payload=event?.data;
+  if(!payload||typeof payload!=='object')return;
+  const type=String(payload.type||'').toUpperCase();
+  if(!['CURRENT_USER','AUTH_USER','SEEL_USER','LOGGED_USER','USER_SESSION','CURRENT_USER_RESPONSE','LOGGED_USER_RESPONSE'].includes(type))return;
+  window.setContractsLoggedUser(payload.user||payload.usuario||payload.account||payload.profile||payload.data||payload);
+});
+
+window.addEventListener('storage',event=>{
+  if(!event.key||CONTRACT_LOGGED_USER_STORAGE_KEYS.includes(event.key)||/user|usuario|email|profile|account|session/i.test(event.key)){
+    if(syncContractLoggedRequester())updateContractLoggedRequesterFieldsInPlace();
+  }
+});
+
+
+function updateContractLoggedRequesterFieldsInPlace(){
+  const form=document.getElementById('form');
+  if(!form)return;
+  const requester=form.elements?.namedItem('solicitante');
+  const email=form.elements?.namedItem('email');
+  if(requester&&String(data.solicitante||'')!==requester.value)requester.value=data.solicitante||'';
+  if(email&&String(data.email||'')!==email.value)email.value=data.email||'';
+}
+
+
+function updateContractFormModeUI(){
+  const title=document.getElementById('contractFormTitle');
+  const subtitle=document.getElementById('contractFormSubtitle');
+  const view=document.getElementById('formView');
+  const tabButton=document.querySelector('.tab[data-tab="form"]');
+  const request=editingRequestId?requests.find(item=>String(item.id)===String(editingRequestId)):null;
+  const editing=Boolean(request);
+  view?.classList.toggle('editing-request',editing);
+  if(title)title.textContent=editing?\`Editar solicitação \${request.id}\`:'Nova Solicitação de Contrato';
+  if(subtitle)subtitle.textContent=editing
+    ?'Revise e altere as informações do formulário. A fase, os cronômetros, o histórico, as observações e a marcação de erro serão preservados.'
+    :'Preencha as informações iniciais, dados do contrato e anexos. Ao criar, o card entra no Kanban.';
+  if(tabButton)tabButton.innerHTML=editing?'<span class="tab-icon">✏️</span>Editando solicitação':'<span class="tab-icon">📝</span>Nova solicitação';
+}
+
+function requestDataForEditing(request){
+  const identity=normalizeContractLoggedUser(contractLoggedRequesterIdentity)||{};
+  const source=JSON.parse(JSON.stringify(request?.data||{}));
+  source.data_solicitacao=source.data_solicitacao||request?.dataSolicitacao||today();
+  source.solicitante=source.solicitante||request?.solicitante||identity.name||'';
+  source.email=source.email||request?.email||identity.email||'';
+  source.prazo_urgencia=source.prazo_urgencia||request?.urgencia||'';
+  source.data_limite_atendimento=source.data_limite_atendimento||request?.dataLimite||'';
+  if(!source.centro_obra&&!source.centro_departamento&&request?.centro){
+    if(String(source.solicitacao||'').toLowerCase().includes('depart'))source.centro_departamento=request.centro;
+    else source.centro_obra=request.centro;
+  }
+  if(!source.tipo_documento_obra&&!source.tipo_documento_departamento&&request?.tipo){
+    if(String(source.solicitacao||'').toLowerCase().includes('depart'))source.tipo_documento_departamento=request.tipo;
+    else source.tipo_documento_obra=request.tipo;
+  }
+  return source;
+}
+
+function startRequestEdit(id){
+  const request=requests.find(item=>String(item.id)===String(id));
+  if(!request){toast('Solicitação não encontrada.');return;}
+  editingRequestId=String(request.id);
+  data=requestDataForEditing(request);
+  closeRequestDetails();
+  switchTab('form');
+  renderForm();
+  const formView=document.getElementById('formView');
+  if(formView){
+    try{formView.scrollIntoView({behavior:'smooth',block:'start'});}catch(error){window.scrollTo(0,0);}
+  }
+  toast(\`Editando \${request.id}.\`);
+}
+
+function cancelRequestEdit(returnToKanban=true){
+  editingRequestId=null;
+  data={};
+  syncContractLoggedRequester();
+  renderForm();
+  if(returnToKanban)switchTab('kanban');
+  toast('Edição cancelada.');
+}
+
+function collectContractConditionFields(condition,target){
+  if(!condition||typeof condition!=='object')return target;
+  if(Array.isArray(condition.any))condition.any.forEach(item=>collectContractConditionFields(item,target));
+  if(Array.isArray(condition.all))condition.all.forEach(item=>collectContractConditionFields(item,target));
+  if(condition.field)target.add(String(condition.field));
+  return target;
+}
+
+function getContractConditionalDriverFields(){
+  const fields=new Set();
+  (formSpec||[]).forEach(section=>collectContractConditionFields(section.condition,fields));
+  return fields;
+}
+
+function captureContractFormPosition(){
+  const active=document.activeElement;
+  const inside=active&&active.closest&&active.closest('#form');
+  if(!inside)return {scrollX:window.scrollX,scrollY:window.scrollY};
+  return {
+    scrollX:window.scrollX,
+    scrollY:window.scrollY,
+    name:active.name||'',
+    value:active.type==='checkbox'||active.type==='radio'?active.value:'',
+    top:active.getBoundingClientRect().top,
+    selectionStart:typeof active.selectionStart==='number'?active.selectionStart:null,
+    selectionEnd:typeof active.selectionEnd==='number'?active.selectionEnd:null
+  };
+}
+
+function restoreContractFormPosition(state){
+  if(!state)return;
+  const form=document.getElementById('form');
+  let target=null;
+  if(form&&state.name){
+    const matches=[...form.querySelectorAll('[name]')].filter(el=>el.name===state.name);
+    target=matches.find(el=>!state.value||el.value===state.value)||matches[0]||null;
+  }
+  if(target){
+    try{target.focus({preventScroll:true})}catch(error){try{target.focus()}catch(innerError){}}
+    if(state.selectionStart!==null&&typeof target.setSelectionRange==='function'){
+      try{target.setSelectionRange(state.selectionStart,state.selectionEnd??state.selectionStart)}catch(error){}
+    }
+    const currentTop=target.getBoundingClientRect().top;
+    const delta=Number.isFinite(state.top)?currentTop-state.top:0;
+    window.scrollTo(state.scrollX,state.scrollY+delta);
+  }else{
+    window.scrollTo(state.scrollX||0,state.scrollY||0);
+  }
+}
+
+function updateContractDeadlineField(){
+  const deadline=document.querySelector('#form [name="data_limite_atendimento"]');
+  if(deadline)deadline.value=data.data_limite_atendimento||'';
+}
+
+function updateContractFileLabel(input,fileName){
+  const label=input.closest('.file');
+  const textNode=label?.querySelector('span');
+  if(textNode)textNode.textContent=fileName||'Selecionar arquivo';
+}
+
+function ensureInitialDates(){if(!data.data_solicitacao)data.data_solicitacao=today();if(data.prazo_urgencia&&!data.data_limite_atendimento)data.data_limite_atendimento=calcDeadline(data.prazo_urgencia)}
+function getVal(name){ensureInitialDates();return data[name]}
+function isFilled(name){const v=getVal(name);return Array.isArray(v)?v.length>0:String(v??'').trim()!==''}
+function conditionOk(c){if(!c)return true;if(c.any)return c.any.some(conditionOk);if(c.all)return c.all.every(conditionOk);const vals=c.values||[c.value];return vals.some(v=>v==='__filled__'?isFilled(c.field):String(getVal(c.field)||'')===String(v))}
+function visibleSections(){return formSpec.filter(s=>conditionOk(s.condition))}
+function fieldHtml(f){const val=getVal(f.name)||'';const full=(f.type==='textarea'||String(f.label).length>56)?' full':'';const req=f.required?'<span class="req"> *</span>':'';const loginFixed=f.name==='solicitante'||f.name==='email';let input='';if(f.type==='select'){input=\`<select name="\${esc(f.name)}"><option value="">Escolher</option>\${(f.options||[]).map(o=>\`<option value="\${esc(o)}" \${String(o)===String(val)?'selected':''}>\${esc(o)}</option>\`).join('')}</select>\`}else if(f.type==='textarea'){input=\`<textarea name="\${esc(f.name)}">\${esc(val)}</textarea>\`}else if(f.type==='file'){input=\`<label class="file">📎 <span>\${esc(val||'Selecionar arquivo')}</span><input type="file" name="\${esc(f.name)}"></label>\`}else if(f.type==='checkbox'){const arr=Array.isArray(val)?val:[];input=\`<div class="checkwrap">\${(f.options||[]).map(o=>\`<label class="check"><input type="checkbox" name="\${esc(f.name)}" value="\${esc(o)}" \${arr.includes(o)?'checked':''}> \${esc(o)}</label>\`).join('')}</div>\`}else{const placeholder=loginFixed?(f.name==='solicitante'?'Aguardando nome do usuário conectado...':'Aguardando e-mail do usuário conectado...'):'';input=\`<input type="\${esc(f.type||'text')}" name="\${esc(f.name)}" value="\${esc(val)}" \${f.readonly||loginFixed?'readonly aria-readonly="true"':''} \${loginFixed?'class="login-fixed-field"':''} \${placeholder?\`placeholder="\${esc(placeholder)}"\`:''}>\`}return \`<div class="field\${full}"><label>\${esc(f.label)}\${req}</label>\${f.note?\`<div class="note">\${esc(f.note)}</div>\`:''}\${input}</div>\`}
+function renderForm(options={}){
+  const form=document.getElementById('form');
+  if(!form)return;
+  const preservePosition=Boolean(options&&options.preservePosition);
+  const positionState=preservePosition?captureContractFormPosition():null;
+  if(!editingRequestId)syncContractLoggedRequester();
+  ensureInitialDates();
+  updateContractFormModeUI();
+  const secs=visibleSections();
+  const actions=editingRequestId
+    ? \`<div class="actions edit-actions"><button type="button" class="secondary cancel-edit-button" id="cancelFormEdit">Cancelar edição</button><button type="submit" class="primary save-edit-button">Salvar alterações</button></div>\`
+    : \`<div class="actions"><button type="button" class="secondary" id="resetForm">Limpar formulário</button><button type="submit" class="primary">Enviar solicitação</button></div>\`;
+  form.innerHTML=secs.map(s=>\`<section class="section"><div class="section-title">\${esc(s.title)}</div><div class="section-body">\${s.description?\`<p class="desc">\${esc(s.description)}</p>\`:''}<div class="grid">\${(s.fields||[]).map(fieldHtml).join('')}</div></div></section>\`).join('')+actions;
+  bindFields();
+  const reset=document.getElementById('resetForm');
+  if(reset)reset.onclick=()=>{
+    data={};
+    syncContractLoggedRequester();
+    renderForm();
+    toast('Formulário limpo.');
+  };
+  const cancel=document.getElementById('cancelFormEdit');
+  if(cancel)cancel.onclick=()=>cancelRequestEdit(true);
+  if(preservePosition){
+    requestAnimationFrame(()=>{
+      restoreContractFormPosition(positionState);
+      setTimeout(()=>restoreContractFormPosition(positionState),0);
+    });
+  }
+}
+
+function bindFields(){
+  const form=document.getElementById('form');
+  if(!form)return;
+  const conditionalDrivers=getContractConditionalDriverFields();
+  form.querySelectorAll('input,select,textarea').forEach(el=>{
+    if(el.type==='file'){
+      el.addEventListener('change',event=>{
+        const fileName=event.target.files?.[0]?.name||'';
+        data[el.name]=fileName;
+        updateContractFileLabel(el,fileName);
+        if(conditionalDrivers.has(el.name))renderForm({preservePosition:true});
+      });
+      return;
+    }
+
+    if(el.type==='checkbox'){
+      el.addEventListener('change',()=>{
+        data[el.name]=[...form.querySelectorAll(\`input[name="\${CSS.escape(el.name)}"]:checked\`)].map(item=>item.value);
+        if(conditionalDrivers.has(el.name))renderForm({preservePosition:true});
+      });
+      return;
+    }
+
+    const saveValue=()=>{
+      data[el.name]=el.value;
+      if(el.name==='prazo_urgencia'){
+        data.data_limite_atendimento=calcDeadline(el.value);
+        updateContractDeadlineField();
+      }
+    };
+
+    el.addEventListener('input',saveValue);
+    el.addEventListener('change',()=>{
+      saveValue();
+      if(conditionalDrivers.has(el.name))renderForm({preservePosition:true});
+    });
+  });
+  updateContractLoggedRequesterFieldsInPlace();
+}
+function validate(){for(const s of visibleSections()){for(const f of s.fields||[]){if(f.required&&!isFilled(f.name)){toast('Preencha todos os campos obrigatórios.');return false}}}return true}
+document.getElementById('form').onsubmit=e=>{
+  e.preventDefault();
+  if(!editingRequestId)syncContractLoggedRequester();
+  if(!String(data.solicitante||'').trim()||!String(data.email||'').trim()){
+    requestContractLoggedUserFromHost();
+    toast('Não foi possível identificar o solicitante.');
+    alert('Não foi possível identificar o nome e o e-mail do solicitante. Verifique os dados da solicitação e tente novamente.');
+    return;
+  }
+  if(!validate())return;
+  const tipo=data.tipo_documento_obra||data.tipo_documento_departamento||'Solicitação';
+  const now=new Date().toISOString();
+
+  if(editingRequestId){
+    const index=requests.findIndex(item=>String(item.id)===String(editingRequestId));
+    if(index<0){
+      toast('A solicitação em edição não foi encontrada.');
+      editingRequestId=null;
+      renderForm();
+      return;
+    }
+    const current=requests[index];
+    const editor=normalizeContractLoggedUser(contractLoggedRequesterIdentity)||{};
+    const updatedData=JSON.parse(JSON.stringify(data));
+    const updated={
+      ...current,
+      tipo,
+      solicitante:data.solicitante||current.solicitante||'',
+      email:data.email||current.email||'',
+      centro:data.centro_obra||data.centro_departamento||'',
+      urgencia:data.prazo_urgencia||'',
+      dataLimite:data.data_limite_atendimento||'',
+      dataSolicitacao:data.data_solicitacao||current.dataSolicitacao||today(),
+      data:updatedData,
+      updatedAt:now,
+      lastEditedBy:editor.name||'Responsável pelo contrato',
+      lastEditedByEmail:editor.email||'',
+      editHistory:[...(current.editHistory||[]),{
+        editedAt:now,
+        editedBy:editor.name||'Responsável pelo contrato',
+        editedByEmail:editor.email||''
+      }]
+    };
+    requests[index]=updated;
+    const updatedId=updated.id;
+    saveRequests();
+    editingRequestId=null;
+    data={};
+    syncContractLoggedRequester();
+    renderForm();
+    renderStats();
+    renderDashboard();
+    bindApprovedReportControls();
+    renderReport();
+    renderKanban();
+    bindLegacyImport();
+    switchTab('kanban');
+    toast(\`Solicitação \${updatedId} atualizada.\`);
+    return;
+  }
+
+  const id='SC-'+String(requests.length+1).padStart(3,'0');
+  requests.unshift({
+    id,
+    createdAt:now,
+    dataSolicitacao:data.data_solicitacao||today(),
+    status:stages[0],
+    phaseStartedAt:now,
+    phaseHistory:[],
+    tipo,
+    solicitante:data.solicitante||'',
+    email:data.email||'',
+    centro:data.centro_obra||data.centro_departamento||'',
+    urgencia:data.prazo_urgencia||'',
+    dataLimite:data.data_limite_atendimento||'',
+    data:JSON.parse(JSON.stringify(data))
+  });
+  saveRequests();
+  data={};
+  syncContractLoggedRequester();
+  renderForm();
+  renderStats();
+  renderDashboard();
+  bindApprovedReportControls();
+  renderReport();
+  renderKanban();
+  bindLegacyImport();
+  switchTab('kanban');
+  toast('Solicitação enviada.');
+}
+
+function normalizeImportText(v){return String(v??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+function importCell(row,key){const el=document.getElementById(\`map_\${key}\`);return el&&el.value?row[el.value]:''}
+function detectImportHeader(mapping){
+  const normalized=importHeaders.map(h=>({raw:h,n:normalizeImportText(h)}));
+  const synonyms=mapping.synonyms.map(normalizeImportText);
+  let match=normalized.find(h=>synonyms.includes(h.n));
+  if(!match) match=normalized.find(h=>synonyms.some(s=>s.length>3&&(h.n.includes(s)||s.includes(h.n))));
+  return match?.raw||'';
+}
+function mappingSelectHtml(mapping){
+  const detected=detectImportHeader(mapping);
+  return \`<div class="mapping-field"><label class="\${mapping.required?'mapping-required':''}">\${esc(mapping.label)}</label><select id="map_\${mapping.key}" data-map-key="\${mapping.key}"><option value="">Não importar</option>\${importHeaders.map(h=>\`<option value="\${esc(h)}" \${h===detected?'selected':''}>\${esc(h)}</option>\`).join('')}</select><small>\${esc(mapping.hint)}</small></div>\`;
+}
+function renderImportMapping(){
+  const grid=document.getElementById('importMappingGrid');
+  if(!grid)return;
+  if(!importHeaders.length){grid.innerHTML='<div class="import-empty" style="grid-column:1/-1">As colunas aparecerão aqui após o carregamento do arquivo.</div>';return;}
+  grid.innerHTML=importMappings.map(mappingSelectHtml).join('');
+  grid.querySelectorAll('select').forEach(el=>el.addEventListener('change',()=>{updateImportSummary();renderImportPreview();}));
+}
+function formatFileSize(bytes){if(!Number.isFinite(bytes))return '';if(bytes<1024)return \`\${bytes} B\`;if(bytes<1048576)return \`\${(bytes/1024).toFixed(1)} KB\`;return \`\${(bytes/1048576).toFixed(1)} MB\`}
+function parseImportDate(v){
+  if(v instanceof Date&&!Number.isNaN(v.getTime()))return \`\${v.getFullYear()}-\${String(v.getMonth()+1).padStart(2,'0')}-\${String(v.getDate()).padStart(2,'0')}\`;
+  if(typeof v==='number'&&window.XLSX?.SSF){const p=XLSX.SSF.parse_date_code(v);if(p)return \`\${p.y}-\${String(p.m).padStart(2,'0')}-\${String(p.d).padStart(2,'0')}\`;}
+  const s=String(v??'').trim();if(!s)return '';
+  let m=s.match(/^(\\d{4})[-\\/.](\\d{1,2})[-\\/.](\\d{1,2})/);if(m)return \`\${m[1]}-\${m[2].padStart(2,'0')}-\${m[3].padStart(2,'0')}\`;
+  m=s.match(/^(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{2,4})/);if(m){let y=m[3];if(y.length===2)y=Number(y)>50?\`19\${y}\`:\`20\${y}\`;return \`\${y}-\${m[2].padStart(2,'0')}-\${m[1].padStart(2,'0')}\`;}
+  const d=new Date(s);if(!Number.isNaN(d.getTime()))return \`\${d.getFullYear()}-\${String(d.getMonth()+1).padStart(2,'0')}-\${String(d.getDate()).padStart(2,'0')}\`;
+  return '';
+}
+function normalizeImportedStatus(v){
+  const s=normalizeImportText(v);const fallback=document.getElementById('importDefaultStatus')?.value||stages[0];if(!s)return fallback;
+  if(s.includes('aprovado')&&s.includes('compor'))return 'Aprovado no Compor';
+  if(s.includes('finaliz')||s.includes('conclu'))return 'Aprovado no Compor';
+  if(s.includes('cadastro')&&s.includes('compor'))return 'Em Cadastro no Compor';
+  if(s.includes('assinado'))return 'Contrato Assinado';
+  if(s.includes('assinatura'))return 'Enviado para Assinatura';
+  if(s.includes('valid'))return 'Aguardando Validação';
+  if(s.includes('elabor')||s.includes('minuta'))return 'Em Elaboração';
+  if(s.includes('nao iniciado')||s.includes('pendente')||s.includes('aberto')||s.includes('recebid'))return 'Não Iniciado';
+  const exact=stages.find(x=>normalizeImportText(x)===s);return exact||fallback;
+}
+function normalizeImportedUrgency(v){const s=normalizeImportText(v);if(s.includes('urgent')||s==='p1'||s.includes('alta'))return 'URGENTE - 3 DIAS ÚTEIS';if(s.includes('normal')||s==='p2')return 'NORMAL - 5 DIAS ÚTEIS';return document.getElementById('importDefaultUrgency')?.value||'NORMAL - 5 DIAS ÚTEIS'}
+function normalizeImportedType(v){const s=normalizeImportText(v);if(s.includes('aditiv'))return 'ADITIVO';if(s.includes('distrat'))return 'DISTRATO';if(s.includes('rerrat'))return 'RERRATIFICAÇÃO';if(s==='pj'||s.includes('pessoa juridica'))return 'PJ';return 'CONTRATO'}
+function mappedRowReady(row){const supplier=String(importCell(row,'supplier')??'').trim();const id=String(importCell(row,'id')??'').trim();const object=String(importCell(row,'object')??'').trim();return Boolean(supplier||id||object)}
+function importDuplicateIds(){const existing=new Set(requests.map(r=>String(r.id).trim().toLowerCase()));return importRows.filter(mappedRowReady).filter(row=>{const id=String(importCell(row,'id')??'').trim().toLowerCase();return id&&existing.has(id)}).length}
+function updateImportSummary(){
+  const ready=importRows.filter(mappedRowReady).length;
+  document.getElementById('importRowsCount').textContent=importRows.length;
+  document.getElementById('importReadyCount').textContent=ready;
+  document.getElementById('importDuplicateCount').textContent=importDuplicateIds();
+  const supplierMap=document.getElementById('map_supplier')?.value;
+  const btn=document.getElementById('runLegacyImport');if(btn)btn.disabled=!importRows.length||!supplierMap||ready===0;
+}
+function previewValue(row,key){const v=importCell(row,key);return String(v??'').trim()||'—'}
+function renderImportPreview(){
+  const target=document.getElementById('importPreview');const label=document.getElementById('importPreviewLabel');if(!target)return;
+  if(!importRows.length){target.innerHTML='<div class="import-empty">Selecione uma planilha para visualizar os primeiros registros.</div>';if(label)label.textContent='Nenhum arquivo carregado';return;}
+  const rows=importRows.filter(mappedRowReady).slice(0,10);
+  if(label)label.textContent=\`Mostrando \${rows.length} de \${importRows.filter(mappedRowReady).length} registro(s) válido(s)\`;
+  target.innerHTML=\`<table class="import-preview"><thead><tr><th>Código</th><th>Fornecedor</th><th>Tipo</th><th>Fase</th><th>Solicitante</th><th>Centro de custo</th><th>Urgência</th><th>Data</th></tr></thead><tbody>\${rows.map(row=>\`<tr><td>\${esc(previewValue(row,'id'))}</td><td>\${esc(previewValue(row,'supplier'))}</td><td>\${esc(normalizeImportedType(importCell(row,'type')))}</td><td>\${esc(normalizeImportedStatus(importCell(row,'status')))}</td><td>\${esc(previewValue(row,'requester'))}</td><td>\${esc(previewValue(row,'center'))}</td><td>\${esc(normalizeImportedUrgency(importCell(row,'urgency')).includes('URGENTE')?'Urgente':'Normal')}</td><td>\${esc(parseImportDate(importCell(row,'requestDate'))||'—')}</td></tr>\`).join('')}</tbody></table>\`;
+}
+function setImportResult(message,type='success'){const el=document.getElementById('importResult');if(!el)return;el.className=\`import-result show \${type}\`;el.innerHTML=message}
+function loadImportSheet(sheetName){
+  if(!importWorkbook||!sheetName)return;
+  try{
+    const sheet=importWorkbook.Sheets[sheetName];
+    importRows=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:false,dateNF:'dd/mm/yyyy'}).filter(row=>Object.values(row).some(v=>String(v??'').trim()!==''));
+    importHeaders=[...new Set(importRows.flatMap(row=>Object.keys(row)))];
+    renderImportMapping();updateImportSummary();renderImportPreview();setImportResult(\`\${importRows.length} linha(s) lida(s) na aba <strong>\${esc(sheetName)}</strong>. Revise o relacionamento das colunas antes de importar.\`,'warning');
+  }catch(err){console.error(err);setImportResult('Não foi possível ler a aba selecionada. Verifique a estrutura da planilha.','error');}
+}
+async function handleLegacyFile(file){
+  if(!file)return;
+  if(!window.XLSX){setImportResult('A biblioteca de leitura do Excel não foi carregada. Verifique sua conexão com a internet e tente novamente.','error');return;}
+  const allowed=/\\.(xlsx|xls|csv)$/i.test(file.name);if(!allowed){setImportResult('Formato não reconhecido. Use um arquivo .xlsx, .xls ou .csv.','error');return;}
+  importFile=file;document.getElementById('importFileName').textContent=file.name;document.getElementById('importFileSize').textContent=formatFileSize(file.size);document.getElementById('importFileMeta').classList.add('show');
+  try{
+    const buffer=await file.arrayBuffer();importWorkbook=XLSX.read(buffer,{type:'array',cellDates:true});
+    const sheetSelect=document.getElementById('importSheetSelect');sheetSelect.disabled=false;sheetSelect.innerHTML=importWorkbook.SheetNames.map(n=>\`<option value="\${esc(n)}">\${esc(n)}</option>\`).join('');
+    loadImportSheet(importWorkbook.SheetNames[0]);
+  }catch(err){console.error(err);setImportResult('Não foi possível abrir o arquivo. Confirme se ele não está corrompido ou protegido por senha.','error');}
+}
+function resetLegacyImport(){
+  importWorkbook=null;importRows=[];importHeaders=[];importFile=null;
+  const input=document.getElementById('legacyFileInput');if(input)input.value='';
+  const select=document.getElementById('importSheetSelect');if(select){select.disabled=true;select.innerHTML='<option value="">Selecione um arquivo</option>';}
+  document.getElementById('importFileMeta')?.classList.remove('show');
+  const result=document.getElementById('importResult');if(result){result.className='import-result';result.innerHTML='';}
+  renderImportMapping();updateImportSummary();renderImportPreview();
+}
+function nextImportedId(used,index){let n=index+1;let id='';do{id=\`IMP-\${String(n).padStart(4,'0')}\`;n++;}while(used.has(id.toLowerCase()));return id}
+function runLegacyImport(){
+  const supplierMap=document.getElementById('map_supplier')?.value;if(!supplierMap){toast('Selecione a coluna de fornecedor ou razão social.');return;}
+  const policy=document.getElementById('importDuplicatePolicy')?.value||'skip';const existing=new Set(requests.map(r=>String(r.id).trim().toLowerCase()));const used=new Set(existing);let imported=0,skipped=0,renamed=0;
+  const now=new Date();
+  importRows.filter(mappedRowReady).forEach((row,index)=>{
+    let rawId=String(importCell(row,'id')??'').trim();let id=rawId||nextImportedId(used,requests.length+index+1);const duplicate=used.has(id.toLowerCase());
+    if(duplicate&&policy==='skip'){skipped++;return;}
+    if(duplicate&&policy==='new'){id=nextImportedId(used,requests.length+index+1);renamed++;}
+    used.add(id.toLowerCase());
+    const supplier=String(importCell(row,'supplier')??'').trim()||'Fornecedor não informado';
+    const type=normalizeImportedType(importCell(row,'type'));const status=normalizeImportedStatus(importCell(row,'status'));const urgency=normalizeImportedUrgency(importCell(row,'urgency'));
+    const requestDate=parseImportDate(importCell(row,'requestDate'))||today();let deadline=parseImportDate(importCell(row,'deadline'));
+    if(!deadline){const base=new Date(\`\${requestDate}T12:00:00\`);const businessDays=urgency.includes('URGENTE')?3:5;let count=0;while(count<businessDays){base.setDate(base.getDate()+1);if(base.getDay()!==0&&base.getDay()!==6)count++;}deadline=\`\${base.getFullYear()}-\${String(base.getMonth()+1).padStart(2,'0')}-\${String(base.getDate()).padStart(2,'0')}\`;}
+    const createdAt=\`\${requestDate}T12:00:00\`;
+    const mappedData={data_solicitacao:requestDate,data_limite_atendimento:deadline,razao_social:supplier,objeto_contrato:String(importCell(row,'object')??'').trim(),valor_global_contrato:String(importCell(row,'value')??'').trim(),prazo_urgencia:urgency,tipo_documento_obra:type};
+    requests.push({id,createdAt,phaseStartedAt:createdAt,phaseHistory:[],dataSolicitacao:requestDate,status,tipo:type,solicitante:String(importCell(row,'requester')??'').trim(),centro:String(importCell(row,'center')??'').trim(),urgencia:urgency,dataLimite:deadline,data:mappedData,imported:true,importedAt:now.toISOString(),importedSource:importFile?.name||'',importedOriginalId:rawId,importedData:{...row}});imported++;
+  });
+  saveRequests();renderStats();renderKanban();updateImportSummary();
+  const details=[\`<strong>\${imported}</strong> registro(s) importado(s)\`];if(skipped)details.push(\`\${skipped} repetido(s) ignorado(s)\`);if(renamed)details.push(\`\${renamed} código(s) substituído(s)\`);
+  setImportResult(\`\${details.join(' • ')}. Os dados já estão disponíveis no Kanban e Dashboard.\`,'success');toast(\`\${imported} registro(s) importado(s).\`);
+}
+function bindLegacyImport(){
+  const input=document.getElementById('legacyFileInput');if(input&&!input.dataset.bound){input.addEventListener('change',e=>handleLegacyFile(e.target.files?.[0]));input.dataset.bound='1';}
+  const drop=document.getElementById('importDrop');if(drop&&!drop.dataset.bound){['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.add('dragover')}));['dragleave','drop'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.remove('dragover')}));drop.addEventListener('drop',e=>{const file=e.dataTransfer?.files?.[0];if(file)handleLegacyFile(file)});drop.dataset.bound='1';}
+  const sheet=document.getElementById('importSheetSelect');if(sheet&&!sheet.dataset.bound){sheet.addEventListener('change',e=>loadImportSheet(e.target.value));sheet.dataset.bound='1';}
+  ['importDefaultStatus','importDefaultUrgency','importDuplicatePolicy'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.bound){el.addEventListener('change',()=>{updateImportSummary();renderImportPreview();});el.dataset.bound='1';}});
+  const run=document.getElementById('runLegacyImport');if(run&&!run.dataset.bound){run.addEventListener('click',runLegacyImport);run.dataset.bound='1';}
+  const reset=document.getElementById('resetLegacyImport');if(reset&&!reset.dataset.bound){reset.addEventListener('click',resetLegacyImport);reset.dataset.bound='1';}
+  const remove=document.getElementById('removeImportFile');if(remove&&!remove.dataset.bound){remove.addEventListener('click',resetLegacyImport);remove.dataset.bound='1';}
+  renderImportMapping();updateImportSummary();renderImportPreview();
+}
+
+function renderStats(){}
+
+let selectedEditorSection = 0;
+
+function allFieldsFromSpec(){
+  return formSpec.flatMap(section => (section.fields||[]).map(field => ({...field, sectionTitle: section.title})));
+}
+function conditionLabel(condition){
+  if(!condition) return 'Sem condição: aparece sempre';
+  if(condition.any) return 'OU: ' + condition.any.map(conditionLabel).join(' | ');
+  if(condition.all) return 'E: ' + condition.all.map(conditionLabel).join(' + ');
+  const field = allFieldsFromSpec().find(f => f.name === condition.field);
+  const label = field ? field.label : condition.field;
+  const values = condition.values || [condition.value];
+  return \`\${label} = \${values.join(', ')}\`;
+}
+function fieldTypeLabel(type){
+  return {
+    text:'Texto curto',
+    textarea:'Texto longo',
+    select:'Lista suspensa',
+    checkbox:'Múltipla escolha',
+    date:'Data',
+    number:'Número',
+    email:'E-mail',
+    file:'Arquivo'
+  }[type] || type || 'Texto curto';
+}
+function normalizeName(label){
+  const base = String(label||'nova_pergunta')
+    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')
+    .toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')
+    .slice(0,48) || 'nova_pergunta';
+  const used = new Set(allFieldsFromSpec().map(f=>f.name));
+  let name = base, i = 1;
+  while(used.has(name)) name = \`\${base}_\${i++}\`;
+  return name;
+}
+function setEditorSection(index){
+  selectedEditorSection = Math.max(0, Math.min(formSpec.length-1, Number(index)||0));
+  renderEditor();
+}
+function moveArrayItem(arr, from, to){
+  if(to < 0 || to >= arr.length || from < 0 || from >= arr.length) return false;
+  const [item] = arr.splice(from,1);
+  arr.splice(to,0,item);
+  return true;
+}
+function renderEditor(){
+  if(!formSpec.length){
+    formSpec.push({title:'Nova seção',description:'',fields:[]});
+    selectedEditorSection = 0;
+    saveFormSpec();
+  }
+  if(selectedEditorSection >= formSpec.length) selectedEditorSection = formSpec.length-1;
+  const section = formSpec[selectedEditorSection];
+  const editor = document.getElementById('editor');
+
+  editor.innerHTML = \`
+    <div class="editor-help">
+      <strong>Editor completo do formulário:</strong> crie, edite, exclua e reordene seções e perguntas. 
+      Também é possível configurar tipos de campo, opções, obrigatoriedade, observações e condições de exibição.
+    </div>
+    <div class="editor-toolbar-full">
+      <button type="button" class="primary" id="edAddSection">+ Nova seção</button>
+      <button type="button" class="secondary" id="edDuplicateSection">Duplicar seção</button>
+      <button type="button" class="secondary" id="edRestore">Restaurar estrutura do arquivo</button>
+      <button type="button" class="secondary" id="edExport">Exportar JSON</button>
+      <button type="button" class="secondary" id="edImport">Importar JSON</button>
+    </div>
+    <div class="editor-layout">
+      <aside class="editor-side">
+        <h3>Seções do formulário</h3>
+        <div class="editor-section-list">
+          \${formSpec.map((s,i)=>\`
+            <div class="editor-section-card \${i===selectedEditorSection?'active':''}" data-select-section="\${i}">
+              <b>\${i+1}. \${esc(s.title)}</b>
+              <small>\${(s.fields||[]).length} pergunta(s)</small>
+              <small>\${esc(conditionLabel(s.condition))}</small>
+              <div class="editor-actions-mini" style="justify-content:flex-start;margin-top:8px">
+                <button type="button" class="secondary" data-section-up="\${i}">↑</button>
+                <button type="button" class="secondary" data-section-down="\${i}">↓</button>
+                <button type="button" class="secondary" data-section-del="\${i}">Excluir</button>
+              </div>
+            </div>
+          \`).join('')}
+        </div>
+      </aside>
+      <section class="editor-main">
+        <h3>Editar seção selecionada</h3>
+        <div class="editor-form-grid">
+          <div class="full">
+            <label>Nome da seção</label>
+            <input id="edSectionTitle" value="\${esc(section.title)}">
+          </div>
+          <div class="full">
+            <label>Descrição / orientação da seção</label>
+            <textarea id="edSectionDescription">\${esc(section.description||'')}</textarea>
+          </div>
+          <div>
+            <label>Campo que controla esta seção</label>
+            <select id="edConditionField">
+              <option value="">Sem condição / sempre aparece</option>
+              \${allFieldsFromSpec().map(f=>\`<option value="\${esc(f.name)}" \${section.condition && !section.condition.any && !section.condition.all && section.condition.field===f.name?'selected':''}>\${esc(f.label)}</option>\`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Respostas que fazem aparecer</label>
+            <input id="edConditionValues" placeholder="Separe por ponto e vírgula" value="\${esc(section.condition && !section.condition.any && !section.condition.all ? (section.condition.values||[]).join('; ') : '')}">
+          </div>
+          <div class="full">
+            <div class="editor-condition-box">
+              Condição atual: \${esc(conditionLabel(section.condition))}
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="edSaveSection">Salvar seção</button>
+          <button type="button" class="secondary" id="edClearCondition">Limpar condição</button>
+          <button type="button" class="primary" id="edAddQuestion">+ Nova pergunta nesta seção</button>
+        </div>
+
+        <h3 style="margin-top:18px">Perguntas da seção</h3>
+        <div class="editor-question-list">
+          \${(section.fields||[]).length ? section.fields.map((f,i)=>\`
+            <div class="editor-question-card">
+              <div>
+                <b>\${i+1}. \${esc(f.label)}</b>
+                <small>\${esc(f.name)} • \${esc(fieldTypeLabel(f.type))}</small>
+                \${f.note?\`<small>Obs.: \${esc(f.note)}</small>\`:''}
+              </div>
+              <div>
+                <span class="editor-badge \${f.required?'required':''}">\${f.required?'Obrigatória':'Opcional'}</span>
+                <span class="editor-badge">\${esc(fieldTypeLabel(f.type))}</span>
+              </div>
+              <div class="editor-actions-mini">
+                <button type="button" data-question-edit="\${i}">Editar</button>
+                <button type="button" class="secondary" data-question-up="\${i}">↑</button>
+                <button type="button" class="secondary" data-question-down="\${i}">↓</button>
+                <button type="button" class="secondary" data-question-dup="\${i}">Duplicar</button>
+                <button type="button" class="secondary" data-question-del="\${i}">Excluir</button>
+              </div>
+            </div>
+          \`).join('') : '<p class="mini">Nenhuma pergunta nesta seção.</p>'}
+        </div>
+        <textarea id="edJsonBox" class="editor-json-box"></textarea>
+      </section>
+    </div>
+  \`;
+
+  bindEditorEvents();
+}
+function bindEditorEvents(){
+  document.querySelectorAll('[data-select-section]').forEach(el=>{
+    el.onclick = ev => {
+      if(ev.target.tagName === 'BUTTON') return;
+      setEditorSection(Number(el.dataset.selectSection));
+    };
+  });
+  document.querySelectorAll('[data-section-up]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.sectionUp);
+    if(moveArrayItem(formSpec,i,i-1)){selectedEditorSection=i-1;saveFormSpec();renderEditor();renderForm();}
+  });
+  document.querySelectorAll('[data-section-down]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.sectionDown);
+    if(moveArrayItem(formSpec,i,i+1)){selectedEditorSection=i+1;saveFormSpec();renderEditor();renderForm();}
+  });
+  document.querySelectorAll('[data-section-del]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.sectionDel);
+    if(!confirm('Excluir esta seção e todas as perguntas dela?')) return;
+    formSpec.splice(i,1);
+    selectedEditorSection=Math.max(0,i-1);
+    saveFormSpec();renderEditor();renderForm();toast('Seção excluída.');
+  });
+
+  document.getElementById('edAddSection').onclick=()=>{
+    formSpec.push({title:'Nova seção',description:'',fields:[]});
+    selectedEditorSection=formSpec.length-1;
+    saveFormSpec();renderEditor();renderForm();toast('Seção criada.');
+  };
+  document.getElementById('edDuplicateSection').onclick=()=>{
+    const copy=JSON.parse(JSON.stringify(formSpec[selectedEditorSection]));
+    copy.title=copy.title+' - cópia';
+    copy.fields=(copy.fields||[]).map(f=>({...f,name:normalizeName(f.label)}));
+    formSpec.splice(selectedEditorSection+1,0,copy);
+    selectedEditorSection++;
+    saveFormSpec();renderEditor();renderForm();toast('Seção duplicada.');
+  };
+  document.getElementById('edRestore').onclick=()=>{
+    if(!confirm('Restaurar a estrutura original do arquivo PDF? Isso remove edições locais do formulário.')) return;
+    formSpec=JSON.parse(JSON.stringify(BASE_FORM));
+    selectedEditorSection=0;
+    saveFormSpec();renderEditor();renderForm();toast('Estrutura restaurada.');
+  };
+  document.getElementById('edExport').onclick=()=>{
+    const box=document.getElementById('edJsonBox');
+    box.value=JSON.stringify(formSpec,null,2);
+    box.classList.toggle('show');
+    if(box.classList.contains('show')) box.select();
+  };
+  document.getElementById('edImport').onclick=()=>{
+    const txt=prompt('Cole aqui o JSON exportado do formulário:');
+    if(!txt) return;
+    try{
+      const parsed=JSON.parse(txt);
+      if(!Array.isArray(parsed)) throw new Error('Formato inválido');
+      formSpec=parsed;
+      selectedEditorSection=0;
+      saveFormSpec();renderEditor();renderForm();toast('JSON importado.');
+    }catch(e){toast('JSON inválido.');}
+  };
+  document.getElementById('edSaveSection').onclick=()=>{
+    const section=formSpec[selectedEditorSection];
+    section.title=document.getElementById('edSectionTitle').value.trim()||'Seção sem título';
+    section.description=document.getElementById('edSectionDescription').value.trim();
+    const field=document.getElementById('edConditionField').value;
+    const values=document.getElementById('edConditionValues').value.split(';').map(x=>x.trim()).filter(Boolean);
+    if(field && values.length){
+      section.condition={field,values};
+    }else if(field && !values.length){
+      toast('Informe pelo menos uma resposta para a condição, ou limpe a condição.');
+      return;
+    }
+    saveFormSpec();renderEditor();renderForm();toast('Seção salva.');
+  };
+  document.getElementById('edClearCondition').onclick=()=>{
+    delete formSpec[selectedEditorSection].condition;
+    saveFormSpec();renderEditor();renderForm();toast('Condição removida.');
+  };
+  document.getElementById('edAddQuestion').onclick=()=>editQuestion(null);
+
+  document.querySelectorAll('[data-question-edit]').forEach(btn=>btn.onclick=()=>editQuestion(Number(btn.dataset.questionEdit)));
+  document.querySelectorAll('[data-question-up]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.questionUp), arr=formSpec[selectedEditorSection].fields||[];
+    if(moveArrayItem(arr,i,i-1)){saveFormSpec();renderEditor();renderForm();}
+  });
+  document.querySelectorAll('[data-question-down]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.questionDown), arr=formSpec[selectedEditorSection].fields||[];
+    if(moveArrayItem(arr,i,i+1)){saveFormSpec();renderEditor();renderForm();}
+  });
+  document.querySelectorAll('[data-question-dup]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.questionDup), arr=formSpec[selectedEditorSection].fields||[];
+    const copy=JSON.parse(JSON.stringify(arr[i]));
+    copy.label=copy.label+' - cópia';
+    copy.name=normalizeName(copy.label);
+    arr.splice(i+1,0,copy);
+    saveFormSpec();renderEditor();renderForm();toast('Pergunta duplicada.');
+  });
+  document.querySelectorAll('[data-question-del]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.questionDel), arr=formSpec[selectedEditorSection].fields||[];
+    if(!confirm('Excluir esta pergunta?')) return;
+    arr.splice(i,1);
+    saveFormSpec();renderEditor();renderForm();toast('Pergunta excluída.');
+  });
+}
+function editQuestion(index){
+  const section=formSpec[selectedEditorSection];
+  if(!section.fields) section.fields=[];
+  const arr=section.fields;
+  const current=index===null?{label:'',type:'text',required:false,options:[],note:''}:arr[index];
+
+  const label=prompt('Texto da pergunta:', current.label||'');
+  if(label===null) return;
+  const cleanLabel=label.trim();
+  if(!cleanLabel){toast('A pergunta precisa ter texto.');return;}
+
+  const typeOptions=['text','textarea','select','checkbox','date','number','email','file'];
+  const typePrompt='Tipo do campo:\\\\n1 Texto curto\\\\n2 Texto longo\\\\n3 Lista suspensa\\\\n4 Múltipla escolha\\\\n5 Data\\\\n6 Número\\\\n7 E-mail\\\\n8 Arquivo';
+  const defaultTypeIndex=Math.max(0,typeOptions.indexOf(current.type||'text'))+1;
+  const typeChoice=prompt(typePrompt, String(defaultTypeIndex));
+  if(typeChoice===null) return;
+  const type=typeOptions[Number(typeChoice)-1]||'text';
+
+  const requiredChoice=confirm('Essa pergunta será obrigatória?\\\\nOK = Sim\\\\nCancelar = Não');
+
+  let options=[];
+  if(type==='select' || type==='checkbox'){
+    const optText=prompt('Opções de resposta separadas por ponto e vírgula:', (current.options||[]).join('; '));
+    if(optText===null) return;
+    options=optText.split(';').map(x=>x.trim()).filter(Boolean);
+    if(!options.length){toast('Informe pelo menos uma opção.');return;}
+  }
+
+  const note=prompt('Observações/instruções da pergunta:', current.note||'');
+  if(note===null) return;
+
+  const field={
+    name: current.name || normalizeName(cleanLabel),
+    label: cleanLabel,
+    type,
+    required: requiredChoice,
+    options,
+    note: note.trim()
+  };
+
+  if(index===null) arr.push(field);
+  else arr[index]=field;
+
+  saveFormSpec();renderEditor();renderForm();toast(index===null?'Pergunta criada.':'Pergunta atualizada.');
+}
+
+function normalizeRequestStages(){requests=requests.map(r=>stages.includes(r.status)?r:{...r,status:stages[0]});saveRequests()}
+
+function parseDateMs(v){
+  const n=Date.parse(v||'');
+  return Number.isFinite(n)?n:Date.now();
+}
+function fmtDuration(ms){
+  if(!Number.isFinite(ms)||ms<=0)return '0s';
+  const t=Math.floor(ms/1000);
+  const d=Math.floor(t/86400);
+  const h=Math.floor((t%86400)/3600);
+  const m=Math.floor((t%3600)/60);
+  const s=t%60;
+  if(d)return \`\${d}d \${h}h \${m}min\`;
+  if(h)return \`\${h}h \${m}min \${s}s\`;
+  if(m)return \`\${m}min \${s}s\`;
+  return \`\${s}s\`;
+}
+function activePhaseMs(r){
+  if(r?.status==='Aprovado no Compor')return 0;
+  return Math.max(0,Date.now()-parseDateMs(r.phaseStartedAt||r.createdAt));
+}
+function savedPhaseMs(r){
+  return (r.phaseHistory||[]).reduce((sum,x)=>sum+(Number(x.durationMs)||0),0);
+}
+function totalSlaMs(r){
+  return savedPhaseMs(r)+activePhaseMs(r);
+}
+function avgMs(values){
+  const arr=values.filter(v=>Number.isFinite(v)&&v>=0);
+  return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;
+}
+function stageSla(stage){
+  const active=requests.filter(r=>r.status===stage).map(activePhaseMs);
+  const hist=requests.flatMap(r=>(r.phaseHistory||[]).filter(h=>h.status===stage).map(h=>Number(h.durationMs)||0));
+  return {
+    total: active.reduce((a,b)=>a+b,0),
+    avg: avgMs(active),
+    hist: avgMs(hist)
+  };
+}
+function urgencyPriority(v){
+  return String(v||'').includes('URGENTE')?'P1':'P2';
+}
+function businessDaysBetween(startDate,endDate){
+  const start=new Date(startDate);start.setHours(0,0,0,0);
+  const end=new Date(endDate);end.setHours(0,0,0,0);
+  if(Number.isNaN(start.getTime())||Number.isNaN(end.getTime()))return 0;
+  if(start.getTime()===end.getTime())return 0;
+  const direction=end>start?1:-1;
+  const cursor=new Date(start);let count=0;
+  while((direction===1&&cursor<end)||(direction===-1&&cursor>end)){
+    cursor.setDate(cursor.getDate()+direction);
+    const day=cursor.getDay();
+    if(day!==0&&day!==6)count+=direction;
+  }
+  return count;
+}
+function deadlineInfo(r){
+  const due=r.dataLimite||r.data_limite_atendimento||r.data?.data_limite_atendimento||'';
+  if(!due)return {text:'Sem prazo',cls:'blue',status:'Sem prazo',businessDays:null};
+  const dueDate=new Date(due+'T00:00:00');
+  if(Number.isNaN(dueDate.getTime()))return {text:'Sem prazo',cls:'blue',status:'Sem prazo',businessDays:null};
+  const days=businessDaysBetween(new Date(),dueDate);
+  if(days<0)return {text:\`Atrasado há \${Math.abs(days)} dia(s) útil(is)\`,cls:'red',status:'Em atraso',businessDays:days};
+  if(days===0)return {text:'Vence hoje',cls:'orange',status:'Em alerta',businessDays:days};
+  if(days===1)return {text:'Vence em 1 dia útil',cls:'orange',status:'Em alerta',businessDays:days};
+  return {text:\`Vence em \${days} dias úteis\`,cls:'green',status:'No prazo',businessDays:days};
+}
+function requestTitle(r){
+  return r.data?.razao_social || r.data?.nome_parceiro_negocios_aditivo || r.data?.nome_parceiro_negocios_distrato || r.tipo || 'Solicitação';
+}
+function requestObject(r){
+  return r.data?.objeto_contrato || r.data?.motivo_aditivo || r.data?.observacao_distrato || r.data?.correcao_rerratificacao || '';
+}
+function contractRequestHasError(request){
+  const value=request?.solicitacaoComErro ?? request?.data?.solicitacaoComErro ?? false;
+  if(value===true)return true;
+  return ['true','sim','1','yes'].includes(String(value||'').trim().toLowerCase());
+}
+function normalizeKanbanData(){
+  let changed=false;
+  requests=requests.map(r=>{
+    let next={...r};
+    if(!stages.includes(next.status)){next.status=stages[0];changed=true;}
+    if(!next.createdAt){next.createdAt=new Date().toISOString();changed=true;}
+    if(!next.phaseStartedAt){next.phaseStartedAt=next.createdAt;changed=true;}
+    if(!Array.isArray(next.phaseHistory)){next.phaseHistory=[];changed=true;}
+    return next;
+  });
+  if(changed)saveRequests();
+}
+
+
+const stageMeta={
+  'Não Iniciado':{icon:'📥',subtitle:'Solicitação recebida'},
+  'Em Elaboração':{icon:'✍️',subtitle:'Minuta em desenvolvimento'},
+  'Aguardando Validação':{icon:'⏳',subtitle:'Validação interna ou do fornecedor'},
+  'Enviado para Assinatura':{icon:'💻',subtitle:'Com as partes para assinatura'},
+  'Contrato Assinado':{icon:'✅',subtitle:'Contrato finalizado'},
+  'Em Cadastro no Compor':{icon:'🧾',subtitle:'Cadastro sistêmico'},
+  'Aprovado no Compor':{icon:'✅',subtitle:'Finalizado no sistema'}
+};
+function contractKindLabel(r){return r.data?.tipo_contrato||r.data?.tipo_documento_obra||r.data?.tipo_documento_departamento||r.tipo||'Documento'}
+function contractValue(r){
+  const keys=['valor_global_contrato','valor_global_do_contrato','valor_acordado','qual_o_valor_acordado','valor_a_ser_alterado_no_aditivo','qual_o_valor_a_ser_alterado_no_aditivo','valor_contratual','valor_total_contrato_estimado','valor_global','descrever_valor_global_do_contrato'];
+  for(const k of keys){const v=r.data?.[k]; if(v!==undefined && v!==null && String(v).trim()!=='') return String(v)}
+  return ''
+}
+function getFilteredRequests(){
+  let list=[...requests];
+  const search=(document.getElementById('kanbanSearch')?.value||'').trim().toLowerCase();
+  const type=(document.getElementById('kanbanTypeFilter')?.value||'Todas');
+  const urgency=(document.getElementById('kanbanUrgencyFilter')?.value||'Todas');
+  const sort=(document.getElementById('kanbanSort')?.value||'prazo');
+  if(type!=='Todas') list=list.filter(r=>String(r.tipo||'')===type);
+  if(urgency!=='Todas') list=list.filter(r=>String(r.urgencia||'').toUpperCase().includes(urgency));
+  if(search){
+    list=list.filter(r=>{
+      const hay=[r.id,r.tipo,r.solicitante,r.centro,r.urgencia,requestTitle(r),requestObject(r),contractKindLabel(r),contractValue(r)].join(' ').toLowerCase();
+      return hay.includes(search);
+    });
+  }
+  const dueRank=r=>{const d=r.dataLimite||r.data_limite_atendimento||r.data?.data_limite_atendimento;return d?Date.parse(d+'T00:00:00'):Number.MAX_SAFE_INTEGER};
+  if(sort==='prazo') list.sort((a,b)=>dueRank(a)-dueRank(b)||parseDateMs(a.createdAt)-parseDateMs(b.createdAt));
+  if(sort==='recentes') list.sort((a,b)=>parseDateMs(b.createdAt)-parseDateMs(a.createdAt));
+  if(sort==='urgencia') list.sort((a,b)=>{const pa=urgencyPriority(a.urgencia)==='P1'?0:1; const pb=urgencyPriority(b.urgencia)==='P1'?0:1; return pa-pb || dueRank(a)-dueRank(b);});
+  if(sort==='alfabetica') list.sort((a,b)=>requestTitle(a).localeCompare(requestTitle(b),'pt-BR'));
+  return list;
+}
+function renderBarChart(elId, rows){
+  const el=document.getElementById(elId); if(!el) return;
+  const total=rows.reduce((s,r)=>s+r.value,0) || 1;
+  el.innerHTML=\`<div class="bar-list">\${rows.map(r=>{const pct=((r.value/total)*100);return \`<div class="bar-row"><label>\${r.label}</label><div class="bar-track"><div class="bar-fill \${r.cls}" style="width:\${pct}%"></div></div><div class="bar-metric">\${r.value} | \${pct.toFixed(1)}%</div></div>\`}).join('')}</div>\`;
+}
+function stageTotalMsForRequest(r,stage){
+  const saved=(r.phaseHistory||[]).filter(h=>h.status===stage).reduce((sum,h)=>sum+(Number(h.durationMs)||0),0);
+  const active=r.status===stage?activePhaseMs(r):0;
+  return saved+active;
+}
+function stageWasVisited(r,stage){
+  return r.status===stage || (r.phaseHistory||[]).some(h=>h.status===stage);
+}
+function averageTimeByStage(list){
+  return stages.map(stage=>{
+    const visited=list.filter(r=>stageWasVisited(r,stage));
+    return {stage,value:visited.length?visited.reduce((sum,r)=>sum+stageTotalMsForRequest(r,stage),0)/visited.length:0,count:visited.length};
+  });
+}
+function renderDurationChart(elId,rows){
+  const el=document.getElementById(elId);if(!el)return;
+  const visible=rows.filter(r=>r.count>0&&r.value>0);
+  if(!visible.length){el.innerHTML='<div class="empty-col" style="min-height:110px">Sem tempo registrado ainda.</div>';return;}
+  const max=Math.max(1,...visible.map(r=>r.value));
+  el.innerHTML=\`<div class="bar-list">\${visible.map((r,index)=>{const width=Math.max(4,(r.value/max)*100);const cls=['blue','green','orange','red'][index%4];return \`<div class="bar-row"><label>\${esc(r.stage)}</label><div class="bar-track"><div class="bar-fill \${cls}" style="width:\${width}%"></div></div><div class="bar-metric">\${fmtDuration(r.value)}</div></div>\`}).join('')}</div>\`;
+}
+function renderKanbanDashboard(list){
+  const total=list.length;
+  const urg=list.filter(r=>String(r.urgencia).includes('URGENTE')).length;
+  const norm=list.filter(r=>String(r.urgencia).includes('NORMAL')).length;
+  const finalizados=list.filter(r=>r.status==='Aprovado no Compor').length;
+  const emAberto=list.filter(r=>r.status!=='Aprovado no Compor').length;
+  const avg=avgMs(list.map(totalSlaMs));
+  const ttl=list.reduce((s,r)=>s+totalSlaMs(r),0);
+  const comErro=list.filter(contractRequestHasError).length;
+  const percentualErro=total?((comErro/total)*100):0;
+  const kpis=[['Solicitações',total],['Em aberto',emAberto],['Finalizados',finalizados],['Com erro',comErro],['% com erro',\`\${percentualErro.toFixed(1)}%\`],['SLA médio',fmtDuration(avg)],['SLA total',fmtDuration(ttl)]];
+  const kpiEl=document.getElementById('kanbanKpis'); if(kpiEl) kpiEl.innerHTML=kpis.map(([a,b])=>\`<article class="kpi-card"><small>\${a}</small><strong>\${b}</strong></article>\`).join('');
+  const openItems=list.filter(r=>r.status!=='Aprovado no Compor');
+  const late=openItems.filter(r=>deadlineInfo(r).status==='Em atraso').length;
+  const warning=openItems.filter(r=>deadlineInfo(r).status==='Em alerta').length;
+  const onTime=openItems.filter(r=>deadlineInfo(r).status==='No prazo').length;
+  const noDeadline=openItems.filter(r=>deadlineInfo(r).status==='Sem prazo').length;
+  renderBarChart('queueSemaphoreChart', [
+    {label:'Em atraso', value:late, cls:'red'},
+    {label:'Em alerta', value:warning, cls:'orange'},
+    {label:'No prazo', value:onTime, cls:'green'},
+    ...(noDeadline?[{label:'Sem prazo',value:noDeadline,cls:'blue'}]:[])
+  ]);
+  renderDurationChart('phaseAverageChart',averageTimeByStage(list));
+  renderBarChart('urgencyChart', [
+    {label:'Normal', value:norm, cls:'green'},
+    {label:'Urgente', value:urg, cls:'orange'}
+  ]);
+  renderBarChart('docTypeChart', [
+    {label:'Contratos', value:list.filter(r=>r.tipo==='CONTRATO').length, cls:'blue'},
+    {label:'Aditivos', value:list.filter(r=>r.tipo==='ADITIVO').length, cls:'green'},
+    {label:'Distratos', value:list.filter(r=>r.tipo==='DISTRATO').length, cls:'orange'}
+  ]);
+  renderBarChart('requestErrorChart', [
+    {label:'Com erro', value:comErro, cls:'red'},
+    {label:'Sem erro', value:Math.max(0,total-comErro), cls:'green'}
+  ]);
+}
+function stageSlaForList(list, stage){
+  const active=list.filter(r=>r.status===stage).map(activePhaseMs);
+  const hist=requests.flatMap(r=>(r.phaseHistory||[]).filter(h=>h.status===stage).map(h=>Number(h.durationMs)||0));
+  return {total:active.reduce((a,b)=>a+b,0), avg:avgMs(active), hist:avgMs(hist)};
+}
+function currencyFmt(v){
+  if(v===undefined || v===null || String(v).trim()==='') return 'Sem valor';
+  const s=String(v).trim();
+  const n=Number(s.replace(/[^\\d,.-]/g,'').replace(/\\.(?=\\d{3}(\\D|$))/g,'').replace(',','.'));
+  if(Number.isFinite(n)) return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  return s;
+}
+function bindKanbanControls(){
+  ['kanbanSearch','kanbanTypeFilter','kanbanUrgencyFilter','kanbanSort'].forEach(id=>{const el=document.getElementById(id); if(el && !el.dataset.bound){el.addEventListener('input',renderKanban); el.addEventListener('change',renderKanban); el.dataset.bound='1';}});
+  const clear=document.getElementById('clearFilters');
+  if(clear && !clear.dataset.bound){clear.onclick=()=>{document.getElementById('kanbanSearch').value='';document.getElementById('kanbanTypeFilter').value='Todas';document.getElementById('kanbanUrgencyFilter').value='Todas';document.getElementById('kanbanSort').value='prazo';renderKanban();}; clear.dataset.bound='1';}
+}
+
+
+function answerDisplay(v){
+  if(Array.isArray(v)) return v.length ? v.join(', ') : '';
+  if(v===undefined || v===null) return '';
+  return String(v);
+}
+function visibleSectionsForRequest(requestData){
+  const oldData=data;
+  data=requestData||{};
+  let secs=[];
+  try{secs=visibleSections();}catch(e){secs=formSpec||[]}
+  data=oldData;
+  return secs;
+}
+function allFilledDetails(r){
+  const requestData=r.data||{};
+  const sections=visibleSectionsForRequest(requestData);
+  return sections.map(section=>{
+    const answers=(section.fields||[])
+      .map(field=>({field,value:answerDisplay(requestData[field.name])}))
+      .filter(item=>String(item.value||'').trim()!=='');
+    return {...section, answers};
+  }).filter(section=>section.answers.length>0);
+}
+function openRequestDetails(id){
+  const r=requests.find(x=>x.id===id);
+  if(!r) return;
+  const modal=document.getElementById('detailModal');
+  const body=document.getElementById('detailBody');
+  const title=document.getElementById('detailTitle');
+  const subtitle=document.getElementById('detailSubtitle');
+  const sections=allFilledDetails(r);
+  title.textContent=\`\${r.id} - \${requestTitle(r)}\`;
+  subtitle.textContent=\`\${r.tipo||'Solicitação'} • \${r.status||''}\`;
+  body.innerHTML=\`
+    <div class="detail-edit-actions"><button type="button" onclick="startRequestEdit('\${esc(r.id)}')">✏️ Editar informações</button></div>
+    <div class="detail-grid">
+      <div class="detail-kv"><small>Status atual</small><strong>\${esc(r.status||'')}</strong></div>
+      <div class="detail-kv"><small>Tipo</small><strong>\${esc(r.tipo||'')}</strong></div>
+      <div class="detail-kv"><small>Solicitante</small><strong>\${esc(r.solicitante||'')}</strong></div>
+      <div class="detail-kv"><small>Centro de custo</small><strong>\${esc(r.centro||'')}</strong></div>
+      <div class="detail-kv"><small>Urgência</small><strong>\${esc(r.urgencia||'')}</strong></div>
+      <div class="detail-kv"><small>Data da solicitação</small><strong>\${esc(r.dataSolicitacao||'')}</strong></div>
+      <div class="detail-kv"><small>Data limite</small><strong>\${esc(r.dataLimite||'')}</strong></div>
+      <div class="detail-kv"><small>SLA total</small><strong>\${fmtDuration(totalSlaMs(r))}</strong></div>
+    </div>
+    \${sections.length ? sections.map(section=>\`
+      <div class="detail-section">
+        <div class="detail-section-title">
+          <span>\${esc(section.title)}</span>
+          <span>\${section.answers.length} campo(s)</span>
+        </div>
+        <div class="detail-section-content">
+          \${section.answers.map(item=>\`
+            <div class="detail-answer \${String(item.value).length>90 || item.field.type==='textarea' ? 'full' : ''}">
+              <small>\${esc(item.field.label)}</small>
+              <div>\${esc(item.value)}</div>
+            </div>
+          \`).join('')}
+        </div>
+      </div>
+    \`).join('') : '<div class="empty-col">Nenhuma informação preenchida encontrada para esta solicitação.</div>'}
+    \${r.importedData ? \`<div class="detail-section"><div class="detail-section-title"><span>Dados originais importados</span><span>\${Object.keys(r.importedData).length} coluna(s)</span></div><div class="detail-section-content">\${Object.entries(r.importedData).filter(([,value])=>String(value??'').trim()!=='').map(([key,value])=>\`<div class="detail-answer \${String(value).length>90?'full':''}"><small>\${esc(key)}</small><div>\${esc(answerDisplay(value))}</div></div>\`).join('')}</div></div>\` : ''}
+  \`;
+  modal.classList.add('show');
+}
+function closeRequestDetails(){
+  document.getElementById('detailModal')?.classList.remove('show');
+}
+
+function fillDashboardFilterOptions(){
+  const statusEl=document.getElementById('dashboardStatusFilter');
+  const centerEl=document.getElementById('dashboardCenterFilter');
+  if(statusEl){
+    const current=statusEl.value||'Todas';
+    statusEl.innerHTML='<option value="Todas">Todas as fases</option>'+stages.map(stage=>\`<option value="\${esc(stage)}">\${esc(stage)}</option>\`).join('');
+    statusEl.value=[...statusEl.options].some(o=>o.value===current)?current:'Todas';
+  }
+  if(centerEl){
+    const current=centerEl.value||'Todas';
+    const centers=[...new Set(requests.map(r=>String(r.centro||r.data?.centro_obra||r.data?.centro_departamento||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    centerEl.innerHTML='<option value="Todas">Todas as obras e centros</option>'+centers.map(center=>\`<option value="\${esc(center)}">\${esc(center)}</option>\`).join('');
+    centerEl.value=[...centerEl.options].some(o=>o.value===current)?current:'Todas';
+  }
+}
+function dashboardRequestDate(r){
+  const raw=r.dataSolicitacao||r.data?.data_solicitacao||r.createdAt||'';
+  if(!raw)return '';
+  const match=String(raw).match(/^(\\d{4}-\\d{2}-\\d{2})/);
+  if(match)return match[1];
+  const d=new Date(raw);
+  return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10);
+}
+function getDashboardFilteredRequests(){
+  let list=[...requests];
+  const search=(document.getElementById('dashboardSearch')?.value||'').trim().toLowerCase();
+  const type=document.getElementById('dashboardTypeFilter')?.value||'Todas';
+  const urgency=document.getElementById('dashboardUrgencyFilter')?.value||'Todas';
+  const status=document.getElementById('dashboardStatusFilter')?.value||'Todas';
+  const center=document.getElementById('dashboardCenterFilter')?.value||'Todas';
+  const sla=document.getElementById('dashboardSlaFilter')?.value||'Todas';
+  const dateFrom=document.getElementById('dashboardDateFrom')?.value||'';
+  const dateTo=document.getElementById('dashboardDateTo')?.value||'';
+  if(type!=='Todas')list=list.filter(r=>String(r.tipo||'')===type);
+  if(urgency!=='Todas')list=list.filter(r=>String(r.urgencia||'').toUpperCase().includes(urgency));
+  if(status!=='Todas')list=list.filter(r=>String(r.status||'')===status);
+  if(center!=='Todas')list=list.filter(r=>String(r.centro||r.data?.centro_obra||r.data?.centro_departamento||'')===center);
+  if(sla!=='Todas')list=list.filter(r=>r.status!=='Aprovado no Compor'&&deadlineInfo(r).status===sla);
+  if(dateFrom)list=list.filter(r=>{const d=dashboardRequestDate(r);return d&&d>=dateFrom;});
+  if(dateTo)list=list.filter(r=>{const d=dashboardRequestDate(r);return d&&d<=dateTo;});
+  if(search){
+    list=list.filter(r=>{
+      const hay=[r.id,r.tipo,r.status,r.solicitante,r.centro,r.urgencia,requestTitle(r),requestObject(r),contractKindLabel(r),contractValue(r)].join(' ').toLowerCase();
+      return hay.includes(search);
+    });
+  }
+  return list;
+}
+function updateDashboardFilterSummary(filtered){
+  const el=document.getElementById('dashboardFilterSummary');
+  if(!el)return;
+  const total=requests.length;
+  const active=[
+    document.getElementById('dashboardSearch')?.value,
+    (document.getElementById('dashboardTypeFilter')?.value||'Todas')!=='Todas',
+    (document.getElementById('dashboardUrgencyFilter')?.value||'Todas')!=='Todas',
+    (document.getElementById('dashboardStatusFilter')?.value||'Todas')!=='Todas',
+    (document.getElementById('dashboardCenterFilter')?.value||'Todas')!=='Todas',
+    (document.getElementById('dashboardSlaFilter')?.value||'Todas')!=='Todas',
+    document.getElementById('dashboardDateFrom')?.value,
+    document.getElementById('dashboardDateTo')?.value
+  ].filter(Boolean).length;
+  el.textContent=active?\`\${filtered.length} de \${total} solicitação(ões) • \${active} filtro(s)\`:\`Base completa • \${total} solicitação(ões)\`;
+}
+function bindDashboardControls(){
+  const ids=['dashboardSearch','dashboardTypeFilter','dashboardUrgencyFilter','dashboardStatusFilter','dashboardCenterFilter','dashboardSlaFilter','dashboardDateFrom','dashboardDateTo'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.bound){el.addEventListener('input',renderDashboard);el.addEventListener('change',renderDashboard);el.dataset.bound='1';}});
+  const clear=document.getElementById('clearDashboardFilters');
+  if(clear&&!clear.dataset.bound){clear.onclick=()=>{
+    const values={dashboardSearch:'',dashboardTypeFilter:'Todas',dashboardUrgencyFilter:'Todas',dashboardStatusFilter:'Todas',dashboardCenterFilter:'Todas',dashboardSlaFilter:'Todas',dashboardDateFrom:'',dashboardDateTo:''};
+    Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.value=value;});
+    renderDashboard();
+  };clear.dataset.bound='1';}
+}
+function renderDashboard(){
+  normalizeKanbanData();
+  fillDashboardFilterOptions();
+  bindDashboardControls();
+  const filtered=getDashboardFilteredRequests();
+  updateDashboardFilterSummary(filtered);
+  renderKanbanDashboard(filtered);
+}
+function renderKanban(){
+  normalizeKanbanData();
+  bindKanbanControls();
+  const el=document.getElementById('kanban');
+  if(!el)return;
+  const filtered=getFilteredRequests();
+  const groupedStages=processGroups.flatMap((group,groupIndex)=>
+    group.stages.map((stage,stageIndex)=>({
+      group:group.className,
+      groupIndex,
+      stage,
+      stageIndex
+    }))
+  );
+  el.innerHTML=\`<section class="process-block">
+    <div class="process-head unified-process-head">
+      <div>
+        <h3>Fluxo completo de contratos</h3>
+        <p>Os dois processos seguem em uma única linha, com distinção visual entre Contratos e Sistema Compor.</p>
+      </div>
+      <div class="process-legend" aria-label="Legenda dos processos">
+        <span class="process-legend-item process-one"><i></i>Processo 1 — Contratos</span>
+        <span class="process-legend-item process-two"><i></i>Processo 2 — Sistema Compor</span>
+      </div>
+    </div>
+    <div class="kanban unified-kanban">
+      \${groupedStages.map(({group,groupIndex,stage:st,stageIndex})=>{
+        const meta=stageMeta[st]||{icon:'•',subtitle:'Etapa do processo'};
+        const items=filtered.filter(r=>r.status===st).sort((a,b)=>{
+          const pa=urgencyPriority(a.urgencia)==='P1'?0:1;
+          const pb=urgencyPriority(b.urgencia)==='P1'?0:1;
+          if(pa!==pb)return pa-pb;
+          const da=(a.dataLimite||a.data?.data_limite_atendimento||'9999-12-31');
+          const db=(b.dataLimite||b.data?.data_limite_atendimento||'9999-12-31');
+          return String(da).localeCompare(String(db)) || parseDateMs(a.createdAt)-parseDateMs(b.createdAt);
+        });
+        const sla=stageSlaForList(filtered, st);
+        const processClass=groupIndex===0?'process-one':'process-two';
+        const separatorClass=groupIndex===1&&stageIndex===0?' process-separator':'';
+        const totalOpen=st==='Aprovado no Compor'?0:items.length;
+        return \`<div class="col unified-col \${processClass}\${separatorClass}">
+          <div class="process-column-label">\${groupIndex===0?'Processo 1 · Contratos':'Processo 2 · Compor'}</div>
+          <div class="col-head">
+            <div class="col-icon">\${meta.icon}</div>
+            <div><div class="col-title">\${st}</div><div class="col-subtitle">\${meta.subtitle}</div></div>
+            <div class="col-count">\${items.length}</div>
+          </div>
+          <div class="sla-box">
+            <div class="sla-row"><span>Fila</span><strong class="contract-queue-lights"><i class="queue-red"></i><b>→</b><i class="queue-yellow"></i><b>→</b><i class="queue-green"></i></strong></div>
+            <div class="sla-row"><span>Tempo médio dos cards</span><strong>\${fmtDuration(sla.avg)}</strong></div>
+            <div class="sla-row"><span>Total em aberto</span><strong>\${totalOpen}</strong></div>
+          </div>
+          <div class="kanban-card-stack">\${items.length ? items.map(r=>{
+            const due=deadlineInfo(r);
+            const kind=contractKindLabel(r);
+            const completed=r.status==='Aprovado no Compor';
+            const trafficKey=completed?'gray':(due.cls==='orange'?'yellow':due.cls==='blue'?'gray':due.cls);
+            const trafficLabel=completed?'Finalizado':(due.status==='Em atraso'?'Atrasado':due.status==='Em alerta'?'Em alerta':due.status==='No prazo'?'No prazo':'Sem prazo');
+            const urgencyIsUrgent=String(r.urgencia||'').includes('URGENTE');
+            const urgencyShort=urgencyIsUrgent?'URG':'NOR';
+            const urgencyLabel=urgencyIsUrgent?'URGENTE':'NORMAL';
+            const processLabel=groupIndex===0?'PROCESSO 1':'PROCESSO 2';
+            const processBadgeClass=groupIndex===0?'process-one':'process-two';
+            const title=requestTitle(r)||'Solicitação';
+            const description=requestObject(r)||'Sem descrição informada';
+            const centerLabel=r.centro||r.data?.centro_obra||r.data?.centro_departamento||'Centro de custo não informado';
+            const responsibleObservation=String(r.observacoesResponsavel||r.data?.observacoesResponsavel||'').slice(0,240);
+            const requestHasError=contractRequestHasError(r);
+            const dueText=completed?'Processo concluído':(r.dataLimite||r.data_limite_atendimento||r.data?.data_limite_atendimento||'Não informado');
+            const phaseNow=fmtDuration(activePhaseMs(r));
+            const totalTime=fmtDuration(totalSlaMs(r));
+            return \`<div class="card contract-freight-card \${trafficKey}\${requestHasError?' request-error':''}" onclick="openRequestDetails('\${r.id}')">
+              <div class="contract-compact-top">
+                <div class="contract-compact-title-wrap">
+                  <div class="contract-compact-id">\${esc(r.id)}</div>
+                  <div class="contract-compact-title">\${esc(title)}</div>
+                </div>
+                <div class="contract-priority-bubble \${urgencyIsUrgent?'urgent':'normal'}">\${urgencyShort}</div>
+              </div>
+
+              <div class="contract-compact-lines">
+                <div><span class="contract-line-icon">#</span><span>\${esc(centerLabel)}</span></div>
+                <div><span class="contract-line-icon">▣</span><span>\${esc(kind)}</span></div>
+                <div><span class="contract-line-icon">●</span><span>\${esc(r.solicitante||'Solicitante não informado')}</span></div>
+              </div>
+
+              <div class="contract-compact-description" title="\${esc(description)}">\${esc(description)}</div>
+
+              <div class="contract-card-observation" onclick="event.stopPropagation()">
+                <label for="contractObservation_\${esc(r.id)}">Observações do responsável</label>
+                <textarea id="contractObservation_\${esc(r.id)}" maxlength="240" placeholder="Registre orientações, pendências ou informações importantes..." onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" oninput="event.stopPropagation();updateContractObservationCounter(this);queueContractObservationSave('\${r.id}',this)" onblur="event.stopPropagation();persistContractResponsibleObservation('\${r.id}',this,true)">\${esc(responsibleObservation)}</textarea>
+                <div class="contract-observation-footer">
+                  <span class="contract-observation-save-status">Salvo automaticamente</span>
+                  <strong class="contract-observation-counter">\${responsibleObservation.length}/240</strong>
+                </div>
+              </div>
+
+              <label class="contract-error-toggle" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">
+                <input type="checkbox" \${requestHasError?'checked':''} aria-label="Marcar solicitação \${esc(r.id)} como contendo erro" onchange="event.stopPropagation();toggleContractRequestError('\${r.id}',this.checked,this)">
+                <span class="contract-error-toggle-icon">⚑</span>
+                <span>Solicitação com erro</span>
+              </label>
+
+              <div class="contract-compact-badges">
+                <span class="contract-mini-badge \${urgencyIsUrgent?'urgent':'normal'}">\${urgencyLabel}</span>
+                <span class="contract-mini-badge traffic-\${trafficKey}">\${esc(trafficLabel)}</span>
+                <span class="contract-mini-badge \${processBadgeClass}">\${processLabel}</span>
+                <span class="contract-mini-badge request-error-badge \${requestHasError?'show':''}">SOLICITAÇÃO COM ERRO</span>
+              </div>
+
+              <div class="contract-compact-meta">
+                <span>Prazo atendimento: <strong>\${esc(dueText)}</strong></span>
+                <span class="contract-meta-status \${trafficKey}">\${esc(trafficLabel)}</span>
+              </div>
+
+              <div class="contract-compact-timer">
+                <div><span>Na fase agora</span><strong data-contract-phase-timer="\${esc(r.id)}">\${phaseNow}</strong></div>
+                <div><span>Total acumulado</span><strong data-contract-total-timer="\${esc(r.id)}">\${totalTime}</strong></div>
+                <div><span>SLA previsto</span><strong>\${urgencyIsUrgent?'3 dias úteis':'5 dias úteis'}</strong></div>
+              </div>
+
+              <div class="contract-phase-selector-wrap" onclick="event.stopPropagation()">
+                <label>Selecionar fase</label>
+                <select class="contract-phase-select" aria-label="Selecionar fase da solicitação \${esc(r.id)}" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="event.stopPropagation();setReqStage('\${r.id}',this.value)">
+                  \${stages.map(stage=>\`<option value="\${esc(stage)}" \${stage===r.status?'selected':''}>\${esc(stage)}</option>\`).join('')}
+                </select>
+              </div>
+
+              <div class="contract-compact-actions" onclick="event.stopPropagation()">
+                <button class="contract-detail-btn secondary" type="button" onclick="event.stopPropagation();openRequestDetails('\${r.id}')">Ver detalhes</button>
+                <button class="contract-edit-btn secondary" type="button" onclick="event.stopPropagation();startRequestEdit('\${r.id}')">Editar informações</button>
+              </div>
+            </div>\`;
+          }).join('') : '<div class="empty-col">Nenhuma solicitação nesta fase.</div>'}</div>
+        </div>\`;
+      }).join('')}
+    </div>
+  </section>\`;
+}
+
+function toggleContractRequestError(id,checked,checkbox){
+  const flagged=Boolean(checked);
+  let changed=false;
+  requests=requests.map(request=>{
+    if(String(request.id)!==String(id))return request;
+    if(contractRequestHasError(request)===flagged)return request;
+    changed=true;
+    return {
+      ...request,
+      solicitacaoComErro:flagged,
+      data:{...(request.data||{}),solicitacaoComErro:flagged}
+    };
+  });
+  if(changed)saveRequests();
+  const card=checkbox?.closest('.contract-freight-card');
+  card?.classList.toggle('request-error',flagged);
+  card?.querySelector('.request-error-badge')?.classList.toggle('show',flagged);
+  renderDashboard();
+  if(typeof renderReport==='function')renderReport();
+  toast(flagged?'Solicitação marcada com erro.':'Marcação de erro removida.');
+}
+
+function updateContractObservationCounter(textarea){
+  if(!textarea)return;
+  const max=240;
+  if(textarea.value.length>max)textarea.value=textarea.value.slice(0,max);
+  const box=textarea.closest('.contract-card-observation');
+  const counter=box?.querySelector('.contract-observation-counter');
+  if(counter)counter.textContent=\`\${textarea.value.length}/\${max}\`;
+}
+
+function persistContractResponsibleObservation(id,textarea,showFeedback=false){
+  if(!textarea)return;
+  const value=String(textarea.value||'').slice(0,240);
+  if(textarea.value!==value)textarea.value=value;
+  let changed=false;
+  requests=requests.map(request=>{
+    if(String(request.id)!==String(id))return request;
+    const current=String(request.observacoesResponsavel||'');
+    if(current===value)return request;
+    changed=true;
+    return {
+      ...request,
+      observacoesResponsavel:value,
+      data:{...(request.data||{}),observacoesResponsavel:value}
+    };
+  });
+  if(changed)saveRequests();
+  const box=textarea.closest('.contract-card-observation');
+  const status=box?.querySelector('.contract-observation-save-status');
+  if(status){
+    status.textContent='Salvo automaticamente';
+    status.classList.add('saved');
+    clearTimeout(status._savedTimer);
+    status._savedTimer=setTimeout(()=>status.classList.remove('saved'),1200);
+  }
+  updateContractObservationCounter(textarea);
+  if(showFeedback&&changed)toast('Observação salva.');
+}
+
+function queueContractObservationSave(id,textarea){
+  if(!textarea)return;
+  const box=textarea.closest('.contract-card-observation');
+  const status=box?.querySelector('.contract-observation-save-status');
+  if(status){status.textContent='Salvando...';status.classList.remove('saved');}
+  clearTimeout(textarea._contractObservationTimer);
+  textarea._contractObservationTimer=setTimeout(()=>persistContractResponsibleObservation(id,textarea,false),550);
+}
+
+function setReqStage(id,newStage){
+  if(!stages.includes(newStage))return;
+  const now=new Date().toISOString();
+  let changed=false;
+  requests=requests.map(r=>{
+    if(r.id!==id || r.status===newStage)return r;
+    const started=r.phaseStartedAt||r.createdAt||now;
+    const duration=Math.max(0,Date.parse(now)-parseDateMs(started));
+    changed=true;
+    return {
+      ...r,
+      status:newStage,
+      phaseStartedAt:now,
+      approvedAt:newStage==='Aprovado no Compor'?now:'',
+      phaseHistory:[...(r.phaseHistory||[]),{status:r.status,startedAt:started,endedAt:now,durationMs:duration}]
+    };
+  });
+  if(!changed)return;
+  saveRequests();
+  renderStats();
+  renderKanban();
+  renderDashboard();
+  renderReport();
+  toast('Fase atualizada.');
+}
+
+function updateKanbanTimerValues(){
+  if(tab!=='kanban')return;
+  document.querySelectorAll('[data-contract-phase-timer]').forEach(el=>{
+    const id=el.getAttribute('data-contract-phase-timer');
+    const request=requests.find(r=>String(r.id)===String(id));
+    if(request)el.textContent=fmtDuration(activePhaseMs(request));
+  });
+  document.querySelectorAll('[data-contract-total-timer]').forEach(el=>{
+    const id=el.getAttribute('data-contract-total-timer');
+    const request=requests.find(r=>String(r.id)===String(id));
+    if(request)el.textContent=fmtDuration(totalSlaMs(request));
+  });
+}
+
+function moveReq(id,dir){
+  const now=new Date().toISOString();
+  requests=requests.map(r=>{
+    if(r.id!==id)return r;
+    const i=stages.indexOf(r.status);
+    const nextStage=stages[Math.max(0,Math.min(stages.length-1,i+dir))];
+    if(nextStage===r.status)return r;
+    const started=r.phaseStartedAt||r.createdAt||now;
+    const duration=Math.max(0,Date.parse(now)-parseDateMs(started));
+    return {
+      ...r,
+      status:nextStage,
+      phaseStartedAt:now,
+      approvedAt:nextStage==='Aprovado no Compor'?now:'',
+      phaseHistory:[...(r.phaseHistory||[]),{status:r.status,startedAt:started,endedAt:now,durationMs:duration}]
+    };
+  });
+  saveRequests();
+  renderKanban();
+  renderDashboard();
+  renderReport();
+}
+
+const clearDataButton=document.getElementById('clearData');
+if(clearDataButton){
+  clearDataButton.onclick=()=>{
+    if(confirm('Limpar todas as solicitações?')){
+      requests=[];
+      saveRequests();
+      renderStats();
+      renderKanban();
+      renderDashboard();
+      renderReport();
+      toast('Solicitações removidas.');
+    }
+  };
+}
+document.getElementById('detailClose')?.addEventListener('click',closeRequestDetails);document.getElementById('detailModal')?.addEventListener('click',e=>{if(e.target.id==='detailModal')closeRequestDetails()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRequestDetails()});
+
+function contractReportNormalizeKey(value){
+  return String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+}
+function contractReportFirstValue(request, keys){
+  const source=request?.data||{};
+  for(const key of keys){
+    const value=request?.[key] ?? source?.[key];
+    if(value!==undefined && value!==null && String(value).trim()!=='')return String(value).trim();
+  }
+  return '';
+}
+function contractReportCode(request){
+  return contractReportFirstValue(request,['codigoContrato','codigo_contrato','numero_contrato','numeroContrato','numero_contrato_rerratificacao','id']) || String(request?.id||'Não informado');
+}
+function contractReportSupplier(request){
+  return contractReportFirstValue(request,[
+    'razao_social','fornecedor','supplier','nome_fornecedor','nome_parceiro_negocios_contrato',
+    'nome_parceiro_negocios_aditivo','nome_parceiro_negocios_distrato','razao_social_rerratificacao'
+  ]) || requestTitle(request) || 'Não informado';
+}
+function contractReportContractType(request){
+  return contractReportFirstValue(request,['tipo_contrato','tipo_aditivo','modelo_minuta','tipo_documento_obra','tipo_documento_departamento']) || String(request?.tipo||'Não informado');
+}
+function contractReportObservations(request){
+  const direct=contractReportFirstValue(request,[
+    'observacoesResponsavel','observacoes_responsavel','observacaoResponsavel','observacao_responsavel',
+    'observacoes','observacao'
+  ]);
+  if(direct)return direct;
+  const source=request?.data||{};
+  for(const [key,current] of Object.entries(source)){
+    const normalized=contractReportNormalizeKey(key);
+    if((normalized.includes('observacao')||normalized.includes('observacoes'))&&current!==undefined&&current!==null&&String(current).trim()!==''){
+      return String(current).trim();
+    }
+  }
+  return 'Sem observações';
+}
+function contractReportCenter(request){
+  return contractReportFirstValue(request,['centro','centro_obra','centro_departamento','centro_custo_departamento_final']) || 'Não informado';
+}
+function contractReportPmp(request){
+  const direct=contractReportFirstValue(request,[
+    'pmp','PMP','prazo_medio_pagamento','prazo_pagamento','pagamento_dias_contrato_deposito_only',
+    'pagamento_dias_contrato_demais','pagamento_dias_nf_alimentacao','pagamento_dias_nf_locacao',
+    'pagamento_dias_nf_terceirizados','pagamento_dias_nf_equip_operador','pagamento_dias_nf_equip_sem_operador',
+    'pagamento_dias_nf_combustivel','pagamento_dias_rpa','pagamento_dias_boleto'
+  ]);
+  let value=direct;
+  if(!value){
+    const data=request?.data||{};
+    for(const [key,current] of Object.entries(data)){
+      const normalized=contractReportNormalizeKey(key);
+      const hasPayment=normalized.includes('pagamento') || normalized==='pmp' || normalized.includes('prazo_medio_pagamento');
+      const hasDays=normalized.includes('dias') || normalized.includes('prazo') || normalized==='pmp';
+      if(hasPayment&&hasDays&&current!==undefined&&current!==null&&String(current).trim()!==''){
+        value=String(current).trim();
+        break;
+      }
+    }
+  }
+  if(!value)return 'Não informado';
+  if(/^\\d+(?:[.,]\\d+)?$/.test(value))return \`\${value} dias\`;
+  return value;
+}
+function contractReportUrgency(request){
+  return String(request?.urgencia||request?.data?.prazo_urgencia||'NORMAL').toUpperCase().includes('URGENTE')?'URGENTE':'NORMAL';
+}
+function contractReportRequestDate(request){
+  return request?.dataSolicitacao||request?.data?.data_solicitacao||request?.createdAt||'';
+}
+function contractReportApprovalDate(request){
+  if(request?.approvedAt)return request.approvedAt;
+  if(request?.status==='Aprovado no Compor'&&request?.phaseStartedAt)return request.phaseStartedAt;
+  const finalHistory=[...(request?.phaseHistory||[])].reverse().find(item=>item?.status==='Aprovado no Compor');
+  return finalHistory?.startedAt||finalHistory?.endedAt||'';
+}
+function contractReportFormatDate(value, includeTime=false){
+  if(!value)return 'Não informado';
+  const raw=String(value);
+  const date=/^\\d{4}-\\d{2}-\\d{2}$/.test(raw)?new Date(\`\${raw}T12:00:00\`):new Date(raw);
+  if(Number.isNaN(date.getTime()))return raw;
+  return includeTime
+    ?date.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    :date.toLocaleDateString('pt-BR');
+}
+function contractReportTotalSla(request){
+  return fmtDuration(totalSlaMs(request));
+}
+function getApprovedReportRows(){
+  let list=requests.filter(request=>request.status==='Aprovado no Compor');
+  const search=(document.getElementById('approvedReportSearch')?.value||'').trim().toLowerCase();
+  const type=document.getElementById('approvedReportType')?.value||'Todas';
+  const contractType=document.getElementById('approvedReportContractType')?.value||'Todos';
+  const urgency=document.getElementById('approvedReportUrgency')?.value||'Todas';
+  const center=document.getElementById('approvedReportCenter')?.value||'Todas';
+  const dateFrom=document.getElementById('approvedReportDateFrom')?.value||'';
+  const dateTo=document.getElementById('approvedReportDateTo')?.value||'';
+  if(type!=='Todas')list=list.filter(request=>String(request.tipo||'').toUpperCase()===type);
+  if(contractType!=='Todos')list=list.filter(request=>contractReportContractType(request)===contractType);
+  if(urgency!=='Todas')list=list.filter(request=>contractReportUrgency(request)===urgency);
+  if(center!=='Todas')list=list.filter(request=>contractReportCenter(request)===center);
+  if(dateFrom)list=list.filter(request=>String(contractReportRequestDate(request)).slice(0,10)>=dateFrom);
+  if(dateTo)list=list.filter(request=>String(contractReportRequestDate(request)).slice(0,10)<=dateTo);
+  if(search){
+    list=list.filter(request=>[
+      contractReportCode(request),request.tipo,contractReportCenter(request),contractReportSupplier(request),
+      contractReportContractType(request),request.solicitante,contractReportUrgency(request),contractReportPmp(request),
+      contractReportObservations(request)
+    ].join(' ').toLowerCase().includes(search));
+  }
+  return list.sort((a,b)=>Date.parse(contractReportApprovalDate(b)||0)-Date.parse(contractReportApprovalDate(a)||0));
+}
+function fillApprovedReportCenters(){
+  const select=document.getElementById('approvedReportCenter');
+  if(!select)return;
+  const current=select.value||'Todas';
+  const centers=[...new Set(requests.filter(request=>request.status==='Aprovado no Compor').map(contractReportCenter).filter(value=>value&&value!=='Não informado'))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  select.innerHTML='<option value="Todas">Todas as obras e departamentos</option>'+centers.map(value=>\`<option value="\${esc(value)}">\${esc(value)}</option>\`).join('');
+  select.value=centers.includes(current)?current:'Todas';
+}
+function fillApprovedReportContractTypes(){
+  const select=document.getElementById('approvedReportContractType');
+  if(!select)return;
+  const current=select.value||'Todos';
+  const types=[...new Set(requests.filter(request=>request.status==='Aprovado no Compor').map(contractReportContractType).filter(value=>value&&value!=='Não informado'))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  select.innerHTML='<option value="Todos">Todos os tipos de contrato</option>'+types.map(value=>\`<option value="\${esc(value)}">\${esc(value)}</option>\`).join('');
+  select.value=types.includes(current)?current:'Todos';
+}
+
+function renderApprovedReportKpis(allRows,filteredRows){
+  const summary=document.getElementById('approvedReportSummary');
+  if(summary)summary.textContent=\`Exibindo \${filteredRows.length} de \${allRows.length} registro(s) aprovado(s) no Compor.\`;
+}
+function renderReport(){
+  fillApprovedReportCenters();
+  fillApprovedReportContractTypes();
+  const allRows=requests.filter(request=>request.status==='Aprovado no Compor');
+  const rows=getApprovedReportRows();
+  renderApprovedReportKpis(allRows,rows);
+  const body=document.getElementById('approvedReportBody');
+  const empty=document.getElementById('approvedReportEmpty');
+  if(!body||!empty)return;
+  empty.classList.toggle('hidden',rows.length>0);
+  body.innerHTML=rows.map(request=>{
+    const urgency=contractReportUrgency(request);
+    const documentType=String(request.tipo||'Não informado').toUpperCase();
+    return \`<tr>
+      <td><span class="contract-report-code">\${esc(contractReportCode(request))}</span></td>
+      <td><span class="contract-report-badge doc">\${esc(documentType)}</span></td>
+      <td><span class="contract-report-main">\${esc(contractReportCenter(request))}</span></td>
+      <td><span class="contract-report-main">\${esc(contractReportSupplier(request))}</span></td>
+      <td><span class="contract-report-main">\${esc(contractReportContractType(request))}</span></td>
+      <td><span class="contract-report-main">\${esc(request.solicitante||request.data?.solicitante||'Não informado')}</span><span class="contract-report-sub">\${esc(request.email||request.data?.email||'')}</span></td>
+      <td><span class="contract-report-badge \${urgency==='URGENTE'?'urgent':'normal'}">\${urgency}</span></td>
+      <td><span class="contract-report-pmp">\${esc(contractReportPmp(request))}</span></td>
+      <td>\${esc(contractReportFormatDate(contractReportRequestDate(request)))}</td>
+      <td>\${esc(contractReportFormatDate(contractReportApprovalDate(request),true))}</td>
+      <td><span class="contract-report-sla">\${esc(contractReportTotalSla(request))}</span></td>
+      <td><span class="contract-report-observation">\${esc(contractReportObservations(request))}</span></td>
+    </tr>\`;
+  }).join('');
+}
+function bindApprovedReportControls(){
+  ['approvedReportSearch','approvedReportType','approvedReportContractType','approvedReportUrgency','approvedReportCenter','approvedReportDateFrom','approvedReportDateTo'].forEach(id=>{
+    const element=document.getElementById(id);
+    if(element&&!element.dataset.bound){
+      element.addEventListener('input',renderReport);
+      element.addEventListener('change',renderReport);
+      element.dataset.bound='1';
+    }
+  });
+  const clear=document.getElementById('clearApprovedReportFilters');
+  if(clear&&!clear.dataset.bound){
+    clear.addEventListener('click',()=>{
+      const search=document.getElementById('approvedReportSearch');if(search)search.value='';
+      const type=document.getElementById('approvedReportType');if(type)type.value='Todas';
+      const contractType=document.getElementById('approvedReportContractType');if(contractType)contractType.value='Todos';
+      const urgency=document.getElementById('approvedReportUrgency');if(urgency)urgency.value='Todas';
+      const center=document.getElementById('approvedReportCenter');if(center)center.value='Todas';
+      const dateFrom=document.getElementById('approvedReportDateFrom');if(dateFrom)dateFrom.value='';
+      const dateTo=document.getElementById('approvedReportDateTo');if(dateTo)dateTo.value='';
+      renderReport();
+    });
+    clear.dataset.bound='1';
+  }
+  const exportButton=document.getElementById('exportApprovedReport');
+  if(exportButton&&!exportButton.dataset.bound){
+    exportButton.addEventListener('click',exportApprovedReportExcel);
+    exportButton.dataset.bound='1';
+  }
+}
+function exportApprovedReportExcel(){
+  const rows=getApprovedReportRows();
+  if(!rows.length){toast('Nenhum registro disponível para exportação.');return;}
+  if(!window.XLSX){toast('Não foi possível carregar o recurso de exportação Excel.');return;}
+  const exportRows=rows.map(request=>({
+    'Nº do contrato':contractReportCode(request),
+    'Documento':request.tipo||'',
+    'Obra / departamento':contractReportCenter(request),
+    'Fornecedor':contractReportSupplier(request),
+    'Tipo de contrato':contractReportContractType(request),
+    'Solicitante':request.solicitante||request.data?.solicitante||'',
+    'E-mail':request.email||request.data?.email||'',
+    'Urgência':contractReportUrgency(request),
+    'PMP':contractReportPmp(request),
+    'Data da solicitação':contractReportFormatDate(contractReportRequestDate(request)),
+    'Aprovação no Compor':contractReportFormatDate(contractReportApprovalDate(request),true),
+    'SLA total':contractReportTotalSla(request),
+    'Observações do responsável':contractReportObservations(request)
+  }));
+  const worksheet=XLSX.utils.json_to_sheet(exportRows);
+  worksheet['!cols']=[
+    {wch:18},{wch:16},{wch:34},{wch:30},{wch:38},{wch:24},{wch:30},{wch:12},{wch:16},{wch:18},{wch:22},{wch:18},{wch:48}
+  ];
+  const workbook=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook,worksheet,'Aprovados no Compor');
+  XLSX.writeFile(workbook,\`relatorio_contratos_aprovados_compor_\${today()}.xlsx\`);
+  toast('Tabela exportada em Excel.');
+}
+
+function switchTab(t){tab=t;updateContractFormModeUI();document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.getElementById('formView').classList.toggle('hidden',t!=='form');document.getElementById('dashboardView').classList.toggle('hidden',t!=='dashboard');document.getElementById('reportView').classList.toggle('hidden',t!=='report');document.getElementById('editorView').classList.toggle('hidden',t!=='editor');document.getElementById('kanbanView').classList.toggle('hidden',t!=='kanban');document.getElementById('importView').classList.toggle('hidden',t!=='import');if(t==='editor')renderEditor();if(t==='dashboard')renderDashboard();if(t==='report'){bindApprovedReportControls();renderReport();}if(t==='kanban')renderKanban();if(t==='import')bindLegacyImport()}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+syncContractLoggedRequester();requestContractLoggedUserFromHost();renderForm();renderStats();renderDashboard();renderKanban();let contractLoggedUserSyncAttempts=0;const contractLoggedUserSyncTimer=setInterval(()=>{contractLoggedUserSyncAttempts++;const changed=syncContractLoggedRequester();if(changed&&tab==='form')updateContractLoggedRequesterFieldsInPlace();if((contractLoggedRequesterIdentity?.name&&contractLoggedRequesterIdentity?.email)||contractLoggedUserSyncAttempts>=30)clearInterval(contractLoggedUserSyncTimer)},1000);let contractRefreshTick=0;setInterval(()=>{contractRefreshTick++;if(tab==='kanban')updateKanbanTimerValues();else if(tab==='dashboard'&&contractRefreshTick%30===0)renderDashboard();else if(tab==='report'&&contractRefreshTick%30===0)renderReport();},1000);
+<\/script>
+<script>
+(function(){
+  const app=document.getElementById('sfApp');
+  const menu=document.getElementById('sfMenuBtn');
+  if(menu && app){
+    menu.addEventListener('click',()=>app.classList.toggle('sidebar-open'));
+    app.addEventListener('click',(e)=>{
+      if(app.classList.contains('sidebar-open') && window.innerWidth<=920 && e.target===app){app.classList.remove('sidebar-open');}
+    });
+  }
+  document.querySelectorAll('.sf-side-link').forEach(link=>link.addEventListener('click',e=>e.preventDefault()));
+})();
+<\/script></body></html>`;export{e as default};

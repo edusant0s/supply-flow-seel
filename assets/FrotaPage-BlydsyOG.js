@@ -1,0 +1,1 @@
+import{c as e,f as t}from"./index-CYps1W0I.js";import{t as n}from"./EmbeddedHtmlToolPage--8llq9CR.js";var r=e(),i=()=>t(()=>import(`./gestao-frota-BTEtiI8E.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`Gestao de frota`,moduleKey:`frota`,loadHtml:i})}export{a as FrotaPage};

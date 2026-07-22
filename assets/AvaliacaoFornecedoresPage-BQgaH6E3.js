@@ -1,0 +1,1 @@
+import{c as e,f as t}from"./index-CYps1W0I.js";import{t as n}from"./EmbeddedHtmlToolPage--8llq9CR.js";var r=e(),i=()=>t(()=>import(`./avaliacao-fornecedores-B42iv7RX.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`Avaliacao de fornecedores`,moduleKey:`avaliacao_fornecedores`,loadHtml:i})}export{a as AvaliacaoFornecedoresPage};
