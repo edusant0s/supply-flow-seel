@@ -3,11 +3,17 @@ import { requireSupabase } from "./supabase";
 
 export const FRETES_STORAGE_KEY = "gestao_fretes_solicitacoes_v1";
 export const FRETES_FORM_STORAGE_KEY = "gestao_fretes_formulario_config_v1";
+export const FRETES_CARGO_LABELS_STORAGE_KEY = "gestao_fretes_cargo_items_labels_v1";
+
+export const NOTA_FISCAL_STORAGE_KEY = "seel_nf_simples_remessa_v1";
+export const NOTA_FISCAL_FORM_STORAGE_KEY = "seel_nf_formulario_editor_v1";
 
 export const FROTA_VEHICLES_STORAGE_KEY = "frota_veiculos_v4_importacao_inicial";
 export const FROTA_FINES_STORAGE_KEY = "frota_multas_v4_importacao_inicial";
 export const FROTA_MEASUREMENTS_STORAGE_KEY = "frota_medicoes_v4_integracoes";
 export const FROTA_MANAGER_STORAGE_KEY = "frota_responsavel_v4";
+export const FROTA_OPERATIONAL_IMPORTS_STORAGE_KEY = "frota_importacoes_operacionais_v1";
+export const FROTA_BILLING_BATCHES_STORAGE_KEY = "frota_medicoes_faturamento_importacoes_v2";
 
 export const ESTOQUE_STATE_STORAGE_KEY = "obrastock_clean_state_v1";
 
@@ -16,20 +22,43 @@ export const AVALIACAO_DB_STORAGE_KEY = "seel_supplier_evaluation_db_v10";
 export const CONTRATOS_FORM_STORAGE_KEY = "seel_form_google_forms_v8_sem_mapa_sem_un";
 export const CONTRATOS_REQUESTS_STORAGE_KEY = "seel_requests_google_forms_exato_v1";
 
+export const ORCAMENTOS_FORM_STORAGE_KEY = "orcamentos_form_spec_v1";
+
+export const FORNECEDORES_CADASTRO_STORAGE_KEY = "seel_fornecedores_items_v1";
+export const FORNECEDORES_CADASTRO_SCHEMA_STORAGE_KEY = "seel_fornecedores_schema_v2";
+export const FORNECEDORES_CADASTRO_PHASE_AVG_STORAGE_KEY = "seel_fornecedores_phase_averages_v1";
+export const FORNECEDORES_CADASTRO_QUADRANT_AVG_STORAGE_KEY = "seel_fornecedores_quadrant_averages_v1";
+export const FORNECEDORES_MAP_STORAGE_KEY = "supply_flow_fornecedores_map_v1";
+
 export type EmbeddedStorageSnapshot = Record<string, unknown>;
 
 const sharedStateKeysByModule: Partial<Record<ModuleKey, string[]>> = {
   contratos: [CONTRATOS_FORM_STORAGE_KEY],
-  fretes: [FRETES_FORM_STORAGE_KEY],
-  frota: [FROTA_VEHICLES_STORAGE_KEY, FROTA_FINES_STORAGE_KEY, FROTA_MEASUREMENTS_STORAGE_KEY, FROTA_MANAGER_STORAGE_KEY],
+  fretes: [FRETES_FORM_STORAGE_KEY, FRETES_CARGO_LABELS_STORAGE_KEY],
+  nota_fiscal: [NOTA_FISCAL_FORM_STORAGE_KEY],
+  frota: [
+    FROTA_VEHICLES_STORAGE_KEY,
+    FROTA_FINES_STORAGE_KEY,
+    FROTA_MEASUREMENTS_STORAGE_KEY,
+    FROTA_MANAGER_STORAGE_KEY,
+    FROTA_OPERATIONAL_IMPORTS_STORAGE_KEY,
+    FROTA_BILLING_BATCHES_STORAGE_KEY,
+  ],
   estoque_obras: [ESTOQUE_STATE_STORAGE_KEY],
   avaliacao_fornecedores: [AVALIACAO_DB_STORAGE_KEY],
+  fornecedores: [
+    FORNECEDORES_CADASTRO_SCHEMA_STORAGE_KEY,
+    FORNECEDORES_CADASTRO_PHASE_AVG_STORAGE_KEY,
+    FORNECEDORES_CADASTRO_QUADRANT_AVG_STORAGE_KEY,
+  ],
 };
 
 export function getEmbeddedStorageKeysForModule(moduleKey: ModuleKey) {
   const keys = sharedStateKeysByModule[moduleKey] || [];
   if (moduleKey === "contratos") return [CONTRATOS_REQUESTS_STORAGE_KEY, ...keys];
   if (moduleKey === "fretes") return [FRETES_STORAGE_KEY, ...keys];
+  if (moduleKey === "nota_fiscal") return [NOTA_FISCAL_STORAGE_KEY, ...keys];
+  if (moduleKey === "fornecedores") return [FORNECEDORES_CADASTRO_STORAGE_KEY, ...keys];
   return keys;
 }
 
@@ -47,6 +76,14 @@ export async function loadEmbeddedStorageSnapshot(moduleKey: ModuleKey): Promise
     const localFretes = readLocalStorageArray(FRETES_STORAGE_KEY);
     if (fretes?.length) snapshot[FRETES_STORAGE_KEY] = fretes;
     else if (localFretes.length) snapshot[FRETES_STORAGE_KEY] = localFretes;
+  }
+
+  if (moduleKey === "nota_fiscal") {
+    const notas = await listNotaFiscalPayloads();
+    const localNotas = readLocalStorageArray(NOTA_FISCAL_STORAGE_KEY);
+    if (notas?.length) snapshot[NOTA_FISCAL_STORAGE_KEY] = notas;
+    else if (notas) snapshot[NOTA_FISCAL_STORAGE_KEY] = localNotas;
+    else if (localNotas.length) snapshot[NOTA_FISCAL_STORAGE_KEY] = localNotas;
   }
 
   if (moduleKey === "contratos") {
@@ -81,11 +118,23 @@ export async function loadEmbeddedStorageSnapshot(moduleKey: ModuleKey): Promise
     }
   }
 
+  if (moduleKey === "fornecedores") {
+    const cadastros = await listFornecedorCadastroPayloads();
+    const localCadastros = readLocalStorageArray(FORNECEDORES_CADASTRO_STORAGE_KEY);
+    if (cadastros?.length) snapshot[FORNECEDORES_CADASTRO_STORAGE_KEY] = cadastros;
+    else if (cadastros) snapshot[FORNECEDORES_CADASTRO_STORAGE_KEY] = localCadastros;
+    else if (localCadastros.length) snapshot[FORNECEDORES_CADASTRO_STORAGE_KEY] = localCadastros;
+  }
+
   return snapshot;
 }
 
 export async function listFretePayloads() {
   return listPayloads("fretes_solicitacoes", "updated_at", "desc");
+}
+
+export async function listNotaFiscalPayloads() {
+  return listPayloads("nf_simples_remessa_solicitacoes", "updated_at", "desc");
 }
 
 export async function listContratoRequestPayloads() {
@@ -123,6 +172,35 @@ export async function listSupplierEvaluationPayloads() {
   return listPayloads("avaliacao_fornecedores_avaliacoes", "updated_at", "desc");
 }
 
+export async function listFornecedorCadastroPayloads() {
+  return listPayloads("fornecedores_cadastros", "updated_at", "desc");
+}
+
+export async function listFornecedorMapSuppliers() {
+  try {
+    const client = requireSupabase();
+    const pageSize = 1000;
+    const rows: SupplierMapRow[] = [];
+
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await client
+        .from("fornecedores")
+        .select("id,codigo,nome,categoria,produto_servico,cidade,uf,regiao,telefone,email,site,cadastro_ativo,latitude,longitude,payload,created_at,updated_at")
+        .order("nome", { ascending: true })
+        .range(from, from + pageSize - 1);
+
+      if (error) throw error;
+      rows.push(...((data || []) as SupplierMapRow[]));
+      if (!data || data.length < pageSize) break;
+    }
+
+    return rows.map(supplierRowToEmbeddedMap);
+  } catch (error) {
+    console.warn("Nao foi possivel carregar o mapa de fornecedores compartilhado.", error);
+    return null;
+  }
+}
+
 export async function listEmbeddedStateValue<T = unknown>(storageKey: string): Promise<T | null> {
   try {
     const client = requireSupabase();
@@ -133,6 +211,17 @@ export async function listEmbeddedStateValue<T = unknown>(storageKey: string): P
     console.warn("Nao foi possivel carregar estado compartilhado.", error);
     return null;
   }
+}
+
+export async function saveEmbeddedStateValue(moduleKey: ModuleKey, storageKey: string, payload: unknown) {
+  const client = requireSupabase();
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  const { error } = await client
+    .from("embedded_app_state")
+    .upsert({ storage_key: storageKey, module_key: moduleKey, payload, updated_by: user?.id || null }, { onConflict: "storage_key" });
+  if (error) throw error;
 }
 
 async function listEmbeddedAppState(keys: string[]): Promise<EmbeddedStorageSnapshot> {
@@ -156,7 +245,16 @@ async function listEmbeddedAppState(keys: string[]): Promise<EmbeddedStorageSnap
   }
 }
 
-async function listPayloads(table: "fretes_solicitacoes" | "estoque_obras_pedidos" | "avaliacao_fornecedores_avaliacoes", orderColumn: string, direction: "asc" | "desc") {
+async function listPayloads(
+  table:
+    | "fretes_solicitacoes"
+    | "nf_simples_remessa_solicitacoes"
+    | "estoque_obras_pedidos"
+    | "avaliacao_fornecedores_avaliacoes"
+    | "fornecedores_cadastros",
+  orderColumn: string,
+  direction: "asc" | "desc"
+) {
   try {
     const client = requireSupabase();
     const { data, error } = await client.from(table).select("payload").order(orderColumn, { ascending: direction === "asc" });
@@ -216,6 +314,88 @@ type ContractRow = {
   created_at: string | null;
   updated_at: string | null;
 };
+
+type SupplierMapRow = {
+  id: string;
+  codigo: string | null;
+  nome: string | null;
+  categoria: string | null;
+  produto_servico: string | null;
+  cidade: string | null;
+  uf: string | null;
+  regiao: string | null;
+  telefone: string | null;
+  email: string | null;
+  site: string | null;
+  cadastro_ativo: boolean | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
+  payload: Record<string, unknown> | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+function supplierRowToEmbeddedMap(row: SupplierMapRow): Record<string, unknown> {
+  const payload = asObject(row.payload) || {};
+  const categories = uniqueTexts([
+    ...splitSupplierList(row.categoria),
+    ...splitSupplierList(row.produto_servico),
+    ...splitSupplierList(payload.categoria),
+    ...splitSupplierList(payload.Categoria),
+  ]);
+  const sourceSheets = payload.sourceSheets;
+
+  return {
+    id: row.id,
+    __supplyFornecedorDbId: row.id,
+    code: firstString(row.codigo),
+    name: firstString(row.nome, "Fornecedor sem nome"),
+    city: firstString(row.cidade),
+    uf: firstString(row.uf).toUpperCase(),
+    region: firstString(row.regiao),
+    categories: categories.length ? categories : ["Diversos"],
+    contact: firstString(
+      payload.contato,
+      payload.Contato,
+      payload.nome_contato,
+      payload["Nome Contato"],
+      payload["Nome do Contato"]
+    ),
+    phone: firstString(row.telefone, payload.telefone, payload.Telefone),
+    email: firstString(row.email, payload.email, payload.Email, payload["E-mail"], payload["E-Mail"]),
+    site: firstString(row.site, payload.site, payload.Site),
+    notes: firstString(payload.observacoes, payload.Observacoes, payload.Observacao, payload.Observação, row.produto_servico),
+    registration: row.cadastro_ativo ? "Sim" : "Não",
+    sourceSheets: Array.isArray(sourceSheets) ? sourceSheets : uniqueTexts([payload.origem, payload.Origem, "Supabase"]),
+    latitude: parseSupplierCoordinate(row.latitude),
+    longitude: parseSupplierCoordinate(row.longitude),
+    locationPrecision: firstString(
+      payload.locationPrecision,
+      payload.precisao_localizacao,
+      payload["Precisão da localização"],
+      row.latitude !== null && row.longitude !== null ? "Centro do município" : "Não localizada"
+    ),
+    createdAt: firstString(row.created_at),
+    updatedAt: firstString(row.updated_at),
+  };
+}
+
+function splitSupplierList(value: unknown) {
+  return String(value ?? "")
+    .split(/[|,;/]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function uniqueTexts(values: unknown[]) {
+  return Array.from(new Set(values.map((value) => String(value ?? "").trim()).filter(Boolean)));
+}
+
+function parseSupplierCoordinate(value: unknown) {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(String(value).replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : null;
+}
 
 function contractRowToEmbeddedRequest(row: ContractRow): Record<string, unknown> {
   const payload = asObject(row.payload) || {};

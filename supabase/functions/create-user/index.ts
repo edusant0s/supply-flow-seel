@@ -2,6 +2,21 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
 
 type Role = "super_admin" | "admin_suprimentos" | "admin_orcamentos" | "admin_contratos" | "viewer_global" | "viewer";
+type ModuleKey =
+  | "dashboard"
+  | "alertas"
+  | "requisicoes"
+  | "orcamentos"
+  | "contratos"
+  | "fretes"
+  | "nota_fiscal"
+  | "estoque_obras"
+  | "frota"
+  | "fornecedores"
+  | "avaliacao_fornecedores"
+  | "importacoes";
+
+type ModulePermissions = Partial<Record<ModuleKey, { view?: boolean; manage?: boolean }>>;
 
 const allowedRoles: Role[] = [
   "super_admin",
@@ -10,6 +25,21 @@ const allowedRoles: Role[] = [
   "admin_contratos",
   "viewer_global",
   "viewer",
+];
+
+const allowedModuleKeys: ModuleKey[] = [
+  "dashboard",
+  "alertas",
+  "requisicoes",
+  "orcamentos",
+  "contratos",
+  "fretes",
+  "nota_fiscal",
+  "estoque_obras",
+  "frota",
+  "fornecedores",
+  "avaliacao_fornecedores",
+  "importacoes",
 ];
 
 const defaultAllowedOrigins = [
@@ -68,6 +98,22 @@ function randomPassword() {
   return Array.from({ length: 14 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
+function sanitizeModulePermissions(value: unknown): ModulePermissions {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+
+  const sanitized: ModulePermissions = {};
+  for (const key of allowedModuleKeys) {
+    const rawPermission = (value as Record<string, unknown>)[key];
+    if (!rawPermission || typeof rawPermission !== "object" || Array.isArray(rawPermission)) continue;
+    const view = (rawPermission as { view?: unknown }).view;
+    const manage = (rawPermission as { manage?: unknown }).manage;
+    const normalizedManage = manage === true;
+    const normalizedView = normalizedManage || view === true;
+    sanitized[key] = { view: normalizedView, manage: normalizedView ? normalizedManage : false };
+  }
+  return sanitized;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: getCorsHeaders(req) });
   if (req.method !== "POST") return jsonResponse(req, { error: "Metodo nao permitido." }, 405);
@@ -116,6 +162,7 @@ serve(async (req) => {
     ativo?: boolean;
     obraIds?: string[];
     password?: string;
+    module_permissions?: unknown;
   };
 
   const nome = String(body.nome || "").trim();
@@ -123,6 +170,7 @@ serve(async (req) => {
   const role = body.role || "viewer";
   const ativo = body.ativo ?? true;
   const obraIds = Array.isArray(body.obraIds) ? body.obraIds.filter((id) => typeof id === "string" && id.length <= 80) : [];
+  const modulePermissions = sanitizeModulePermissions(body.module_permissions);
   const temporaryPassword = body.password?.trim() || randomPassword();
 
   if (!nome || !email) {
@@ -160,6 +208,9 @@ serve(async (req) => {
     email,
     role,
     ativo,
+    module_permissions: modulePermissions,
+    must_change_password: true,
+    password_changed_at: null,
   });
 
   if (profileUpsertError) {

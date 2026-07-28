@@ -55,10 +55,10 @@ const importOptions: Array<{ key: ImportKind; label: string; description: string
 export function ImportacoesPage() {
   const { profile } = useAuth();
   const [activeKind, setActiveKind] = useState<ImportKind>("requisicoes");
-  const { data, loading, error, refresh } = useAsyncData(listImportacoes, []);
+  const { data, loading, error, refresh } = useAsyncData(listImportacoes, [], { cacheKey: "importacoes" });
   const visibleOptions = useMemo(
-    () => importOptions.filter((option) => canManage(profile?.role, importKindModules[option.key])),
-    [profile?.role]
+    () => importOptions.filter((option) => canManage(profile, importKindModules[option.key])),
+    [profile]
   );
 
   useEffect(() => {

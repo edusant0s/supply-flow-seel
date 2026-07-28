@@ -1,0 +1,11 @@
+.git
+.claude
+node_modules
+app/dist
+.env
+.env.*
+**/.env
+**/.env.*
+*.log
+SECURITY_REVIEW_TI.md
+app/public/_dev-test-*.html

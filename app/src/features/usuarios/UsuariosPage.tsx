@@ -3,11 +3,11 @@ import { Download, Search, ShieldCheck, UploadCloud, UserPlus } from "lucide-rea
 import { DataTable } from "../../components/DataTable";
 import { EmptyState, LoadingState } from "../../components/States";
 import { headerKey, normalizeText } from "../../lib/format";
-import { roleLabel, roles } from "../../lib/permissions";
+import { defaultCanManage, defaultCanView, permissionModules, roleLabel, roles } from "../../lib/permissions";
 import { readSpreadsheet, type RawRow } from "../../lib/spreadsheet";
 import { useAsyncData } from "../../hooks";
 import { createUser, listObras, listProfiles, listUserObraLinks, setUserObras, updateProfile } from "../../services/admin";
-import type { Obra, Profile, UserRole } from "../../types";
+import type { ModuleKey, ModulePermissions, Obra, Profile, UserRole } from "../../types";
 
 type UserFormState = {
   nome: string;
@@ -17,6 +17,7 @@ type UserFormState = {
   password: string;
   obraIds: string[];
   allObras: boolean;
+  modulePermissions: ModulePermissions;
 };
 
 type BulkUserRow = {
@@ -28,6 +29,7 @@ type BulkUserRow = {
   password: string;
   obraIds: string[];
   allObras: boolean;
+  modulePermissions: ModulePermissions;
   errors: string[];
 };
 
@@ -36,9 +38,9 @@ export function UsuariosPage() {
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const users = useAsyncData(listProfiles, []);
-  const obras = useAsyncData(listObras, []);
-  const userObras = useAsyncData(listUserObraLinks, []);
+  const users = useAsyncData(listProfiles, [], { cacheKey: "profiles" });
+  const obras = useAsyncData(listObras, [], { cacheKey: "obras" });
+  const userObras = useAsyncData(listUserObraLinks, [], { cacheKey: "user_obras" });
 
   const filtered = useMemo(() => {
     const q = normalizeText(query);
@@ -120,6 +122,7 @@ export function UsuariosPage() {
                   ? "Todas"
                   : `${linksByUser.get(item.id)?.length || 0} obra(s)`,
             },
+            { key: "abas", label: "Abas", render: (item) => summarizeModulePermissions(item) },
             {
               key: "ativo",
               label: "Status",
@@ -155,6 +158,7 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
     password: "",
     obraIds: [],
     allObras: false,
+    modulePermissions: buildRoleModulePermissions("viewer"),
   });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error">("success");
@@ -179,6 +183,7 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
         password: form.password.trim() || undefined,
         role: effectiveRole,
         obraIds: form.allObras ? [] : form.obraIds,
+        module_permissions: normalizeModulePermissions(form.modulePermissions),
       });
       setMessageType("success");
       setMessage(result.temporary_password ? `Usuario criado. Senha temporaria: ${result.temporary_password}` : "Usuario criado.");
@@ -190,6 +195,7 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
         password: "",
         obraIds: [],
         allObras: false,
+        modulePermissions: buildRoleModulePermissions("viewer"),
       });
       onSaved();
     } catch (err) {
@@ -226,6 +232,7 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
                 ...current,
                 role: event.target.value as UserRole,
                 allObras: event.target.value === "viewer_global" ? true : current.allObras,
+                modulePermissions: buildRoleModulePermissions(event.target.value as UserRole),
               }))
             }
           >
@@ -251,12 +258,20 @@ function UserForm({ obras, onSaved }: { obras: Obra[]; onSaved: () => void }) {
               allObras: event.target.checked,
               role: event.target.checked && current.role === "viewer" ? "viewer_global" : !event.target.checked && current.role === "viewer_global" ? "viewer" : current.role,
               obraIds: event.target.checked ? [] : current.obraIds,
+              modulePermissions: buildRoleModulePermissions(
+                event.target.checked && current.role === "viewer" ? "viewer_global" : !event.target.checked && current.role === "viewer_global" ? "viewer" : current.role
+              ),
             }))
           }
         />
         Visualizar todas as obras
       </label>
       {!form.allObras ? <ObraCheckboxes obras={obras} selected={form.obraIds} onChange={(obraIds) => setForm((current) => ({ ...current, obraIds }))} /> : null}
+      <ModulePermissionGrid
+        role={effectiveRole}
+        value={form.modulePermissions}
+        onChange={(modulePermissions) => setForm((current) => ({ ...current, modulePermissions }))}
+      />
       {message ? <div className={messageType === "error" ? "form-error" : "form-note"}>{message}</div> : null}
       <div className="form-actions">
         <button className="primary-button" type="button" onClick={save} disabled={saving}>
@@ -291,11 +306,12 @@ function UserPermissionsEditor({
   const [ativo, setAtivo] = useState(profile.ativo);
   const [allObras, setAllObras] = useState(profile.role === "viewer_global");
   const [obraIds, setObraIds] = useState(initialObraIds);
+  const [modulePermissions, setModulePermissions] = useState<ModulePermissions>(() => mergeWithRoleDefaults(profile.role, profile.module_permissions));
   const [message, setMessage] = useState("");
 
   async function save() {
     const nextRole = getScopedRole(role, allObras);
-    await updateProfile(profile.id, { role: nextRole, ativo });
+    await updateProfile(profile.id, { role: nextRole, ativo, module_permissions: normalizeModulePermissions(modulePermissions) });
     await setUserObras(profile.id, allObras ? [] : obraIds);
     setMessage("Permissoes salvas.");
     onSaved();
@@ -321,6 +337,7 @@ function UserPermissionsEditor({
               const nextRole = event.target.value as UserRole;
               setRole(nextRole);
               if (nextRole === "viewer_global") setAllObras(true);
+              setModulePermissions(buildRoleModulePermissions(nextRole));
             }}
           >
             {roles.map((item) => (
@@ -343,14 +360,16 @@ function UserPermissionsEditor({
           type="checkbox"
           checked={allObras}
           onChange={(event) => {
+            const nextRole = event.target.checked && role === "viewer" ? "viewer_global" : !event.target.checked && role === "viewer_global" ? "viewer" : role;
             setAllObras(event.target.checked);
-            if (event.target.checked && role === "viewer") setRole("viewer_global");
-            if (!event.target.checked && role === "viewer_global") setRole("viewer");
+            setRole(nextRole);
+            setModulePermissions(buildRoleModulePermissions(nextRole));
           }}
         />
         Visualizar todas as obras
       </label>
       {!allObras ? <ObraCheckboxes obras={obras} selected={obraIds} onChange={setObraIds} /> : null}
+      <ModulePermissionGrid role={getScopedRole(role, allObras)} value={modulePermissions} onChange={setModulePermissions} />
       {message ? <div className="form-note">{message}</div> : null}
       <div className="form-actions">
         <button className="primary-button" type="button" onClick={save}>
@@ -391,11 +410,19 @@ function BulkUserImport({ obras, existingProfiles, onSaved }: { obras: Obra[]; e
 
       try {
         if (existing) {
-          await updateProfile(existing.id, { nome: row.nome || existing.nome, role, ativo: row.ativo });
+          await updateProfile(existing.id, { nome: row.nome || existing.nome, role, ativo: row.ativo, module_permissions: normalizeModulePermissions(row.modulePermissions) });
           await setUserObras(existing.id, obraIds);
           results.push(`Linha ${row.row}: atualizado`);
         } else {
-          const created = await createUser({ nome: row.nome, email: row.email, role, ativo: row.ativo, obraIds, password: row.password });
+          const created = await createUser({
+            nome: row.nome,
+            email: row.email,
+            role,
+            ativo: row.ativo,
+            obraIds,
+            password: row.password,
+            module_permissions: normalizeModulePermissions(row.modulePermissions),
+          });
           results.push(created.temporary_password ? `Linha ${row.row}: criado com senha temporaria` : `Linha ${row.row}: criado`);
         }
       } catch (error) {
@@ -434,6 +461,7 @@ function BulkUserImport({ obras, existingProfiles, onSaved }: { obras: Obra[]; e
             { key: "email", label: "E-mail", render: (item) => item.email || "-" },
             { key: "role", label: "Perfil", render: (item) => roleLabel(getScopedRole(item.role, item.allObras)) },
             { key: "obras", label: "Obras", render: (item) => (item.allObras ? "Todas" : `${item.obraIds.length} obra(s)`) },
+            { key: "abas", label: "Abas", render: (item) => summarizeModulePermissions({ role: item.role, module_permissions: item.modulePermissions } as Profile) },
             { key: "erros", label: "Erros", render: (item) => item.errors.join(", ") || "-" },
           ]}
         />
@@ -460,6 +488,82 @@ function ObraCheckboxes({ obras, selected, onChange }: { obras: Obra[]; selected
   );
 }
 
+function ModulePermissionGrid({
+  role,
+  value,
+  onChange,
+}: {
+  role: UserRole;
+  value: ModulePermissions;
+  onChange: (permissions: ModulePermissions) => void;
+}) {
+  const permissions = mergeWithRoleDefaults(role, value);
+  const isSuperAdmin = role === "super_admin";
+
+  return (
+    <section className="module-permission-editor" aria-label="Permissoes por aba">
+      <div className="module-permission-editor__head">
+        <div>
+          <span className="eyebrow">Acesso por aba</span>
+          <h3>O que este usuario pode ver e fazer</h3>
+          <p>Marque visualizar para liberar a aba. Marque editar para permitir acoes como mover cards, importar, alterar status ou manipular dados.</p>
+        </div>
+        <button className="secondary-button" type="button" onClick={() => onChange(buildRoleModulePermissions(role))}>
+          Restaurar padrao
+        </button>
+      </div>
+      {isSuperAdmin ? <div className="form-note">Super admin sempre tem acesso total, mesmo que alguma permissao seja desmarcada.</div> : null}
+      <div className="module-permission-grid">
+        {permissionModules.map((module) => {
+          const modulePermission = permissions[module.key] || {};
+          const canSee = Boolean(modulePermission.view);
+          const canEdit = Boolean(modulePermission.manage);
+          return (
+            <article key={module.key} className="module-permission-card">
+              <div>
+                <strong>{module.label}</strong>
+                <span>{module.description}</span>
+              </div>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isSuperAdmin || canSee}
+                  disabled={isSuperAdmin}
+                  onChange={(event) =>
+                    onChange(
+                      updateModulePermission(permissions, module.key, {
+                        view: event.target.checked,
+                        manage: event.target.checked ? canEdit : false,
+                      })
+                    )
+                  }
+                />
+                Ver aba
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isSuperAdmin || canEdit}
+                  disabled={isSuperAdmin}
+                  onChange={(event) =>
+                    onChange(
+                      updateModulePermission(permissions, module.key, {
+                        view: event.target.checked ? true : canSee,
+                        manage: event.target.checked,
+                      })
+                    )
+                  }
+                />
+                Editar
+              </label>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function mapBulkUserRow(row: RawRow, rowNumber: number, obras: Obra[]): BulkUserRow {
   const nome = getCell(row, ["nome", "usuario", "usuário", "name"]);
   const email = getCell(row, ["email", "e-mail", "mail"]);
@@ -470,13 +574,14 @@ function mapBulkUserRow(row: RawRow, rowNumber: number, obras: Obra[]): BulkUser
   const ativo = parseBoolean(getCell(row, ["ativo", "status", "active"]), true);
   const password = getCell(row, ["senha", "senha temporaria", "senha temporária", "password"]);
   const obraIds = allObras ? [] : findObraIds(getCell(row, ["obras", "obra", "obras permitidas", "obra permitida"]), obras);
+  const modulePermissions = parseModulePermissions(row, role);
   const errors: string[] = [];
 
   if (!nome) errors.push("nome obrigatorio");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("e-mail invalido");
   if (!allObras && role === "viewer" && !obraIds.length) errors.push("viewer sem obra");
 
-  return { row: rowNumber, nome, email, role, ativo, password, obraIds, allObras, errors };
+  return { row: rowNumber, nome, email, role, ativo, password, obraIds, allObras, modulePermissions, errors };
 }
 
 function getCell(row: RawRow, aliases: string[]) {
@@ -517,6 +622,136 @@ function findObraIds(value: string, obras: Obra[]) {
       )
     )
     .map((obra) => obra.id);
+}
+
+function buildRoleModulePermissions(role: UserRole): ModulePermissions {
+  const permissions: ModulePermissions = {};
+  permissionModules.forEach((module) => {
+    permissions[module.key] = {
+      view: role === "super_admin" || defaultCanView(role, module.key),
+      manage: role === "super_admin" || defaultCanManage(role, module.key),
+    };
+  });
+  return permissions;
+}
+
+function mergeWithRoleDefaults(role: UserRole, permissions?: ModulePermissions | null): ModulePermissions {
+  const merged = buildRoleModulePermissions(role);
+  Object.entries(permissions || {}).forEach(([key, value]) => {
+    if (!isPermissionModuleKey(key)) return;
+    const current = merged[key] || {};
+    const next = {
+      view: typeof value?.view === "boolean" ? value.view : current.view,
+      manage: typeof value?.manage === "boolean" ? value.manage : current.manage,
+    };
+    if (next.manage) next.view = true;
+    if (!next.view) next.manage = false;
+    merged[key] = next;
+  });
+  return merged;
+}
+
+function normalizeModulePermissions(permissions: ModulePermissions): ModulePermissions {
+  const normalized: ModulePermissions = {};
+  permissionModules.forEach((module) => {
+    const permission = permissions[module.key] || {};
+    const manage = Boolean(permission.manage);
+    const view = manage || Boolean(permission.view);
+    normalized[module.key] = { view, manage: view ? manage : false };
+  });
+  return normalized;
+}
+
+function updateModulePermission(permissions: ModulePermissions, moduleKey: ModuleKey, patch: { view?: boolean; manage?: boolean }): ModulePermissions {
+  const next = normalizeModulePermissions({
+    ...permissions,
+    [moduleKey]: {
+      ...(permissions[moduleKey] || {}),
+      ...patch,
+    },
+  });
+  const current = next[moduleKey] || {};
+  if (current.manage) current.view = true;
+  if (!current.view) current.manage = false;
+  next[moduleKey] = current;
+  return next;
+}
+
+function summarizeModulePermissions(profile: Pick<Profile, "role" | "module_permissions">) {
+  if (profile.role === "super_admin") return "Todas, edicao total";
+  const permissions = mergeWithRoleDefaults(profile.role, profile.module_permissions);
+  const visible = permissionModules.filter((module) => permissions[module.key]?.view).length;
+  const editable = permissionModules.filter((module) => permissions[module.key]?.manage).length;
+  return `${visible} aba(s), ${editable} com edicao`;
+}
+
+function parseModulePermissions(row: RawRow, role: UserRole): ModulePermissions {
+  const viewValue = getCell(row, ["abas", "abas liberadas", "modulos", "modulos liberados", "areas", "areas liberadas"]);
+  const manageValue = getCell(row, ["editar", "abas edicao", "modulos edicao", "permissoes edicao", "pode editar"]);
+  const permissions = buildRoleModulePermissions(role);
+
+  if (viewValue) {
+    const visibleModules = parseModuleList(viewValue);
+    permissionModules.forEach((module) => {
+      permissions[module.key] = {
+        view: visibleModules.includes(module.key),
+        manage: false,
+      };
+    });
+  }
+
+  if (manageValue) {
+    const editableModules = parseModuleList(manageValue);
+    editableModules.forEach((moduleKey) => {
+      permissions[moduleKey] = { view: true, manage: true };
+    });
+  }
+
+  return normalizeModulePermissions(permissions);
+}
+
+function parseModuleList(value: string): ModuleKey[] {
+  const normalized = headerKey(value);
+  if (!normalized || ["nenhum", "nenhuma", "sem acesso"].includes(normalized)) return [];
+  if (["todos", "todas", "todas as abas", "todos os modulos"].some((token) => normalized.includes(headerKey(token)))) {
+    return permissionModules.map((module) => module.key);
+  }
+
+  const tokens = value
+    .split(/[;,|]/)
+    .map((item) => headerKey(item))
+    .filter(Boolean);
+
+  return permissionModules
+    .filter((module) => {
+      const aliases = getModuleAliases(module.key).map(headerKey);
+      return tokens.some((token) => aliases.some((alias) => token === alias || token.includes(alias) || alias.includes(token)));
+    })
+    .map((module) => module.key);
+}
+
+function getModuleAliases(moduleKey: ModuleKey) {
+  const labels: Record<ModuleKey, string[]> = {
+    dashboard: ["dashboard", "inicio", "home", "painel"],
+    alertas: ["alertas", "notificacoes", "comentarios"],
+    requisicoes: ["requisicoes", "rms", "compras", "suprimentos"],
+    orcamentos: ["orcamentos", "cotacoes", "propostas"],
+    contratos: ["contratos", "compor"],
+    fretes: ["fretes", "logistica", "transportes"],
+    nota_fiscal: ["nota fiscal", "nf", "nf simples remessa", "simples remessa"],
+    estoque_obras: ["estoque obras", "estoque", "obra stock", "obrastock"],
+    frota: ["frota", "veiculos"],
+    fornecedores: ["fornecedores", "mapa fornecedores", "cadastro fornecedores"],
+    avaliacao_fornecedores: ["avaliacao fornecedores", "avaliacoes", "avaliacao"],
+    importacoes: ["importacoes", "importacao", "central de dados"],
+    usuarios: ["usuarios"],
+    settings: ["configuracoes"],
+  };
+  return labels[moduleKey];
+}
+
+function isPermissionModuleKey(key: string): key is ModuleKey {
+  return permissionModules.some((module) => module.key === key);
 }
 
 function getScopedRole(role: UserRole, allObras: boolean): UserRole {

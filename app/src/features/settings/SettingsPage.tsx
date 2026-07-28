@@ -8,7 +8,7 @@ import { deleteObra, listObras, upsertObra } from "../../services/admin";
 export function SettingsPage() {
   const [form, setForm] = useState({ nome: "", codigo: "", centro_custo: "" });
   const [message, setMessage] = useState("");
-  const { data, loading, error, refresh } = useAsyncData(listObras, []);
+  const { data, loading, error, refresh } = useAsyncData(listObras, [], { cacheKey: "obras" });
 
   if (loading) return <LoadingState label="Carregando configuracoes" />;
   if (error) return <EmptyState title="Falha ao carregar obras" description={error} />;

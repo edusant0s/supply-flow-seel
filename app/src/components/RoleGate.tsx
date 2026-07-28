@@ -14,6 +14,6 @@ export function RoleGate({
   fallback?: React.ReactNode;
 }) {
   const { profile } = useAuth();
-  const allowed = mode === "view" ? canView(profile?.role, module) : canManage(profile?.role, module);
+  const allowed = mode === "view" ? canView(profile, module) : canManage(profile, module);
   return allowed ? <>{children}</> : <>{fallback}</>;
 }

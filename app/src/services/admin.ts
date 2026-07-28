@@ -1,4 +1,4 @@
-import type { Obra, Profile, UserRole } from "../types";
+import type { ModulePermissions, Obra, Profile, UserRole } from "../types";
 import { requireSupabase, supabaseAnonKey, supabaseUrl } from "./supabase";
 
 export async function listProfiles(): Promise<Profile[]> {
@@ -56,6 +56,7 @@ export async function createUser(input: {
   ativo: boolean;
   obraIds: string[];
   password?: string;
+  module_permissions?: ModulePermissions | null;
 }) {
   const client = requireSupabase();
   if (!supabaseUrl || !supabaseAnonKey) throw new Error("Supabase nao configurado.");

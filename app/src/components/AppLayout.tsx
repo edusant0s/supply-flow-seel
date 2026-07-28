@@ -1,40 +1,49 @@
 import {
   BarChart3,
+  BellRing,
   Building2,
   Car,
   ClipboardList,
   FileSpreadsheet,
   FileText,
+  KeyRound,
   LogOut,
   MapPinned,
   Menu,
   Moon,
   Package,
+  ReceiptText,
   Settings,
   ShieldCheck,
   Star,
   Sun,
   Truck,
   UploadCloud,
+  UserRoundPlus,
   Users,
   X,
 } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import type React from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { AlertNotificationBell } from "../features/alertas/AlertNotificationBell";
 import { canView, roleLabel } from "../lib/permissions";
+import { useSupplyFlowRealtime } from "../useSupplyFlowRealtime";
 import type { ModuleKey } from "../types";
 
 const menu: { to: string; label: string; module: ModuleKey; icon: React.ElementType }[] = [
   { to: "/", label: "Dashboard", module: "dashboard", icon: BarChart3 },
+  { to: "/alertas", label: "Alertas", module: "alertas", icon: BellRing },
   { to: "/requisicoes", label: "Requisições", module: "requisicoes", icon: ClipboardList },
   { to: "/orcamentos", label: "Orçamentos", module: "orcamentos", icon: FileSpreadsheet },
   { to: "/contratos", label: "Contratos", module: "contratos", icon: FileText },
   { to: "/fretes", label: "Fretes", module: "fretes", icon: Truck },
+  { to: "/nota-fiscal", label: "NF Simples Remessa", module: "nota_fiscal", icon: ReceiptText },
   { to: "/estoque-obras", label: "Estoque Obras", module: "estoque_obras", icon: Package },
   { to: "/frota", label: "Frota", module: "frota", icon: Car },
   { to: "/fornecedores", label: "Fornecedores", module: "fornecedores", icon: MapPinned },
+  { to: "/cadastro-fornecedores", label: "Cadastro Fornecedores", module: "fornecedores", icon: UserRoundPlus },
   { to: "/avaliacao-fornecedores", label: "Avaliacao Fornecedores", module: "avaliacao_fornecedores", icon: Star },
   { to: "/importacoes", label: "Importações", module: "importacoes", icon: UploadCloud },
   { to: "/usuarios", label: "Usuários", module: "usuarios", icon: Users },
@@ -43,18 +52,24 @@ const menu: { to: string; label: string; module: ModuleKey; icon: React.ElementT
 
 const routeTitles: Record<string, string> = {
   "/": "Dashboard",
+  "/alertas": "Central de Alertas",
   "/requisicoes": "Requisições de Suprimentos",
   "/orcamentos": "Solicitações de Orçamento",
   "/contratos": "Contratos",
   "/fretes": "Gestao de Fretes",
+  "/nota-fiscal": "NF de Simples Remessa",
   "/estoque-obras": "Estoque de Obras",
   "/frota": "Gestao de Frota",
   "/fornecedores": "Mapa de Fornecedores",
+  "/cadastro-fornecedores": "Cadastro de Fornecedores",
   "/avaliacao-fornecedores": "Avaliacao de Fornecedores",
   "/importacoes": "Importações",
   "/usuarios": "Gestão de Usuários",
   "/settings": "Configurações",
+  "/alterar-senha": "Alterar Senha",
 };
+
+const routeScrollPositions = new Map<string, { x: number; y: number }>();
 
 export function AppLayout() {
   const [open, setOpen] = useState(false);
@@ -63,17 +78,30 @@ export function AppLayout() {
     return window.localStorage.getItem("supply-flow:theme") === "light" ? "light" : "dark";
   });
   const location = useLocation();
-  const { profile, obras, signOut } = useAuth();
+  const { profile, obras, signOut, refreshProfile } = useAuth();
 
-  const visibleMenu = useMemo(
-    () => menu.filter((item) => canView(profile?.role, item.module)),
-    [profile?.role]
-  );
+  const visibleMenu = useMemo(() => menu.filter((item) => canView(profile, item.module)), [profile]);
+  useSupplyFlowRealtime({ enabled: Boolean(profile?.ativo), currentUserId: profile?.id, refreshProfile });
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem("supply-flow:theme", theme);
   }, [theme]);
+
+  useLayoutEffect(() => {
+    const path = location.pathname;
+    const saved = routeScrollPositions.get(path);
+    if (saved) {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ left: saved.x, top: saved.y, behavior: "auto" });
+        window.requestAnimationFrame(() => window.scrollTo({ left: saved.x, top: saved.y, behavior: "auto" }));
+      });
+    }
+
+    return () => {
+      routeScrollPositions.set(path, { x: window.scrollX, y: window.scrollY });
+    };
+  }, [location.pathname]);
 
   return (
     <div className="app-shell">
@@ -127,6 +155,7 @@ export function AppLayout() {
             <h1>{routeTitles[location.pathname] || "Supply Flow"}</h1>
           </div>
           <div className="profile-area">
+            <AlertNotificationBell />
             <button
               className="icon-button"
               type="button"
@@ -144,6 +173,9 @@ export function AppLayout() {
               <strong>{profile?.nome || "Usuário"}</strong>
               <span>{profile?.email}</span>
             </div>
+            <NavLink className="icon-button" to="/alterar-senha" aria-label="Alterar senha" title="Alterar senha">
+              <KeyRound size={18} />
+            </NavLink>
             <button className="icon-button" type="button" onClick={signOut} aria-label="Sair">
               <LogOut size={18} />
             </button>

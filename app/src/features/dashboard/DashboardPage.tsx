@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import type React from "react";
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   AlertTriangle,
+  ArrowUpRight,
   BarChart3,
   Car,
   CheckCircle2,
@@ -17,6 +19,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Star,
+  Target,
   Truck,
   Users,
   Warehouse,
@@ -58,6 +61,21 @@ type DashboardMetric = {
   icon: LucideIcon;
   tone?: KpiTone;
   chartValue?: number;
+};
+
+type CriticalTone = "success" | "monitor" | "warning" | "danger";
+
+type CriticalInsight = {
+  key: string;
+  category: string;
+  title: string;
+  value: string;
+  meta: string;
+  description: string;
+  action: string;
+  tone: CriticalTone;
+  icon: LucideIcon;
+  priority: number;
 };
 
 type DashboardRow = {
@@ -115,9 +133,10 @@ export function DashboardPage() {
     if (!data) return [];
     return buildDashboardRows(data);
   }, [data]);
+  const lastUpdatedAt = useMemo(() => new Date(), [data]);
 
   if (loading) return <LoadingState label="Carregando indicadores" />;
-  if (error) return <EmptyState title="Falha ao carregar dashboard" description={error} />;
+  if (error && !data) return <EmptyState title="Falha ao carregar dashboard" description={error} />;
   if (!data) return null;
 
   const selectedRow = processFilter === "todos" ? null : rows.find((row) => row.key === processFilter) ?? null;
@@ -138,11 +157,22 @@ export function DashboardPage() {
             ))}
           </select>
         </label>
-        <button className="secondary-button" type="button" onClick={refresh}>
+        <button className="secondary-button" type="button" onClick={() => refresh({ preserveScroll: true })}>
           <RefreshCw size={18} />
           Atualizar dados
         </button>
       </section>
+
+      {error ? (
+        <section className="dashboard-cache-warning">
+          <AlertTriangle size={18} />
+          <span>Alguma fonte demorou para responder. Mantive os indicadores em cache enquanto a proxima atualizacao e processada.</span>
+        </section>
+      ) : null}
+
+      <DashboardCommandCenter rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
+
+      <DashboardCriticalAnalysis rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
 
       <section className="kpi-grid">
         {topMetrics.map((metric) => (
@@ -151,6 +181,8 @@ export function DashboardPage() {
       </section>
 
       {selectedRow ? <AreaDashboardPanel row={selectedRow} /> : <SupplyPortfolioOverview rows={rows} />}
+
+      <OperationalPulse rows={selectedRow ? [selectedRow] : rows} />
 
       {selectedRow ? <AreaBreakdownCharts row={selectedRow} /> : <DashboardCharts rows={chartRows} />}
 
@@ -250,6 +282,379 @@ function buildSupplyMetrics(rows: DashboardRow[]): DashboardMetric[] {
     { title: "Veiculos da frota", value: frota?.demanda ?? 0, icon: Car, tone: "neutral" },
     { title: "Fornecedores ativos", value: fornecedores?.finalizados ?? 0, icon: Users, tone: "blue" },
   ];
+}
+
+function DashboardCommandCenter({
+  rows,
+  selectedRow,
+  updatedAt,
+}: {
+  rows: DashboardRow[];
+  selectedRow: DashboardRow | null;
+  updatedAt: Date;
+}) {
+  const scopeRows = selectedRow ? [selectedRow] : rows;
+  const operationalRows = scopeRows.filter((row) => row.family === "operacao");
+  const rowsForHealth = operationalRows.length ? operationalRows : scopeRows;
+  const totals = rowTotals(rowsForHealth);
+  const health = calculateHealthScore(rowsForHealth);
+  const completion = formatPercent(totals.finalizados, totals.demanda);
+  const risk = formatPercent(totals.riscoSla, totals.demanda);
+  const backlogLeader = rowsForHealth.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
+  const riskLeader = rowsForHealth.slice().sort((a, b) => b.riscoSla - a.riscoSla)[0];
+  const healthTone = health >= 80 ? "success" : health >= 58 ? "warning" : "danger";
+
+  return (
+    <section className="dashboard-command-center">
+      <article className="dashboard-command-center__main">
+        <div>
+          <span className="eyebrow">{selectedRow ? "Area selecionada" : "Centro de comando"}</span>
+          <h2>{selectedRow ? selectedRow.processo : "Supply Flow em tempo de gestao"}</h2>
+          <p>
+            Indicadores recalculados por fonte de dados, separando atendimento, ativos e bases cadastrais para evitar leitura distorcida.
+          </p>
+        </div>
+        <div className={`dashboard-health-ring dashboard-health-ring--${healthTone}`} style={{ "--health": `${health * 3.6}deg` } as React.CSSProperties}>
+          <strong>{health}</strong>
+          <span>saude</span>
+        </div>
+      </article>
+
+      <article className="dashboard-live-card">
+        <Activity size={18} />
+        <span>Atualizado</span>
+        <strong>{updatedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</strong>
+        <small>{updatedAt.toLocaleDateString("pt-BR")}</small>
+      </article>
+
+      <article className="dashboard-live-card">
+        <Target size={18} />
+        <span>Conclusao</span>
+        <strong>{completion}</strong>
+        <small>{formatCount(totals.finalizados)} de {formatCount(totals.demanda)}</small>
+      </article>
+
+      <article className="dashboard-live-card">
+        <AlertTriangle size={18} />
+        <span>Pressao SLA</span>
+        <strong>{risk}</strong>
+        <small>{formatCount(totals.riscoSla)} alertas</small>
+      </article>
+
+      <article className="dashboard-live-card">
+        <ArrowUpRight size={18} />
+        <span>Gargalo</span>
+        <strong>{backlogLeader?.processo || "-"}</strong>
+        <small>{backlogLeader ? `${formatCount(backlogLeader.emAberto)} ${backlogLeader.openLabel}` : "Sem fila"}</small>
+      </article>
+
+      <article className="dashboard-live-card">
+        <Gauge size={18} />
+        <span>Maior risco</span>
+        <strong>{riskLeader?.processo || "-"}</strong>
+        <small>{riskLeader ? `${formatCount(riskLeader.riscoSla)} ${riskLeader.riskLabel}` : "Sem alerta"}</small>
+      </article>
+    </section>
+  );
+}
+
+function DashboardCriticalAnalysis({
+  rows,
+  selectedRow,
+  updatedAt,
+}: {
+  rows: DashboardRow[];
+  selectedRow: DashboardRow | null;
+  updatedAt: Date;
+}) {
+  const scopeRows = selectedRow ? [selectedRow] : rows;
+  const rowsForHealth = scopeRows.filter((row) => row.family === "operacao").length ? scopeRows.filter((row) => row.family === "operacao") : scopeRows;
+  const totals = rowTotals(rowsForHealth);
+  const controlIndex = calculateHealthScore(rowsForHealth);
+  const insights = buildCriticalInsights(scopeRows);
+  const mainInsight = insights[0] ?? buildControlledInsight(scopeRows);
+  const criticalCount = insights.filter((item) => item.tone === "danger").length;
+  const attentionCount = insights.filter((item) => item.tone === "danger" || item.tone === "warning").length;
+  const exposure = totals.emAberto + totals.riscoSla;
+  const HeadIcon = mainInsight.icon;
+
+  return (
+    <section className="dashboard-alerts-section">
+      <div className="dashboard-alerts-title">
+        <span>
+          <AlertTriangle size={20} />
+        </span>
+        <div>
+          <h2>{selectedRow ? `Alertas de ${selectedRow.processo}` : "Alertas do Supply"}</h2>
+          <p>Analises automaticas recalculadas conforme as bases e filtros do dashboard.</p>
+        </div>
+      </div>
+
+      <div className="dashboard-alert-summary-grid">
+        <article className={`dashboard-alert-summary-card dashboard-alert-summary-card--${mainInsight.tone} dashboard-alert-summary-card--wide`}>
+          <HeadIcon size={26} />
+          <div>
+            <h3>{mainInsight.title}</h3>
+            <p>{mainInsight.value} {mainInsight.meta}</p>
+            <small>Recalculado automaticamente em {formatDashboardTimestamp(updatedAt)}</small>
+          </div>
+        </article>
+        <article className={`dashboard-alert-summary-card dashboard-alert-summary-card--${controlIndex >= 80 ? "success" : controlIndex >= 58 ? "warning" : "danger"}`}>
+          <span>Indice de controle</span>
+          <strong>{controlIndex}/100</strong>
+          <p>Composto por fila, conclusao, risco de SLA e qualidade cadastral.</p>
+        </article>
+        <article className={`dashboard-alert-summary-card dashboard-alert-summary-card--${criticalCount ? "danger" : attentionCount ? "warning" : "success"}`}>
+          <span>Analises criticas</span>
+          <strong>{criticalCount}</strong>
+          <p>{attentionCount} analise(s) em atencao no recorte atual.</p>
+        </article>
+        <article className={`dashboard-alert-summary-card dashboard-alert-summary-card--${exposure ? "warning" : "success"}`}>
+          <span>Exposicao operacional</span>
+          <strong>{formatCount(exposure)}</strong>
+          <p>{formatCount(totals.emAberto)} em aberto + {formatCount(totals.riscoSla)} alerta(s).</p>
+        </article>
+      </div>
+
+      <div className="dashboard-auto-analysis-head">
+        <h3>Analises automaticas priorizadas</h3>
+        <span>{formatCount(scopeRows.reduce((sum, row) => sum + row.demanda, 0))} registro(s) considerados no filtro atual</span>
+      </div>
+
+      <div className="dashboard-auto-analysis-grid">
+        {insights.map((insight) => {
+          const Icon = insight.icon;
+          return (
+            <article key={insight.key} className={`dashboard-analysis-card dashboard-analysis-card--${insight.tone}`}>
+              <div className="dashboard-analysis-card__head">
+                <span>
+                  <Icon size={17} />
+                </span>
+                <b>{insight.category}</b>
+                <em>{criticalToneLabel(insight.tone)}</em>
+              </div>
+              <strong>{insight.title}</strong>
+              <div className="dashboard-analysis-card__value">
+                <span>{insight.value}</span>
+                <small>{insight.meta}</small>
+              </div>
+              <p>{insight.description}</p>
+              <footer>
+                <b>Acao:</b> {insight.action}
+              </footer>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function buildCriticalInsights(rows: DashboardRow[]): CriticalInsight[] {
+  if (!rows.length) return [buildControlledInsight(rows)];
+  const insights: CriticalInsight[] = [];
+  const totals = rowTotals(rows);
+  const riskLeader = rows.slice().sort((a, b) => criticalPriorityScore(b) - criticalPriorityScore(a))[0];
+  const backlogLeader = rows.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
+  const baseRows = rows.filter((row) => row.family === "base");
+  const assetRows = rows.filter((row) => row.family === "ativo");
+
+  rows.forEach((row) => {
+    const total = Math.max(row.demanda, 1);
+    const riskPercent = Math.round((row.riscoSla / total) * 100);
+    const openPercent = Math.round((row.emAberto / total) * 100);
+    const donePercent = Math.round((row.finalizados / total) * 100);
+
+    insights.push({
+      key: `${row.key}-risk`,
+      category: row.family === "base" ? "Governanca de dados" : row.family === "ativo" ? "Risco de ativos" : "Risco operacional",
+      title: row.riscoSla ? `${row.processo} com alertas` : `${row.processo} sob controle`,
+      value: formatCount(row.riscoSla),
+      meta: `${riskPercent}% de exposicao`,
+      description: row.riscoSla
+        ? `${formatCount(row.riscoSla)} ${row.riskLabel} exigem acompanhamento para evitar perda de prazo, contrato ou qualidade.`
+        : `Nao ha ${row.riskLabel} relevantes no recorte atual.`,
+      action: row.riscoSla ? `Priorizar ${row.riskLabel} e atualizar responsaveis no modulo.` : "Manter rotina de acompanhamento e validacao da base.",
+      tone: row.riscoSla ? (riskPercent >= 18 || row.riscoSla >= 10 ? "danger" : "warning") : "success",
+      icon: row.riscoSla ? AlertTriangle : CheckCircle2,
+      priority: row.riscoSla ? 100 + row.riscoSla * 3 + riskPercent : 15,
+    });
+
+    insights.push({
+      key: `${row.key}-backlog`,
+      category: row.family === "base" ? "Qualidade cadastral" : row.family === "ativo" ? "Utilizacao" : "Fila de atendimento",
+      title: row.family === "base" ? `${row.processo}: registros pendentes` : `${row.processo}: carteira em aberto`,
+      value: formatCount(row.emAberto),
+      meta: `${openPercent}% do total`,
+      description: row.emAberto
+        ? `${formatCount(row.emAberto)} ${row.openLabel} ainda precisam de tratativa ou saneamento.`
+        : `Nao ha ${row.openLabel} pendentes neste momento.`,
+      action: row.emAberto ? "Definir responsavel e revisar itens mais antigos antes de novas entradas." : "Manter controle de entrada para preservar o fluxo.",
+      tone: row.emAberto ? (openPercent >= 45 ? "warning" : "monitor") : "success",
+      icon: row.emAberto ? Clock3 : ShieldCheck,
+      priority: row.emAberto ? 60 + row.emAberto + openPercent : 10,
+    });
+
+    insights.push({
+      key: `${row.key}-conversion`,
+      category: row.family === "ativo" ? "Disponibilidade" : row.family === "base" ? "Cobertura" : "Eficiencia",
+      title: row.family === "ativo" ? `Disponibilidade de ${row.processo}` : `${row.processo}: conclusao do fluxo`,
+      value: `${donePercent}%`,
+      meta: `${formatCount(row.finalizados)} ${row.doneLabel}`,
+      description: row.family === "base"
+        ? `A base possui ${formatCount(row.finalizados)} ${row.doneLabel} para uso operacional.`
+        : `Percentual de ${row.doneLabel} em relacao ao volume principal do modulo.`,
+      action: donePercent < 35 && row.family === "operacao" ? "Revisar gargalos do Kanban e redistribuir demandas abertas." : "Manter revisao periodica para preservar o indice.",
+      tone: donePercent >= 65 ? "success" : donePercent >= 35 ? "monitor" : "warning",
+      icon: donePercent >= 65 ? CheckCircle2 : Gauge,
+      priority: donePercent >= 65 ? 5 : 40 + (65 - donePercent),
+    });
+  });
+
+  if (riskLeader && riskLeader.riscoSla) {
+    insights.push({
+      key: "portfolio-risk-leader",
+      category: "Priorizacao executiva",
+      title: `${riskLeader.processo} concentra o maior risco`,
+      value: formatCount(riskLeader.riscoSla),
+      meta: riskLeader.riskLabel,
+      description: `Esta area lidera os alertas no recorte atual e deve ser atacada antes das filas de baixo risco.`,
+      action: "Abrir o modulo, filtrar os itens criticos e registrar plano de tratativa.",
+      tone: "danger",
+      icon: Target,
+      priority: 180 + riskLeader.riscoSla,
+    });
+  }
+
+  if (backlogLeader && backlogLeader.emAberto) {
+    insights.push({
+      key: "portfolio-backlog-leader",
+      category: "Capacidade operacional",
+      title: `${backlogLeader.processo} tem o maior volume aberto`,
+      value: formatCount(backlogLeader.emAberto),
+      meta: backlogLeader.openLabel,
+      description: `O volume aberto pode pressionar SLA e qualidade caso nao seja redistribuido.`,
+      action: "Avaliar capacidade, responsaveis e idade dos itens em aberto.",
+      tone: backlogLeader.emAberto > Math.max(8, totals.emAberto * 0.35) ? "warning" : "monitor",
+      icon: ClipboardList,
+      priority: 95 + backlogLeader.emAberto,
+    });
+  }
+
+  if (baseRows.length) {
+    const baseRisk = sumRows(baseRows, "riscoSla");
+    insights.push({
+      key: "portfolio-data-governance",
+      category: "Governanca de dados",
+      title: baseRisk ? "Bases cadastrais precisam de saneamento" : "Qualidade cadastral controlada",
+      value: formatCount(baseRisk),
+      meta: "pendencia(s) cadastrais",
+      description: baseRisk ? "Cadastros sem contato, inativos ou incompletos reduzem a velocidade de acionamento." : "As bases cadastrais estao em nivel adequado para consulta.",
+      action: baseRisk ? "Completar e-mails, telefones, status e classificacoes antes de novas importacoes." : "Manter validacoes na entrada e edicao dos cadastros.",
+      tone: baseRisk ? "warning" : "success",
+      icon: Users,
+      priority: baseRisk ? 88 + baseRisk : 8,
+    });
+  }
+
+  if (assetRows.length) {
+    const assetRisk = sumRows(assetRows, "riscoSla");
+    insights.push({
+      key: "portfolio-assets",
+      category: "Ativos e contratos",
+      title: assetRisk ? "Ativos com exposicao contratual" : "Ativos operacionais controlados",
+      value: formatCount(assetRisk),
+      meta: "alerta(s) de ativo",
+      description: assetRisk ? "Contratos, multas ou manutencoes pedem acompanhamento para evitar ruptura operacional." : "Nao ha exposicoes relevantes nos ativos filtrados.",
+      action: assetRisk ? "Revisar vencimentos, multas e disponibilidade por centro de custo." : "Manter agenda preventiva e controle de disponibilidade.",
+      tone: assetRisk ? "warning" : "success",
+      icon: ShieldCheck,
+      priority: assetRisk ? 86 + assetRisk : 7,
+    });
+  }
+
+  if (!insights.some((item) => item.tone === "danger" || item.tone === "warning")) insights.unshift(buildControlledInsight(rows));
+
+  return insights
+    .sort((a, b) => b.priority - a.priority || toneRank(b.tone) - toneRank(a.tone))
+    .slice(0, 12);
+}
+
+function buildControlledInsight(rows: DashboardRow[]): CriticalInsight {
+  const totals = rowTotals(rows);
+  return {
+    key: "portfolio-controlled",
+    category: "Operacao controlada",
+    title: "Sem alerta critico no recorte",
+    value: formatCount(totals.demanda),
+    meta: "registro(s) monitorado(s)",
+    description: "Os principais indicadores estao sem desvio critico para o filtro atual.",
+    action: "Manter rotina de acompanhamento e revisar filtros com frequencia.",
+    tone: "success",
+    icon: CheckCircle2,
+    priority: 1,
+  };
+}
+
+function criticalPriorityScore(row: DashboardRow) {
+  const total = Math.max(row.demanda, 1);
+  return row.riscoSla * 4 + row.emAberto + Math.round((row.riscoSla / total) * 100);
+}
+
+function criticalToneLabel(tone: CriticalTone) {
+  return {
+    danger: "Critico",
+    warning: "Atencao",
+    monitor: "Monitorar",
+    success: "Controlado",
+  }[tone];
+}
+
+function toneRank(tone: CriticalTone) {
+  return { danger: 4, warning: 3, monitor: 2, success: 1 }[tone];
+}
+
+function formatDashboardTimestamp(value: Date) {
+  return `${value.toLocaleDateString("pt-BR")} ${value.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+function OperationalPulse({ rows }: { rows: DashboardRow[] }) {
+  const ranked = rows
+    .slice()
+    .sort((a, b) => b.riscoSla - a.riscoSla || b.emAberto - a.emAberto || b.demanda - a.demanda)
+    .slice(0, 6);
+  if (!ranked.length) return null;
+
+  return (
+    <section className="dashboard-pulse-grid">
+      {ranked.map((row, index) => {
+        const total = Math.max(row.demanda, 1);
+        const openPercent = Math.min(100, Math.round((row.emAberto / total) * 100));
+        const donePercent = Math.min(100, Math.round((row.finalizados / total) * 100));
+        const riskPercent = Math.min(100, Math.round((row.riscoSla / total) * 100));
+        const status = row.riscoSla > 0 ? "Atencao" : row.emAberto > 0 ? "Em fluxo" : "Estavel";
+
+        return (
+          <article key={row.key} className="dashboard-pulse-card">
+            <div className="dashboard-pulse-card__head">
+              <span>{index + 1}</span>
+              <strong>{row.processo}</strong>
+              <b>{status}</b>
+            </div>
+            <div className="dashboard-pulse-bars" aria-label={`Pulso operacional de ${row.processo}`}>
+              <span style={{ width: `${Math.max(3, openPercent)}%` }} />
+              <span style={{ width: `${Math.max(3, donePercent)}%` }} />
+              <span style={{ width: `${Math.max(3, riskPercent)}%` }} />
+            </div>
+            <div className="dashboard-pulse-card__meta">
+              <span>{formatCount(row.emAberto)} {row.openLabel}</span>
+              <span>{formatCount(row.riscoSla)} {row.riskLabel}</span>
+            </div>
+          </article>
+        );
+      })}
+    </section>
+  );
 }
 
 function AreaDashboardPanel({ row }: { row: DashboardRow }) {
@@ -720,6 +1125,28 @@ function sumRows(rows: DashboardRow[], key: "demanda" | "emAberto" | "finalizado
   return rows.reduce((acc, row) => acc + row[key], 0);
 }
 
+function rowTotals(rows: DashboardRow[]) {
+  return rows.reduce(
+    (acc, row) => ({
+      demanda: acc.demanda + row.demanda,
+      emAberto: acc.emAberto + row.emAberto,
+      finalizados: acc.finalizados + row.finalizados,
+      riscoSla: acc.riscoSla + row.riscoSla,
+    }),
+    { demanda: 0, emAberto: 0, finalizados: 0, riscoSla: 0 }
+  );
+}
+
+function calculateHealthScore(rows: DashboardRow[]) {
+  const totals = rowTotals(rows);
+  if (!totals.demanda) return 100;
+  const completionRate = totals.finalizados / totals.demanda;
+  const riskRate = totals.riscoSla / totals.demanda;
+  const backlogRate = totals.emAberto / totals.demanda;
+  const score = 100 - riskRate * 48 - backlogRate * 22 + completionRate * 18;
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
 function getText(row: Record<string, unknown>, keys: string[]) {
   const value = firstDefined(row, keys);
   return String(value ?? "");
@@ -809,6 +1236,6 @@ function formatPercent(part: number, total: number) {
 }
 
 function chartColor(index: number) {
-  const colors = ["#ffe61c", "#49a7d9", "#10b981", "#f97316", "#ef4444", "#14b8a6", "#94a3b8", "#8b5cf6"];
+  const colors = ["#fcc800", "#1b6d8e", "#45a0c0", "#10b981", "#f97316", "#ef4444", "#0a2e3d", "#8b5cf6"];
   return colors[index % colors.length];
 }

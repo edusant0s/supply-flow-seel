@@ -10,6 +10,8 @@ app/dist/
 *.log
 
 .vercel/
+.claude/
+app/public/_dev-test-*.html
 **/.temp/
 *.pem
 *.key

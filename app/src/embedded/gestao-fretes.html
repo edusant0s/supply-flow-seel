@@ -289,6 +289,151 @@
 
     .full { grid-column: 1 / -1; }
 
+    .freight-cargo-items-panel {
+      margin-top: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      border-radius: 16px;
+      background: rgba(248, 250, 252, 0.86);
+      padding: 14px;
+    }
+
+    .freight-cargo-items-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .freight-cargo-items-head h3 {
+      margin: 0 0 4px;
+      color: var(--seel-blue-dark);
+      font-size: 15px;
+      font-weight: 950;
+      letter-spacing: 0;
+    }
+
+    .freight-cargo-items-head p {
+      margin: 0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .freight-cargo-items-scroll {
+      overflow-x: auto;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .freight-cargo-items-table {
+      width: 100%;
+      min-width: 920px;
+      border-collapse: collapse;
+    }
+
+    .freight-cargo-items-table th,
+    .freight-cargo-items-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .freight-cargo-items-table th {
+      color: #475569;
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: rgba(226, 232, 240, 0.45);
+    }
+
+    .freight-cargo-items-table td:first-child,
+    .freight-cargo-items-table th:first-child {
+      width: 44px;
+      text-align: center;
+      color: #64748b;
+      font-weight: 950;
+    }
+
+    .freight-cargo-items-table input {
+      height: 40px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .freight-cargo-item-total {
+      text-align: right;
+      white-space: nowrap;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .freight-cargo-items-summary {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .freight-cargo-items-summary strong {
+      color: var(--seel-blue-dark);
+      font-weight: 950;
+    }
+
+    .freight-conditional-hidden {
+      display: none !important;
+    }
+
+    .freight-return-doc-message {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(14, 165, 233, 0.28);
+      border-left: 4px solid #0ea5e9;
+      border-radius: 12px;
+      background: rgba(14, 165, 233, 0.1);
+      color: var(--seel-blue-dark);
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    .freight-form-warning {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-left: 4px solid #f59e0b;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.11);
+      color: #92400e;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 720px) {
+      .freight-cargo-items-head {
+        display: grid;
+      }
+      .freight-cargo-items-head button {
+        width: 100%;
+      }
+      .freight-cargo-items-panel {
+        padding: 12px;
+        margin-left: -2px;
+        margin-right: -2px;
+      }
+    }
+
     .kanban-toolbar {
       display: grid;
       grid-template-columns: 1fr 180px 220px 200px;
@@ -9113,12 +9258,12 @@
     .form-editor-order{width:42px;height:42px;border-radius:12px;background:#0e4a6e;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:950}
     .form-editor-item.section-item .form-editor-order{background:var(--seel-yellow,#ffe119);color:#0e4a6e}
     .form-editor-content{display:grid;gap:10px;min-width:0}
-    .form-editor-main-grid{display:grid;grid-template-columns:1.4fr .75fr 1.2fr;gap:9px}.form-editor-main-grid.section-grid{grid-template-columns:1fr}
+    .form-editor-main-grid{display:grid;grid-template-columns:1.4fr .75fr 1.2fr;gap:9px}.form-editor-main-grid.section-grid{grid-template-columns:1fr}.form-editor-main-grid.cargo-label-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .form-editor-content label{margin:0;font-size:9px}.form-editor-content input,.form-editor-content select,.form-editor-content textarea{margin-top:5px;padding:9px 10px;font-size:12px;border-radius:10px}.form-editor-content textarea{min-height:70px}
     .form-editor-options{display:none}.form-editor-item.is-select .form-editor-options{display:block}
     .form-editor-checks{display:flex;gap:12px;flex-wrap:wrap;padding:8px 10px;border-radius:11px;background:#f8fafc;border:1px solid rgba(100,116,139,.14)}
     .form-editor-checks label{display:flex;align-items:center;gap:6px;font-size:11px;text-transform:none;letter-spacing:0;color:#334155}.form-editor-checks input{width:auto;margin:0}
-    .form-editor-item-actions{display:grid;grid-template-columns:repeat(2,34px);gap:6px}.form-editor-item-actions button{width:34px;height:34px;min-height:34px;padding:0;border-radius:10px;background:#f1f5f9;color:#0e4a6e;border:1px solid rgba(100,116,139,.18);font-size:14px}.form-editor-item-actions .delete-editor-item{grid-column:1/-1;width:74px;color:#991b1b;background:#fff1f2}
+    .form-editor-item-actions{display:grid;grid-template-columns:repeat(2,34px);gap:6px}.form-editor-item-actions button{width:34px;height:34px;min-height:34px;padding:0;border-radius:10px;background:#f1f5f9;color:#0e4a6e;border:1px solid rgba(100,116,139,.18);font-size:14px}.form-editor-item-actions .delete-editor-item{grid-column:1/-1;width:74px;color:#991b1b;background:#fff1f2}.cargo-labels-item .form-editor-item-actions .delete-editor-item{width:96px;font-size:11px}
     .form-editor-empty{padding:34px;text-align:center;border:1px dashed #9fb4c1;border-radius:15px;color:#64748b;background:#f8fafc}
     .form-editor-note{font-size:11px;color:#64748b;padding:10px 12px;border-left:4px solid var(--seel-yellow,#ffe119);background:#fffbea;border-radius:10px;line-height:1.45}
     @media(max-width:1100px){.form-editor-tools{grid-template-columns:1fr}.form-editor-tool-row.field-add{grid-template-columns:1fr 1fr}.form-editor-actions{justify-content:flex-start}.form-editor-main-grid{grid-template-columns:1fr 1fr}}
@@ -12686,7 +12831,7 @@
 
     <section id="form" class="section active">
       <div class="panel">
-        <h2 id="freightFormTitle">Nova Solicitação de Frete</h2><p id="freightFormSubtitle" class="muted">Preencha os dados da RM, endereços, carga, documentação e fornecedor. Ao criar, o card entra no Kanban.</p>
+        <h2 id="freightFormTitle" data-cargo-label-key="formTitle">Nova Solicitação de Frete</h2><p id="freightFormSubtitle" class="muted" data-cargo-label-key="formSubtitle">Preencha os dados da RM, endereços, carga, documentação e fornecedor. Ao criar, o card entra no Kanban.</p>
         <div id="freightEditBanner" class="edit-mode-banner">Modo de edição ativo. Revise as informações e registre os erros encontrados no campo Observações.</div>
         <form id="freightForm">
           <div class="form-grid">
@@ -12701,7 +12846,7 @@
             <div><label>Data da solicitação *</label><input id="dataSolicitacao" type="date" required readonly /></div>
             <div><label>Data da Coleta do Material *</label><input id="dataColetaMaterial" type="date" required /></div>
             <div><label>Horário da coleta *</label><input id="horarioColeta" type="time" required /></div>
-            <div><label>Tipo de movimentação *</label><select id="tipoMovimentacao" required><option value="">Selecione</option><option>Movimentação entre obras</option><option>Coleta em fornecedor</option><option>Entrega em obra</option><option>Devolução</option><option>Transferência interna</option><option>Outro</option></select></div>
+            <div><label>Tipo de movimentação *</label><select id="tipoMovimentacao" required><option value="">Selecione</option><option>Movimentação entre obras</option><option>Coleta em fornecedor</option><option>Coleta no fornecedor</option><option>Entrega em obra</option><option>Devolução</option><option>Devolução ao fornecedor</option><option>Transferência interna</option><option>Outro</option></select></div>
             <div><label>Particularidade da Obra</label><input id="particularidadeObra" placeholder="Ex.: RODOVIA" /></div>
             <div class="form-section-title">Endereços</div>
             <div class="full google-places-config" id="googlePlacesConfig">
@@ -12740,10 +12885,12 @@
             <div><label>Responsável no recebimento</label><input id="responsavelRecebimento" placeholder="Nome e telefone" /></div>
             <div><label>Ordem/Pedido de coleta</label><input id="ordemColeta" placeholder="Ex.: 86693" /></div>
             <div><label>Pedido de compra</label><input id="pedidoCompra" placeholder="Ex.: 86693" /></div>
-            <div><label>Requer nota fiscal?</label><input id="notaFiscal" placeholder="Ex.: NÃO PRECISA. O FORNECEDOR IRÁ EMITIR A NF." /></div>
+            <div><label>Requer nota fiscal?</label><select id="notaFiscal"><option value="">Selecione</option><option>SIM. NOTA FISCAL DE SIMPLES REMESSA</option><option>SIM. NOTA FISCAL DE DEVOLUÇÃO - SETOR FISCAL</option><option>NÃO. O FORNECEDOR IRÁ EMITIR</option><option>NÃO PRECISA</option></select></div>
             <div class="form-section-title">Carga e Fornecedor</div>
             <div><label>Peso total da carga kg</label><input id="pesoTotalCarga" type="number" min="0" step="0.01" placeholder="Ex.: 145.40" /></div>
             <div><label>Valor total da carga R$</label><input id="valorTotalCarga" type="number" min="0" step="0.01" placeholder="Ex.: 23140.00" /></div>
+            <div><label>Nome / descriÃ§Ã£o da carga</label><input id="nomeCarga" placeholder="Ex.: Uniformes, tubos, equipamentos" /></div>
+            <div><label>Valor unitÃ¡rio da carga R$</label><input id="valorUnitarioCarga" type="number" min="0" step="0.01" placeholder="Ex.: 125.90" /></div>
             <div><label>Total de peças / volumes</label><input id="totalPecas" placeholder="Ex.: 92 unidades" /></div>
             <div><label>Data limite de entrega *</label><input id="dataLimiteEntrega" type="datetime-local" required /></div>
             <div><label>Fornecedor / Locador</label><input id="fornecedorNome" placeholder="Ex.: SEEL ENGENHARIA" /></div>
@@ -12754,6 +12901,36 @@
             <div class="full"><label>Materiais / Detalhes da carga</label><textarea id="materiais" placeholder="Descreva todos os itens, quantidades, pesos, dimensões e valores declarados."></textarea></div>
             <div class="full"><label>Dimensões / Informações complementares</label><textarea id="dimensoesCarga" placeholder="Ex.: dimensões totais, peso estimado por obra, observações para cotação."></textarea></div>
             <div class="full observations-limit-wrap"><label>Observações / erros encontrados</label><textarea id="observacoes" maxlength="240" placeholder="Descreva os erros encontrados no formulário ou outras observações (máximo de 240 caracteres)."></textarea><div class="observations-counter" id="observacoesCounter">0/240 caracteres</div></div>
+          </div>
+
+          <div class="freight-cargo-items-panel" id="freightCargoItemsPanel">
+            <div class="freight-cargo-items-head">
+              <div>
+                <h3 id="freightCargoItemsTitle" data-cargo-label-key="title">Itens da carga para Nota Fiscal</h3>
+                <p id="freightCargoItemsSubtitle" data-cargo-label-key="subtitle">Informe cada item separadamente para que a NF de simples remessa seja criada com os produtos corretos.</p>
+              </div>
+              <button id="addFreightCargoItem" class="btn-secondary btn-small" type="button" data-cargo-label-key="addButton">Adicionar item</button>
+            </div>
+            <div class="freight-cargo-items-scroll">
+              <table class="freight-cargo-items-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th style="min-width:280px" data-cargo-label-key="description">Nome / descrição</th>
+                    <th style="width:130px" data-cargo-label-key="quantity">Quantidade</th>
+                    <th style="width:150px" data-cargo-label-key="unitValue">Valor unitário</th>
+                    <th style="min-width:210px" data-cargo-label-key="dimensions">Dimensões</th>
+                    <th style="width:140px;text-align:right">Total</th>
+                    <th style="width:58px"></th>
+                  </tr>
+                </thead>
+                <tbody id="freightCargoItemsBody"></tbody>
+              </table>
+            </div>
+            <div class="freight-cargo-items-summary">
+              <span>Itens: <strong id="freightCargoItemsCount">0</strong></span>
+              <span>Total: <strong id="freightCargoItemsTotal">R$ 0,00</strong></span>
+            </div>
           </div>
 
           <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -13353,11 +13530,36 @@
     };
 
     const VEHICLE_TRACTION_TYPES = new Set(["Truck", "Bitruck", "Munck", "Prancha", "Carreta"]);
+    const FREIGHT_SUPPLIER_RETURN_MOVEMENT = "Devolução ao fornecedor";
+    const FREIGHT_SUPPLIER_PICKUP_MOVEMENT = "Coleta no fornecedor";
+    const FREIGHT_RETURN_DOCUMENTATION_VALUE = "SIM. NOTA FISCAL DE DEVOLUÇÃO - SETOR FISCAL";
+    const FREIGHT_RETURN_DOCUMENTATION_MESSAGE = "Solicitar Nota Fiscal de Devolução ao Setor Fiscal.";
+    const FREIGHT_DOCUMENTATION_DIVERGENCE_MESSAGE = "A Nota Fiscal de Devolução só se aplica ao tipo de movimentação 'Devolução ao fornecedor'. Ajuste o tipo de movimentação ou a documentação selecionada.";
+    const FREIGHT_DOCUMENTATION_OPTIONS = [
+      { value: "", text: "Selecione" },
+      { value: "SIM. NOTA FISCAL DE SIMPLES REMESSA", text: "SIM. NOTA FISCAL DE SIMPLES REMESSA" },
+      { value: FREIGHT_RETURN_DOCUMENTATION_VALUE, text: FREIGHT_RETURN_DOCUMENTATION_VALUE },
+      { value: "NÃO. O FORNECEDOR IRÁ EMITIR", text: "NÃO. O FORNECEDOR IRÁ EMITIR" },
+      { value: "NÃO PRECISA", text: "NÃO PRECISA" }
+    ];
     const STORAGE_KEY = "gestao_fretes_solicitacoes_v1";
     const FORM_EDITOR_STORAGE_KEY = "gestao_fretes_formulario_config_v1";
+    const FREIGHT_CARGO_LABELS_STORAGE_KEY = "gestao_fretes_cargo_items_labels_v1";
+    const DEFAULT_FREIGHT_CARGO_LABELS = {
+      formTitle: "Nova Solicitação de Frete",
+      formSubtitle: "Preencha os dados da RM, endereços, carga, documentação e fornecedor. Ao criar, o card entra no Kanban.",
+      title: "Itens da carga para Nota Fiscal",
+      subtitle: "Informe cada item separadamente para que a NF de simples remessa seja criada com os produtos corretos.",
+      addButton: "Adicionar item",
+      description: "Nome / descrição",
+      quantity: "Quantidade",
+      unitValue: "Valor unitário",
+      dimensions: "Dimensões"
+    };
 
     let defaultFreightFormSchema = [];
     let freightFormSchema = [];
+    let freightCargoLabels = loadFreightCargoLabels();
     let freights = loadFreights();
     let selectedMapFreightId = null;
     let selectedQuoteFreightId = null;
@@ -13933,6 +14135,9 @@
     setupLocationInputModes(false);
     setupFreightAddressAutocomplete();
     setupLoggedRequesterFromHost(true);
+    setupSupplierReturnLogic(false);
+    document.getElementById("addFreightCargoItem")?.addEventListener("click", () => addFreightCargoItemRow());
+    renderFreightCargoItemRows();
 
     document.getElementById("freightForm").addEventListener("submit", function(event) {
       event.preventDefault();
@@ -13957,6 +14162,8 @@
         setupLocationInputModes(false);
         setupFreightAddressAutocomplete();
         setupLoggedRequesterFromHost(true);
+        setupSupplierReturnLogic(false);
+        renderFreightCargoItemRows();
       }, 0);
     });
 
@@ -14165,7 +14372,58 @@
       ensureInitialInformationAndSlaFieldsInSchema();
       ensureGoogleMapsLinkFieldsInSchema();
       ensureVehicleLogicFieldsInSchema();
+      ensureCargoFiscalFieldsInSchema();
+      ensureSupplierReturnMovementOptionInSchema();
+      ensureFreightDocumentationFieldInSchema();
       renderFreightFormFromSchema(false);
+      renderFreightCargoLabels();
+    }
+
+    function ensureSupplierReturnMovementOptionInSchema() {
+      const field = freightFormSchema.find(item => item.kind === "field" && item.id === "tipoMovimentacao");
+      if (!field) return;
+      field.type = "select";
+      field.required = true;
+      const options = normalizedEditorOptions(field);
+      const nextOptions = [...options];
+      const requiredOptions = [
+        { value: FREIGHT_SUPPLIER_RETURN_MOVEMENT, text: FREIGHT_SUPPLIER_RETURN_MOVEMENT },
+        { value: FREIGHT_SUPPLIER_PICKUP_MOVEMENT, text: FREIGHT_SUPPLIER_PICKUP_MOVEMENT }
+      ];
+      let changed = false;
+      requiredOptions.forEach(requiredOption => {
+        const exists = nextOptions.some(option => normalizeFreightIntegrationText(option.value || option.text) === normalizeFreightIntegrationText(requiredOption.value));
+        if (!exists) {
+          nextOptions.push({ value: requiredOption.value, text: requiredOption.text });
+          changed = true;
+        }
+      });
+      if (changed) {
+        field.options = nextOptions;
+        saveFreightFormSchema(false);
+      }
+    }
+
+    function ensureFreightDocumentationFieldInSchema() {
+      const field = freightFormSchema.find(item => item.kind === "field" && item.id === "notaFiscal");
+      if (!field) return;
+      field.type = "select";
+      field.placeholder = "";
+      field.required = false;
+      const currentOptions = normalizedEditorOptions(field);
+      const nextOptions = currentOptions.length ? [...currentOptions] : [];
+      let changed = !currentOptions.length;
+      FREIGHT_DOCUMENTATION_OPTIONS.forEach(defaultOption => {
+        const exists = nextOptions.some(option => normalizeFreightIntegrationText(option.value || option.text) === normalizeFreightIntegrationText(defaultOption.value));
+        if (!exists) {
+          nextOptions.push(deepClone(defaultOption));
+          changed = true;
+        }
+      });
+      if (changed) {
+        field.options = nextOptions;
+        saveFreightFormSchema(false);
+      }
     }
 
     function ensureInitialInformationAndSlaFieldsInSchema() {
@@ -14357,6 +14615,28 @@
       saveFreightFormSchema(false);
     }
 
+    function ensureCargoFiscalFieldsInSchema() {
+      const templates = [
+        {
+          key: "field:nomeCarga", kind: "field", id: "nomeCarga", label: "Nome / descriÃ§Ã£o da carga",
+          type: "text", placeholder: "Ex.: Uniformes, tubos, equipamentos", required: false, full: false, visible: true,
+          options: [], min: "", step: "", custom: false
+        },
+        {
+          key: "field:valorUnitarioCarga", kind: "field", id: "valorUnitarioCarga", label: "Valor unitÃ¡rio da carga R$",
+          type: "number", placeholder: "Ex.: 125.90", required: false, full: false, visible: true,
+          options: [], min: "0", step: "0.01", custom: false
+        }
+      ];
+      const existingIds = new Set(freightFormSchema.filter(item => item.kind === "field").map(item => item.id));
+      const missing = templates.filter(item => !existingIds.has(item.id));
+      if (!missing.length) return;
+      let insertIndex = freightFormSchema.findIndex(item => item.kind === "field" && item.id === "totalPecas");
+      if (insertIndex < 0) insertIndex = freightFormSchema.findIndex(item => item.kind === "field" && item.id === "materiais");
+      freightFormSchema.splice(insertIndex >= 0 ? insertIndex : freightFormSchema.length, 0, ...missing.map(deepClone));
+      saveFreightFormSchema(false);
+    }
+
     function ensureUrgencyFieldInSchema() {
       if (freightFormSchema.some(item => item.kind === "field" && item.id === "urgencia")) return;
       const urgencyField = defaultFreightFormSchema.find(item => item.kind === "field" && item.id === "urgencia") || {
@@ -14447,6 +14727,107 @@
       updateVehicleFormFields(preserveValues);
     }
 
+    function isSupplierReturnMovement(value) {
+      const normalized = normalizeFreightIntegrationText(value);
+      return normalized === "devolucao ao fornecedor" || (normalized.includes("devolucao") && normalized.includes("fornecedor"));
+    }
+
+    function isSupplierPickupMovement(value) {
+      const normalized = normalizeFreightIntegrationText(value);
+      return normalized.includes("coleta") && normalized.includes("fornecedor");
+    }
+
+    function requiresSupplierFieldsForMovement(value) {
+      return isSupplierReturnMovement(value) || isSupplierPickupMovement(value);
+    }
+
+    function isReturnDocumentationValue(value) {
+      const normalized = normalizeFreightIntegrationText(value);
+      return normalized.includes("nota fiscal") && normalized.includes("devolucao") && normalized.includes("setor fiscal");
+    }
+
+    function getFreightFieldWrapper(fieldId) {
+      const control = document.getElementById(fieldId);
+      return control?.closest("[data-form-key]") || control?.parentElement || null;
+    }
+
+    function setFreightConditionalFieldState(fieldId, visible, required = false, clearWhenHidden = true) {
+      const control = document.getElementById(fieldId);
+      if (!control) return;
+      const wrapper = getFreightFieldWrapper(fieldId);
+      if (wrapper) wrapper.classList.toggle("freight-conditional-hidden", !visible);
+      control.disabled = !visible;
+      control.required = Boolean(visible && required);
+      if (!visible && clearWhenHidden) control.value = "";
+    }
+
+    function ensureFreightInlineMessage(id, afterWrapper, className, text) {
+      let message = document.getElementById(id);
+      if (!message) {
+        message = document.createElement("div");
+        message.id = id;
+        message.className = className;
+        message.textContent = text;
+        afterWrapper?.insertAdjacentElement("afterend", message);
+      }
+      return message;
+    }
+
+    function updateSupplierReturnFormState(preserveValues = true) {
+      const movementControl = document.getElementById("tipoMovimentacao");
+      const documentationControl = document.getElementById("notaFiscal");
+      const documentationWrapper = getFreightFieldWrapper("notaFiscal");
+      const isSupplierReturn = isSupplierReturnMovement(movementControl?.value);
+      const requiresSupplierFields = requiresSupplierFieldsForMovement(movementControl?.value);
+
+      setFreightConditionalFieldState("fornecedorNome", requiresSupplierFields, requiresSupplierFields, !preserveValues);
+      setFreightConditionalFieldState("fornecedorCnpj", requiresSupplierFields, requiresSupplierFields, !preserveValues);
+
+      if (!documentationControl || !documentationWrapper) return;
+
+      const returnMessage = ensureFreightInlineMessage(
+        "freightReturnDocumentationMessage",
+        documentationWrapper,
+        "freight-return-doc-message",
+        FREIGHT_RETURN_DOCUMENTATION_MESSAGE
+      );
+      const divergenceWarning = ensureFreightInlineMessage(
+        "freightDocumentationDivergenceWarning",
+        returnMessage,
+        "freight-form-warning",
+        FREIGHT_DOCUMENTATION_DIVERGENCE_MESSAGE
+      );
+
+      if (isSupplierReturn) {
+        documentationControl.value = FREIGHT_RETURN_DOCUMENTATION_VALUE;
+        documentationControl.disabled = true;
+        documentationControl.required = false;
+        documentationWrapper.classList.add("freight-conditional-hidden");
+        returnMessage.hidden = false;
+        divergenceWarning.hidden = true;
+        return;
+      }
+
+      documentationControl.disabled = false;
+      documentationWrapper.classList.remove("freight-conditional-hidden");
+      returnMessage.hidden = true;
+      divergenceWarning.hidden = !isReturnDocumentationValue(documentationControl.value);
+    }
+
+    function setupSupplierReturnLogic(preserveValues = true) {
+      const movementControl = document.getElementById("tipoMovimentacao");
+      const documentationControl = document.getElementById("notaFiscal");
+      if (movementControl && movementControl.dataset.supplierReturnBound !== "1") {
+        movementControl.dataset.supplierReturnBound = "1";
+        movementControl.addEventListener("change", () => updateSupplierReturnFormState(false));
+      }
+      if (documentationControl && documentationControl.dataset.supplierReturnBound !== "1") {
+        documentationControl.dataset.supplierReturnBound = "1";
+        documentationControl.addEventListener("change", () => updateSupplierReturnFormState(true));
+      }
+      updateSupplierReturnFormState(preserveValues);
+    }
+
     function currentFreightFormValues() {
       const values = {};
       freightFormSchema.filter(item => item.kind === "field").forEach(item => {
@@ -14458,6 +14839,77 @@
 
     function normalizedEditorOptions(item) {
       return (item.options || []).map(option => typeof option === "string" ? { value: option, text: option } : { value: String(option.value ?? option.text ?? ""), text: String(option.text ?? option.value ?? "") });
+    }
+
+    function loadFreightCargoLabels() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(FREIGHT_CARGO_LABELS_STORAGE_KEY) || "{}");
+        return { ...DEFAULT_FREIGHT_CARGO_LABELS, ...(stored && typeof stored === "object" ? stored : {}) };
+      } catch (error) {
+        return { ...DEFAULT_FREIGHT_CARGO_LABELS };
+      }
+    }
+
+    function saveFreightCargoLabels(showStatus = true) {
+      localStorage.setItem(FREIGHT_CARGO_LABELS_STORAGE_KEY, JSON.stringify(freightCargoLabels));
+      renderFreightCargoLabels();
+      if (showStatus) updateFormEditorStatus("Rótulos dos itens salvos");
+    }
+
+    function freightCargoLabelText(key) {
+      return Object.prototype.hasOwnProperty.call(freightCargoLabels, key)
+        ? String(freightCargoLabels[key] ?? "")
+        : String(DEFAULT_FREIGHT_CARGO_LABELS[key] ?? "");
+    }
+
+    function renderFreightCargoLabels() {
+      document.querySelectorAll("[data-cargo-label-key]").forEach(element => {
+        const key = element.dataset.cargoLabelKey;
+        element.textContent = freightCargoLabelText(key);
+      });
+    }
+
+    function renderFreightCargoLabelsEditorHtml() {
+      const label = key => escapeHtml(freightCargoLabelText(key));
+      return `<article class="form-editor-item cargo-labels-item" data-cargo-label-editor="1">
+        <div class="form-editor-order">NF</div>
+        <div class="form-editor-content">
+          <div class="form-editor-main-grid cargo-label-grid">
+            <label>TÍTULO DO FORMULÁRIO<input data-cargo-label-prop="formTitle" value="${label("formTitle")}"></label>
+            <label class="full">SUBTÍTULO DO FORMULÁRIO<textarea data-cargo-label-prop="formSubtitle">${label("formSubtitle")}</textarea></label>
+            <label>TÍTULO DOS ITENS<input data-cargo-label-prop="title" value="${label("title")}"></label>
+            <label>TEXTO DO BOTÃO<input data-cargo-label-prop="addButton" value="${label("addButton")}"></label>
+            <label class="full">SUBTÍTULO<textarea data-cargo-label-prop="subtitle">${label("subtitle")}</textarea></label>
+            <label>CABEÇALHO DESCRIÇÃO<input data-cargo-label-prop="description" value="${label("description")}"></label>
+            <label>CABEÇALHO QUANTIDADE<input data-cargo-label-prop="quantity" value="${label("quantity")}"></label>
+            <label>CABEÇALHO VALOR UNITÁRIO<input data-cargo-label-prop="unitValue" value="${label("unitValue")}"></label>
+            <label>CABEÇALHO DIMENSÕES<input data-cargo-label-prop="dimensions" value="${label("dimensions")}"></label>
+          </div>
+          <div class="form-editor-checks"><span style="font-size:10px;color:#64748b">Configuração da seção de itens da carga usada para gerar Nota Fiscal.</span></div>
+        </div>
+        <div class="form-editor-item-actions">
+          <button class="delete-editor-item" type="button" title="Restaurar rótulos padrão" onclick="restoreFreightCargoLabels()">Restaurar</button>
+        </div>
+      </article>`;
+    }
+
+    function bindFreightCargoLabelsEditor() {
+      const list = document.getElementById("freightFormEditorList");
+      if (!list) return;
+      list.querySelectorAll("[data-cargo-label-prop]").forEach(element => {
+        element.addEventListener(element.tagName === "TEXTAREA" ? "input" : "input", () => {
+          const prop = element.dataset.cargoLabelProp;
+          freightCargoLabels[prop] = element.value;
+          saveFreightCargoLabels();
+        });
+      });
+    }
+
+    function restoreFreightCargoLabels() {
+      if (!confirm("Restaurar os rótulos padrão dos itens da carga?")) return;
+      freightCargoLabels = { ...DEFAULT_FREIGHT_CARGO_LABELS };
+      saveFreightCargoLabels();
+      renderFreightFormEditor();
     }
 
     function freightFormControlHtml(item) {
@@ -14503,6 +14955,7 @@
       setupLocationInputModes(preserveValues);
       setupFreightAddressAutocomplete();
       setupLoggedRequesterFromHost(false);
+      setupSupplierReturnLogic(preserveValues);
     }
 
     function editorTypeOptions(selected) {
@@ -14515,10 +14968,11 @@
       if (!list) return;
       populateFormEditorSectionSelect();
       if (!freightFormSchema.length) {
-        list.innerHTML = '<div class="form-editor-empty">Nenhuma seção ou campo configurado.</div>';
+        list.innerHTML = renderFreightCargoLabelsEditorHtml() + '<div class="form-editor-empty">Nenhuma seção ou campo configurado.</div>';
+        bindFreightCargoLabelsEditor();
         return;
       }
-      list.innerHTML = freightFormSchema.map((item, index) => {
+      list.innerHTML = renderFreightCargoLabelsEditorHtml() + freightFormSchema.map((item, index) => {
         if (item.kind === "section") {
           return `<article class="form-editor-item section-item" data-editor-key="${escapeHtml(item.key)}">
             <div class="form-editor-order">S${index + 1}</div>
@@ -14546,6 +15000,7 @@
           ${editorItemActionHtml(index)}
         </article>`;
       }).join("");
+      bindFreightCargoLabelsEditor();
       bindFreightFormEditorInputs();
     }
 
@@ -14738,6 +15193,10 @@
       normalized.tamanhoPrancha = normalized.tamanhoPrancha || normalized.formData?.tamanhoPrancha?.value || "";
       normalized.tracaoVeiculo = normalized.tracaoVeiculo || normalized.formData?.tracaoVeiculo?.value || "";
       normalized.observacoesVeiculoOperacao = normalized.observacoesVeiculoOperacao || normalized.formData?.observacoesVeiculoOperacao?.value || "";
+      normalized.nomeCarga = normalized.nomeCarga || normalized.formData?.nomeCarga?.value || "";
+      normalized.valorUnitarioCarga = normalized.valorUnitarioCarga || normalized.formData?.valorUnitarioCarga?.value || "";
+      normalized.itensCarga = normalizeFreightCargoItems(normalized.itensCarga || normalized.cargoItems || normalized.itemsCarga || []);
+      normalized.cargoItems = normalized.itensCarga;
       normalized.dataSolicitacao = String(normalized.dataSolicitacao || normalized.formData?.dataSolicitacao?.value || dateToInputValue(new Date(createdAt))).slice(0, 10);
       normalized.observacoes = String(normalized.observacoes || "").slice(0, 240);
       normalized.numeroOC = String(normalized.numeroOC || normalized.numeroOc || normalized.ordemCompra || "").trim().slice(0, 40);
@@ -14755,6 +15214,360 @@
 
     function saveFreights() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(freights));
+    }
+
+    const NOTA_FISCAL_STORAGE_KEY = (() => {
+      try {
+        return String(window.SUPPLY_FLOW_CONTEXT?.sync?.notaFiscalStorageKey || "seel_nf_simples_remessa_v1");
+      } catch (error) {
+        return "seel_nf_simples_remessa_v1";
+      }
+    })();
+    const NF_INITIAL_PHASE = "N\u00e3o Iniciado";
+    const NF_PROGRESS_PHASE = "Em Tratativa";
+    const NF_DONE_PHASE = "Finalizado";
+
+    function normalizeFreightIntegrationText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function freightRequiresNotaFiscal(value) {
+      const normalized = normalizeFreightIntegrationText(value);
+      if (!normalized) return false;
+      if (normalized.startsWith("nao") || normalized.startsWith("sem ") || normalized.includes("nao precisa") || normalized.includes("sem nf") || normalized.includes("sem nota") || normalized.includes("fornecedor ira emitir")) return false;
+      return normalized.includes("sim") || normalized.includes("simples remessa") || normalized.includes("precisa") || normalized.includes("preciso") || normalized.includes("necessita") || normalized.includes("emissao") || normalized === "nf";
+    }
+
+    function loadNotaFiscalRequests() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(NOTA_FISCAL_STORAGE_KEY) || "[]");
+        return Array.isArray(stored) ? stored : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveNotaFiscalRequests(rows) {
+      localStorage.setItem(NOTA_FISCAL_STORAGE_KEY, JSON.stringify(Array.isArray(rows) ? rows : []));
+    }
+
+    function nextNotaFiscalCode(rows) {
+      const date = new Date();
+      const prefix = `NF-${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getFullYear()).slice(-2)}-`;
+      const numbers = (Array.isArray(rows) ? rows : [])
+        .filter(row => String(row?.code || "").startsWith(prefix))
+        .map(row => Number(String(row.code).split("-").pop()) || 0);
+      return prefix + String(Math.max(0, ...numbers) + 1).padStart(3, "0");
+    }
+
+    function linkedNotaFiscalIdForFreight(freight) {
+      return String(freight?.notaFiscalSolicitacaoId || freight?.nfSimplesRemessaId || `NF-FRETE-${freight?.id || generateId()}`).trim();
+    }
+
+    function normalizeFreightCnpj(value) {
+      const digits = String(value || "").replace(/\D/g, "").slice(0, 14);
+      if (digits.length !== 14) return "";
+      return digits
+        .replace(/^(\d{2})(\d)/, "$1.$2")
+        .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/\.(\d{3})(\d)/, ".$1/$2")
+        .replace(/(\d{4})(\d)/, "$1-$2");
+    }
+
+    function numericFromFreightText(value, fallback = 0) {
+      const match = String(value || "").replace(/\./g, "").replace(",", ".").match(/\d+(?:\.\d+)?/);
+      const parsed = match ? Number(match[0]) : Number(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function parseFreightDecimal(value, fallback = 0) {
+      let raw = String(value ?? "").trim();
+      if (!raw) return fallback;
+      if (raw.includes(",") && raw.includes(".")) raw = raw.replace(/\./g, "").replace(",", ".");
+      else raw = raw.replace(",", ".");
+      const parsed = Number(raw);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function legacyFreightDimensionsText(item) {
+      const length = Math.max(0, parseFreightDecimal(item?.length ?? item?.comprimento ?? item?.comprimentoItem, 0));
+      const width = Math.max(0, parseFreightDecimal(item?.width ?? item?.largura ?? item?.larguraItem, 0));
+      const height = Math.max(0, parseFreightDecimal(item?.height ?? item?.altura ?? item?.alturaItem, 0));
+      if (!(length || width || height)) return "";
+      return `C ${length || "-"} x L ${width || "-"} x A ${height || "-"} cm`;
+    }
+
+    function normalizeFreightCargoItems(items) {
+      return (Array.isArray(items) ? items : [])
+        .map((item, index) => {
+          const description = String(item?.description || item?.nome || item?.nomeCarga || item?.descricao || "").trim();
+          const quantity = Math.max(0, parseFreightDecimal(item?.quantity ?? item?.quantidade ?? item?.qtd, 0));
+          const unitValue = Math.max(0, parseFreightDecimal(item?.unitValue ?? item?.valorUnitario ?? item?.valor_unitario, 0));
+          const length = Math.max(0, parseFreightDecimal(item?.length ?? item?.comprimento ?? item?.comprimentoItem, 0));
+          const width = Math.max(0, parseFreightDecimal(item?.width ?? item?.largura ?? item?.larguraItem, 0));
+          const height = Math.max(0, parseFreightDecimal(item?.height ?? item?.altura ?? item?.alturaItem, 0));
+          const dimensions = String(item?.dimensions || item?.dimensoes || item?.dimensoesItem || legacyFreightDimensionsText(item)).trim();
+          const ncm = String(item?.ncm || "").replace(/\D/g, "").slice(0, 8);
+          const id = String(item?.id || `ITEM-${index + 1}`);
+          return { id, description, quantity, unitValue, dimensions, length, width, height, ncm };
+        })
+        .filter(item => item.description || item.quantity > 0 || item.unitValue > 0 || item.dimensions || item.length > 0 || item.width > 0 || item.height > 0 || item.ncm);
+    }
+
+    function freightCargoFallbackItems(freight) {
+      const quantity = Math.max(1, numericFromFreightText(freight.totalPecas || freight.volumes, 1));
+      const totalValue = Math.max(0, parseFreightDecimal(freight.valorTotalCarga, 0));
+      const explicitUnitValue = Math.max(0, parseFreightDecimal(freight.valorUnitarioCarga, 0));
+      const unitValue = explicitUnitValue > 0 ? explicitUnitValue : totalValue > 0 ? totalValue / quantity : 0;
+      const descriptionParts = [
+        freight.nomeCarga || freight.materiais || freight.tipoMaterial,
+        freight.nomeCarga && freight.materiais ? freight.materiais : "",
+        freight.dimensoesCarga,
+        freight.pesoTotalCarga ? `Peso total: ${freight.pesoTotalCarga} kg` : "",
+        freight.totalPecas ? `Volumes: ${freight.totalPecas}` : "",
+        freight.numeroRM ? `RM: ${freight.numeroRM}` : ""
+      ].filter(Boolean);
+      return [{
+        id: `P-${freight.id || Date.now()}`,
+        description: descriptionParts.join(" | ") || "Carga vinculada a solicitacao de frete",
+        quantity,
+        unitValue,
+        dimensions: freight.dimensoesCarga || "",
+        length: 0,
+        width: 0,
+        height: 0,
+        ncm: ""
+      }];
+    }
+
+    function freightCargoItemsFromFreight(freight) {
+      const normalized = normalizeFreightCargoItems(freight?.itensCarga || freight?.cargoItems || freight?.itemsCarga || freight?.freightIntegration?.itensCarga);
+      return normalized.length ? normalized : freightCargoFallbackItems(freight || {});
+    }
+
+    function freightCargoItemsForDisplay(freight) {
+      const normalized = normalizeFreightCargoItems(freight?.itensCarga || freight?.cargoItems || freight?.itemsCarga || freight?.freightIntegration?.itensCarga);
+      if (normalized.length) return normalized;
+      const hasLegacyCargoInfo = Boolean(freight?.nomeCarga || freight?.materiais || freight?.tipoMaterial || freight?.valorUnitarioCarga || freight?.valorTotalCarga || freight?.totalPecas || freight?.volumes);
+      return hasLegacyCargoInfo ? freightCargoFallbackItems(freight || {}) : [];
+    }
+
+    function formatFreightCargoItemDimensions(item) {
+      const dimensions = String(item?.dimensions || item?.dimensoes || item?.dimensoesItem || "").trim();
+      if (dimensions) return `Dim.: ${dimensions}`;
+      const length = Number(item?.length) || 0;
+      const width = Number(item?.width) || 0;
+      const height = Number(item?.height) || 0;
+      if (!(length || width || height)) return "";
+      return `Dim.: ${length || "-"} x ${width || "-"} x ${height || "-"} cm`;
+    }
+
+    function formatFreightCargoItemsText(items) {
+      const normalized = normalizeFreightCargoItems(items);
+      if (!normalized.length) return "-";
+      return normalized.map((item, index) => {
+        const total = (Number(item.quantity) || 0) * (Number(item.unitValue) || 0);
+        const dimensions = formatFreightCargoItemDimensions(item);
+        const parts = [
+          `${index + 1}. ${item.description || "Item sem descriÃ§Ã£o"}`,
+          `Qtd: ${item.quantity || 0}`,
+          `Unit.: ${formatCurrency(item.unitValue)}`,
+          `Total: ${formatCurrency(total)}`,
+          dimensions
+        ].filter(Boolean);
+        return parts.join(" | ");
+      }).join("\n");
+    }
+
+    function renderFreightCargoItemRows(items = []) {
+      const body = document.getElementById("freightCargoItemsBody");
+      if (!body) return;
+      body.innerHTML = "";
+      const rows = normalizeFreightCargoItems(items);
+      if (rows.length) rows.forEach(item => addFreightCargoItemRow(item));
+      else addFreightCargoItemRow();
+      updateFreightCargoItemsSummary();
+    }
+
+    function addFreightCargoItemRow(data = {}) {
+      const body = document.getElementById("freightCargoItemsBody");
+      if (!body) return;
+      const item = normalizeFreightCargoItems([data])[0] || {};
+      const tr = document.createElement("tr");
+      tr.dataset.itemId = item.id || generateId();
+      tr.innerHTML = `
+        <td class="freight-cargo-item-number"></td>
+        <td><input class="freight-cargo-desc" placeholder="Ex.: Uniforme brim azul" value="${escapeHtml(item.description || "")}" /></td>
+        <td><input class="freight-cargo-qty" type="number" min="0" step="0.0001" placeholder="0" value="${item.quantity || ""}" /></td>
+        <td><input class="freight-cargo-unit" type="number" min="0" step="0.01" placeholder="0,00" value="${item.unitValue || ""}" /></td>
+        <td><input class="freight-cargo-dimensions" placeholder="Ex.: 120 x 80 x 60 cm" value="${escapeHtml(item.dimensions || legacyFreightDimensionsText(item))}" /></td>
+        <td class="freight-cargo-item-total">R$ 0,00</td>
+        <td><button type="button" class="btn-danger btn-small freight-cargo-remove" title="Excluir item">x</button></td>
+      `;
+      body.appendChild(tr);
+      tr.querySelectorAll("input").forEach(input => input.addEventListener("input", updateFreightCargoItemsSummary));
+      tr.querySelector(".freight-cargo-remove")?.addEventListener("click", () => {
+        if (body.children.length === 1) {
+          tr.querySelectorAll("input").forEach(input => { input.value = ""; });
+        } else {
+          tr.remove();
+        }
+        updateFreightCargoItemsSummary();
+      });
+      updateFreightCargoItemsSummary();
+    }
+
+    function updateFreightCargoItemsSummary() {
+      const rows = Array.from(document.querySelectorAll("#freightCargoItemsBody tr"));
+      let total = 0;
+      let filled = 0;
+      rows.forEach((tr, index) => {
+        const quantity = parseFreightDecimal(tr.querySelector(".freight-cargo-qty")?.value, 0);
+        const unitValue = parseFreightDecimal(tr.querySelector(".freight-cargo-unit")?.value, 0);
+        const description = tr.querySelector(".freight-cargo-desc")?.value.trim() || "";
+        const dimensions = tr.querySelector(".freight-cargo-dimensions")?.value.trim() || "";
+        const rowTotal = Math.max(0, quantity) * Math.max(0, unitValue);
+        tr.querySelector(".freight-cargo-item-number").textContent = String(index + 1);
+        tr.querySelector(".freight-cargo-item-total").textContent = rowTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        if (description || quantity > 0 || unitValue > 0 || dimensions) filled += 1;
+        total += rowTotal;
+      });
+      const count = document.getElementById("freightCargoItemsCount");
+      const totalLabel = document.getElementById("freightCargoItemsTotal");
+      if (count) count.textContent = String(filled);
+      if (totalLabel) totalLabel.textContent = total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function collectFreightCargoItems() {
+      const rows = Array.from(document.querySelectorAll("#freightCargoItemsBody tr"));
+      const items = [];
+      const errors = [];
+      rows.forEach((tr, index) => {
+        const description = tr.querySelector(".freight-cargo-desc")?.value.trim() || "";
+        const quantityRaw = tr.querySelector(".freight-cargo-qty")?.value.trim() || "";
+        const unitRaw = tr.querySelector(".freight-cargo-unit")?.value.trim() || "";
+        const dimensions = tr.querySelector(".freight-cargo-dimensions")?.value.trim() || "";
+        const quantity = parseFreightDecimal(quantityRaw, 0);
+        const unitValue = parseFreightDecimal(unitRaw, 0);
+        const hasValue = Boolean(description || quantityRaw || unitRaw || dimensions);
+        if (!hasValue) return;
+        if (!description) errors.push(`Item ${index + 1}: informe o nome / descrição.`);
+        if (!(quantity > 0)) errors.push(`Item ${index + 1}: informe a quantidade maior que zero.`);
+        if (!(unitValue > 0)) errors.push(`Item ${index + 1}: informe o valor unitário maior que zero.`);
+        items.push({
+          id: tr.dataset.itemId || generateId(),
+          description,
+          quantity,
+          unitValue,
+          dimensions
+        });
+      });
+      return { items, errors };
+    }
+
+    function freightCargoItemsTotal(items) {
+      return normalizeFreightCargoItems(items).reduce((sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.unitValue) || 0), 0);
+    }
+
+    function notaFiscalProductsFromFreight(freight) {
+      return freightCargoItemsFromFreight(freight).map((item, index) => ({
+        id: item.id || `P-${freight.id || Date.now()}-${index + 1}`,
+        description: [item.description || "Carga vinculada a solicitacao de frete", formatFreightCargoItemDimensions(item)].filter(Boolean).join(" | "),
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        unitValue: Math.max(0, Number(item.unitValue) || 0),
+        dimensions: item.dimensions || legacyFreightDimensionsText(item),
+        ncm: item.ncm || ""
+      }));
+    }
+
+    function buildNotaFiscalRequestFromFreight(freight, existing, rows) {
+      const now = new Date().toISOString();
+      const id = linkedNotaFiscalIdForFreight(freight);
+      const priority = getFreightUrgency(freight) === "URGENTE" ? "Urgente" : "Normal";
+      const issuerDepartment = freight.numeroObra || freight.centroCusto || freight.obra || "";
+      const issuerAddress = freight.enderecoColeta || freight.origem || freight.linkGoogleMapsColeta || "";
+      const recipientAddress = freight.enderecoEntrega || freight.destino || freight.linkGoogleMapsEntrega || "";
+      const carrierName = freight.transportadora || existing?.carrierName || "A definir pela cotacao do frete";
+      const carrierCnpj = normalizeFreightCnpj(existing?.carrierCnpj || freight.fornecedorCnpj);
+      const history = Array.isArray(existing?.history) ? [...existing.history] : [];
+      history.push({
+        at: now,
+        text: existing
+          ? `Dados atualizados automaticamente pela solicitacao de frete ${freight.id}.`
+          : `Solicitacao criada automaticamente pela solicitacao de frete ${freight.id}.`
+      });
+
+      return {
+        ...(existing || {}),
+        id,
+        code: existing?.code || freight.notaFiscalCodigo || nextNotaFiscalCode(rows),
+        createdAt: existing?.createdAt || now,
+        updatedAt: now,
+        priority,
+        deadline: existing?.deadline || String(freight.dataLimiteEntrega || "").slice(0, 10) || "",
+        requesterName: freight.solicitante || existing?.requesterName || "",
+        requesterEmail: freight.emailSolicitante || existing?.requesterEmail || "",
+        requesterUserId: existing?.requesterUserId || "",
+        issuerCnpj: existing?.issuerCnpj || "72.030.927/0005-09",
+        issuerDepartment,
+        issuerAddress,
+        recipientCnpj: normalizeFreightCnpj(existing?.recipientCnpj || freight.fornecedorCnpj),
+        recipientDepartment: freight.numeroObra || freight.obra || existing?.recipientDepartment || "",
+        recipientAddress,
+        freightResponsible: existing?.freightResponsible || "Transportadora",
+        carrierName,
+        carrierCnpj,
+        products: notaFiscalProductsFromFreight(freight),
+        status: existing?.status || NF_INITIAL_PHASE,
+        phaseStartedAt: existing?.phaseStartedAt || now,
+        phaseDurations: existing?.phaseDurations || { [NF_INITIAL_PHASE]: 0, [NF_PROGRESS_PHASE]: 0, [NF_DONE_PHASE]: 0 },
+        completedAt: existing?.completedAt || null,
+        internalNote: existing?.internalNote || "",
+        linkedFreightId: freight.id,
+        sourceModule: "fretes",
+        freightIntegration: {
+          sourceFreightId: freight.id,
+          sourceFreightCode: freight.id,
+          numeroRM: freight.numeroRM || "",
+          numeroObra: freight.numeroObra || "",
+          tipoMovimentacao: freight.tipoMovimentacao || freight.tipoFrete || "",
+          coleta: issuerAddress,
+          entrega: recipientAddress,
+          nomeCarga: freight.nomeCarga || "",
+          valorUnitarioCarga: freight.valorUnitarioCarga || "",
+          itensCarga: normalizeFreightCargoItems(freight.itensCarga || freight.cargoItems || []),
+          dataColetaMaterial: freight.dataColetaMaterial || "",
+          horarioColeta: freight.horarioColeta || "",
+          responsavelRecebimento: freight.responsavelRecebimento || "",
+          pedidoCompra: freight.pedidoCompra || "",
+          ordemColeta: freight.ordemColeta || "",
+          notaFiscalResposta: freight.notaFiscal || "",
+          updatedAt: now
+        },
+        history
+      };
+    }
+
+    function upsertNotaFiscalFromFreight(freight) {
+      if (!freightRequiresNotaFiscal(freight?.notaFiscal)) return null;
+      const rows = loadNotaFiscalRequests();
+      const linkedId = linkedNotaFiscalIdForFreight(freight);
+      const existingIndex = rows.findIndex(row =>
+        String(row?.id || "") === linkedId ||
+        String(row?.linkedFreightId || "") === String(freight.id || "") ||
+        String(row?.freightIntegration?.sourceFreightId || "") === String(freight.id || "")
+      );
+      const existing = existingIndex >= 0 ? rows[existingIndex] : null;
+      const next = buildNotaFiscalRequestFromFreight(freight, existing, rows);
+      if (existingIndex >= 0) rows[existingIndex] = next;
+      else rows.unshift(next);
+      saveNotaFiscalRequests(rows);
+      return next;
     }
 
     function createFreight() {
@@ -14836,6 +15649,33 @@
         return;
       }
 
+      const movementValue = value("tipoMovimentacao");
+      const documentationValue = value("notaFiscal");
+      const isSupplierReturn = isSupplierReturnMovement(movementValue);
+      const requiresSupplierFields = requiresSupplierFieldsForMovement(movementValue);
+      const finalDocumentationValue = isSupplierReturn ? FREIGHT_RETURN_DOCUMENTATION_VALUE : documentationValue;
+      if (!isSupplierReturn && isReturnDocumentationValue(documentationValue)) {
+        alert(FREIGHT_DOCUMENTATION_DIVERGENCE_MESSAGE);
+        document.getElementById("tipoMovimentacao")?.focus();
+        updateSupplierReturnFormState(true);
+        return;
+      }
+      if (requiresSupplierFields && (!value("fornecedorNome") || !value("fornecedorCnpj"))) {
+        alert("Para devolução ou coleta no fornecedor, informe o nome do fornecedor e o CNPJ.");
+        document.getElementById(!value("fornecedorNome") ? "fornecedorNome" : "fornecedorCnpj")?.focus();
+        return;
+      }
+
+      const cargoItemsResult = collectFreightCargoItems();
+      if (cargoItemsResult.errors.length) {
+        alert("Revise os itens da carga:\n\n" + cargoItemsResult.errors.join("\n"));
+        document.getElementById("freightCargoItemsPanel")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      const cargoItems = cargoItemsResult.items;
+      const cargoItemsTotalValue = freightCargoItemsTotal(cargoItems);
+      const firstCargoItem = cargoItems[0] || null;
+
       const formValues = {
         numeroRM: value("numeroRM"),
         dataSolicitacao: requestDateValue,
@@ -14844,7 +15684,7 @@
         solicitante: value("solicitante"),
         telefoneSolicitante: value("telefoneSolicitante"),
         emailSolicitante: value("emailSolicitante"),
-        tipoMovimentacao: value("tipoMovimentacao"),
+        tipoMovimentacao: movementValue,
         particularidadeObra: value("particularidadeObra"),
         modoLocalColeta: collectionLocationMode,
         enderecoColeta: collectionLocationMode === LOCATION_INPUT_MODES.ADDRESS ? collectionAddressValue : "",
@@ -14870,17 +15710,21 @@
         responsavelRecebimento: value("responsavelRecebimento"),
         ordemColeta: value("ordemColeta"),
         pedidoCompra: value("pedidoCompra"),
-        notaFiscal: value("notaFiscal"),
+        notaFiscal: finalDocumentationValue,
         materiais: value("materiais"),
         dimensoesCarga: value("dimensoesCarga"),
         tipoMaterial: value("materiais").slice(0, 80) || "Carga geral",
         pesoTotalCarga: value("pesoTotalCarga"),
         peso: value("pesoTotalCarga"),
-        valorTotalCarga: value("valorTotalCarga"),
+        valorTotalCarga: value("valorTotalCarga") || (cargoItemsTotalValue > 0 ? String(cargoItemsTotalValue.toFixed(2)) : ""),
+        nomeCarga: value("nomeCarga") || firstCargoItem?.description || "",
+        valorUnitarioCarga: value("valorUnitarioCarga") || (firstCargoItem?.unitValue ? String(firstCargoItem.unitValue) : ""),
+        itensCarga: cargoItems,
+        cargoItems,
         totalPecas: value("totalPecas"),
         volumes: value("totalPecas"),
-        fornecedorNome: value("fornecedorNome"),
-        fornecedorCnpj: value("fornecedorCnpj"),
+        fornecedorNome: requiresSupplierFields ? value("fornecedorNome") : "",
+        fornecedorCnpj: requiresSupplierFields ? value("fornecedorCnpj") : "",
         dataLimiteEntrega: value("dataLimiteEntrega"),
         responsavelSupply: value("responsavelSupply"),
         transportadora: value("transportadora"),
@@ -14890,7 +15734,7 @@
         observacoes: value("observacoes").slice(0, 240),
         urgencia: selectedUrgency,
         prioridade: selectedUrgency,
-        tipoFrete: value("tipoMovimentacao"),
+        tipoFrete: movementValue,
         centroCusto: value("numeroObra"),
         cubagem: existing?.cubagem || "",
         veiculoEspecial: normalizeVehicleTypeValue(value("tipoVeiculo")),
@@ -14900,11 +15744,17 @@
 
       if (isEditing) {
         Object.assign(existing, formValues, { updatedAt: now });
+        const linkedNotaFiscal = upsertNotaFiscalFromFreight(existing);
+        if (linkedNotaFiscal) {
+          existing.notaFiscalSolicitacaoId = linkedNotaFiscal.id;
+          existing.notaFiscalCodigo = linkedNotaFiscal.code;
+          existing.notaFiscalIntegradaEm = linkedNotaFiscal.updatedAt;
+        }
         saveFreights();
         const editedId = existing.id;
         document.getElementById("freightForm").reset();
         cancelFreightEdit(false);
-        alert("Solicitação atualizada com sucesso: " + editedId);
+        alert("Solicitacao atualizada com sucesso: " + editedId + (linkedNotaFiscal ? `\nNF de simples remessa atualizada: ${linkedNotaFiscal.code}` : ""));
         renderAll();
         showTab("kanban");
         return;
@@ -14920,12 +15770,18 @@
         history: [{ phase: "Não iniciado", enteredAt: now, exitedAt: null }]
       };
 
+      const linkedNotaFiscal = upsertNotaFiscalFromFreight(freight);
+      if (linkedNotaFiscal) {
+        freight.notaFiscalSolicitacaoId = linkedNotaFiscal.id;
+        freight.notaFiscalCodigo = linkedNotaFiscal.code;
+        freight.notaFiscalIntegradaEm = linkedNotaFiscal.updatedAt;
+      }
       freights.push(freight);
       saveFreights();
 
       document.getElementById("freightForm").reset();
       cancelFreightEdit(false);
-      alert("Solicitação criada com sucesso: " + freight.id);
+      alert("Solicitacao criada com sucesso: " + freight.id + (linkedNotaFiscal ? `\nNF de simples remessa criada automaticamente: ${linkedNotaFiscal.code}` : ""));
       renderAll();
     }
 
@@ -15002,6 +15858,8 @@
         notaFiscal: freight.notaFiscal || "",
         pesoTotalCarga: freight.pesoTotalCarga || freight.peso || "",
         valorTotalCarga: freight.valorTotalCarga || "",
+        nomeCarga: freight.nomeCarga || "",
+        valorUnitarioCarga: freight.valorUnitarioCarga || "",
         totalPecas: freight.totalPecas || freight.volumes || "",
         dataLimiteEntrega: freight.dataLimiteEntrega || "",
         fornecedorNome: freight.fornecedorNome || "",
@@ -15034,6 +15892,7 @@
         const element = document.getElementById(fieldId);
         if (element) element.value = fieldValue ?? "";
       });
+      renderFreightCargoItemRows(freightCargoItemsForDisplay(freight));
 
       const title = document.getElementById("freightFormTitle");
       const subtitle = document.getElementById("freightFormSubtitle");
@@ -15050,6 +15909,7 @@
       setupInitialDateUrgencyLogic(true);
       setupGoogleMapsLinkFields();
       setupLocationInputModes(true);
+      setupSupplierReturnLogic(true);
       applyRequesterIdentity({ name: freight.solicitante, email: freight.emailSolicitante }, true);
       document.getElementById("freightForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -15736,6 +16596,11 @@
         freight.capacidadePrancha ? `Capacidade da prancha: ${freight.capacidadePrancha}` : "",
         freight.tamanhoPrancha ? `Tamanho da prancha: ${freight.tamanhoPrancha}` : ""
       ].filter(Boolean).join(" | ");
+      const cargoItemLines = freightCargoItemsForDisplay(freight).map((item, index) => {
+        const total = (Number(item.quantity) || 0) * (Number(item.unitValue) || 0);
+        const dimensions = formatFreightCargoItemDimensions(item);
+        return `Item ${index + 1}: ${quoteEmailValue(item.description)} | Qtd: ${item.quantity || 0} | Unit.: ${formatCurrency(item.unitValue)} | Total: ${formatCurrency(total)}${dimensions ? ` | ${dimensions}` : ""}`;
+      });
 
       const lines = [
         "Prezado, segue abaixo a solicitação de cotação conforme as informações listadas.",
@@ -15787,9 +16652,12 @@
         "",
         "📦 DETALHES DA CARGA",
         "",
+        ...(cargoItemLines.length ? [...cargoItemLines, ""] : []),
+        `Nome / descrição da carga: ${quoteEmailValue(freight.nomeCarga || freight.materiais || freight.tipoMaterial)}`,
         `Materiais: ${quoteEmailValue(freight.materiais || freight.tipoMaterial)}`,
         `Dimensões total da carga: ${quoteEmailValue(freight.dimensoesCarga)}`,
         `Peso total da carga: ${quoteEmailValue(freight.pesoTotalCarga || freight.peso)}${freight.pesoTotalCarga || freight.peso ? " kg" : ""}`,
+        `Valor unitário da carga: ${quoteEmailCurrency(freight.valorUnitarioCarga)}`,
         `Valor total da carga: ${quoteEmailCurrency(freight.valorTotalCarga)}`,
         `Total de peças / volumes: ${quoteEmailValue(freight.totalPecas || freight.volumes)}`,
         "",
@@ -15978,8 +16846,12 @@
             ${detail("Ordem/Pedido coleta", freight.ordemColeta)}
             ${detail("Pedido de compra", freight.pedidoCompra)}
             ${detail("Nota fiscal", freight.notaFiscal)}
+            ${detail("Solicitacao NF integrada", freight.notaFiscalCodigo || freight.notaFiscalSolicitacaoId || "-")}
             ${detail("Peso total kg", freight.pesoTotalCarga || freight.peso)}
             ${detail("Valor total carga", formatCurrency(freight.valorTotalCarga))}
+            ${detail("Nome / descriÃ§Ã£o da carga", freight.nomeCarga || "-", "full")}
+            ${detail("Valor unitÃ¡rio carga", freight.valorUnitarioCarga ? formatCurrency(freight.valorUnitarioCarga) : "-")}
+            ${detail("Itens da carga para NF", formatFreightCargoItemsText(freightCargoItemsForDisplay(freight)), "full")}
             ${detail("Total peças/volumes", freight.totalPecas || freight.volumes)}
             ${detail("Fornecedor / Locador", freight.fornecedorNome)}
             ${detail("CNPJ fornecedor", freight.fornecedorCnpj)}

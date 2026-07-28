@@ -8,10 +8,12 @@ export type UserRole =
 
 export type ModuleKey =
   | "dashboard"
+  | "alertas"
   | "requisicoes"
   | "orcamentos"
   | "contratos"
   | "fretes"
+  | "nota_fiscal"
   | "estoque_obras"
   | "frota"
   | "fornecedores"
@@ -20,12 +22,22 @@ export type ModuleKey =
   | "usuarios"
   | "settings";
 
+export type ModulePermission = {
+  view?: boolean;
+  manage?: boolean;
+};
+
+export type ModulePermissions = Partial<Record<ModuleKey, ModulePermission>>;
+
 export type Profile = {
   id: string;
   nome: string;
   email: string;
   role: UserRole;
   ativo: boolean;
+  module_permissions?: ModulePermissions | null;
+  must_change_password?: boolean;
+  password_changed_at?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -69,6 +81,9 @@ export type Orcamento = {
   status: string;
   data_solicitacao: string | null;
   data_entrega_cotacoes: string | null;
+  data_finalizacao?: string | null;
+  atribuido_a?: string | null;
+  link_pasta?: string | null;
   fornecedor: string | null;
   valor_inicial: number | null;
   valor_final: number | null;

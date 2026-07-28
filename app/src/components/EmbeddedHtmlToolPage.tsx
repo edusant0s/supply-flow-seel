@@ -7,8 +7,13 @@ import {
   CONTRATOS_FORM_STORAGE_KEY,
   CONTRATOS_REQUESTS_STORAGE_KEY,
   ESTOQUE_STATE_STORAGE_KEY,
+  FORNECEDORES_CADASTRO_STORAGE_KEY,
+  FORNECEDORES_MAP_STORAGE_KEY,
   FRETES_STORAGE_KEY,
+  NOTA_FISCAL_FORM_STORAGE_KEY,
+  NOTA_FISCAL_STORAGE_KEY,
   getEmbeddedStorageKeysForModule,
+  listFornecedorMapSuppliers,
   loadEmbeddedStorageSnapshot,
 } from "../services/embeddedSync";
 import { supabaseAnonKey, supabaseUrl } from "../services/supabase";
@@ -18,6 +23,7 @@ type EmbeddedHtmlToolPageProps = {
   title: string;
   moduleKey: ModuleKey;
   loadHtml: () => Promise<string>;
+  loadSupplierMapBase?: boolean;
 };
 
 const embeddedChromeCss = `
@@ -124,6 +130,26 @@ const embeddedChromeCss = `
     color: #e5edf7 !important;
   }
 
+  /* The 5 embedded tools (Frota, Contratos, Fretes, Estoque, Avaliacao) each use their
+     own bespoke class names for dashboard/report panels (powerbi-kpi, analytics-card,
+     bi-card, dashboard-filter-panel, etc). The text-color rules below already recolor
+     any h1-h4/strong/b/p/span/small/label/td to a light tone, but that only reads
+     correctly if the panel behind it is also dark - otherwise the text goes light on
+     an unconverted white background and becomes unreadable. Catch all of them by
+     naming convention instead of hand-listing every module's classes. */
+  html[data-theme="dark"] [class*="card"],
+  html[data-theme="dark"] [class*="panel"],
+  html[data-theme="dark"] [class*="kpi"],
+  html[data-theme="dark"] [class*="analytics"],
+  html[data-theme="dark"] [class*="insight"],
+  html[data-theme="dark"] [class*="summary"],
+  html[data-theme="dark"] .powerbi-dashboard,
+  html[data-theme="dark"] .powerbi-visual,
+  html[data-theme="dark"] .dashboard-chart-stage {
+    background: #0d1b2e !important;
+    border-color: #1f3350 !important;
+  }
+
   html[data-theme="dark"] input,
   html[data-theme="dark"] select,
   html[data-theme="dark"] textarea,
@@ -201,12 +227,71 @@ const embeddedChromeCss = `
 
   body.supply-embedded-frota > header.topbar,
   body.supply-embedded-fretes > header,
+  body.supply-embedded-fornecedores .sf-topbar,
   body.supply-embedded-estoque_obras #loginPage {
     display: none !important;
   }
 
   body.supply-embedded-frota .hero {
     display: none !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-app,
+  body.supply-embedded-fornecedores .sf-workspace {
+    background: transparent !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-page-head {
+    width: 100% !important;
+    margin: 0 0 12px !important;
+    padding: 15px !important;
+    border: 1px solid #d1e1e8 !important;
+    border-left: 4px solid #fcc800 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(10, 46, 61, .1) !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-page-head h1 {
+    color: #081b23 !important;
+    font-size: 1.15rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-page-head p {
+    max-width: 760px !important;
+    color: #526771 !important;
+    font-size: .86rem !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-eyebrow {
+    color: #1b6d8e !important;
+    font-size: .68rem !important;
+    font-weight: 900 !important;
+  }
+
+  body.supply-embedded-fornecedores .sf-primary-action {
+    min-height: 40px !important;
+    border: 1px solid #1b6d8e !important;
+    border-radius: 8px !important;
+    background: #1b6d8e !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded-fornecedores .sf-page-head {
+    background: #0d1b2e !important;
+    border-color: #1f3350 !important;
+    border-left-color: #fcc800 !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .26) !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded-fornecedores .sf-page-head h1 {
+    color: #f6f9fd !important;
+  }
+
+  html[data-theme="dark"] body.supply-embedded-fornecedores .sf-page-head p {
+    color: #b7c6d9 !important;
   }
 
   body.supply-embedded .container,
@@ -376,6 +461,7 @@ type EmbeddedContext = {
     centro_custo: string | null;
   }>;
   sharedStorage: Record<string, unknown>;
+  supplierMapBase: Array<Record<string, unknown>>;
   integrations: {
     googleMapsApiKey: string;
   };
@@ -386,11 +472,47 @@ type EmbeddedContext = {
     contractFormStorageKey: string;
     contractRequestsStorageKey: string;
     freightStorageKey: string;
+    notaFiscalStorageKey: string;
+    notaFiscalFormStorageKey: string;
+    supplierRegistrationStorageKey: string;
+    supplierMapStorageKey: string;
     stockStateKey: string;
     evaluationDbKey: string;
     sharedStateKeys: string[];
   };
 };
+
+type EmbeddedPageCacheEntry = {
+  html: string;
+  sharedStorage: Record<string, unknown>;
+  supplierMapBase: Array<Record<string, unknown>>;
+};
+
+const embeddedPageCache = new Map<string, EmbeddedPageCacheEntry>();
+const embeddedToolInvalidationEvent = "supply-flow:embedded-tool-cache-invalidated";
+
+export function invalidateEmbeddedToolCache(moduleKey?: ModuleKey) {
+  Array.from(embeddedPageCache.keys()).forEach((key) => {
+    if (!moduleKey || key.startsWith(`${moduleKey}:`)) embeddedPageCache.delete(key);
+  });
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(embeddedToolInvalidationEvent, { detail: { moduleKey } }));
+  }
+}
+
+function mergeCachedLocalStorage(moduleKey: ModuleKey, snapshot: Record<string, unknown>) {
+  if (typeof window === "undefined") return snapshot;
+  const next = { ...snapshot };
+  getEmbeddedStorageKeysForModule(moduleKey).forEach((key) => {
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw) next[key] = JSON.parse(raw);
+    } catch {
+      // Local embedded state is only a session cache; keep the Supabase snapshot if parsing fails.
+    }
+  });
+  return next;
+}
 
 function withEmbeddedShell(html: string, baseHref: string, context: EmbeddedContext) {
   const injection = `<base href="${baseHref}"><style>${embeddedChromeCss}</style>${embeddedGovernanceScript(context)}`;
@@ -421,10 +543,14 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     email: hostUser.email || "",
     userEmail: hostUser.email || ""
   };
+  window.SEEL_USER = window.SEEL_CURRENT_USER;
+  window.PLATFORM_USER = window.SEEL_CURRENT_USER;
+  window.SUPPLY_FLOW_USER = window.SEEL_CURRENT_USER;
   window.currentUser = window.SEEL_CURRENT_USER;
   window.supplyFlowUser = window.SEEL_CURRENT_USER;
   window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
   window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
+  window.SUPPLY_FLOW_SUPPLIER_MAP_BASE = Array.isArray(ctx.supplierMapBase) ? ctx.supplierMapBase : [];
 
   Object.keys(sharedStorage).forEach(function(key) {
     try {
@@ -439,6 +565,12 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var initialFreights = Array.isArray(sharedStorage[syncConfig.freightStorageKey]) ? sharedStorage[syncConfig.freightStorageKey] : [];
   initialFreights.forEach(function(item) {
     if (item && item.id) knownFreightIds[String(item.id)] = true;
+  });
+  var knownNotaFiscalIds = {};
+  var initialNotaFiscalRows = Array.isArray(sharedStorage[syncConfig.notaFiscalStorageKey]) ? sharedStorage[syncConfig.notaFiscalStorageKey] : [];
+  initialNotaFiscalRows.forEach(function(item, index) {
+    var id = notaFiscalRecordId(item, index);
+    if (id) knownNotaFiscalIds[id] = true;
   });
   var knownStockOrderIds = {};
   var initialStockState = sharedStorage[syncConfig.stockStateKey] && typeof sharedStorage[syncConfig.stockStateKey] === "object"
@@ -455,6 +587,14 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   var initialEvaluations = Array.isArray(initialEvaluationDb.evaluations) ? initialEvaluationDb.evaluations : [];
   initialEvaluations.forEach(function(item) {
     if (item && item.id) knownEvaluationIds[String(item.id)] = true;
+  });
+  var knownSupplierRegistrationIds = {};
+  var initialSupplierRegistrations = Array.isArray(sharedStorage[syncConfig.supplierRegistrationStorageKey])
+    ? sharedStorage[syncConfig.supplierRegistrationStorageKey]
+    : [];
+  initialSupplierRegistrations.forEach(function(item, index) {
+    var id = supplierRegistrationRecordId(item, index);
+    if (id) knownSupplierRegistrationIds[id] = true;
   });
   var knownContractDbIds = {};
   var knownContractCodes = {};
@@ -519,6 +659,161 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function supplierMapCategories(item) {
+    if (Array.isArray(item && item.categories)) return item.categories.map(firstFilled).filter(Boolean);
+    return String(firstFilled(item && item.categories, item && item.categoria, item && item.produto_servico))
+      .split(/[|,;/]+/)
+      .map(function(value) { return value.trim(); })
+      .filter(Boolean);
+  }
+
+  function supplierMapRegistrationActive(value) {
+    var status = normalizeEmbeddedText(value);
+    return status === "sim" || status === "ativo" || status === "cadastro ativo";
+  }
+
+  function supplierMapNumber(value) {
+    if (value === null || value === undefined || value === "") return null;
+    var parsed = Number(String(value).replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function supplierMapPayload(item, categories) {
+    var previous = item && item.payload && typeof item.payload === "object" && !Array.isArray(item.payload) ? item.payload : {};
+    return Object.assign({}, previous, {
+      contato: firstFilled(item && item.contact, previous.contato, previous.Contato),
+      observacoes: firstFilled(item && item.notes, previous.observacoes, previous.Observacoes),
+      categorias: categories,
+      registration: firstFilled(item && item.registration),
+      locationPrecision: firstFilled(item && item.locationPrecision),
+      sourceSheets: Array.isArray(item && item.sourceSheets) ? item.sourceSheets : [],
+      __embedded_supplier_map: item
+    });
+  }
+
+  function supplierMapRecord(item) {
+    if (!item || typeof item !== "object") return null;
+    var categories = supplierMapCategories(item);
+    var id = firstFilled(item.__supplyFornecedorDbId, isUuid(item.id) ? item.id : "");
+    var record = {
+      codigo: firstFilled(item.code, item.codigo) || null,
+      nome: firstFilled(item.name, item.nome, "Fornecedor sem nome"),
+      categoria: categories.join(", ") || null,
+      produto_servico: firstFilled(item.productService, item.produto_servico, item.notes) || null,
+      cidade: firstFilled(item.city, item.cidade) || null,
+      uf: firstFilled(item.uf).toUpperCase() || null,
+      regiao: firstFilled(item.region, item.regiao) || null,
+      telefone: firstFilled(item.phone, item.telefone) || null,
+      email: firstFilled(item.email) || null,
+      site: firstFilled(item.site) || null,
+      cadastro_ativo: supplierMapRegistrationActive(item.registration),
+      latitude: supplierMapNumber(item.latitude),
+      longitude: supplierMapNumber(item.longitude),
+      payload: supplierMapPayload(item, categories)
+    };
+    if (id) record.id = id;
+    return record;
+  }
+
+  function supplierMapIdentityKey(value) {
+    return normalizeEmbeddedText([
+      value && (value.nome || value.name),
+      value && (value.cidade || value.city),
+      value && value.uf
+    ].join("|"));
+  }
+
+  function mergeSupplierMapIds(items, returnedRows) {
+    if (!Array.isArray(items) || !Array.isArray(returnedRows) || !returnedRows.length) return;
+    var byId = {};
+    var byCode = {};
+    var byIdentity = {};
+    returnedRows.forEach(function(row) {
+      if (!row || !row.id) return;
+      byId[String(row.id)] = row;
+      if (row.codigo) byCode[String(row.codigo)] = row;
+      byIdentity[supplierMapIdentityKey(row)] = row;
+    });
+
+    items.forEach(function(item) {
+      if (!item || typeof item !== "object") return;
+      var match =
+        byId[String(item.__supplyFornecedorDbId || item.id || "")] ||
+        byCode[String(item.code || item.codigo || "")] ||
+        byIdentity[supplierMapIdentityKey(item)];
+      if (!match || !match.id) return;
+      item.id = match.id;
+      item.__supplyFornecedorDbId = match.id;
+      if (match.codigo && !item.code) item.code = match.codigo;
+    });
+  }
+
+  function syncSupplierMapRows(items) {
+    if (!canManage) {
+      alert("Apenas administradores de suprimentos podem alterar a base de fornecedores.");
+      return Promise.resolve(false);
+    }
+    var rows = Array.isArray(items) ? items : [];
+    var records = rows.map(supplierMapRecord).filter(Boolean);
+    var withId = records.filter(function(record) { return record.id; });
+    var withCode = records.filter(function(record) { return !record.id && record.codigo; });
+    var inserts = records.filter(function(record) { return !record.id && !record.codigo; });
+    var tasks = [];
+
+    if (withId.length) {
+      tasks.push(postgrestJson("/rest/v1/fornecedores?on_conflict=id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: JSON.stringify(withId)
+      }));
+    }
+    if (withCode.length) {
+      tasks.push(postgrestJson("/rest/v1/fornecedores?on_conflict=codigo", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: JSON.stringify(withCode)
+      }));
+    }
+    if (inserts.length) {
+      tasks.push(postgrestJson("/rest/v1/fornecedores", {
+        method: "POST",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify(inserts)
+      }));
+    }
+
+    return Promise.all(tasks).then(function(results) {
+      var returned = [];
+      results.forEach(function(result) {
+        if (Array.isArray(result)) returned = returned.concat(result);
+      });
+      mergeSupplierMapIds(rows, returned);
+      return true;
+    });
+  }
+
+  function deleteSupplierMapRecord(id) {
+    if (!canManage) {
+      alert("Apenas administradores de suprimentos podem excluir fornecedores.");
+      return Promise.resolve(false);
+    }
+    var target = firstFilled(id);
+    var path = isUuid(target)
+      ? "/rest/v1/fornecedores?id=eq." + encodeURIComponent(target)
+      : "/rest/v1/fornecedores?codigo=eq." + encodeURIComponent(target);
+    return postgrestRequest(path, {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  window.SUPPLY_FLOW_SUPPLIER_MAP_BRIDGE = {
+    getAll: function() { return Promise.resolve([]); },
+    putMany: syncSupplierMapRows,
+    put: function(item) { return syncSupplierMapRows([item]); },
+    delete: deleteSupplierMapRecord
+  };
+
   function freightRecord(item) {
     if (!item || typeof item !== "object" || !item.id) return null;
     return {
@@ -526,6 +821,42 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       payload: item,
       email_solicitante: String(item.emailSolicitante || item.email_solicitante || ""),
       status: String(item.status || "")
+    };
+  }
+
+  function notaFiscalRecordId(item, index) {
+    if (!item || typeof item !== "object") return "";
+    if (item.id !== undefined && item.id !== null && String(item.id).trim()) return String(item.id);
+    if (item.code !== undefined && item.code !== null && String(item.code).trim()) return "nf_" + compactHash(String(item.code));
+    return stableRecordId("nf_simples", item, index);
+  }
+
+  function notaFiscalRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var payload = Object.assign({}, item);
+    var hostEmail = String(hostUser.email || "").trim();
+    var hostName = String(hostUser.nome || "").trim();
+
+    if (!canManage) {
+      if (hostEmail) payload.requesterEmail = hostEmail;
+      if (hostName) payload.requesterName = hostName;
+    }
+
+    var requesterEmail = firstFilled(payload.requesterEmail, payload.email_solicitante, hostEmail);
+    if (!canManage && hostEmail && requesterEmail.toLowerCase() !== hostEmail.toLowerCase()) return null;
+
+    var id = notaFiscalRecordId(payload, index);
+    payload.id = id;
+
+    return {
+      id: id,
+      payload: payload,
+      codigo: firstFilled(payload.code, payload.codigo, id),
+      solicitante: firstFilled(payload.requesterName, payload.solicitante, hostName),
+      email_solicitante: requesterEmail,
+      centro_custo: firstFilled(payload.issuerDepartment, payload.recipientDepartment, payload.centro_custo),
+      status: firstFilled(payload.status, "N\\u00e3o Iniciado"),
+      prioridade: firstFilled(payload.priority, "Normal")
     };
   }
 
@@ -579,6 +910,63 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       obra: String(payload.obra || ""),
       fornecedor: String(payload.fornecedor || ""),
       avaliador_email: evaluatorEmail
+    };
+  }
+
+  function compactHash(value) {
+    var source = String(value || "");
+    var hash = 0;
+    for (var i = 0; i < source.length; i++) {
+      hash = ((hash << 5) - hash + source.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash).toString(36);
+  }
+
+  function supplierRegistrationRecordId(item, index) {
+    if (!item || typeof item !== "object") return "";
+    var values = item.values && typeof item.values === "object" ? item.values : {};
+    return firstFilled(
+      item.__supplyFornecedorCadastroDbId,
+      "forcad_" + compactHash([
+        item.id,
+        values.requestId,
+        item.createdAt,
+        values.requesterEmail,
+        hostUser.email,
+        index
+      ].join("|"))
+    );
+  }
+
+  function supplierRegistrationRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var values = item.values && typeof item.values === "object" ? Object.assign({}, item.values) : {};
+    var payload = Object.assign({}, item, { values: values });
+    var hostEmail = String(hostUser.email || "").trim();
+    var hostName = String(hostUser.nome || "").trim();
+
+    if (!canManage) {
+      if (hostEmail) {
+        payload.requesterEmail = hostEmail;
+        values.requesterEmail = hostEmail;
+      }
+      if (hostName) {
+        payload.requesterName = hostName;
+        values.requesterName = hostName;
+      }
+    }
+
+    var id = supplierRegistrationRecordId(payload, index);
+    payload.__supplyFornecedorCadastroDbId = id;
+    payload.values = values;
+
+    return {
+      id: id,
+      payload: payload,
+      email_solicitante: firstFilled(payload.requesterEmail, values.requesterEmail, hostEmail),
+      obra: firstFilled(payload.costCenter, values.costCenter),
+      fornecedor: firstFilled(payload.supplierName, values.supplierName, "Fornecedor sem nome"),
+      status: firstFilled(payload.stage, "Solicitacao Recebida")
     };
   }
 
@@ -855,6 +1243,47 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function deleteNotaFiscalRecord(id) {
+    return postgrestRequest("/rest/v1/nf_simples_remessa_solicitacoes?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncNotaFiscalRows(rows) {
+    if (!Array.isArray(rows) || !syncConfig.notaFiscalStorageKey) return;
+    var records = rows.map(notaFiscalRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/nf_simples_remessa_solicitacoes?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownNotaFiscalIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteNotaFiscalRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownNotaFiscalIds = nextIds; });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) { return !knownNotaFiscalIds[record.id]; });
+    if (!newRecords.length) return;
+    postgrestRequest("/rest/v1/nf_simples_remessa_solicitacoes", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(newRecords)
+    }).then(function(ok) {
+      if (!ok) return;
+      newRecords.forEach(function(record) { knownNotaFiscalIds[record.id] = true; });
+    });
+  }
+
   function deleteStockOrderRecord(id) {
     return postgrestRequest("/rest/v1/estoque_obras_pedidos?id=eq." + encodeURIComponent(id), {
       method: "DELETE",
@@ -956,9 +1385,51 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function deleteSupplierRegistrationRecord(id) {
+    return postgrestRequest("/rest/v1/fornecedores_cadastros?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncSupplierRegistrationRows(rows) {
+    if (!Array.isArray(rows) || !syncConfig.supplierRegistrationStorageKey) return;
+    var records = rows.map(supplierRegistrationRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/fornecedores_cadastros?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownSupplierRegistrationIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteSupplierRegistrationRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownSupplierRegistrationIds = nextIds; });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) { return !knownSupplierRegistrationIds[record.id]; });
+    if (!newRecords.length) return;
+    postgrestRequest("/rest/v1/fornecedores_cadastros", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(newRecords)
+    }).then(function(ok) {
+      if (!ok) return;
+      newRecords.forEach(function(record) { knownSupplierRegistrationIds[record.id] = true; });
+    });
+  }
+
   function canSyncSharedState(key) {
     if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return false;
     if (moduleKey === "contratos" && key === syncConfig.contractFormStorageKey && !isSuperAdmin) return false;
+    if (moduleKey === "nota_fiscal" && key === syncConfig.notaFiscalFormStorageKey && !isSuperAdmin) return false;
     return true;
   }
 
@@ -975,10 +1446,16 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  window.SUPPLY_FLOW_SYNC_SHARED_STATE = function(key, payload) {
+    syncSharedState(String(key || ""), payload);
+  };
+
   function syncStorageWrite(key, value) {
     var isSharedStateKey = Array.isArray(syncConfig.sharedStateKeys) && syncConfig.sharedStateKeys.indexOf(key) >= 0;
     var isDedicatedRowKey =
       key === syncConfig.freightStorageKey ||
+      key === syncConfig.notaFiscalStorageKey ||
+      key === syncConfig.supplierRegistrationStorageKey ||
       key === syncConfig.stockStateKey ||
       key === syncConfig.evaluationDbKey ||
       key === syncConfig.contractRequestsStorageKey;
@@ -988,6 +1465,8 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       var payload = parseStoragePayload(value);
       if (key === syncConfig.contractRequestsStorageKey) syncContractRows(payload);
       else if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
+      else if (key === syncConfig.notaFiscalStorageKey) syncNotaFiscalRows(payload);
+      else if (key === syncConfig.supplierRegistrationStorageKey) syncSupplierRegistrationRows(payload);
       else if (key === syncConfig.stockStateKey) syncStockState(payload);
       else if (key === syncConfig.evaluationDbKey) syncSupplierEvaluationDb(payload);
       else syncSharedState(key, payload);
@@ -1139,6 +1618,45 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     guard("loadDemoData", "Apenas super_admin pode carregar exemplos.");
   }
 
+  function applyNotaFiscalRules() {
+    if (!isSuperAdmin) {
+      hide("button[data-view='editor'], #view-editor");
+      guard("saveCurrentEditorField", "Apenas super_admin pode editar o formulario de NF.");
+      guard("resetCurrentEditorField", "Apenas super_admin pode editar o formulario de NF.");
+      guard("resetAllEditorFields", "Apenas super_admin pode editar o formulario de NF.");
+      guard("syncIntegratedWorkLists", "Apenas super_admin pode editar o formulario de NF.");
+    }
+
+    if (canManage) return;
+
+    hide("button[data-view='dashboard'], button[data-view='base'], button[data-view='editor'], #view-dashboard, #view-base, #view-editor");
+    hide("#baseNew, #quickExport, #exportCsv, #detailEdit, #detailDelete, #detailDeadline, #saveDetailNote");
+    disable(".phase-select, #detailNote");
+    document.querySelectorAll(".nf-card").forEach(function(card) {
+      card.setAttribute("draggable", "false");
+    });
+
+    var activeBlocked = ["view-dashboard", "view-base", "view-editor"].some(function(id) {
+      var view = document.getElementById(id);
+      return view && view.classList.contains("active");
+    });
+    if (activeBlocked) {
+      if (typeof window.showView === "function") window.showView("kanban");
+      else {
+        ["view-dashboard", "view-base", "view-editor"].forEach(function(id) {
+          var view = document.getElementById(id);
+          if (view) view.classList.remove("active");
+        });
+      }
+    }
+
+    guard("changePhase", "Apenas administradores de suprimentos podem alterar fases de NF.");
+    guard("moveRelative", "Apenas administradores de suprimentos podem alterar fases de NF.");
+    guard("editRequest", "Apenas administradores de suprimentos podem editar solicita\\u00e7\\u00f5es de NF.");
+    guard("deleteRequest", "Apenas administradores de suprimentos podem excluir solicita\\u00e7\\u00f5es de NF.");
+    guard("exportCsv", "Apenas administradores de suprimentos podem exportar a base de NF.");
+  }
+
   function applyContratosRules() {
     if (!isSuperAdmin) {
       hide("button[data-tab='editor'], #editorView");
@@ -1219,6 +1737,98 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     guard("clearAll", "Apenas super_admin pode apagar a base.");
   }
 
+  function setSupplierMapReadOnlyModal() {
+    hide("#deleteBtn, .modal-foot button[onclick='saveSupplier()']");
+    disable("#supplierForm input, #supplierForm select, #supplierForm textarea");
+    var title = document.getElementById("modalTitle");
+    if (title && normalizeEmbeddedText(title.textContent).indexOf("editar") >= 0) {
+      title.textContent = "Detalhes do fornecedor";
+    }
+  }
+
+  function wrapSupplierMapModal() {
+    if (typeof window.openSupplierModal !== "function" || window.openSupplierModal.__supplyReadonlyWrapped) return;
+    var nativeOpenSupplierModal = window.openSupplierModal;
+    window.openSupplierModal = function() {
+      var result = nativeOpenSupplierModal.apply(this, arguments);
+      window.setTimeout(setSupplierMapReadOnlyModal, 0);
+      return result;
+    };
+    window.openSupplierModal.__supplyReadonlyWrapped = true;
+  }
+
+  function applyFornecedorMapRules() {
+    hide(".sf-topbar, .sf-page-head");
+
+    if (canManage) return;
+
+    hide("button[data-view='import'], #view-import, .sf-header-action.primary, .sf-primary-action, button[onclick='openSupplierModal()']");
+    document.querySelectorAll("button[onclick^=\\"openSupplierModal('\\"]").forEach(function(button) {
+      button.textContent = "\\u2139";
+      button.setAttribute("title", "Detalhes");
+      button.setAttribute("aria-label", "Detalhes do fornecedor");
+    });
+
+    var importView = document.getElementById("view-import");
+    if (importView && importView.classList.contains("active")) {
+      if (typeof window.switchView === "function") window.switchView("suppliers");
+      else importView.classList.remove("active");
+    }
+
+    wrapSupplierMapModal();
+    setSupplierMapReadOnlyModal();
+    guard("saveSupplier", "Apenas administradores de suprimentos podem salvar fornecedores.");
+    guard("deleteCurrentSupplier", "Apenas administradores de suprimentos podem excluir fornecedores.");
+    guard("handleImport", "Apenas administradores de suprimentos podem importar fornecedores.");
+  }
+
+  function applyFornecedorCadastroRules() {
+    hide(".sf-topbar");
+
+    if (!canManage) {
+      hide("button[data-tab='dashboard'], button[data-tab='import'], button[data-tab='editor'], #view-dashboard, #view-import, #view-editor");
+      hide("#btnDemo, #btnClearAll, #btnImportJson, #btnExportJson, .stage-actions, .supplier-phase-selector-wrap, .supplier-detail-phase-selector");
+      hide(".modal-actions button[onclick*='moveStage'], .modal-actions button[onclick*='resetTimer'], .modal-actions button[onclick*='editDeadline'], .modal-actions button[onclick*='deleteItem']");
+      hide(".responsible-actions, .attachment-item button");
+      disable(".phase-select, .supplier-detail-phase-selector select, #responsibleNote, #responsibleFiles");
+
+      var activeBlocked = ["view-dashboard", "view-import", "view-editor"].some(function(id) {
+        var view = document.getElementById(id);
+        return view && !view.classList.contains("hidden");
+      });
+      if (activeBlocked) {
+        if (typeof window.switchTab === "function") window.switchTab("kanban");
+        else {
+          ["view-dashboard", "view-import", "view-editor"].forEach(function(id) {
+            var view = document.getElementById(id);
+            if (view) view.classList.add("hidden");
+          });
+        }
+      }
+
+      guard("moveStage", "Apenas administradores de suprimentos podem mudar fases.");
+      guard("changeSupplierPhase", "Apenas administradores de suprimentos podem mudar fases.");
+      guard("resetTimer", "Apenas administradores de suprimentos podem alterar cronometros.");
+      guard("editDeadline", "Apenas administradores de suprimentos podem alterar prazos.");
+      guard("deleteItem", "Apenas administradores de suprimentos podem excluir cadastros.");
+      guard("saveResponsibleNote", "Apenas administradores de suprimentos podem registrar observacoes internas.");
+      guard("handleResponsibleFiles", "Apenas administradores de suprimentos podem anexar documentacao interna.");
+      guard("removeResponsibleFile", "Apenas administradores de suprimentos podem remover anexos internos.");
+      guard("supplierRunLegacyImport", "Apenas administradores de suprimentos podem importar base antiga.");
+      guard("clearAll", "Apenas administradores de suprimentos podem limpar dados.");
+    }
+
+    if (!isSuperAdmin) {
+      hide("button[data-tab='editor'], #view-editor");
+      guard("saveSchema", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("addSection", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("addQuestion", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("applySection", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("deleteSection", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("removeQuestion", "Apenas super_admin pode editar a estrutura do formulario.");
+    }
+  }
+
   function applyRules() {
     if (applying || !document.body) return;
     applying = true;
@@ -1231,6 +1841,11 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       if (moduleKey === "frota") applyFrotaRules();
       if (moduleKey === "contratos") applyContratosRules();
       if (moduleKey === "fretes") applyFretesRules();
+      if (moduleKey === "nota_fiscal") applyNotaFiscalRules();
+      if (moduleKey === "fornecedores") {
+        if (document.getElementById("sfAppMap")) applyFornecedorMapRules();
+        else applyFornecedorCadastroRules();
+      }
       if (moduleKey === "estoque_obras") applyEstoqueRules();
       if (moduleKey === "avaliacao_fornecedores") applyAvaliacaoRules();
     } finally {
@@ -1253,23 +1868,52 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
 </script>`;
 }
 
-export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtmlToolPageProps) {
-  const [html, setHtml] = useState<string | null>(null);
-  const [sharedStorage, setSharedStorage] = useState<Record<string, unknown> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierMapBase = false }: EmbeddedHtmlToolPageProps) {
   const { session, profile, obras } = useAuth();
+  const cacheKey = `${moduleKey}:${session?.user.id || "anon"}:${loadSupplierMapBase ? "suppliers" : "base"}`;
+  const cached = embeddedPageCache.get(cacheKey);
+  const [html, setHtml] = useState<string | null>(() => cached?.html ?? null);
+  const [sharedStorage, setSharedStorage] = useState<Record<string, unknown> | null>(() => cached?.sharedStorage ?? null);
+  const [supplierMapBase, setSupplierMapBase] = useState<Array<Record<string, unknown>> | null>(() => cached?.supplierMapBase ?? null);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadAttempt, setReloadAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
+    const cachedEntry = reloadAttempt ? undefined : embeddedPageCache.get(cacheKey);
+    if (cachedEntry) {
+      const nextSharedStorage = mergeCachedLocalStorage(moduleKey, cachedEntry.sharedStorage);
+      embeddedPageCache.set(cacheKey, { ...cachedEntry, sharedStorage: nextSharedStorage });
+      setHtml(cachedEntry.html);
+      setSharedStorage(nextSharedStorage);
+      setSupplierMapBase(cachedEntry.supplierMapBase);
+      setError(null);
+      return () => {
+        active = false;
+      };
+    }
+
     setHtml(null);
     setSharedStorage(null);
+    setSupplierMapBase(null);
     setError(null);
 
-    Promise.all([loadHtml(), loadEmbeddedStorageSnapshot(moduleKey)])
-      .then(([content, snapshot]) => {
+    Promise.all([
+      loadHtml(),
+      loadEmbeddedStorageSnapshot(moduleKey),
+      loadSupplierMapBase ? listFornecedorMapSuppliers() : Promise.resolve(null),
+    ])
+      .then(([content, snapshot, supplierMapRows]) => {
         if (!active) return;
+        const nextSupplierMapBase = Array.isArray(supplierMapRows) ? supplierMapRows : [];
+        embeddedPageCache.set(cacheKey, {
+          html: content,
+          sharedStorage: snapshot,
+          supplierMapBase: nextSupplierMapBase,
+        });
         setHtml(content);
         setSharedStorage(snapshot);
+        setSupplierMapBase(nextSupplierMapBase);
       })
       .catch(() => {
         if (active) setError("Nao foi possivel carregar este modulo.");
@@ -1278,15 +1922,26 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
     return () => {
       active = false;
     };
-  }, [loadHtml, moduleKey]);
+  }, [cacheKey, loadHtml, loadSupplierMapBase, moduleKey, reloadAttempt]);
+
+  useEffect(() => {
+    function handleEmbeddedInvalidation(event: Event) {
+      const targetModule = (event as CustomEvent<{ moduleKey?: ModuleKey }>).detail?.moduleKey;
+      if (targetModule && targetModule !== moduleKey) return;
+      setReloadAttempt((value) => value + 1);
+    }
+
+    window.addEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
+    return () => window.removeEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
+  }, [moduleKey]);
 
   const srcDoc = useMemo(() => {
-    if (!html || !sharedStorage) return undefined;
+    if (!html || !sharedStorage || supplierMapBase === null) return undefined;
     const baseHref = new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString();
     return withEmbeddedShell(html, baseHref, {
       module: moduleKey,
       role: profile?.role || "viewer",
-      canManage: canManage(profile?.role, moduleKey),
+      canManage: canManage(profile, moduleKey),
       user: {
         nome: profile?.nome || "",
         email: profile?.email || "",
@@ -1295,9 +1950,10 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         id: obra.id,
         nome: obra.nome,
         codigo: obra.codigo,
-        centro_custo: obra.centro_custo,
+          centro_custo: obra.centro_custo,
       })),
       sharedStorage,
+      supplierMapBase,
       integrations: {
         googleMapsApiKey: moduleKey === "fretes" ? String(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim() : "",
       },
@@ -1308,20 +1964,38 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml }: EmbeddedHtm
         contractFormStorageKey: CONTRATOS_FORM_STORAGE_KEY,
         contractRequestsStorageKey: CONTRATOS_REQUESTS_STORAGE_KEY,
         freightStorageKey: FRETES_STORAGE_KEY,
+        notaFiscalStorageKey: NOTA_FISCAL_STORAGE_KEY,
+        notaFiscalFormStorageKey: NOTA_FISCAL_FORM_STORAGE_KEY,
+        supplierRegistrationStorageKey: FORNECEDORES_CADASTRO_STORAGE_KEY,
+        supplierMapStorageKey: FORNECEDORES_MAP_STORAGE_KEY,
         stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
         evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
         sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter(
-          (key) => key !== FRETES_STORAGE_KEY && key !== CONTRATOS_REQUESTS_STORAGE_KEY
+          (key) =>
+            key !== FRETES_STORAGE_KEY &&
+            key !== NOTA_FISCAL_STORAGE_KEY &&
+            key !== CONTRATOS_REQUESTS_STORAGE_KEY &&
+            key !== FORNECEDORES_CADASTRO_STORAGE_KEY
         ),
       },
     });
-  }, [html, moduleKey, obras, profile, session, sharedStorage]);
+  }, [html, moduleKey, obras, profile, session, sharedStorage, supplierMapBase]);
 
   if (error) {
     return (
       <section className="state-panel">
         <h2>{error}</h2>
-        <p>Atualize a pagina e tente novamente.</p>
+        <p>O modulo nao foi derrubado; apenas a carga do asset falhou. Tente novamente sem precisar sair da tela.</p>
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={() => {
+            embeddedPageCache.delete(cacheKey);
+            setReloadAttempt((value) => value + 1);
+          }}
+        >
+          Tentar novamente
+        </button>
       </section>
     );
   }

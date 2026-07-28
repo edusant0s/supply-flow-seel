@@ -5,6 +5,8 @@ import { mapRowsForImport, readSpreadsheet, type RawRow } from "../lib/spreadshe
 import { clearEntityTable, upsertImportedRows } from "../services/entities";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
+import { invalidateAsyncData } from "../hooks";
+import { invalidateEmbeddedToolCache } from "./EmbeddedHtmlToolPage";
 
 const labels: Record<ImportKind, string> = {
   requisicoes: "Requisições",
@@ -22,6 +24,14 @@ const importKindModules: Record<ImportKind, ModuleKey> = {
   frota: "frota",
 };
 
+const importCacheKeys: Partial<Record<ImportKind, string[]>> = {
+  requisicoes: ["requisicoes", "dashboard:summary"],
+  orcamentos: ["orcamentos", "alertas:orcamentos", "dashboard:summary"],
+  contratos: ["dashboard:summary"],
+  fornecedores: ["fornecedores", "dashboard:summary"],
+  frota: ["dashboard:summary"],
+};
+
 export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplete: () => void }) {
   const { obras, profile } = useAuth();
   const [fileName, setFileName] = useState("");
@@ -33,7 +43,7 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
   const mapped = useMemo(() => mapRowsForImport(kind, rawRows, obras), [kind, obras, rawRows]);
   const preview = mapped.records.slice(0, 6);
   const headers = Object.keys(preview[0] || {}).filter((key) => key !== "payload").slice(0, 8);
-  const canImportKind = canManage(profile?.role, importKindModules[kind]);
+  const canImportKind = canManage(profile, importKindModules[kind]);
   const canClearPurchases = kind === "requisicoes" && canImportKind;
 
   async function handleFile(file: File | undefined) {
@@ -62,6 +72,7 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
       setRawRows([]);
       setFileName("");
       setMessage("Importação gravada com sucesso.");
+      invalidateImportedKind(kind);
       onComplete();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Falha ao gravar importação.");
@@ -82,6 +93,7 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
     try {
       await clearEntityTable("requisicoes");
       setMessage("Base antiga de compras apagada. Voce ja pode gravar a planilha nova.");
+      invalidateImportedKind("requisicoes");
       onComplete();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Falha ao apagar a base antiga.");
@@ -196,4 +208,9 @@ export function ImportWizard({ kind, onComplete }: { kind: ImportKind; onComplet
       </div>
     </section>
   );
+}
+
+function invalidateImportedKind(kind: ImportKind) {
+  invalidateEmbeddedToolCache(importKindModules[kind]);
+  invalidateAsyncData(importCacheKeys[kind] || ["dashboard:summary"], { clearCache: true });
 }

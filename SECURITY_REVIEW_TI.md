@@ -22,7 +22,7 @@
 
 ## Pendencias operacionais
 
-- Rotacionar a anon key/chaves do Supabase se a regra interna considerar a anon key como credencial vazada, porque ela apareceu no historico Git antes desta correcao.
+
 - Confirmar no Vercel que as mesmas variaveis existem em Production, Preview e Development.
 - Configurar `ALLOWED_ORIGINS` na Edge Function se houver novo dominio alem de Vercel, GitHub Pages e localhost.
 - Separar Supabase de desenvolvimento e producao quando o sistema for liberado para uso corporativo.

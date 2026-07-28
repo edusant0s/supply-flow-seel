@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
-import { Download, Mail, MessageCircle, Plus, Search, UploadCloud, X } from "lucide-react";
+import { Mail, MessageCircle, Plus, Search, UploadCloud } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
+import { DetailDrawer, InfoField } from "../../components/DetailDrawer";
+import { ExportButton } from "../../components/ExportButton";
 import { KanbanBoard } from "../../components/KanbanBoard";
 import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
 import { formatDateBr, headerKey, normalizeText } from "../../lib/format";
-import { exportToXlsx, type RawRow } from "../../lib/spreadsheet";
+import type { RawRow } from "../../lib/spreadsheet";
 import { canManage } from "../../lib/permissions";
 import { useAsyncData, useSessionState } from "../../hooks";
 import { listObras } from "../../services/admin";
@@ -27,7 +29,22 @@ const statuses = [
 const customBuyersKey = "supply-flow:custom-buyers";
 const assinaturaAliases = ["Data Assinatura RM", "Data Assinatura", "Dt Assinatura", "Assinatura RM", "Assinatura", "Data Aprovacao", "Data Aprovacao RM"];
 const obraAliases = ["Obra", "Nome da Obra", "Centro de Custo", "Descricao Centro Custo", "Centro Custo", "Local Obra"];
+const slaMediaAliases = [
+  "SLA Medio",
+  "SLA Médio",
+  "Media SLA",
+  "Média SLA",
+  "SLA Medio Dias",
+  "SLA Médio Dias",
+  "SLA Dias",
+  "Dias SLA",
+  "Lead Time",
+  "Leadtime",
+  "Tempo Medio",
+  "Tempo Médio",
+];
 const closedOrSeparatedStatuses = ["OC", "CANCELADA", "PENDENTE_ASSINATURA"];
+const slaComprasAliases = ["SLA COMPRAS", "SLA Compras", "SLA Compra", "SLA Compras Dias", "SLA de Compras"];
 const kanbanColumnLimit = 60;
 
 type RequisicaoIndex = {
@@ -40,7 +57,7 @@ type RequisicaoIndex = {
   ocNumber: string;
   firstItem: string;
   urgent: boolean;
-  elapsedDays: number | null;
+  averageSlaDays: number | null;
   itemCount: number;
 };
 
@@ -51,10 +68,11 @@ export function RequisicoesPage() {
   const [customBuyers, setCustomBuyers] = useState<string[]>(() => loadCustomBuyers());
   const [obraFilter, setObraFilter] = useSessionState("supply-flow:requisicoes:obra", "");
   const [slaFilter, setSlaFilter] = useSessionState("supply-flow:requisicoes:sla", "");
+  const [priorityFilter, setPriorityFilter] = useSessionState("supply-flow:requisicoes:prioridade", "");
   const [selectedId, setSelectedId] = useSessionState<string | null>("supply-flow:requisicoes:selected", null);
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("requisicoes"), [], { cacheKey: "requisicoes" });
   const obras = useAsyncData(listObras, [], { cacheKey: "obras" });
-  const canEdit = canManage(profile?.role, "requisicoes");
+  const canEdit = canManage(profile, "requisicoes");
 
   const indexed = useMemo(() => {
     return (data || []).map((item): RequisicaoIndex => {
@@ -65,10 +83,10 @@ export function RequisicoesPage() {
       const ocNumber = getOcNumber(item);
       const firstItem = getFirstItemDescription(item);
       const urgent = isUrgent(item);
-      const elapsedDays = getSlaElapsedDays(item);
+      const averageSlaDays = status === "OC" ? getImportedSlaComprasDays(item) : null;
       const rowsText = normalizeText(rows.map((row) => Object.values(row).join(" ")).join(" "));
       const searchText = normalizeText([item.numero_rm, ocNumber, item.solicitante, item.comprador, item.categoria, item.centro_custo, obra, status, rowsText].join(" "));
-      return { item, status, obra, sla, rows, rowsText: searchText, ocNumber, firstItem, urgent, elapsedDays, itemCount: rows.length };
+      return { item, status, obra, sla, rows, rowsText: searchText, ocNumber, firstItem, urgent, averageSlaDays, itemCount: rows.length };
     });
   }, [data, obras.data]);
 
@@ -83,14 +101,15 @@ export function RequisicoesPage() {
 
   const filteredIndex = useMemo(() => {
     const q = normalizeText(query);
-    return indexed.filter(({ item, obra, rowsText, sla }) => {
+    return indexed.filter(({ item, obra, rowsText, sla, urgent }) => {
       const matchesBuyer = buyer === "Todos" || (item.comprador || "Sem comprador") === buyer;
       const matchesObra = !obraFilter || obra === obraFilter;
       const matchesSla = !slaFilter || sla.tone === slaFilter;
+      const matchesPriority = !priorityFilter || (priorityFilter === "urgente" ? urgent : !urgent);
       const matchesQuery = !q || rowsText.includes(q);
-      return matchesBuyer && matchesObra && matchesSla && matchesQuery;
+      return matchesBuyer && matchesObra && matchesSla && matchesPriority && matchesQuery;
     });
-  }, [buyer, indexed, obraFilter, query, slaFilter]);
+  }, [buyer, indexed, obraFilter, priorityFilter, query, slaFilter]);
 
   const filtered = useMemo(() => filteredIndex.map(({ item }) => item), [filteredIndex]);
   const indexById = useMemo(() => new Map(filteredIndex.map((item) => [item.item.id, item])), [filteredIndex]);
@@ -143,6 +162,11 @@ export function RequisicoesPage() {
             </option>
           ))}
         </select>
+        <select value={priorityFilter} onChange={(event) => setPriorityFilter(event.target.value)}>
+          <option value="">Todas prioridades</option>
+          <option value="normal">RMs normais</option>
+          <option value="urgente">RMs urgentes</option>
+        </select>
         <select value={slaFilter} onChange={(event) => setSlaFilter(event.target.value)}>
           <option value="">Todos SLAs</option>
           <option value="danger">Atrasadas</option>
@@ -150,31 +174,23 @@ export function RequisicoesPage() {
           <option value="success">No prazo</option>
           <option value="neutral">Sem SLA</option>
         </select>
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={() =>
-            exportToXlsx(
-              filtered.map((item) => ({
-                RM: item.numero_rm,
-                Status: statusLabel(getRequisicaoStatus(item)),
-                OC: getOcNumber(item),
-                Comprador: item.comprador,
-                Categoria: item.categoria,
-                Obra: obraName(item, obras.data || []),
-                CentroCusto: item.centro_custo,
-                Solicitante: item.solicitante,
-                DataInclusao: formatDateBr(item.data_inclusao),
-                DataNecessidade: formatDateBr(item.data_necessidade),
-                ItensAgrupados: getPayloadRows(item.payload).length,
-              })),
-              `requisicoes-${new Date().toISOString().slice(0, 10)}.xlsx`
-            )
-          }
-        >
-          <Download size={18} />
-          Exportar
-        </button>
+        <ExportButton
+          rows={filtered.map((item) => ({
+            RM: item.numero_rm,
+            Status: statusLabel(getRequisicaoStatus(item)),
+            Prioridade: isUrgent(item) ? "Urgente" : "Normal",
+            OC: getOcNumber(item),
+            Comprador: item.comprador,
+            Categoria: item.categoria,
+            Obra: obraName(item, obras.data || []),
+            CentroCusto: item.centro_custo,
+            Solicitante: item.solicitante,
+            DataInclusao: formatDateBr(item.data_inclusao),
+            DataNecessidade: formatDateBr(item.data_necessidade),
+            ItensAgrupados: getPayloadRows(item.payload).length,
+          }))}
+          filename={`requisicoes-${new Date().toISOString().slice(0, 10)}.xlsx`}
+        />
         <RoleGate module="requisicoes">
           <Link className="primary-button" to="/importacoes">
             <UploadCloud size={18} />
@@ -264,7 +280,7 @@ export function RequisicoesPage() {
           <article>
             <span>SLA medio</span>
             <strong>{ocSummary.avgSla}</strong>
-            <b>Media das OCs filtradas</b>
+            <b>Coluna SLA Compras</b>
           </article>
         </div>
       </section>
@@ -366,74 +382,53 @@ function RequisicaoDrawer({
   }
 
   return (
-    <div className="drawer-backdrop">
-      <aside className="detail-drawer">
-        <header>
-          <div>
-            <span className="eyebrow">Ficha completa da RM</span>
-            <h2>RM {item.numero_rm || "S/N"}</h2>
-          </div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Fechar">
-            <X size={18} />
+    <DetailDrawer eyebrow="Ficha completa da RM" title={`RM ${item.numero_rm || "S/N"}`} onClose={onClose}>
+      <div className="drawer-grid">
+        <InfoField label="Status" value={statusLabel(getRequisicaoStatus(item))} />
+        <InfoField label="OC" value={getOcNumber(item) || "-"} />
+        <InfoField label="Obra" value={obraName(item, obras)} />
+        <InfoField label="SLA" value={sla.label} />
+        <InfoField label="Solicitante" value={item.solicitante || "-"} />
+        <InfoField label="Centro de custo" value={item.centro_custo || "-"} />
+        <InfoField label="Data inclusao" value={formatDateBr(item.data_inclusao)} />
+        <InfoField label="Necessidade" value={formatDateBr(item.data_necessidade)} />
+        <InfoField label="Telefone comprador" value={getPayloadField(item.payload, ["Telefone", "Celular", "WhatsApp", "Wpp"]) || "-"} />
+        <InfoField label="Email comprador" value={getPayloadField(item.payload, ["Email", "E-mail", "Correio"]) || "-"} />
+      </div>
+
+      {canEdit ? (
+        <div className="drawer-edit-row">
+          <label>
+            Comprador
+            <select value={newBuyer} onChange={(event) => setNewBuyer(event.target.value)}>
+              {Array.from(new Set(["Sem comprador", ...buyers, item.comprador || "Sem comprador"])).map((buyer) => (
+                <option key={buyer}>{buyer}</option>
+              ))}
+            </select>
+          </label>
+          <button className="primary-button" type="button" onClick={saveBuyer}>
+            Salvar comprador
           </button>
-        </header>
-
-        <div className="drawer-grid">
-          <Info label="Status" value={statusLabel(getRequisicaoStatus(item))} />
-          <Info label="OC" value={getOcNumber(item) || "-"} />
-          <Info label="Obra" value={obraName(item, obras)} />
-          <Info label="SLA" value={sla.label} />
-          <Info label="Solicitante" value={item.solicitante || "-"} />
-          <Info label="Centro de custo" value={item.centro_custo || "-"} />
-          <Info label="Data inclusao" value={formatDateBr(item.data_inclusao)} />
-          <Info label="Necessidade" value={formatDateBr(item.data_necessidade)} />
-          <Info label="Telefone comprador" value={getPayloadField(item.payload, ["Telefone", "Celular", "WhatsApp", "Wpp"]) || "-"} />
-          <Info label="Email comprador" value={getPayloadField(item.payload, ["Email", "E-mail", "Correio"]) || "-"} />
         </div>
+      ) : null}
 
-        {canEdit ? (
-          <div className="drawer-edit-row">
-            <label>
-              Comprador
-              <select value={newBuyer} onChange={(event) => setNewBuyer(event.target.value)}>
-                {Array.from(new Set(["Sem comprador", ...buyers, item.comprador || "Sem comprador"])).map((buyer) => (
-                  <option key={buyer}>{buyer}</option>
-                ))}
-              </select>
-            </label>
-            <button className="primary-button" type="button" onClick={saveBuyer}>
-              Salvar comprador
-            </button>
+      <section className="panel panel--flat">
+        <div className="panel-heading">
+          <div>
+            <span className="eyebrow">Itens da RM</span>
+            <h3>{rows.length} linha(s) importada(s)</h3>
           </div>
-        ) : null}
-
-        <section className="panel panel--flat">
-          <div className="panel-heading">
-            <div>
-              <span className="eyebrow">Itens da RM</span>
-              <h3>{rows.length} linha(s) importada(s)</h3>
-            </div>
-          </div>
-          <DataTable
-            data={rows}
-            columns={[
-              { key: "desc", label: "Descricao", render: (row) => getAny(row, ["Descricao Item", "Produto", "Descricao"]) || "-" },
-              { key: "cat", label: "Categoria", render: (row) => getAny(row, ["Categoria Item", "Categoria", "Filial"]) || "-" },
-              { key: "sit", label: "Situacao", render: (row) => getAny(row, ["Situacao RM", "Status"]) || "-" },
-            ]}
-          />
-        </section>
-      </aside>
-    </div>
-  );
-}
-
-function Info({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="info-field">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
+        </div>
+        <DataTable
+          data={rows}
+          columns={[
+            { key: "desc", label: "Descricao", render: (row) => getAny(row, ["Descricao Item", "Produto", "Descricao"]) || "-" },
+            { key: "cat", label: "Categoria", render: (row) => getAny(row, ["Categoria Item", "Categoria", "Filial"]) || "-" },
+            { key: "sit", label: "Situacao", render: (row) => getAny(row, ["Situacao RM", "Status"]) || "-" },
+          ]}
+        />
+      </section>
+    </DetailDrawer>
   );
 }
 
@@ -532,6 +527,22 @@ function getSlaElapsedDays(item: Requisicao) {
   return null;
 }
 
+function getImportedSlaAverageDays(item: Requisicao) {
+  return getImportedSlaAverageFromAliases(item, slaMediaAliases);
+}
+
+function getImportedSlaComprasDays(item: Requisicao) {
+  return getImportedSlaAverageFromAliases(item, slaComprasAliases);
+}
+
+function getImportedSlaAverageFromAliases(item: Requisicao, aliases: string[]) {
+  const values = getPayloadRows(item.payload)
+    .map((row) => parseNumberFromCell(getAny(row, aliases)))
+    .filter((value): value is number => value !== null);
+  if (!values.length) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
 function buildPrioritySummary(items: Requisicao[]) {
   const total = items.length;
   const urgent = items.filter(isUrgent).length;
@@ -553,19 +564,20 @@ function buildPrioritySummaryFromIndex(items: RequisicaoIndex[]) {
 }
 
 function buildOcSummary(items: Requisicao[]) {
-  const urgentItems = items.filter(isUrgent);
-  const normalItems = items.filter((item) => !isUrgent(item));
+  const ocItems = items.filter((item) => getRequisicaoStatus(item) === "OC");
+  const urgentItems = ocItems.filter(isUrgent);
+  const normalItems = ocItems.filter((item) => !isUrgent(item));
   return {
-    total: items.length,
-    avgSla: averageSlaLabel(items),
+    total: ocItems.length,
+    avgSla: averageSlaLabel(ocItems),
     normal: {
       count: normalItems.length,
-      percent: formatPercent(normalItems.length, items.length),
+      percent: formatPercent(normalItems.length, ocItems.length),
       avgSla: averageSlaLabel(normalItems),
     },
     urgent: {
       count: urgentItems.length,
-      percent: formatPercent(urgentItems.length, items.length),
+      percent: formatPercent(urgentItems.length, ocItems.length),
       avgSla: averageSlaLabel(urgentItems),
     },
   };
@@ -591,17 +603,27 @@ function buildOcSummaryFromIndex(items: RequisicaoIndex[]) {
 }
 
 function averageSlaLabel(items: Requisicao[]) {
-  const values = items.map(getSlaElapsedDays).filter((value): value is number => value !== null);
+  const values = items.map(getImportedSlaComprasDays).filter((value): value is number => value !== null);
   if (!values.length) return "sem data";
   const average = values.reduce((sum, value) => sum + value, 0) / values.length;
   return `${average.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}d`;
 }
 
 function averageIndexedSlaLabel(items: RequisicaoIndex[]) {
-  const values = items.map((item) => item.elapsedDays).filter((value): value is number => value !== null);
+  const values = items.map((item) => item.averageSlaDays).filter((value): value is number => value !== null);
   if (!values.length) return "sem data";
   const average = values.reduce((sum, value) => sum + value, 0) / values.length;
   return `${average.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}d`;
+}
+
+function parseNumberFromCell(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const match = String(value ?? "")
+    .replace(",", ".")
+    .match(/-?\d+(\.\d+)?/);
+  if (!match) return null;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function formatPercent(value: number, total: number) {
