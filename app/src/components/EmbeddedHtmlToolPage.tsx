@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
-import { Car, Database, FileText, MapPinned, Package, ReceiptText, ShieldCheck, Star, Truck, UserRoundPlus } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LoadingState } from "./States";
-import { ModuleHero } from "./ModuleHero";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
 import {
@@ -535,44 +533,6 @@ const embeddedChromeCss = `
     }
   }
 `;
-
-const embeddedHeroCopy: Partial<Record<ModuleKey, { description: string; processLabel: string; icon: ElementType }>> = {
-  contratos: {
-    description: "Solicitacoes, processo detalhado, fases, anexos e acompanhamento contratual no padrao Supply Flow.",
-    processLabel: "Contratos",
-    icon: FileText,
-  },
-  fretes: {
-    description: "Solicitacoes logisticas, cotacoes, kanban, notas fiscais vinculadas e acompanhamento operacional.",
-    processLabel: "Fretes",
-    icon: Truck,
-  },
-  nota_fiscal: {
-    description: "Solicitacoes de nota fiscal de simples remessa com itens, dados fiscais e vinculo com fretes.",
-    processLabel: "NF",
-    icon: ReceiptText,
-  },
-  estoque_obras: {
-    description: "Loja de materiais, pedidos das obras, movimentacoes e integracao com fretes quando necessario.",
-    processLabel: "Estoque",
-    icon: Package,
-  },
-  frota: {
-    description: "Gestao de veiculos, contratos, condutores, disponibilidade e indicadores da frota.",
-    processLabel: "Frota",
-    icon: Car,
-  },
-  fornecedores: {
-    description: "Mapa, cadastro, contatos e consulta corporativa da base de fornecedores da SEEL.",
-    processLabel: "Fornecedores",
-    icon: MapPinned,
-  },
-  avaliacao_fornecedores: {
-    description: "Avaliacoes, filtros por obra, relatorios e governanca de desempenho dos fornecedores.",
-    processLabel: "Avaliacao",
-    icon: Star,
-  },
-};
 
 type EmbeddedContext = {
   module: ModuleKey;
@@ -2185,30 +2145,8 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
 
   if (!srcDoc) return <LoadingState label={`Carregando ${title}...`} />;
 
-  const hero = embeddedHeroCopy[moduleKey] || {
-    description: "Modulo operacional padronizado com a identidade visual do Supply Flow SEEL.",
-    processLabel: "Modulo",
-    icon: UserRoundPlus,
-  };
-  const HeroIcon = hero.icon;
-  const canEditModule = canManage(profile, moduleKey);
-
   return (
     <div className="embedded-tool-page">
-      <ModuleHero
-        title={title}
-        description={hero.description}
-        metrics={[
-          { label: "Modulo", value: hero.processLabel, icon: <HeroIcon size={18} /> },
-          { label: "Base", value: "Supabase", icon: <Database size={18} /> },
-        ]}
-        badge={
-          <>
-            <ShieldCheck size={16} />
-            {canEditModule ? "Controle administrativo" : "Consulta e solicitacao"}
-          </>
-        }
-      />
       <iframe
         ref={frameRef}
         className="embedded-tool-frame"

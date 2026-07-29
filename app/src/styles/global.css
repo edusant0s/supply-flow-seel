@@ -1014,18 +1014,17 @@ th {
 }
 
 .embedded-tool-page {
-  display: grid;
-  gap: 14px;
+  display: block;
   min-height: calc(100vh - 124px);
   background: transparent;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .embedded-tool-frame {
   display: block;
   width: 100%;
-  height: calc(100vh - 266px);
-  min-height: 680px;
+  height: calc(100vh - 124px);
+  min-height: calc(100vh - 124px);
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
@@ -3168,8 +3167,8 @@ html[data-theme="dark"] .oc-summary__urgent {
   }
 
   .embedded-tool-frame {
-    min-height: calc(100vh - 220px);
-    height: calc(100vh - 220px);
+    min-height: calc(100vh - 82px);
+    height: calc(100vh - 82px);
     border-radius: 0;
   }
 }

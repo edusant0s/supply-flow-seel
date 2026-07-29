@@ -1,12 +1,9 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
-  CheckCircle2,
   ClipboardList,
-  FileSpreadsheet,
   PenLine,
   Settings2,
-  TimerReset,
   type LucideIcon,
 } from "lucide-react";
 import { EmptyState, LoadingState } from "../../components/States";
@@ -15,14 +12,12 @@ import { canManage } from "../../lib/permissions";
 import { invalidateAsyncData, useAsyncData, useSessionState } from "../../hooks";
 import { listEntities } from "../../services/entities";
 import { ORCAMENTOS_FORM_STORAGE_KEY, listEmbeddedStateValue, saveEmbeddedStateValue } from "../../services/embeddedSync";
-import type { Orcamento } from "../../types";
 import { DynamicOrcamentoForm } from "./DynamicOrcamentoForm";
 import { DEFAULT_ORCAMENTO_FORM_SPEC, type OrcamentoFormSpec } from "./formSpec";
 import { OrcamentosDashboardTab } from "./OrcamentosDashboardTab";
 import { OrcamentoFormEditor } from "./OrcamentoFormEditor";
 import { OrcamentosKanbanTab } from "./OrcamentosKanbanTab";
 import { OrcamentosReportTab } from "./OrcamentosReportTab";
-import { formatBusinessDuration, getOrcamentoSla } from "./sla";
 
 type OrcamentosTab = "dashboard" | "formulario" | "kanban" | "relatorio" | "editor";
 
@@ -59,7 +54,6 @@ export function OrcamentosPage() {
   const rows = data || [];
   const spec: OrcamentoFormSpec = specState.data && specState.data.length ? specState.data : DEFAULT_ORCAMENTO_FORM_SPEC;
   const tabs = isSuperAdmin ? [...baseTabs, { key: "editor" as const, label: "Editor do formulario", icon: Settings2 }] : baseTabs;
-  const summary = summarizeOrcamentos(rows, now);
 
   async function saveSpec(next: OrcamentoFormSpec) {
     await saveEmbeddedStateValue("orcamentos", ORCAMENTOS_FORM_STORAGE_KEY, next);
@@ -69,21 +63,6 @@ export function OrcamentosPage() {
 
   return (
     <div className="page-stack orcamentos-workspace">
-      <section className="module-command-bar orcamentos-hero">
-        <div className="orcamentos-hero__copy">
-          <span className="eyebrow">Supply Flow SEEL</span>
-          <h2>Orcamentos</h2>
-          <p>Solicitacoes, cotacoes, anexos, saving e SLA em horario comercial no mesmo fluxo operacional dos demais modulos.</p>
-        </div>
-        <div className="module-command-bar__actions orcamentos-hero__metrics">
-          <HeroMetric icon={<FileSpreadsheet size={18} />} label="Solicitacoes" value={summary.total} />
-          <HeroMetric icon={<ClipboardList size={18} />} label="Em aberto" value={summary.open} />
-          <HeroMetric icon={<CheckCircle2 size={18} />} label="Finalizados" value={summary.finished} />
-          <HeroMetric icon={<TimerReset size={18} />} label="SLA medio" value={summary.averageSla} />
-          <span className="module-command-bar__badge">{canEdit ? "Controle administrativo" : "Consulta e acompanhamento"}</span>
-        </div>
-      </section>
-
       <div className="module-tabs orcamentos-tabs">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -115,27 +94,4 @@ export function OrcamentosPage() {
       {activeTab === "editor" && isSuperAdmin ? <OrcamentoFormEditor spec={spec} onSave={saveSpec} /> : null}
     </div>
   );
-}
-
-function HeroMetric({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
-  return (
-    <span className="orcamentos-hero-metric">
-      {icon}
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </span>
-  );
-}
-
-function summarizeOrcamentos(rows: Orcamento[], now: number) {
-  const open = rows.filter((item) => ["nao_iniciado", "em_cotacao"].includes(item.status || "nao_iniciado")).length;
-  const finished = rows.filter((item) => item.status === "finalizado").length;
-  const basis = finished ? rows.filter((item) => item.status === "finalizado") : rows;
-  const averageMs = basis.length ? basis.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0) / basis.length : 0;
-  return {
-    total: rows.length,
-    open,
-    finished,
-    averageSla: formatBusinessDuration(averageMs),
-  };
 }

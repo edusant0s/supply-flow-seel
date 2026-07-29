@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, ClipboardList, Clock3, Mail, MessageCircle, Plus, Search, UploadCloud } from "lucide-react";
+import { Mail, MessageCircle, Plus, Search, UploadCloud } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { DetailDrawer, InfoField } from "../../components/DetailDrawer";
 import { ExportButton } from "../../components/ExportButton";
 import { KanbanBoard } from "../../components/KanbanBoard";
 import { KpiCard } from "../../components/KpiCard";
-import { ModuleHero } from "../../components/ModuleHero";
 import { RoleGate } from "../../components/RoleGate";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
@@ -152,18 +151,6 @@ export function RequisicoesPage() {
 
   return (
     <div className="page-stack">
-      <ModuleHero
-        title="Requisicoes de suprimentos"
-        description="Acompanhamento de RMs, compradores, fases de compra, OCs, urgencias e SLA em um fluxo unico de suprimentos."
-        metrics={[
-          { label: "RMs visiveis", value: activeItems.length, icon: <ClipboardList size={18} /> },
-          { label: "Itens abertos", value: openItemCount, icon: <Clock3 size={18} /> },
-          { label: "Atrasadas", value: lateCount, icon: <AlertTriangle size={18} /> },
-          { label: "No prazo", value: okCount, icon: <CheckCircle2 size={18} /> },
-        ]}
-        badge={canEdit ? "Controle administrativo" : "Consulta operacional"}
-      />
-
       <section className="toolbar-panel toolbar-panel--wrap">
         <label className="search-field">
           <Search size={18} />
