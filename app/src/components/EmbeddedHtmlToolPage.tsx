@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ElementType } from "react";
+import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
 import { Car, Database, FileText, MapPinned, Package, ReceiptText, ShieldCheck, Star, Truck, UserRoundPlus } from "lucide-react";
 import { LoadingState } from "./States";
 import { ModuleHero } from "./ModuleHero";
@@ -619,11 +619,15 @@ type EmbeddedPageCacheEntry = {
 const embeddedPageCache = new Map<string, EmbeddedPageCacheEntry>();
 const embeddedToolInvalidationEvent = "supply-flow:embedded-tool-cache-invalidated";
 
-export function invalidateEmbeddedToolCache(moduleKey?: ModuleKey) {
+type EmbeddedToolInvalidationOptions = {
+  notifyActive?: boolean;
+};
+
+export function invalidateEmbeddedToolCache(moduleKey?: ModuleKey, options: EmbeddedToolInvalidationOptions = {}) {
   Array.from(embeddedPageCache.keys()).forEach((key) => {
     if (!moduleKey || key.startsWith(`${moduleKey}:`)) embeddedPageCache.delete(key);
   });
-  if (typeof window !== "undefined") {
+  if (options.notifyActive && typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(embeddedToolInvalidationEvent, { detail: { moduleKey } }));
   }
 }
@@ -679,6 +683,36 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
   window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
   window.SUPPLY_FLOW_SUPPLIER_MAP_BASE = Array.isArray(ctx.supplierMapBase) ? ctx.supplierMapBase : [];
+
+  function updateHostContext(nextContext) {
+    if (!nextContext || typeof nextContext !== "object") return;
+    ctx = Object.assign({}, ctx, nextContext);
+    syncConfig = Object.assign({}, syncConfig, nextContext.sync || {});
+    integrations = Object.assign({}, integrations, nextContext.integrations || {});
+    canManage = !!ctx.canManage;
+    isSuperAdmin = ctx.role === "super_admin";
+    hostUser = ctx.user || hostUser || {};
+    window.SEEL_CURRENT_USER = {
+      name: hostUser.nome || "",
+      nome: hostUser.nome || "",
+      email: hostUser.email || "",
+      userEmail: hostUser.email || ""
+    };
+    window.SEEL_USER = window.SEEL_CURRENT_USER;
+    window.PLATFORM_USER = window.SEEL_CURRENT_USER;
+    window.SUPPLY_FLOW_USER = window.SEEL_CURRENT_USER;
+    window.currentUser = window.SEEL_CURRENT_USER;
+    window.supplyFlowUser = window.SEEL_CURRENT_USER;
+    window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
+    window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
+    applyRules();
+  }
+
+  window.addEventListener("message", function(event) {
+    var message = event && event.data;
+    if (!message || message.type !== "supply-flow:context-update") return;
+    updateHostContext(message.context || {});
+  });
 
   Object.keys(sharedStorage).forEach(function(key) {
     try {
@@ -2000,11 +2034,60 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
   const { session, profile, obras } = useAuth();
   const cacheKey = `${moduleKey}:${session?.user.id || "anon"}:${loadSupplierMapBase ? "suppliers" : "base"}`;
   const cached = embeddedPageCache.get(cacheKey);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
+  const srcDocVersionRef = useRef<string | null>(null);
   const [html, setHtml] = useState<string | null>(() => cached?.html ?? null);
   const [sharedStorage, setSharedStorage] = useState<Record<string, unknown> | null>(() => cached?.sharedStorage ?? null);
   const [supplierMapBase, setSupplierMapBase] = useState<Array<Record<string, unknown>> | null>(() => cached?.supplierMapBase ?? null);
   const [error, setError] = useState<string | null>(null);
   const [reloadAttempt, setReloadAttempt] = useState(0);
+  const [srcDoc, setSrcDoc] = useState<string | undefined>(undefined);
+  const baseHref = useMemo(() => new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString(), []);
+
+  const embeddedContext = useMemo<EmbeddedContext>(
+    () => ({
+      module: moduleKey,
+      role: profile?.role || "viewer",
+      canManage: canManage(profile, moduleKey),
+      user: {
+        nome: profile?.nome || "",
+        email: profile?.email || "",
+      },
+      obras: obras.map((obra) => ({
+        id: obra.id,
+        nome: obra.nome,
+        codigo: obra.codigo,
+        centro_custo: obra.centro_custo,
+      })),
+      sharedStorage: sharedStorage || {},
+      supplierMapBase: supplierMapBase || [],
+      integrations: {
+        googleMapsApiKey: moduleKey === "fretes" ? String(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim() : "",
+      },
+      sync: {
+        supabaseUrl: supabaseUrl || "",
+        supabaseAnonKey: supabaseAnonKey || "",
+        accessToken: session?.access_token || "",
+        contractFormStorageKey: CONTRATOS_FORM_STORAGE_KEY,
+        contractRequestsStorageKey: CONTRATOS_REQUESTS_STORAGE_KEY,
+        freightStorageKey: FRETES_STORAGE_KEY,
+        notaFiscalStorageKey: NOTA_FISCAL_STORAGE_KEY,
+        notaFiscalFormStorageKey: NOTA_FISCAL_FORM_STORAGE_KEY,
+        supplierRegistrationStorageKey: FORNECEDORES_CADASTRO_STORAGE_KEY,
+        supplierMapStorageKey: FORNECEDORES_MAP_STORAGE_KEY,
+        stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
+        evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
+        sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter(
+          (key) =>
+            key !== FRETES_STORAGE_KEY &&
+            key !== NOTA_FISCAL_STORAGE_KEY &&
+            key !== CONTRATOS_REQUESTS_STORAGE_KEY &&
+            key !== FORNECEDORES_CADASTRO_STORAGE_KEY
+        ),
+      },
+    }),
+    [moduleKey, obras, profile, session?.access_token, sharedStorage, supplierMapBase]
+  );
 
   useEffect(() => {
     let active = true;
@@ -2063,51 +2146,23 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
     return () => window.removeEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
   }, [moduleKey]);
 
-  const srcDoc = useMemo(() => {
-    if (!html || !sharedStorage || supplierMapBase === null) return undefined;
-    const baseHref = new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString();
-    return withEmbeddedShell(html, baseHref, {
-      module: moduleKey,
-      role: profile?.role || "viewer",
-      canManage: canManage(profile, moduleKey),
-      user: {
-        nome: profile?.nome || "",
-        email: profile?.email || "",
-      },
-      obras: obras.map((obra) => ({
-        id: obra.id,
-        nome: obra.nome,
-        codigo: obra.codigo,
-          centro_custo: obra.centro_custo,
-      })),
-      sharedStorage,
-      supplierMapBase,
-      integrations: {
-        googleMapsApiKey: moduleKey === "fretes" ? String(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim() : "",
-      },
-      sync: {
-        supabaseUrl: supabaseUrl || "",
-        supabaseAnonKey: supabaseAnonKey || "",
-        accessToken: session?.access_token || "",
-        contractFormStorageKey: CONTRATOS_FORM_STORAGE_KEY,
-        contractRequestsStorageKey: CONTRATOS_REQUESTS_STORAGE_KEY,
-        freightStorageKey: FRETES_STORAGE_KEY,
-        notaFiscalStorageKey: NOTA_FISCAL_STORAGE_KEY,
-        notaFiscalFormStorageKey: NOTA_FISCAL_FORM_STORAGE_KEY,
-        supplierRegistrationStorageKey: FORNECEDORES_CADASTRO_STORAGE_KEY,
-        supplierMapStorageKey: FORNECEDORES_MAP_STORAGE_KEY,
-        stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
-        evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
-        sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter(
-          (key) =>
-            key !== FRETES_STORAGE_KEY &&
-            key !== NOTA_FISCAL_STORAGE_KEY &&
-            key !== CONTRATOS_REQUESTS_STORAGE_KEY &&
-            key !== FORNECEDORES_CADASTRO_STORAGE_KEY
-        ),
-      },
-    });
-  }, [html, moduleKey, obras, profile, session, sharedStorage, supplierMapBase]);
+  useEffect(() => {
+    if (!html || !sharedStorage || supplierMapBase === null) {
+      setSrcDoc(undefined);
+      srcDocVersionRef.current = null;
+      return;
+    }
+
+    const nextVersion = `${cacheKey}:${reloadAttempt}`;
+    if (srcDocVersionRef.current === nextVersion) return;
+    srcDocVersionRef.current = nextVersion;
+    setSrcDoc(withEmbeddedShell(html, baseHref, embeddedContext));
+  }, [baseHref, cacheKey, embeddedContext, html, reloadAttempt, sharedStorage, supplierMapBase]);
+
+  useEffect(() => {
+    if (!srcDoc) return;
+    frameRef.current?.contentWindow?.postMessage({ type: "supply-flow:context-update", context: embeddedContext }, window.location.origin);
+  }, [embeddedContext, srcDoc]);
 
   if (error) {
     return (
@@ -2155,9 +2210,11 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
         }
       />
       <iframe
+        ref={frameRef}
         className="embedded-tool-frame"
         title={title}
         srcDoc={srcDoc}
+        onLoad={() => frameRef.current?.contentWindow?.postMessage({ type: "supply-flow:context-update", context: embeddedContext }, window.location.origin)}
         sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox"
       />
     </div>
