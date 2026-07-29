@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Building2, CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
+import { ModuleHero } from "../../components/ModuleHero";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAsyncData } from "../../hooks";
 import { deleteObra, listObras, upsertObra } from "../../services/admin";
@@ -39,6 +40,16 @@ export function SettingsPage() {
 
   return (
     <div className="page-stack">
+      <ModuleHero
+        title="Configuracoes"
+        description="Administracao das obras e centros de custo que organizam as permissoes e filtros do Supply Flow."
+        metrics={[
+          { label: "Obras", value: data?.length || 0, icon: <Building2 size={18} /> },
+          { label: "Ativas", value: (data || []).filter((obra) => obra.ativo).length, icon: <CheckCircle2 size={18} /> },
+        ]}
+        badge="Governanca"
+      />
+
       <section className="panel">
         <div className="panel-heading">
           <div>

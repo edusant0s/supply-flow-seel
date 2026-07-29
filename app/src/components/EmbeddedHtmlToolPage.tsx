@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ElementType } from "react";
+import { Car, Database, FileText, MapPinned, Package, ReceiptText, ShieldCheck, Star, Truck, UserRoundPlus } from "lucide-react";
 import { LoadingState } from "./States";
+import { ModuleHero } from "./ModuleHero";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
 import {
@@ -89,6 +91,94 @@ const embeddedChromeCss = `
     font-size: 14px !important;
     overflow-x: hidden !important;
     padding: 0 !important;
+    background: #f0f7fa !important;
+    color: #081b23 !important;
+    font-family: Roboto, "Segoe UI", Arial, sans-serif !important;
+  }
+
+  body.supply-embedded h1,
+  body.supply-embedded h2,
+  body.supply-embedded h3,
+  body.supply-embedded h4 {
+    color: #081b23 !important;
+    letter-spacing: 0 !important;
+  }
+
+  body.supply-embedded .card,
+  body.supply-embedded .panel,
+  body.supply-embedded .section,
+  body.supply-embedded .stat,
+  body.supply-embedded .kpi,
+  body.supply-embedded .analytics-card,
+  body.supply-embedded .chart-card,
+  body.supply-embedded .table-wrap,
+  body.supply-embedded .table-panel,
+  body.supply-embedded .toolbar,
+  body.supply-embedded .toolbar-panel,
+  body.supply-embedded .filters,
+  body.supply-embedded .kanban-column,
+  body.supply-embedded .col,
+  body.supply-embedded .supplier,
+  body.supply-embedded .order-card,
+  body.supply-embedded .freight-card,
+  body.supply-embedded .vehicle-card,
+  body.supply-embedded .analysis-card,
+  body.supply-embedded .summary-card,
+  body.supply-embedded .insight-card {
+    border: 1px solid #d1e1e8 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(10, 46, 61, .1) !important;
+  }
+
+  body.supply-embedded .kpi,
+  body.supply-embedded .stat,
+  body.supply-embedded .kpi-card,
+  body.supply-embedded .stat-card {
+    border-left: 3px solid #fcc800 !important;
+  }
+
+  body.supply-embedded .col,
+  body.supply-embedded .kanban-column {
+    background: #f7fbfd !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8) !important;
+  }
+
+  body.supply-embedded button,
+  body.supply-embedded .btn,
+  body.supply-embedded .primary,
+  body.supply-embedded input,
+  body.supply-embedded select,
+  body.supply-embedded textarea {
+    border-radius: 8px !important;
+    font-size: 13px !important;
+  }
+
+  body.supply-embedded input,
+  body.supply-embedded select,
+  body.supply-embedded textarea {
+    border: 1px solid #d1e1e8 !important;
+    background: #ffffff !important;
+    color: #081b23 !important;
+  }
+
+  body.supply-embedded button,
+  body.supply-embedded .btn,
+  body.supply-embedded .primary {
+    min-height: 38px !important;
+    border: 1px solid #1b6d8e !important;
+    background: #1b6d8e !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    font-weight: 850 !important;
+  }
+
+  body.supply-embedded .secondary,
+  body.supply-embedded .btn.secondary,
+  body.supply-embedded button.secondary {
+    background: #ffffff !important;
+    color: #0a2e3d !important;
+    border-color: #d1e1e8 !important;
   }
 
   html[data-theme="dark"],
@@ -445,6 +535,44 @@ const embeddedChromeCss = `
     }
   }
 `;
+
+const embeddedHeroCopy: Partial<Record<ModuleKey, { description: string; processLabel: string; icon: ElementType }>> = {
+  contratos: {
+    description: "Solicitacoes, processo detalhado, fases, anexos e acompanhamento contratual no padrao Supply Flow.",
+    processLabel: "Contratos",
+    icon: FileText,
+  },
+  fretes: {
+    description: "Solicitacoes logisticas, cotacoes, kanban, notas fiscais vinculadas e acompanhamento operacional.",
+    processLabel: "Fretes",
+    icon: Truck,
+  },
+  nota_fiscal: {
+    description: "Solicitacoes de nota fiscal de simples remessa com itens, dados fiscais e vinculo com fretes.",
+    processLabel: "NF",
+    icon: ReceiptText,
+  },
+  estoque_obras: {
+    description: "Loja de materiais, pedidos das obras, movimentacoes e integracao com fretes quando necessario.",
+    processLabel: "Estoque",
+    icon: Package,
+  },
+  frota: {
+    description: "Gestao de veiculos, contratos, condutores, disponibilidade e indicadores da frota.",
+    processLabel: "Frota",
+    icon: Car,
+  },
+  fornecedores: {
+    description: "Mapa, cadastro, contatos e consulta corporativa da base de fornecedores da SEEL.",
+    processLabel: "Fornecedores",
+    icon: MapPinned,
+  },
+  avaliacao_fornecedores: {
+    description: "Avaliacoes, filtros por obra, relatorios e governanca de desempenho dos fornecedores.",
+    processLabel: "Avaliacao",
+    icon: Star,
+  },
+};
 
 type EmbeddedContext = {
   module: ModuleKey;
@@ -2002,8 +2130,30 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
 
   if (!srcDoc) return <LoadingState label={`Carregando ${title}...`} />;
 
+  const hero = embeddedHeroCopy[moduleKey] || {
+    description: "Modulo operacional padronizado com a identidade visual do Supply Flow SEEL.",
+    processLabel: "Modulo",
+    icon: UserRoundPlus,
+  };
+  const HeroIcon = hero.icon;
+  const canEditModule = canManage(profile, moduleKey);
+
   return (
     <div className="embedded-tool-page">
+      <ModuleHero
+        title={title}
+        description={hero.description}
+        metrics={[
+          { label: "Modulo", value: hero.processLabel, icon: <HeroIcon size={18} /> },
+          { label: "Base", value: "Supabase", icon: <Database size={18} /> },
+        ]}
+        badge={
+          <>
+            <ShieldCheck size={16} />
+            {canEditModule ? "Controle administrativo" : "Consulta e solicitacao"}
+          </>
+        }
+      />
       <iframe
         className="embedded-tool-frame"
         title={title}

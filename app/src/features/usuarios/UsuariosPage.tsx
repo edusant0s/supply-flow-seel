@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Download, Search, ShieldCheck, UploadCloud, UserPlus } from "lucide-react";
+import { Building2, CheckCircle2, Download, Search, ShieldCheck, UploadCloud, UserPlus, Users } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
+import { ModuleHero } from "../../components/ModuleHero";
 import { EmptyState, LoadingState } from "../../components/States";
 import { headerKey, normalizeText } from "../../lib/format";
 import { defaultCanManage, defaultCanView, permissionModules, roleLabel, roles } from "../../lib/permissions";
@@ -66,9 +67,23 @@ export function UsuariosPage() {
   if (userObras.error) return <EmptyState title="Falha ao carregar permissoes" description={userObras.error} />;
 
   const selectedUser = (users.data || []).find((user) => user.id === selectedUserId) || null;
+  const activeUsers = (users.data || []).filter((user) => user.ativo).length;
+  const adminUsers = (users.data || []).filter((user) => user.role !== "viewer" && user.role !== "viewer_global").length;
 
   return (
     <div className="page-stack">
+      <ModuleHero
+        title="Gestao de usuarios"
+        description="Controle de acesso por perfil, obra e aba para manter cada usuario com a visao e as acoes corretas."
+        metrics={[
+          { label: "Usuarios", value: users.data?.length || 0, icon: <Users size={18} /> },
+          { label: "Ativos", value: activeUsers, icon: <CheckCircle2 size={18} /> },
+          { label: "Admins", value: adminUsers, icon: <ShieldCheck size={18} /> },
+          { label: "Obras", value: obras.data?.length || 0, icon: <Building2 size={18} /> },
+        ]}
+        badge="Acesso protegido"
+      />
+
       <section className="toolbar-panel toolbar-panel--wrap">
         <label className="search-field">
           <Search size={18} />

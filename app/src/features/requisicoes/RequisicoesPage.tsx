@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Mail, MessageCircle, Plus, Search, UploadCloud } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardList, Clock3, Mail, MessageCircle, Plus, Search, UploadCloud } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { DetailDrawer, InfoField } from "../../components/DetailDrawer";
 import { ExportButton } from "../../components/ExportButton";
 import { KanbanBoard } from "../../components/KanbanBoard";
 import { KpiCard } from "../../components/KpiCard";
+import { ModuleHero } from "../../components/ModuleHero";
 import { RoleGate } from "../../components/RoleGate";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
@@ -146,9 +147,23 @@ export function RequisicoesPage() {
   const prioritySummary = buildPrioritySummaryFromIndex(activeIndexes);
   const ocSummary = buildOcSummaryFromIndex(filteredIndex.filter((item) => item.status === "OC"));
   const buyerReport = buildBuyerReport(activeItems, buyer);
+  const lateCount = activeItems.filter((item) => getSlaInfo(item).tone === "danger").length;
+  const okCount = activeItems.filter((item) => getSlaInfo(item).tone === "success").length;
 
   return (
     <div className="page-stack">
+      <ModuleHero
+        title="Requisicoes de suprimentos"
+        description="Acompanhamento de RMs, compradores, fases de compra, OCs, urgencias e SLA em um fluxo unico de suprimentos."
+        metrics={[
+          { label: "RMs visiveis", value: activeItems.length, icon: <ClipboardList size={18} /> },
+          { label: "Itens abertos", value: openItemCount, icon: <Clock3 size={18} /> },
+          { label: "Atrasadas", value: lateCount, icon: <AlertTriangle size={18} /> },
+          { label: "No prazo", value: okCount, icon: <CheckCircle2 size={18} /> },
+        ]}
+        badge={canEdit ? "Controle administrativo" : "Consulta operacional"}
+      />
+
       <section className="toolbar-panel toolbar-panel--wrap">
         <label className="search-field">
           <Search size={18} />
@@ -232,9 +247,9 @@ export function RequisicoesPage() {
       <section className="kpi-grid">
         <KpiCard title="RMs visiveis" value={activeItems.length} />
         <KpiCard title="Itens em aberto" value={openItemCount} />
-        <KpiCard title="Atrasadas" value={activeItems.filter((item) => getSlaInfo(item).tone === "danger").length} tone="danger" />
+        <KpiCard title="Atrasadas" value={lateCount} tone="danger" />
         <KpiCard title="Alerta SLA" value={activeItems.filter((item) => getSlaInfo(item).tone === "warning").length} tone="warning" />
-        <KpiCard title="No prazo" value={activeItems.filter((item) => getSlaInfo(item).tone === "success").length} tone="success" />
+        <KpiCard title="No prazo" value={okCount} tone="success" />
       </section>
 
       <section className="priority-summary">

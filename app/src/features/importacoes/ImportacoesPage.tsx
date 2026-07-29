@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ElementType } from "react";
-import { Car, CheckCircle2, ClipboardList, FileSpreadsheet, FileText, PackageSearch, UploadCloud, XCircle } from "lucide-react";
+import { Car, CheckCircle2, ClipboardList, Database, FileSpreadsheet, FileText, PackageSearch, UploadCloud, XCircle } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { ImportWizard } from "../../components/ImportWizard";
+import { ModuleHero } from "../../components/ModuleHero";
 import { EmptyState, LoadingState } from "../../components/States";
 import { formatDateBr } from "../../lib/format";
 import { useAsyncData } from "../../hooks";
@@ -72,17 +73,21 @@ export function ImportacoesPage() {
 
   return (
     <div className="page-stack">
-      <section className="module-command-bar">
-        <div>
-          <span className="eyebrow">Central de dados</span>
-          <h2>Alimentacao unica das bases</h2>
-          <p>Use esta area para importar planilhas e manter todas as bases com o mesmo fluxo profissional de validacao.</p>
-        </div>
-        <div className="module-command-bar__badge">
-          <UploadCloud size={18} />
-          Supabase + auditoria
-        </div>
-      </section>
+      <ModuleHero
+        eyebrow="Central de dados"
+        title="Alimentacao unica das bases"
+        description="Importe planilhas, valide dados e mantenha todas as bases com o mesmo fluxo profissional de governanca."
+        metrics={[
+          { label: "Bases liberadas", value: visibleOptions.length, icon: <Database size={18} /> },
+          { label: "Historico", value: data?.length || 0, icon: <ClipboardList size={18} /> },
+        ]}
+        badge={
+          <>
+            <UploadCloud size={16} />
+            Supabase + auditoria
+          </>
+        }
+      />
 
       <section className="data-hub-grid">
         {visibleOptions.map((option) => {

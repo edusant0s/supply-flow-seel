@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { BellRing, CheckCircle2, Clock3, MessageSquare, Search, Send } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { KpiCard } from "../../components/KpiCard";
+import { ModuleHero } from "../../components/ModuleHero";
 import { EmptyState, LoadingState } from "../../components/States";
 import { useAuth } from "../../contexts/AuthContext";
 import { invalidateAsyncData, useAsyncData } from "../../hooks";
@@ -91,19 +92,21 @@ export function AlertasPage() {
 
   return (
     <div className="page-stack alertas-page">
-      <section className="module-command-bar alertas-hero">
-        <div>
-          <span className="eyebrow">Supply Flow SEEL</span>
-          <h2>Central de alertas</h2>
-          <p>Comentarios de orcamentos, respostas dos solicitantes e historico de comunicacao em um unico lugar.</p>
-        </div>
-        <div className="module-command-bar__actions">
-          <span className="module-command-bar__badge">
+      <ModuleHero
+        title="Central de alertas"
+        description="Comentarios de orcamentos, respostas dos solicitantes e historico de comunicacao em um unico lugar."
+        metrics={[
+          { label: "Conversas", value: threads.length, icon: <MessageSquare size={18} /> },
+          { label: "Comentarios", value: adminComments, icon: <BellRing size={18} /> },
+          { label: "Respostas", value: requesterReplies, icon: <Send size={18} /> },
+        ]}
+        badge={
+          <>
             <BellRing size={16} />
             {canSeeAll ? "Visao administrativa" : "Minhas solicitacoes"}
-          </span>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       <section className="kpi-grid">
         <KpiCard title="Conversas" value={threads.length} icon={MessageSquare} tone="blue" />

@@ -24,7 +24,6 @@ import {
   Users,
   Warehouse,
 } from "lucide-react";
-import { DataTable } from "../../components/DataTable";
 import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
 import { formatCurrency, normalizeText, parseMoney } from "../../lib/format";
@@ -140,8 +139,7 @@ export function DashboardPage() {
   if (!data) return null;
 
   const selectedRow = processFilter === "todos" ? null : rows.find((row) => row.key === processFilter) ?? null;
-  const filteredRows = selectedRow ? [selectedRow] : rows;
-  const topMetrics = selectedRow ? selectedRow.metrics : buildSupplyMetrics(rows);
+  const topMetrics = (selectedRow ? selectedRow.metrics : buildSupplyMetrics(rows)).slice(0, 4);
   const chartRows = selectedRow ? [selectedRow] : rows.filter((row) => row.family === "operacao");
 
   return (
@@ -172,60 +170,17 @@ export function DashboardPage() {
 
       <DashboardCommandCenter rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
 
-      <DashboardCriticalAnalysis rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
-
       <section className="kpi-grid">
         {topMetrics.map((metric) => (
           <KpiCard key={metric.title} title={metric.title} value={metric.value} icon={metric.icon} tone={metric.tone} />
         ))}
       </section>
 
-      {selectedRow ? <AreaDashboardPanel row={selectedRow} /> : <SupplyPortfolioOverview rows={rows} />}
+      {selectedRow ? <AreaDashboardPanel row={selectedRow} /> : <DashboardCharts rows={chartRows} />}
 
-      <OperationalPulse rows={selectedRow ? [selectedRow] : rows} />
+      {selectedRow ? <AreaBreakdownCharts row={selectedRow} /> : null}
 
-      {selectedRow ? <AreaBreakdownCharts row={selectedRow} /> : <DashboardCharts rows={chartRows} />}
-
-      {!selectedRow ? <StrategicInsights rows={rows} fornecedores={data.fornecedores} /> : null}
-
-      <section className="dashboard-process-grid">
-        {filteredRows.map((row) => (
-          <article key={row.key}>
-            <div className="dashboard-process-grid__top">
-              {processIcon(row.key)}
-              <strong>{row.processo}</strong>
-            </div>
-            <span className={`dashboard-family-badge dashboard-family-badge--${row.family}`}>{row.familyLabel}</span>
-            <div className="dashboard-process-grid__numbers">
-              <span>{formatCount(row.demanda)} {row.primaryLabel}</span>
-              <span>{formatCount(row.emAberto)} {row.openLabel}</span>
-              <span>{formatCount(row.riscoSla)} {row.riskLabel}</span>
-            </div>
-            <p>{row.indicador}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <span className="eyebrow">Indicadores</span>
-            <h2>Gestao por area de Supply</h2>
-          </div>
-        </div>
-        <DataTable
-          data={filteredRows}
-          columns={[
-            { key: "processo", label: "Area", render: (item) => item.processo },
-            { key: "tipo", label: "Tipo", render: (item) => item.familyLabel },
-            { key: "principal", label: "Indicador principal", render: (item) => `${formatCount(item.demanda)} ${item.primaryLabel}` },
-            { key: "acompanhamento", label: "Acompanhamento", render: (item) => `${formatCount(item.emAberto)} ${item.openLabel}` },
-            { key: "concluidos", label: "Concluidos / disponiveis", render: (item) => `${formatCount(item.finalizados)} ${item.doneLabel}` },
-            { key: "alertas", label: "Alertas", render: (item) => `${formatCount(item.riscoSla)} ${item.riskLabel}` },
-            { key: "indicador", label: "Leitura executiva", render: (item) => item.indicador },
-          ]}
-        />
-      </section>
+      <DashboardCriticalAnalysis rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
     </div>
   );
 }
@@ -265,9 +220,6 @@ function buildDashboardRows(data: {
 
 function buildSupplyMetrics(rows: DashboardRow[]): DashboardMetric[] {
   const operacao = rows.filter((row) => row.family === "operacao");
-  const frota = rows.find((row) => row.key === "frota");
-  const fornecedores = rows.find((row) => row.key === "fornecedores");
-
   const totalDemandas = sumRows(operacao, "demanda");
   const emAberto = sumRows(operacao, "emAberto");
   const finalizados = sumRows(operacao, "finalizados");
@@ -279,8 +231,6 @@ function buildSupplyMetrics(rows: DashboardRow[]): DashboardMetric[] {
     { title: "Fila em aberto", value: emAberto, icon: ClipboardList, tone: emAberto ? "warning" : "success" },
     { title: "Alertas de SLA", value: alertas, icon: AlertTriangle, tone: alertas ? "danger" : "success" },
     { title: "Conclusao operacional", value: `${conclusao}%`, icon: Star, tone: "success", chartValue: conclusao },
-    { title: "Veiculos da frota", value: frota?.demanda ?? 0, icon: Car, tone: "neutral" },
-    { title: "Fornecedores ativos", value: fornecedores?.finalizados ?? 0, icon: Users, tone: "blue" },
   ];
 }
 
@@ -301,7 +251,6 @@ function DashboardCommandCenter({
   const completion = formatPercent(totals.finalizados, totals.demanda);
   const risk = formatPercent(totals.riscoSla, totals.demanda);
   const backlogLeader = rowsForHealth.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
-  const riskLeader = rowsForHealth.slice().sort((a, b) => b.riscoSla - a.riscoSla)[0];
   const healthTone = health >= 80 ? "success" : health >= 58 ? "warning" : "danger";
 
   return (
@@ -348,12 +297,6 @@ function DashboardCommandCenter({
         <small>{backlogLeader ? `${formatCount(backlogLeader.emAberto)} ${backlogLeader.openLabel}` : "Sem fila"}</small>
       </article>
 
-      <article className="dashboard-live-card">
-        <Gauge size={18} />
-        <span>Maior risco</span>
-        <strong>{riskLeader?.processo || "-"}</strong>
-        <small>{riskLeader ? `${formatCount(riskLeader.riscoSla)} ${riskLeader.riskLabel}` : "Sem alerta"}</small>
-      </article>
     </section>
   );
 }
@@ -422,7 +365,7 @@ function DashboardCriticalAnalysis({
       </div>
 
       <div className="dashboard-auto-analysis-grid">
-        {insights.map((insight) => {
+        {insights.slice(0, 4).map((insight) => {
           const Icon = insight.icon;
           return (
             <article key={insight.key} className={`dashboard-analysis-card dashboard-analysis-card--${insight.tone}`}>
