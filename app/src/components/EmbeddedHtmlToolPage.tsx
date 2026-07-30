@@ -536,6 +536,63 @@ const embeddedChromeCss = `
   }
 `;
 
+const embeddedProfessionalIconsCss = `
+  body.supply-embedded .sf-professional-icon svg,
+  body.supply-embedded .sf-professional-inline-icon svg,
+  body.supply-embedded .sf-tab-icon svg,
+  body.supply-embedded .tab-icon svg,
+  body.supply-embedded .icon-badge svg,
+  body.supply-embedded .column-icon svg,
+  body.supply-embedded .col-icon svg,
+  body.supply-embedded .process-icon svg,
+  body.supply-embedded .central-import-hero-icon svg,
+  body.supply-embedded .kanban-premium-ic svg {
+    width: 1em !important;
+    height: 1em !important;
+    display: block !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+  }
+
+  body.supply-embedded .sf-tab-icon,
+  body.supply-embedded .tab-icon,
+  body.supply-embedded .icon-badge,
+  body.supply-embedded .column-icon,
+  body.supply-embedded .col-icon,
+  body.supply-embedded .process-icon,
+  body.supply-embedded .central-import-hero-icon,
+  body.supply-embedded .kanban-premium-ic {
+    line-height: 1 !important;
+  }
+
+  body.supply-embedded .sf-professional-inline-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 1.1em !important;
+    height: 1.1em !important;
+    margin-right: 6px !important;
+    flex: 0 0 auto !important;
+    vertical-align: -0.15em !important;
+  }
+
+  body.supply-embedded .sf-tab-icon svg,
+  body.supply-embedded .tab-icon svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  body.supply-embedded .kanban-premium-ic svg,
+  body.supply-embedded .card-icon-badge svg,
+  body.supply-embedded .mk-product-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+`;
+
 type EmbeddedContext = {
   module: ModuleKey;
   role: string;
@@ -614,11 +671,145 @@ function mergeCachedLocalStorage(moduleKey: ModuleKey, snapshot: Record<string, 
 }
 
 function withEmbeddedShell(html: string, baseHref: string, context: EmbeddedContext) {
-  const injection = `<base href="${baseHref}"><style>${embeddedChromeCss}</style>${embeddedGovernanceScript(context)}`;
+  const injection = `<base href="${baseHref}"><style>${embeddedChromeCss}${embeddedProfessionalIconsCss}</style>${embeddedGovernanceScript(context)}${embeddedProfessionalIconsScript()}`;
   if (/<head[^>]*>/i.test(html)) {
     return html.replace(/<head([^>]*)>/i, `<head$1>${injection}`);
   }
   return `<!doctype html><html lang="pt-BR"><head>${injection}</head><body>${html}</body></html>`;
+}
+
+function embeddedProfessionalIconsScript() {
+  return `<script>
+(function(){
+  var paths = {
+    edit:'<path d="M4 20h16"></path><path d="M6 16l10-10 3 3L9 19H6v-3Z"></path>',
+    kanban:'<path d="M4 5h5v14H4z"></path><path d="M10 5h5v10h-5z"></path><path d="M16 5h4v7h-4z"></path>',
+    map:'<path d="m4 6 5-2 6 2 5-2v14l-5 2-6-2-5 2V6Z"></path><path d="M9 4v14M15 6v14"></path>',
+    quote:'<circle cx="12" cy="12" r="8"></circle><path d="M12 7v10M9 10c0-1.4 1.3-2 3-2s3 .6 3 2-1.3 2-3 2-3 .6-3 2 1.3 2 3 2 3-.6 3-2"></path>',
+    chart:'<path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-5M12 16V8M16 16v-8"></path>',
+    clipboard:'<path d="M8 4h8l1 3H7l1-3Z"></path><path d="M6 6h12v14H6z"></path><path d="M9 11h6M9 15h6"></path>',
+    document:'<path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h6"></path>',
+    database:'<ellipse cx="12" cy="5" rx="7" ry="3"></ellipse><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5"></path><path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path>',
+    upload:'<path d="M12 16V4"></path><path d="m7 9 5-5 5 5"></path><path d="M5 20h14"></path>',
+    settings:'<path d="M4 7h10"></path><circle cx="17" cy="7" r="2"></circle><path d="M20 17H10"></path><circle cx="7" cy="17" r="2"></circle>',
+    check:'<circle cx="12" cy="12" r="8"></circle><path d="m8.5 12.5 2.5 2.5 4.5-5"></path>',
+    inbox:'<path d="M4 4h16v12H4z"></path><path d="M4 12h4l2 3h4l2-3h4"></path>',
+    calendar:'<rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path>',
+    truck:'<path d="M3 7h11v9H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle>',
+    warehouse:'<path d="M3 10 12 4l9 6v10H3z"></path><path d="M9 20v-5h6v5M7 12h2M15 12h2"></path>',
+    package:'<path d="m4 7 8-4 8 4v10l-8 4-8-4V7Z"></path><path d="m4 7 8 4 8-4M12 11v10"></path>',
+    route:'<path d="M6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path><path d="M8 16c3-5 6 1 8-6"></path>',
+    blocked:'<circle cx="12" cy="12" r="8"></circle><path d="m8 8 8 8"></path>',
+    user:'<circle cx="12" cy="8" r="3.3"></circle><path d="M5 20a7 7 0 0 1 14 0"></path>',
+    phone:'<path d="M6.5 4h3l1.5 4-2 1.5a15 15 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 6.2 2 2 0 0 1 6.5 4Z"></path>',
+    location:'<path d="M12 21s6-5.6 6-11a6 6 0 1 0-12 0c0 5.4 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle>',
+    tag:'<path d="M20 10 11 19 4 12V4h8l8 6Z"></path><circle cx="8.5" cy="8.5" r="1"></circle>',
+    cart:'<circle cx="9" cy="19" r="1.5"></circle><circle cx="17" cy="19" r="1.5"></circle><path d="M3 5h2l2.2 9.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H7"></path>',
+    safety:'<path d="M5 12a7 7 0 0 1 14 0v4H5v-4Z"></path><path d="M8 11V9a4 4 0 1 1 8 0v2"></path><path d="M4 16h16"></path>',
+    tools:'<path d="m14 7 3-3 3 3-3 3"></path><path d="M3 21 14 10"></path><path d="m10 14-4-4 2-2 4 4"></path>',
+    electric:'<path d="M13 2 6 13h5l-1 9 8-12h-5l0-8Z"></path>',
+    history:'<path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h6"></path>',
+    process:'<path d="M4 7h6v6H4z"></path><path d="M14 4h6v6h-6z"></path><path d="M14 14h6v6h-6z"></path><path d="M10 10h4"></path><path d="M17 10v4"></path>'
+  };
+  var aliases = {
+    "\\uD83D\\uDCDD":"edit","\\u270F":"edit","\\u270D":"edit",
+    "\\uD83D\\uDDC2":"kanban","\\u25A5":"chart","\\u25A4":"history","\\u25A6":"process","\\u25A3":"process",
+    "\\uD83D\\uDCCA":"chart","\\uD83D\\uDCCB":"clipboard","\\uD83D\\uDCC4":"document",
+    "\\uD83D\\uDDC4":"database","\\uD83D\\uDDC3":"database","\\uD83D\\uDCE5":"inbox",
+    "\\u2699":"settings","\\u2713":"check","\\u2705":"check",
+    "\\uD83D\\uDCC6":"calendar","\\uD83D\\uDCC5":"calendar",
+    "\\uD83D\\uDE9A":"truck","\\uD83C\\uDFE2":"warehouse","\\uD83D\\uDCE6":"package","\\u26D4":"blocked",
+    "\\uD83D\\uDEE3":"route","\\uD83D\\uDED2":"cart","\\uD83D\\uDC64":"user","\\uD83D\\uDCDE":"phone",
+    "\\uD83D\\uDCCD":"location","\\uD83C\\uDFF7":"tag","\\uD83E\\uDDBA":"safety","\\uD83D\\uDEE0":"tools",
+    "\\uD83D\\uDCA1":"electric"
+  };
+  function svg(name, className) {
+    return '<svg class="' + (className || '') + '" aria-hidden="true" viewBox="0 0 24 24" focusable="false">' + (paths[name] || paths.document) + '</svg>';
+  }
+  function normalized(value) {
+    return String(value || '').trim().replace(/\\uFE0F/g, '');
+  }
+  function aliasFor(value) {
+    var text = normalized(value);
+    var keys = Object.keys(aliases).sort(function(a, b) { return b.length - a.length; });
+    for (var i = 0; i < keys.length; i += 1) {
+      if (text === keys[i] || text.indexOf(keys[i] + ' ') === 0) return aliases[keys[i]];
+    }
+    return '';
+  }
+  function iconNameFor(element, value) {
+    var name = aliasFor(value);
+    var text = normalized(value);
+    var context = normalized((element && element.parentElement && element.parentElement.textContent) || (element && element.textContent) || '').toLowerCase();
+    if (text.indexOf("\\uD83D\\uDCE5") === 0 && /(import|upload|planilha|base antiga|central de dados)/.test(context)) return 'upload';
+    return name;
+  }
+  function firstUsefulTextNode(element) {
+    var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    var node = walker.nextNode();
+    while (node && !normalized(node.nodeValue)) node = walker.nextNode();
+    return node;
+  }
+  function upgradeExactIcon(element) {
+    if (element.querySelector('svg')) return true;
+    var name = iconNameFor(element, element.textContent);
+    if (!name) return false;
+    var text = normalized(element.textContent);
+    var exactKey = Object.keys(aliases).some(function(key) { return text === key; });
+    if (!exactKey) return false;
+    element.innerHTML = svg(name, 'sf-professional-svg');
+    element.classList.add('sf-professional-icon');
+    return true;
+  }
+  function upgradeLeadingIcon(element) {
+    if (element.querySelector('.sf-professional-inline-icon')) return;
+    var node = firstUsefulTextNode(element);
+    if (!node) return;
+    var value = String(node.nodeValue || '');
+    var prefix = value.match(/^\\s*/)[0] || '';
+    var text = value.slice(prefix.length);
+    var normalizedText = normalized(text);
+    var keys = Object.keys(aliases).sort(function(a, b) { return b.length - a.length; });
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      if (normalizedText === key || normalizedText.indexOf(key + ' ') === 0) {
+        var rawLength = text.indexOf(key) === 0 ? key.length : 0;
+        if (!rawLength && text.replace(/\\uFE0F/g, '').indexOf(key) === 0) rawLength = key.length + 1;
+        node.nodeValue = prefix + text.slice(rawLength).replace(/^\\uFE0F?\\s*/, '');
+        var holder = document.createElement('span');
+        holder.className = 'sf-professional-inline-icon';
+        holder.innerHTML = svg(iconNameFor(element, key), 'sf-professional-svg');
+        element.insertBefore(holder, node);
+        break;
+      }
+    }
+  }
+  function upgradeProfessionalIcons(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var exactSelector = '.tab-icon,.sf-tab-icon,.icon-badge,.column-icon,.col-icon,.process-icon,.central-import-hero-icon,.kanban-premium-ic,.card-icon-badge,.mk-product-icon';
+    var leadingSelector = '.fulfillment-title,.admin-kanban-type-pill,.kanban-premium-switch button,.cart-head b,.kanban-meta-item,.tag,.kanban-chip,.muted';
+    var exactNodes = Array.prototype.slice.call(scope.querySelectorAll(exactSelector));
+    if (scope.matches && scope.matches(exactSelector)) exactNodes.unshift(scope);
+    exactNodes.forEach(function(element) { if (!upgradeExactIcon(element)) upgradeLeadingIcon(element); });
+    var leadingNodes = Array.prototype.slice.call(scope.querySelectorAll(leadingSelector));
+    if (scope.matches && scope.matches(leadingSelector)) leadingNodes.unshift(scope);
+    leadingNodes.forEach(upgradeLeadingIcon);
+  }
+  window.SFUpgradeProfessionalIcons = upgradeProfessionalIcons;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function() { upgradeProfessionalIcons(document); });
+  else upgradeProfessionalIcons(document);
+  if (!window.__sfProfessionalIconObserver) {
+    window.__sfProfessionalIconObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        Array.prototype.forEach.call(mutation.addedNodes, function(node) {
+          if (node.nodeType === 1) upgradeProfessionalIcons(node);
+        });
+      });
+    });
+    window.__sfProfessionalIconObserver.observe(document.documentElement, { childList: true, subtree: true });
+  }
+})();
+</script>`;
 }
 
 function embeddedGovernanceScript(context: EmbeddedContext) {
