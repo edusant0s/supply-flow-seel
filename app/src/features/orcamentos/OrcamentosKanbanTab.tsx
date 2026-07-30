@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
-  AlertTriangle,
   BellRing,
   CalendarDays,
   CheckCircle2,
-  CircleDollarSign,
   ClipboardList,
-  FileSpreadsheet,
   Link as LinkIcon,
   MessageSquare,
   Paperclip,
@@ -15,7 +12,6 @@ import {
   RefreshCw,
   Search,
   Send,
-  TimerReset,
   Trash2,
   UploadCloud,
   type LucideIcon,
@@ -23,7 +19,6 @@ import {
 import { Link } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { DetailDrawer, InfoField } from "../../components/DetailDrawer";
-import { KpiCard } from "../../components/KpiCard";
 import { RoleGate } from "../../components/RoleGate";
 import { useAuth } from "../../contexts/AuthContext";
 import { invalidateAsyncData } from "../../hooks";
@@ -50,7 +45,6 @@ import {
   getOrcamentoLogs,
   hasRequesterCommentAlert,
   orcamentoOutcomeOptions,
-  openStatuses,
   outcomeLabel,
   printOrcamentosPdf,
   toDateTimeLocal,
@@ -153,17 +147,6 @@ export function OrcamentosKanbanTab({
 
   const selected = useMemo(() => items.find((item) => item.id === selectedId) || null, [items, selectedId]);
 
-  const metrics = useMemo(() => {
-    const openRequests = filtered.filter((item) => openStatuses.includes(item.status || "nao_iniciado"));
-    const finishedRequests = filtered.filter((item) => item.status === "finalizado");
-    const delayed = filtered.filter((item) => getDueInfo(item).tone === "danger");
-    const warning = filtered.filter((item) => getDueInfo(item).tone === "warning");
-    const totalSaving = filtered.reduce((sum, item) => sum + Number(item.saving || 0), 0);
-    const totalLines = filtered.reduce((sum, item) => sum + getLineCount(item), 0);
-    const averageSlaMs = averageMs(finishedRequests.length ? finishedRequests : filtered, now);
-    return { openRequests, finishedRequests, delayed, warning, totalSaving, totalLines, averageSlaMs };
-  }, [filtered, now]);
-
   async function moveOrcamento(item: Orcamento, nextStatus: string) {
     setMovingId(item.id);
     try {
@@ -255,33 +238,6 @@ export function OrcamentosKanbanTab({
             </Link>
           </RoleGate>
         </div>
-      </section>
-
-      <section className="kpi-grid orcamento-kpis">
-        <KpiCard title="Solicitacoes" value={filtered.length} icon={FileSpreadsheet} tone="blue" />
-        <KpiCard title="Em aberto" value={metrics.openRequests.length} icon={ClipboardList} tone={metrics.openRequests.length ? "warning" : "success"} />
-        <KpiCard title="Finalizados" value={metrics.finishedRequests.length} icon={CheckCircle2} tone="success" />
-        <KpiCard title="Quantidade de linhas" value={metrics.totalLines} icon={ClipboardList} tone="blue" />
-        <KpiCard title="Risco de prazo" value={metrics.delayed.length + metrics.warning.length} icon={AlertTriangle} tone={metrics.delayed.length ? "danger" : metrics.warning.length ? "warning" : "success"} />
-        <KpiCard title="SLA medio" value={formatBusinessDuration(metrics.averageSlaMs)} icon={TimerReset} tone="blue" />
-        <KpiCard title="Saving" value={formatCurrency(metrics.totalSaving)} icon={CircleDollarSign} tone={metrics.totalSaving > 0 ? "success" : "neutral"} />
-      </section>
-
-      <section className="orcamento-process-strip">
-        {statuses.map(([key, title]) => {
-          const rows = filtered.filter((item) => (item.status || "nao_iniciado") === key);
-          const MetaIcon = statusMeta[key]?.icon || ClipboardList;
-          return (
-            <article key={key} style={{ "--phase-accent": statusMeta[key]?.accent || "var(--blue-700)" } as CSSProperties}>
-              <div>
-                <MetaIcon size={18} />
-                <span>{title}</span>
-              </div>
-              <strong>{rows.length}</strong>
-              <p>SLA medio: {formatBusinessDuration(averageMs(rows, now))}</p>
-            </article>
-          );
-        })}
       </section>
 
       <section className="orcamento-kanban-board" aria-label="Kanban de orcamentos">
@@ -377,7 +333,6 @@ function OrcamentoColumn({
   onSelect: (id: string) => void;
 }) {
   const MetaIcon = statusMeta[statusKey]?.icon || ClipboardList;
-  const riskCount = items.filter((item) => ["warning", "danger"].includes(getDueInfo(item).tone)).length;
 
   return (
     <section
@@ -405,10 +360,6 @@ function OrcamentoColumn({
         </div>
         <b>{items.length}</b>
       </header>
-      <div className="orcamento-column-metrics">
-        <span>SLA medio: {formatBusinessDuration(averageMs(items, now))}</span>
-        <span>{riskCount} em risco</span>
-      </div>
       <div className="orcamento-column-cards">
         {items.length ? (
           items.map((item) => (
@@ -1025,11 +976,6 @@ function getDueInfo(item: Orcamento): { tone: DueTone; label: string } {
 
 function uniqueText(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "pt-BR"));
-}
-
-function averageMs(items: Orcamento[], now: number) {
-  if (!items.length) return 0;
-  return items.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0) / items.length;
 }
 
 function canDeleteOrcamento(item: Orcamento, userId: string | undefined, email: string | undefined, canEdit: boolean) {

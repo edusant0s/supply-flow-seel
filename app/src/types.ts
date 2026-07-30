@@ -15,6 +15,7 @@ export type ModuleKey =
   | "fretes"
   | "nota_fiscal"
   | "estoque_obras"
+  | "cadastro_materiais"
   | "frota"
   | "fornecedores"
   | "avaliacao_fornecedores"

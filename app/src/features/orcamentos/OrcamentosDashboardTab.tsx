@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle2, ClipboardList, Clock3, Target, TimerReset,
 import { KpiCard } from "../../components/KpiCard";
 import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import type { Orcamento } from "../../types";
-import { formatBusinessDuration, getOrcamentoSla, phaseLabel } from "./sla";
+import { averageOrcamentoSlaMs, formatBusinessDuration, getOrcamentoSla, phaseLabel } from "./sla";
 import {
   getAssignedToList,
   getFilterDate,
@@ -235,8 +235,8 @@ function buildDashboardMetrics(items: Orcamento[], now: number) {
   const waitingOutcome = finished.filter((item) => getOrcamentoOutcome(item) === "aguardando").length;
   const lines = items.reduce((sum, item) => sum + getLineCount(item), 0);
   const saving = items.reduce((sum, item) => sum + Number(item.saving || 0), 0);
-  const avgSla = items.length ? items.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0) / items.length : 0;
-  const avgFinishedSla = finished.length ? finished.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0) / finished.length : 0;
+  const avgFinishedSla = averageOrcamentoSlaMs(finished, now);
+  const avgSla = averageOrcamentoSlaMs(finished.length ? finished : items, now);
   const assigneeRows = groupRowsByAssignee(items);
   return {
     total: items.length,

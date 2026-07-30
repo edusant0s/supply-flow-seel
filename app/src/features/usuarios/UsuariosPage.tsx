@@ -739,6 +739,7 @@ function getModuleAliases(moduleKey: ModuleKey) {
     fretes: ["fretes", "logistica", "transportes"],
     nota_fiscal: ["nota fiscal", "nf", "nf simples remessa", "simples remessa"],
     estoque_obras: ["estoque obras", "estoque", "obra stock", "obrastock"],
+    cadastro_materiais: ["cadastro materiais", "materiais", "cadastro de itens", "itens"],
     frota: ["frota", "veiculos"],
     fornecedores: ["fornecedores", "mapa fornecedores", "cadastro fornecedores"],
     avaliacao_fornecedores: ["avaliacao fornecedores", "avaliacoes", "avaliacao"],

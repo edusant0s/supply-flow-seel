@@ -170,9 +170,13 @@ export function formatBusinessDuration(ms: number) {
 }
 
 export function averageOrcamentoSla(items: Orcamento[], now: number) {
-  if (!items.length) return "0min";
+  return formatBusinessDuration(averageOrcamentoSlaMs(items, now));
+}
+
+export function averageOrcamentoSlaMs(items: Orcamento[], now: number) {
+  if (!items.length) return 0;
   const total = items.reduce((sum, item) => sum + getOrcamentoSla(item, now).totalMs, 0);
-  return formatBusinessDuration(total / items.length);
+  return total / items.length;
 }
 
 export function phaseLabel(status: string) {

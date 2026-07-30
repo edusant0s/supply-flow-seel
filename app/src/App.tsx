@@ -15,6 +15,9 @@ const ContratosPage = lazy(() => import("./features/contratos/ContratosPage").th
 const FretesPage = lazy(() => import("./features/fretes/FretesPage").then((module) => ({ default: module.FretesPage })));
 const NotaFiscalPage = lazy(() => import("./features/notaFiscal/NotaFiscalPage").then((module) => ({ default: module.NotaFiscalPage })));
 const EstoqueObrasPage = lazy(() => import("./features/estoqueObras/EstoqueObrasPage").then((module) => ({ default: module.EstoqueObrasPage })));
+const CadastroMateriaisPage = lazy(() =>
+  import("./features/cadastroMateriais/CadastroMateriaisPage").then((module) => ({ default: module.CadastroMateriaisPage }))
+);
 const FrotaPage = lazy(() => import("./features/frota/FrotaPage").then((module) => ({ default: module.FrotaPage })));
 const FornecedoresPage = lazy(() => import("./features/fornecedores/FornecedoresPage").then((module) => ({ default: module.FornecedoresPage })));
 const CadastroFornecedoresPage = lazy(() =>
@@ -111,6 +114,14 @@ export function App() {
             element={
               <ProtectedRoute module="estoque_obras">
                 <EstoqueObrasPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="cadastro-materiais"
+            element={
+              <ProtectedRoute module="cadastro_materiais">
+                <CadastroMateriaisPage />
               </ProtectedRoute>
             }
           />

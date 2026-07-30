@@ -4,6 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
 import {
   AVALIACAO_DB_STORAGE_KEY,
+  CADASTRO_MATERIAIS_FORM_STORAGE_KEY,
+  CADASTRO_MATERIAIS_STORAGE_KEY,
   CONTRATOS_FORM_STORAGE_KEY,
   CONTRATOS_REQUESTS_STORAGE_KEY,
   ESTOQUE_STATE_STORAGE_KEY,
@@ -566,6 +568,8 @@ type EmbeddedContext = {
     supplierMapStorageKey: string;
     stockStateKey: string;
     evaluationDbKey: string;
+    materialRegistrationStorageKey: string;
+    materialRegistrationFormStorageKey: string;
     sharedStateKeys: string[];
   };
 };
@@ -717,6 +721,14 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   initialSupplierRegistrations.forEach(function(item, index) {
     var id = supplierRegistrationRecordId(item, index);
     if (id) knownSupplierRegistrationIds[id] = true;
+  });
+  var knownMaterialRegistrationIds = {};
+  var initialMaterialRegistrations = Array.isArray(sharedStorage[syncConfig.materialRegistrationStorageKey])
+    ? sharedStorage[syncConfig.materialRegistrationStorageKey]
+    : [];
+  initialMaterialRegistrations.forEach(function(item, index) {
+    var id = materialRegistrationRecordId(item, index);
+    if (id) knownMaterialRegistrationIds[id] = true;
   });
   var knownContractDbIds = {};
   var knownContractCodes = {};
@@ -1089,6 +1101,46 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       obra: firstFilled(payload.costCenter, values.costCenter),
       fornecedor: firstFilled(payload.supplierName, values.supplierName, "Fornecedor sem nome"),
       status: firstFilled(payload.stage, "Solicitacao Recebida")
+    };
+  }
+
+  function materialRegistrationRecordId(item, index) {
+    if (!item || typeof item !== "object") return "";
+    return firstFilled(
+      item.__supplyCadastroMateriaisDbId,
+      item.id,
+      item.code ? "mat_" + compactHash(String(item.code)) : "",
+      stableRecordId("cadastro_materiais", item, index)
+    );
+  }
+
+  function materialRegistrationRecord(item, index) {
+    if (!item || typeof item !== "object") return null;
+    var payload = Object.assign({}, item);
+    var hostEmail = String(hostUser.email || "").trim();
+    var hostName = String(hostUser.nome || "").trim();
+
+    if (!canManage) {
+      if (hostEmail) payload.requesterEmail = hostEmail;
+      if (hostName) payload.requesterName = hostName;
+    }
+
+    var requesterEmail = firstFilled(payload.requesterEmail, payload.email_solicitante, hostEmail);
+    if (!canManage && hostEmail && requesterEmail.toLowerCase() !== hostEmail.toLowerCase()) return null;
+
+    var id = materialRegistrationRecordId(payload, index);
+    payload.id = firstFilled(payload.id, id);
+    payload.__supplyCadastroMateriaisDbId = id;
+
+    return {
+      id: id,
+      payload: payload,
+      codigo: firstFilled(payload.code, payload.codigo, id),
+      solicitante: firstFilled(payload.requesterName, payload.solicitante, hostName),
+      email_solicitante: requesterEmail,
+      centro_custo: firstFilled(payload.issuerDepartment, payload.recipientDepartment, payload.centro_custo),
+      status: firstFilled(payload.status, "Nao Iniciado"),
+      prioridade: firstFilled(payload.priority, "Normal")
     };
   }
 
@@ -1548,10 +1600,52 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function deleteMaterialRegistrationRecord(id) {
+    return postgrestRequest("/rest/v1/cadastro_materiais_solicitacoes?id=eq." + encodeURIComponent(id), {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
+  function syncMaterialRegistrationRows(rows) {
+    if (!Array.isArray(rows) || !syncConfig.materialRegistrationStorageKey) return;
+    var records = rows.map(materialRegistrationRecord).filter(Boolean);
+    var nextIds = {};
+    records.forEach(function(record) { nextIds[record.id] = true; });
+
+    if (canManage) {
+      var tasks = [];
+      if (records.length) {
+        tasks.push(postgrestRequest("/rest/v1/cadastro_materiais_solicitacoes?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(records)
+        }));
+      }
+      Object.keys(knownMaterialRegistrationIds).forEach(function(id) {
+        if (!nextIds[id]) tasks.push(deleteMaterialRegistrationRecord(id));
+      });
+      Promise.all(tasks).then(function() { knownMaterialRegistrationIds = nextIds; });
+      return;
+    }
+
+    var newRecords = records.filter(function(record) { return !knownMaterialRegistrationIds[record.id]; });
+    if (!newRecords.length) return;
+    postgrestRequest("/rest/v1/cadastro_materiais_solicitacoes", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(newRecords)
+    }).then(function(ok) {
+      if (!ok) return;
+      newRecords.forEach(function(record) { knownMaterialRegistrationIds[record.id] = true; });
+    });
+  }
+
   function canSyncSharedState(key) {
     if (!canManage || !Array.isArray(syncConfig.sharedStateKeys) || syncConfig.sharedStateKeys.indexOf(key) < 0) return false;
     if (moduleKey === "contratos" && key === syncConfig.contractFormStorageKey && !isSuperAdmin) return false;
     if (moduleKey === "nota_fiscal" && key === syncConfig.notaFiscalFormStorageKey && !isSuperAdmin) return false;
+    if (moduleKey === "cadastro_materiais" && key === syncConfig.materialRegistrationFormStorageKey && !isSuperAdmin) return false;
     return true;
   }
 
@@ -1578,6 +1672,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       key === syncConfig.freightStorageKey ||
       key === syncConfig.notaFiscalStorageKey ||
       key === syncConfig.supplierRegistrationStorageKey ||
+      key === syncConfig.materialRegistrationStorageKey ||
       key === syncConfig.stockStateKey ||
       key === syncConfig.evaluationDbKey ||
       key === syncConfig.contractRequestsStorageKey;
@@ -1589,6 +1684,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       else if (key === syncConfig.freightStorageKey) syncFreightRows(payload);
       else if (key === syncConfig.notaFiscalStorageKey) syncNotaFiscalRows(payload);
       else if (key === syncConfig.supplierRegistrationStorageKey) syncSupplierRegistrationRows(payload);
+      else if (key === syncConfig.materialRegistrationStorageKey) syncMaterialRegistrationRows(payload);
       else if (key === syncConfig.stockStateKey) syncStockState(payload);
       else if (key === syncConfig.evaluationDbKey) syncSupplierEvaluationDb(payload);
       else syncSharedState(key, payload);
@@ -1951,6 +2047,48 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     }
   }
 
+  function applyCadastroMateriaisRules() {
+    if (!isSuperAdmin) {
+      hide("button[data-view='editor'], #view-editor");
+      guard("saveCurrentEditorField", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("resetCurrentEditorField", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("deleteCurrentEditorField", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("resetAllEditorFields", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("saveProductsEditorV5", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("addProductFieldV7", "Apenas super_admin pode editar a estrutura do formulario.");
+      guard("deleteProductFieldV7", "Apenas super_admin pode editar a estrutura do formulario.");
+    }
+
+    if (canManage) return;
+
+    hide("button[data-view='dashboard'], button[data-view='base'], button[data-view='editor'], #view-dashboard, #view-base, #view-editor");
+    hide("button[onclick*='deleteRequest'], button[onclick*='editRequest'], .table-actions button:not([data-action='detail'])");
+    disable(".phase-select");
+    document.querySelectorAll(".nf-card").forEach(function(card) {
+      card.setAttribute("draggable", "false");
+    });
+
+    var activeBlocked = ["view-dashboard", "view-base", "view-editor"].some(function(id) {
+      var view = document.getElementById(id);
+      return view && view.classList.contains("active");
+    });
+    if (activeBlocked) {
+      if (typeof window.showView === "function") window.showView("kanban");
+      else {
+        ["view-dashboard", "view-base", "view-editor"].forEach(function(id) {
+          var view = document.getElementById(id);
+          if (view) view.classList.remove("active");
+        });
+      }
+    }
+
+    guard("changePhase", "Apenas administradores de suprimentos podem mudar fases.");
+    guard("moveRelative", "Apenas administradores de suprimentos podem mudar fases.");
+    guard("editRequest", "Apenas administradores de suprimentos podem editar solicitacoes.");
+    guard("deleteRequest", "Apenas administradores de suprimentos podem excluir solicitacoes.");
+    guard("exportCsv", "Apenas administradores de suprimentos podem exportar a base.");
+  }
+
   function applyRules() {
     if (applying || !document.body) return;
     applying = true;
@@ -1969,6 +2107,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
         else applyFornecedorCadastroRules();
       }
       if (moduleKey === "estoque_obras") applyEstoqueRules();
+      if (moduleKey === "cadastro_materiais") applyCadastroMateriaisRules();
       if (moduleKey === "avaliacao_fornecedores") applyAvaliacaoRules();
     } finally {
       applying = false;
@@ -2037,12 +2176,15 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
         supplierMapStorageKey: FORNECEDORES_MAP_STORAGE_KEY,
         stockStateKey: ESTOQUE_STATE_STORAGE_KEY,
         evaluationDbKey: AVALIACAO_DB_STORAGE_KEY,
+        materialRegistrationStorageKey: CADASTRO_MATERIAIS_STORAGE_KEY,
+        materialRegistrationFormStorageKey: CADASTRO_MATERIAIS_FORM_STORAGE_KEY,
         sharedStateKeys: getEmbeddedStorageKeysForModule(moduleKey).filter(
           (key) =>
             key !== FRETES_STORAGE_KEY &&
             key !== NOTA_FISCAL_STORAGE_KEY &&
             key !== CONTRATOS_REQUESTS_STORAGE_KEY &&
-            key !== FORNECEDORES_CADASTRO_STORAGE_KEY
+            key !== FORNECEDORES_CADASTRO_STORAGE_KEY &&
+            key !== CADASTRO_MATERIAIS_STORAGE_KEY
         ),
       },
     }),

@@ -27,6 +27,7 @@ const realtimeTables = [
   "fretes_solicitacoes",
   "nf_simples_remessa_solicitacoes",
   "estoque_obras_pedidos",
+  "cadastro_materiais_solicitacoes",
   "avaliacao_fornecedores_avaliacoes",
   "fornecedores_cadastros",
 ] as const;
@@ -44,6 +45,7 @@ const tableTargets: Record<(typeof realtimeTables)[number], RealtimeTarget> = {
   fretes_solicitacoes: { cacheKeys: ["dashboard:summary"], modules: ["fretes"] },
   nf_simples_remessa_solicitacoes: { cacheKeys: ["dashboard:summary"], modules: ["nota_fiscal", "fretes"] },
   estoque_obras_pedidos: { cacheKeys: ["dashboard:summary"], modules: ["estoque_obras", "fretes"] },
+  cadastro_materiais_solicitacoes: { cacheKeys: ["dashboard:summary"], modules: ["cadastro_materiais"] },
   avaliacao_fornecedores_avaliacoes: { cacheKeys: ["dashboard:summary"], modules: ["avaliacao_fornecedores"] },
   fornecedores_cadastros: { cacheKeys: ["dashboard:summary"], modules: ["fornecedores"] },
 };
@@ -57,6 +59,7 @@ const moduleKeys: ModuleKey[] = [
   "fretes",
   "nota_fiscal",
   "estoque_obras",
+  "cadastro_materiais",
   "frota",
   "fornecedores",
   "avaliacao_fornecedores",

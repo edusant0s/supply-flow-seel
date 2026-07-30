@@ -17,6 +17,9 @@ export const FROTA_BILLING_BATCHES_STORAGE_KEY = "frota_medicoes_faturamento_imp
 
 export const ESTOQUE_STATE_STORAGE_KEY = "obrastock_clean_state_v1";
 
+export const CADASTRO_MATERIAIS_STORAGE_KEY = "seel_cadastro_itens_v1";
+export const CADASTRO_MATERIAIS_FORM_STORAGE_KEY = "seel_cadastro_itens_formulario_editor_v1";
+
 export const AVALIACAO_DB_STORAGE_KEY = "seel_supplier_evaluation_db_v10";
 
 export const CONTRATOS_FORM_STORAGE_KEY = "seel_form_google_forms_v8_sem_mapa_sem_un";
@@ -45,6 +48,7 @@ const sharedStateKeysByModule: Partial<Record<ModuleKey, string[]>> = {
     FROTA_BILLING_BATCHES_STORAGE_KEY,
   ],
   estoque_obras: [ESTOQUE_STATE_STORAGE_KEY],
+  cadastro_materiais: [CADASTRO_MATERIAIS_FORM_STORAGE_KEY],
   avaliacao_fornecedores: [AVALIACAO_DB_STORAGE_KEY],
   fornecedores: [
     FORNECEDORES_CADASTRO_SCHEMA_STORAGE_KEY,
@@ -59,6 +63,7 @@ export function getEmbeddedStorageKeysForModule(moduleKey: ModuleKey) {
   if (moduleKey === "fretes") return [FRETES_STORAGE_KEY, ...keys];
   if (moduleKey === "nota_fiscal") return [NOTA_FISCAL_STORAGE_KEY, ...keys];
   if (moduleKey === "fornecedores") return [FORNECEDORES_CADASTRO_STORAGE_KEY, ...keys];
+  if (moduleKey === "cadastro_materiais") return [CADASTRO_MATERIAIS_STORAGE_KEY, ...keys];
   return keys;
 }
 
@@ -126,6 +131,14 @@ export async function loadEmbeddedStorageSnapshot(moduleKey: ModuleKey): Promise
     else if (localCadastros.length) snapshot[FORNECEDORES_CADASTRO_STORAGE_KEY] = localCadastros;
   }
 
+  if (moduleKey === "cadastro_materiais") {
+    const solicitacoes = await listCadastroMateriaisPayloads();
+    const localSolicitacoes = readLocalStorageArray(CADASTRO_MATERIAIS_STORAGE_KEY);
+    if (solicitacoes?.length) snapshot[CADASTRO_MATERIAIS_STORAGE_KEY] = solicitacoes;
+    else if (solicitacoes) snapshot[CADASTRO_MATERIAIS_STORAGE_KEY] = localSolicitacoes;
+    else if (localSolicitacoes.length) snapshot[CADASTRO_MATERIAIS_STORAGE_KEY] = localSolicitacoes;
+  }
+
   return snapshot;
 }
 
@@ -174,6 +187,10 @@ export async function listSupplierEvaluationPayloads() {
 
 export async function listFornecedorCadastroPayloads() {
   return listPayloads("fornecedores_cadastros", "updated_at", "desc");
+}
+
+export async function listCadastroMateriaisPayloads() {
+  return listPayloads("cadastro_materiais_solicitacoes", "updated_at", "desc");
 }
 
 export async function listFornecedorMapSuppliers() {
@@ -251,7 +268,8 @@ async function listPayloads(
     | "nf_simples_remessa_solicitacoes"
     | "estoque_obras_pedidos"
     | "avaliacao_fornecedores_avaliacoes"
-    | "fornecedores_cadastros",
+    | "fornecedores_cadastros"
+    | "cadastro_materiais_solicitacoes",
   orderColumn: string,
   direction: "asc" | "desc"
 ) {
