@@ -71,6 +71,34 @@ const routeTitles: Record<string, string> = {
   "/alterar-senha": "Alterar Senha",
 };
 
+const routePreloaders: Record<string, () => Promise<unknown>> = {
+  "/alertas": () => import("../features/alertas/AlertasPage"),
+  "/requisicoes": () => import("../features/requisicoes/RequisicoesPage"),
+  "/orcamentos": () => import("../features/orcamentos/OrcamentosPage"),
+  "/contratos": () => import("../features/contratos/ContratosPage"),
+  "/fretes": () => import("../features/fretes/FretesPage"),
+  "/nota-fiscal": () => import("../features/notaFiscal/NotaFiscalPage"),
+  "/estoque-obras": () => import("../features/estoqueObras/EstoqueObrasPage"),
+  "/cadastro-materiais": () => import("../features/cadastroMateriais/CadastroMateriaisPage"),
+  "/frota": () => import("../features/frota/FrotaPage"),
+  "/fornecedores": () => import("../features/fornecedores/FornecedoresPage"),
+  "/cadastro-fornecedores": () => import("../features/cadastroFornecedores/CadastroFornecedoresPage"),
+  "/avaliacao-fornecedores": () => import("../features/avaliacaoFornecedores/AvaliacaoFornecedoresPage"),
+  "/importacoes": () => import("../features/importacoes/ImportacoesPage"),
+  "/usuarios": () => import("../features/usuarios/UsuariosPage"),
+  "/settings": () => import("../features/settings/SettingsPage"),
+};
+
+const preloadedRoutes = new Set<string>();
+
+function preloadRoute(to: string) {
+  if (preloadedRoutes.has(to)) return;
+  const preload = routePreloaders[to];
+  if (!preload) return;
+  preloadedRoutes.add(to);
+  void preload().catch(() => preloadedRoutes.delete(to));
+}
+
 const routeScrollPositions = new Map<string, { x: number; y: number }>();
 
 export function AppLayout() {
@@ -128,6 +156,9 @@ export function AppLayout() {
                 key={item.to}
                 end={item.to === "/"}
                 onClick={() => setOpen(false)}
+                onFocus={() => preloadRoute(item.to)}
+                onMouseEnter={() => preloadRoute(item.to)}
+                onPointerDown={() => preloadRoute(item.to)}
                 className={({ isActive }) => (isActive ? "active" : "")}
               >
                 <Icon size={18} />

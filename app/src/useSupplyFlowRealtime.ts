@@ -95,7 +95,7 @@ export function useSupplyFlowRealtime({
         pendingModules.clear();
 
         if (cacheKeys.length) invalidateAsyncData(cacheKeys, { clearCache: true });
-        modules.forEach((moduleKey) => invalidateEmbeddedToolCache(moduleKey));
+        modules.forEach((moduleKey) => invalidateEmbeddedToolCache(moduleKey, { notifyActive: true }));
       }, 650);
     }
 

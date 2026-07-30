@@ -578,6 +578,7 @@ type EmbeddedPageCacheEntry = {
   html: string;
   sharedStorage: Record<string, unknown>;
   supplierMapBase: Array<Record<string, unknown>>;
+  stale?: boolean;
 };
 
 const embeddedPageCache = new Map<string, EmbeddedPageCacheEntry>();
@@ -588,8 +589,10 @@ type EmbeddedToolInvalidationOptions = {
 };
 
 export function invalidateEmbeddedToolCache(moduleKey?: ModuleKey, options: EmbeddedToolInvalidationOptions = {}) {
-  Array.from(embeddedPageCache.keys()).forEach((key) => {
-    if (!moduleKey || key.startsWith(`${moduleKey}:`)) embeddedPageCache.delete(key);
+  Array.from(embeddedPageCache.entries()).forEach(([key, entry]) => {
+    if (!moduleKey || key.startsWith(`${moduleKey}:`)) {
+      embeddedPageCache.set(key, { ...entry, stale: true });
+    }
   });
   if (options.notifyActive && typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(embeddedToolInvalidationEvent, { detail: { moduleKey } }));
@@ -602,7 +605,7 @@ function mergeCachedLocalStorage(moduleKey: ModuleKey, snapshot: Record<string, 
   getEmbeddedStorageKeysForModule(moduleKey).forEach((key) => {
     try {
       const raw = window.localStorage.getItem(key);
-      if (raw) next[key] = JSON.parse(raw);
+      if (raw && next[key] === undefined) next[key] = JSON.parse(raw);
     } catch {
       // Local embedded state is only a session cache; keep the Supabase snapshot if parsing fails.
     }
@@ -648,11 +651,34 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
   window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
   window.SUPPLY_FLOW_SUPPLIER_MAP_BASE = Array.isArray(ctx.supplierMapBase) ? ctx.supplierMapBase : [];
 
+  function writeSharedStorageSnapshot(source, dispatchEvents) {
+    if (!source || typeof source !== "object") return;
+    Object.keys(source).forEach(function(key) {
+      try {
+        var serialized = JSON.stringify(source[key]);
+        if (nativeStorageSetItem) nativeStorageSetItem.call(window.localStorage, key, serialized);
+        else window.localStorage.setItem(key, serialized);
+        if (dispatchEvents) {
+          try {
+            window.dispatchEvent(new StorageEvent("storage", {
+              key: key,
+              newValue: serialized,
+              storageArea: window.localStorage
+            }));
+          } catch (eventError) {
+            window.dispatchEvent(new CustomEvent("supply-flow:shared-storage-updated", { detail: { key: key } }));
+          }
+        }
+      } catch (err) {}
+    });
+  }
+
   function updateHostContext(nextContext) {
     if (!nextContext || typeof nextContext !== "object") return;
     ctx = Object.assign({}, ctx, nextContext);
     syncConfig = Object.assign({}, syncConfig, nextContext.sync || {});
     integrations = Object.assign({}, integrations, nextContext.integrations || {});
+    sharedStorage = nextContext.sharedStorage && typeof nextContext.sharedStorage === "object" ? nextContext.sharedStorage : sharedStorage;
     canManage = !!ctx.canManage;
     isSuperAdmin = ctx.role === "super_admin";
     hostUser = ctx.user || hostUser || {};
@@ -669,6 +695,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     window.supplyFlowUser = window.SEEL_CURRENT_USER;
     window.SUPPLY_FLOW_GOOGLE_MAPS_API_KEY = String(integrations.googleMapsApiKey || "").trim();
     window.SUPPLY_FLOW_SUPABASE_CONNECTED = Boolean(syncConfig.supabaseUrl && syncConfig.supabaseAnonKey && syncConfig.accessToken);
+    writeSharedStorageSnapshot(sharedStorage, true);
     applyRules();
   }
 
@@ -678,11 +705,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     updateHostContext(message.context || {});
   });
 
-  Object.keys(sharedStorage).forEach(function(key) {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(sharedStorage[key]));
-    } catch (err) {}
-  });
+  writeSharedStorageSnapshot(sharedStorage, false);
 
   var nativeStorageSetItem = Storage.prototype.setItem;
   var nativeStorageRemoveItem = Storage.prototype.removeItem;
@@ -2140,6 +2163,7 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
   const [supplierMapBase, setSupplierMapBase] = useState<Array<Record<string, unknown>> | null>(() => cached?.supplierMapBase ?? null);
   const [error, setError] = useState<string | null>(null);
   const [reloadAttempt, setReloadAttempt] = useState(0);
+  const [dataRefreshAttempt, setDataRefreshAttempt] = useState(0);
   const [srcDoc, setSrcDoc] = useState<string | undefined>(undefined);
   const baseHref = useMemo(() => new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString(), []);
 
@@ -2193,7 +2217,9 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
 
   useEffect(() => {
     let active = true;
-    const cachedEntry = reloadAttempt ? undefined : embeddedPageCache.get(cacheKey);
+    const forceAssetReload = reloadAttempt > 0;
+    const cachedEntry = forceAssetReload ? undefined : embeddedPageCache.get(cacheKey);
+
     if (cachedEntry) {
       const nextSharedStorage = mergeCachedLocalStorage(moduleKey, cachedEntry.sharedStorage);
       embeddedPageCache.set(cacheKey, { ...cachedEntry, sharedStorage: nextSharedStorage });
@@ -2201,28 +2227,33 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
       setSharedStorage(nextSharedStorage);
       setSupplierMapBase(cachedEntry.supplierMapBase);
       setError(null);
-      return () => {
-        active = false;
-      };
+      if (!cachedEntry.stale && dataRefreshAttempt === 0) {
+        return () => {
+          active = false;
+        };
+      }
     }
 
-    setHtml(null);
-    setSharedStorage(null);
-    setSupplierMapBase(null);
+    if (!cachedEntry) {
+      setHtml(null);
+      setSharedStorage(null);
+      setSupplierMapBase(null);
+    }
     setError(null);
 
     Promise.all([
-      loadHtml(),
+      cachedEntry?.html && !forceAssetReload ? Promise.resolve(cachedEntry.html) : loadHtml(),
       loadEmbeddedStorageSnapshot(moduleKey),
       loadSupplierMapBase ? listFornecedorMapSuppliers() : Promise.resolve(null),
     ])
       .then(([content, snapshot, supplierMapRows]) => {
         if (!active) return;
-        const nextSupplierMapBase = Array.isArray(supplierMapRows) ? supplierMapRows : [];
+        const nextSupplierMapBase = Array.isArray(supplierMapRows) ? supplierMapRows : cachedEntry?.supplierMapBase || [];
         embeddedPageCache.set(cacheKey, {
           html: content,
           sharedStorage: snapshot,
           supplierMapBase: nextSupplierMapBase,
+          stale: false,
         });
         setHtml(content);
         setSharedStorage(snapshot);
@@ -2235,13 +2266,13 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
     return () => {
       active = false;
     };
-  }, [cacheKey, loadHtml, loadSupplierMapBase, moduleKey, reloadAttempt]);
+  }, [cacheKey, dataRefreshAttempt, loadHtml, loadSupplierMapBase, moduleKey, reloadAttempt]);
 
   useEffect(() => {
     function handleEmbeddedInvalidation(event: Event) {
       const targetModule = (event as CustomEvent<{ moduleKey?: ModuleKey }>).detail?.moduleKey;
       if (targetModule && targetModule !== moduleKey) return;
-      setReloadAttempt((value) => value + 1);
+      setDataRefreshAttempt((value) => value + 1);
     }
 
     window.addEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
@@ -2266,6 +2297,12 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
     frameRef.current?.contentWindow?.postMessage({ type: "supply-flow:context-update", context: embeddedContext }, window.location.origin);
   }, [embeddedContext, srcDoc]);
 
+  const renderedSrcDoc = useMemo(() => {
+    if (srcDoc) return srcDoc;
+    if (!html || !sharedStorage || supplierMapBase === null) return undefined;
+    return withEmbeddedShell(html, baseHref, embeddedContext);
+  }, [baseHref, embeddedContext, html, sharedStorage, srcDoc, supplierMapBase]);
+
   if (error) {
     return (
       <section className="state-panel">
@@ -2285,7 +2322,7 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
     );
   }
 
-  if (!srcDoc) return <LoadingState label={`Carregando ${title}...`} />;
+  if (!renderedSrcDoc) return <LoadingState label={`Carregando ${title}...`} />;
 
   return (
     <div className="embedded-tool-page">
@@ -2293,7 +2330,7 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
         ref={frameRef}
         className="embedded-tool-frame"
         title={title}
-        srcDoc={srcDoc}
+        srcDoc={renderedSrcDoc}
         onLoad={() => frameRef.current?.contentWindow?.postMessage({ type: "supply-flow:context-update", context: embeddedContext }, window.location.origin)}
         sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox"
       />
