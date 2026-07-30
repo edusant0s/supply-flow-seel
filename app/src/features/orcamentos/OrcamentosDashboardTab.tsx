@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, ClipboardList, Clock3, Target, TimerReset,
 import { KpiCard } from "../../components/KpiCard";
 import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import type { Orcamento } from "../../types";
+import { OrcamentosCriticalAnalysis } from "./OrcamentosCriticalAnalysis";
 import { averageOrcamentoSlaMs, formatBusinessDuration, getOrcamentoSla, phaseLabel } from "./sla";
 import {
   getAssignedToList,
@@ -16,7 +17,6 @@ import {
 } from "./model";
 
 type ChartRow = { label: string; value: number; meta?: string; accent?: string };
-type AlertInsight = { title: string; detail: string; tone: "success" | "warning" | "danger" | "blue" };
 
 export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now: number }) {
   const [assignee, setAssignee] = useState("");
@@ -49,7 +49,6 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
   const slaByAssigneeRows = useMemo(() => buildAssigneeSlaRows(filtered, now), [filtered, now]);
   const monthlyRows = useMemo(() => buildMonthlyRows(filtered), [filtered]);
   const typeRows = useMemo(() => groupRows(filtered, (item) => item.tipo_orcamento || "Tipo nao informado"), [filtered]);
-  const alertRows = useMemo(() => buildAlertRows(filtered, metrics, now), [filtered, metrics, now]);
 
   return (
     <div className="page-stack orcamento-dashboard">
@@ -89,6 +88,8 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
         <ExecutiveCard title="Pressao operacional" value={String(metrics.risk)} hint={`${metrics.delayed} atrasada(s), ${metrics.warning} em atencao`} accent="var(--red)" />
       </section>
 
+      <OrcamentosCriticalAnalysis items={filtered} now={now} />
+
       <section className="orcamento-dashboard-grid orcamento-dashboard-grid--executive">
         <ChartCard title="Funil por fase" eyebrow="Operacao" rows={statusRows} accent="var(--yellow)" />
         <ChartCard title="Resultado das obras finalizadas" eyebrow="Comercial" rows={outcomeRows} accent="var(--green)" emptyLabel="Sem finalizados no filtro." />
@@ -96,7 +97,6 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
         <ChartCard title="SLA medio por atribuido" eyebrow="Performance" rows={slaByAssigneeRows} accent="var(--amber)" valueSuffix="h" />
         <TrendCard rows={monthlyRows} />
         <ChartCard title="Tipo de orcamento" eyebrow="Mix de demanda" rows={typeRows} accent="var(--blue-950)" />
-        <AlertPanel rows={alertRows} />
         <section className="orcamento-insight-card orcamento-insight-card--wide">
           <span className="eyebrow">Leitura executiva</span>
           <h3>Resumo analitico</h3>
@@ -208,23 +208,6 @@ function TrendCard({ rows }: { rows: ChartRow[] }) {
   );
 }
 
-function AlertPanel({ rows }: { rows: AlertInsight[] }) {
-  return (
-    <section className="orcamento-alert-panel">
-      <span className="eyebrow">Alertas e analises</span>
-      <h3>Painel de decisao</h3>
-      <div>
-        {rows.map((row) => (
-          <article key={row.title} className={`orcamento-alert-panel__item orcamento-alert-panel__item--${row.tone}`}>
-            <strong>{row.title}</strong>
-            <p>{row.detail}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function buildDashboardMetrics(items: Orcamento[], now: number) {
   const open = items.filter((item) => openStatuses.includes(item.status || "nao_iniciado"));
   const finished = items.filter((item) => item.status === "finalizado");
@@ -305,34 +288,6 @@ function buildMonthlyRows(items: Orcamento[]): ChartRow[] {
     const date = getFilterDate(item);
     return date ? date.slice(0, 7).split("-").reverse().join("/") : "Sem data";
   }).sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { numeric: true }));
-}
-
-function buildAlertRows(items: Orcamento[], metrics: ReturnType<typeof buildDashboardMetrics>, now: number): AlertInsight[] {
-  const rows: AlertInsight[] = [];
-  if (!items.length) return [{ title: "Sem dados no filtro", detail: "Amplie o periodo ou remova filtros para visualizar a carteira.", tone: "blue" }];
-  if (metrics.delayed) {
-    rows.push({ title: "Prioridade de prazo", detail: `${metrics.delayed} solicitacao(oes) em aberto estao atrasadas e precisam de acao no Kanban.`, tone: "danger" });
-  }
-  if (metrics.waitingOutcome) {
-    rows.push({ title: "Resultado comercial pendente", detail: `${metrics.waitingOutcome} finalizado(s) ainda estao aguardando resultado da obra.`, tone: "warning" });
-  }
-  if (metrics.open > metrics.finished) {
-    rows.push({ title: "Carteira aberta elevada", detail: `Abertos representam ${formatPercent(metrics.open, metrics.total)} da carteira filtrada.`, tone: "warning" });
-  }
-  const oldestOpen = items
-    .filter((item) => openStatuses.includes(item.status || "nao_iniciado"))
-    .sort((a, b) => getOrcamentoSla(b, now).totalMs - getOrcamentoSla(a, now).totalMs)[0];
-  if (oldestOpen) {
-    rows.push({
-      title: "Maior tempo em aberto",
-      detail: `${oldestOpen.numero_proposta || "Solicitacao"} esta com ${formatBusinessDuration(getOrcamentoSla(oldestOpen, now).totalMs)} no processo.`,
-      tone: "blue",
-    });
-  }
-  if (!metrics.delayed && !metrics.waitingOutcome) {
-    rows.push({ title: "Operacao controlada", detail: "Nao ha atrasos criticos ou resultados comerciais pendentes no filtro atual.", tone: "success" });
-  }
-  return rows.slice(0, 5);
 }
 
 function unique(values: string[]) {

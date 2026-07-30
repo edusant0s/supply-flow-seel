@@ -11188,13 +11188,13 @@
       height: 36px !important;
       display: grid !important;
       place-items: center !important;
-      border: 2px solid #f5cf00 !important;
+      border: 2px solid #fcc800 !important;
       border-radius: 12px !important;
-      background: #005b89 !important;
+      background: #1b6d8e !important;
       color: #ffffff !important;
       font-size: 16px !important;
       line-height: 1 !important;
-      box-shadow: 0 5px 12px rgba(0,83,131,.15) !important;
+      box-shadow: 0 5px 12px rgba(10,46,61,.15) !important;
     }
 
     #kanbanBoard .freight-stage-header h3 {
@@ -11304,13 +11304,13 @@
     #kanbanBoard .freight-card {
       display: block !important;
       margin: 0 !important;
-      padding: 8px 8px 7px !important;
+      padding: 10px !important;
       overflow: hidden !important;
-      border: 1px solid #d7e1e8 !important;
-      border-left: 5px solid #075985 !important;
-      border-radius: 15px !important;
-      background: #ffffff !important;
-      box-shadow: 0 7px 17px rgba(0,83,131,.09) !important;
+      border: 1px solid var(--border) !important;
+      border-left: 5px solid #1b6d8e !important;
+      border-radius: 14px !important;
+      background: var(--card-solid) !important;
+      box-shadow: 0 8px 18px rgba(10,46,61,.1) !important;
       cursor: pointer !important;
       transition: transform .12s ease, box-shadow .12s ease !important;
     }
@@ -11318,13 +11318,13 @@
     #kanbanBoard .freight-card:hover,
     #kanbanBoard .freight-card:focus-visible {
       transform: translateY(-1px) !important;
-      box-shadow: 0 11px 24px rgba(0,83,131,.15) !important;
+      box-shadow: 0 10px 22px rgba(10,46,61,.16) !important;
       outline: none !important;
     }
 
-    #kanbanBoard .freight-card.red { border-left-color: #ef4444 !important; }
-    #kanbanBoard .freight-card.yellow { border-left-color: #facc15 !important; }
-    #kanbanBoard .freight-card.green { border-left-color: #22c55e !important; }
+    #kanbanBoard .freight-card.red { border-left-color: #e7000b !important; }
+    #kanbanBoard .freight-card.yellow { border-left-color: #d97706 !important; }
+    #kanbanBoard .freight-card.green { border-left-color: #059669 !important; }
     #kanbanBoard .freight-card.cancelled { border-left-color: #64748b !important; opacity: 1 !important; }
 
     #kanbanBoard .freight-compact-top {
@@ -11336,57 +11336,60 @@
 
     #kanbanBoard .freight-compact-title-wrap { min-width: 0 !important; }
     #kanbanBoard .freight-compact-id {
-      margin-bottom: 2px !important;
-      color: #7a95a8 !important;
-      font-size: 8px !important;
+      margin-bottom: 3px !important;
+      color: var(--muted) !important;
+      font-size: 10px !important;
       line-height: 1 !important;
-      font-weight: 950 !important;
+      font-weight: 900 !important;
       letter-spacing: .04em !important;
+      text-transform: uppercase !important;
     }
 
     #kanbanBoard .freight-compact-title {
-      color: #053451 !important;
-      font-size: 11.5px !important;
-      line-height: 1.1 !important;
-      font-weight: 950 !important;
+      color: var(--text) !important;
+      font-size: 13px !important;
+      line-height: 1.15 !important;
+      font-weight: 900 !important;
       text-transform: uppercase !important;
       overflow-wrap: anywhere !important;
     }
 
     #kanbanBoard .freight-priority-bubble {
-      min-width: 31px !important;
-      height: 31px !important;
-      padding: 0 5px !important;
-      display: grid !important;
-      place-items: center !important;
-      border-radius: 10px !important;
-      font-size: 8px !important;
+      min-width: 0 !important;
+      height: 24px !important;
+      padding: 0 10px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 999px !important;
+      font-size: 10px !important;
       line-height: 1 !important;
-      font-weight: 950 !important;
+      font-weight: 900 !important;
     }
 
-    #kanbanBoard .freight-priority-bubble.urgent { background: #f9e8cf !important; color: #f97316 !important; }
-    #kanbanBoard .freight-priority-bubble.normal { background: #dce9fb !important; color: #2563eb !important; }
+    #kanbanBoard .freight-priority-bubble.urgent { background: rgba(217,119,6,.14) !important; color: #d97706 !important; }
+    #kanbanBoard .freight-priority-bubble.normal { background: rgba(27,109,142,.12) !important; color: #1b6d8e !important; }
 
     #kanbanBoard .freight-compact-lines {
       display: grid !important;
-      gap: 2px !important;
-      margin-top: 5px !important;
+      gap: 5px !important;
+      margin-top: 8px !important;
     }
 
     #kanbanBoard .freight-compact-lines > div {
       display: grid !important;
-      grid-template-columns: 12px minmax(0,1fr) !important;
-      gap: 4px !important;
+      grid-template-columns: 14px minmax(0,1fr) !important;
+      gap: 6px !important;
       align-items: start !important;
-      color: #5f7888 !important;
-      font-size: 8.5px !important;
-      line-height: 1.16 !important;
+      color: var(--muted) !important;
+      font-size: 10.5px !important;
+      font-weight: 800 !important;
+      line-height: 1.25 !important;
     }
 
     #kanbanBoard .freight-line-icon {
-      color: #075985 !important;
-      font-size: 8px !important;
+      color: #1b6d8e !important;
+      font-size: 9px !important;
       line-height: 1.2 !important;
       text-align: center !important;
     }
@@ -11394,11 +11397,11 @@
     #kanbanBoard .freight-compact-description {
       min-height: 19px !important;
       max-height: 21px !important;
-      margin-top: 5px !important;
-      color: #173248 !important;
-      font-size: 8.5px !important;
-      line-height: 1.15 !important;
-      font-weight: 700 !important;
+      margin-top: 7px !important;
+      color: var(--text) !important;
+      font-size: 10.5px !important;
+      line-height: 1.2 !important;
+      font-weight: 800 !important;
       display: -webkit-box !important;
       -webkit-line-clamp: 2 !important;
       -webkit-box-orient: vertical !important;
@@ -11435,69 +11438,77 @@
 
     #kanbanBoard .freight-mini-badge {
       max-width: 100% !important;
-      padding: 3px 5px !important;
+      padding: 4px 8px !important;
       border-radius: 999px !important;
-      font-size: 7px !important;
+      font-size: 10px !important;
       line-height: 1 !important;
-      font-weight: 950 !important;
+      font-weight: 900 !important;
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
     }
 
-    #kanbanBoard .freight-mini-badge.urgent { background: #ffe3cf !important; color: #f97316 !important; }
-    #kanbanBoard .freight-mini-badge.normal { background: #dbeafe !important; color: #2563eb !important; }
-    #kanbanBoard .freight-mini-badge.traffic-red { background: #fee2e2 !important; color: #dc2626 !important; }
-    #kanbanBoard .freight-mini-badge.traffic-yellow { background: #fef3c7 !important; color: #b45309 !important; }
-    #kanbanBoard .freight-mini-badge.traffic-green { background: #dcfce7 !important; color: #16a34a !important; }
+    #kanbanBoard .freight-mini-badge.urgent { background: rgba(217,119,6,.12) !important; color: #d97706 !important; }
+    #kanbanBoard .freight-mini-badge.normal { background: rgba(27,109,142,.1) !important; color: #1b6d8e !important; }
+    #kanbanBoard .freight-mini-badge.traffic-red { background: rgba(231,0,11,.1) !important; color: #e7000b !important; }
+    #kanbanBoard .freight-mini-badge.traffic-yellow { background: rgba(217,119,6,.12) !important; color: #d97706 !important; }
+    #kanbanBoard .freight-mini-badge.traffic-green { background: rgba(5,150,105,.1) !important; color: #059669 !important; }
     #kanbanBoard .freight-mini-badge.traffic-gray { background: #e2e8f0 !important; color: #475569 !important; }
-    #kanbanBoard .freight-mini-badge.phase { background: #ede9fe !important; color: #6d28d9 !important; }
+    #kanbanBoard .freight-mini-badge.phase { background: rgba(27,109,142,.1) !important; color: #1b6d8e !important; }
 
     #kanbanBoard .freight-compact-meta {
       display: grid !important;
       grid-template-columns: minmax(0,1fr) auto !important;
-      gap: 4px !important;
+      gap: 6px !important;
       align-items: center !important;
-      margin-top: 5px !important;
-      color: #5f7888 !important;
-      font-size: 8px !important;
-      line-height: 1.12 !important;
+      margin-top: 8px !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 10px !important;
+      background: var(--bg) !important;
+      padding: 6px 9px !important;
+      color: var(--muted) !important;
+      font-size: 10.5px !important;
+      font-weight: 800 !important;
+      line-height: 1.2 !important;
     }
 
-    #kanbanBoard .freight-compact-meta strong { color: #053451 !important; }
+    #kanbanBoard .freight-compact-meta strong { color: var(--text) !important; }
     #kanbanBoard .meta-status { font-weight: 900 !important; white-space: nowrap !important; }
-    #kanbanBoard .meta-status.red { color: #dc2626 !important; }
-    #kanbanBoard .meta-status.yellow { color: #b45309 !important; }
-    #kanbanBoard .meta-status.green { color: #16a34a !important; }
+    #kanbanBoard .meta-status.red { color: #e7000b !important; }
+    #kanbanBoard .meta-status.yellow { color: #d97706 !important; }
+    #kanbanBoard .meta-status.green { color: #059669 !important; }
     #kanbanBoard .meta-status.gray { color: #64748b !important; }
 
     #kanbanBoard .freight-compact-timer {
       display: grid !important;
-      gap: 2px !important;
-      margin-top: 5px !important;
-      padding: 5px 6px !important;
-      border: 1px solid #cfdde7 !important;
-      border-radius: 9px !important;
-      background: #f3f7fa !important;
+      gap: 5px !important;
+      margin-top: 8px !important;
+      padding: 8px 9px !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 10px !important;
+      background: var(--bg) !important;
     }
 
     #kanbanBoard .freight-compact-timer > div {
       display: grid !important;
       grid-template-columns: minmax(0,1fr) auto !important;
-      gap: 5px !important;
+      gap: 6px !important;
       align-items: center !important;
-      color: #5f7888 !important;
-      font-size: 7.5px !important;
-      line-height: 1.1 !important;
+      color: var(--muted) !important;
+      font-size: 9.5px !important;
+      font-weight: 900 !important;
+      text-transform: uppercase !important;
+      line-height: 1.15 !important;
     }
 
     #kanbanBoard .freight-compact-timer strong {
-      color: #053451 !important;
-      font-size: 7.5px !important;
-      line-height: 1.1 !important;
-      font-weight: 950 !important;
+      color: var(--text) !important;
+      font-size: 11px !important;
+      line-height: 1.15 !important;
+      font-weight: 900 !important;
       font-variant-numeric: tabular-nums !important;
       white-space: nowrap !important;
+      text-transform: none !important;
     }
 
     #kanbanBoard .freight-phase-selector-wrap {
@@ -11508,8 +11519,8 @@
 
     #kanbanBoard .freight-phase-selector-wrap label {
       margin: 0 !important;
-      color: #688091 !important;
-      font-size: 7px !important;
+      color: var(--muted) !important;
+      font-size: 9px !important;
       line-height: 1 !important;
       font-weight: 900 !important;
       letter-spacing: .04em !important;
@@ -11518,15 +11529,15 @@
 
     #kanbanBoard .freight-phase-selector-wrap .phase-select {
       width: 100% !important;
-      height: 27px !important;
-      min-height: 27px !important;
+      height: 34px !important;
+      min-height: 34px !important;
       margin: 0 !important;
-      padding: 0 7px !important;
-      border: 1px solid #bfcfd9 !important;
+      padding: 0 9px !important;
+      border: 1px solid var(--border) !important;
       border-radius: 8px !important;
-      background: #ffffff !important;
-      color: #053451 !important;
-      font-size: 8.5px !important;
+      background: var(--card-solid) !important;
+      color: var(--text) !important;
+      font-size: 11px !important;
       line-height: 1 !important;
       font-weight: 800 !important;
       box-shadow: none !important;
@@ -11535,29 +11546,29 @@
     #kanbanBoard .freight-compact-actions {
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 5px !important;
-      margin-top: 5px !important;
+      gap: 7px !important;
+      margin-top: 8px !important;
     }
 
     #kanbanBoard .freight-compact-actions button {
       min-width: 0 !important;
-      min-height: 26px !important;
-      height: 26px !important;
-      padding: 0 5px !important;
-      border: 1px solid #cbdbe4 !important;
+      min-height: 32px !important;
+      height: 32px !important;
+      padding: 0 7px !important;
+      border: 1px solid var(--border) !important;
       border-radius: 8px !important;
-      background: #ffffff !important;
-      color: #053451 !important;
-      font-size: 8px !important;
+      background: var(--card-solid) !important;
+      color: #334155 !important;
+      font-size: 10px !important;
       line-height: 1 !important;
-      font-weight: 900 !important;
+      font-weight: 850 !important;
       box-shadow: none !important;
     }
 
     #kanbanBoard .freight-compact-actions button:last-child {
-      background: #075985 !important;
-      color: #ffffff !important;
-      border-color: #075985 !important;
+      background: var(--card-solid) !important;
+      color: #1b6d8e !important;
+      border-color: rgba(27,109,142,.4) !important;
     }
 
     @media (max-width: 1550px) {
@@ -11712,15 +11723,15 @@
     #kanbanBoard .freight-compact-actions .btn-email {
       grid-column: 1 / -1 !important;
       width: 100% !important;
-      min-height: 30px !important;
-      padding: 6px 8px !important;
-      border: 1px solid #0f766e !important;
+      min-height: 32px !important;
+      padding: 6px 9px !important;
+      border: 1px solid rgba(15,118,110,.4) !important;
       border-radius: 8px !important;
-      background: #0f766e !important;
-      color: #ffffff !important;
-      font-size: 9px !important;
+      background: var(--card-solid) !important;
+      color: #0f766e !important;
+      font-size: 10px !important;
       line-height: 1.1 !important;
-      font-weight: 900 !important;
+      font-weight: 850 !important;
       text-transform: none !important;
       letter-spacing: 0 !important;
       cursor: pointer !important;
@@ -11728,14 +11739,14 @@
     }
 
     #kanbanBoard .freight-compact-actions .btn-email:hover {
-      background: #115e59 !important;
-      border-color: #115e59 !important;
+      background: rgba(15,118,110,.08) !important;
+      border-color: rgba(15,118,110,.55) !important;
     }
 
     #kanbanBoard .freight-compact-actions [data-action="edit"] {
-      background: #075985 !important;
-      color: #ffffff !important;
-      border-color: #075985 !important;
+      background: var(--card-solid) !important;
+      color: #1b6d8e !important;
+      border-color: rgba(27,109,142,.4) !important;
     }
 
 
@@ -11872,9 +11883,9 @@
     #kanbanBoard .freight-compact-actions .btn-email-correction {
       display: none !important;
       grid-column: 1 / -1 !important;
-      background: #b91c1c !important;
-      border-color: #b91c1c !important;
-      color: #ffffff !important;
+      background: var(--card-solid) !important;
+      border-color: rgba(231,0,11,.4) !important;
+      color: #e7000b !important;
     }
 
     #kanbanBoard .freight-card.form-error .freight-compact-actions .btn-email-correction {
@@ -11882,8 +11893,8 @@
     }
 
     #kanbanBoard .freight-card.form-error .freight-compact-actions .btn-email-correction:hover {
-      background: #991b1b !important;
-      border-color: #991b1b !important;
+      background: rgba(231,0,11,.08) !important;
+      border-color: rgba(231,0,11,.55) !important;
     }
 
 
@@ -12557,8 +12568,8 @@
       align-items: center !important;
       justify-content: center !important;
       border-radius: 6px !important;
-      background: #e9f3f8 !important;
-      color: #075985 !important;
+      background: rgba(27,109,142,.1) !important;
+      color: #1b6d8e !important;
     }
 
     #kanbanBoard .freight-line-icon .freight-ui-icon {
@@ -12584,15 +12595,15 @@
       width: 13px !important;
       height: 13px !important;
       min-width: 13px !important;
-      color: #075985 !important;
+      color: #1b6d8e !important;
     }
 
     #kanbanBoard .freight-priority-bubble {
       display: inline-flex !important;
-      flex-direction: column !important;
+      flex-direction: row !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 1px !important;
+      gap: 5px !important;
     }
 
     #kanbanBoard .freight-priority-bubble .freight-ui-icon {
@@ -12621,9 +12632,9 @@
       align-items: center !important;
       justify-content: center !important;
       border-radius: 6px !important;
-      background: #ffffff !important;
-      color: #075985 !important;
-      border: 1px solid #d7e1e8 !important;
+      background: var(--card-solid) !important;
+      color: #1b6d8e !important;
+      border: 1px solid var(--border) !important;
     }
 
     #kanbanBoard .freight-description-icon .freight-ui-icon {

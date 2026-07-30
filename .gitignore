@@ -20,3 +20,5 @@ app/public/_dev-test-*.html
 *.crt
 *.cer
 firebase-config.js
+.vercel
+.env*

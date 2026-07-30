@@ -1784,17 +1784,17 @@ html.contract-form-editing{scroll-behavior:auto!important}
   width:38px !important;
   height:38px !important;
   border-radius:13px !important;
-  background:#075985 !important;
-  color:#ffd400 !important;
-  border:2px solid #ffd400 !important;
+  background:#1b6d8e !important;
+  color:#fcc800 !important;
+  border:2px solid #fcc800 !important;
   display:grid !important;
   place-items:center !important;
   font-size:17px !important;
-  box-shadow:0 5px 12px rgba(7,89,133,.15) !important;
+  box-shadow:0 5px 12px rgba(10,46,61,.15) !important;
 }
 #kanbanView .unified-col.process-two .col-icon{
-  background:#0f5d8f !important;
-  color:#ffd400 !important;
+  background:#0a2e3d !important;
+  color:#fcc800 !important;
 }
 #kanbanView .col-title{
   margin:0 !important;
@@ -1888,19 +1888,19 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   text-align:center !important;
 }
 #kanbanView .contract-freight-card{
-  padding:10px 10px 9px !important;
-  border:1px solid #d7e1e8 !important;
-  border-left:4px solid #075985 !important;
-  border-radius:15px !important;
+  padding:10px !important;
+  border:1px solid var(--border) !important;
+  border-left:5px solid #1b6d8e !important;
+  border-radius:14px !important;
   background:var(--card) !important;
-  box-shadow:0 7px 16px rgba(0,83,131,.08) !important;
+  box-shadow:0 8px 18px rgba(10,46,61,.1) !important;
   cursor:pointer !important;
 }
-#kanbanView .contract-freight-card.red{border-left-color:#ef4444 !important}
-#kanbanView .contract-freight-card.yellow{border-left-color:#f59e0b !important}
-#kanbanView .contract-freight-card.green{border-left-color:#22c55e !important}
+#kanbanView .contract-freight-card.red{border-left-color:#e7000b !important}
+#kanbanView .contract-freight-card.yellow{border-left-color:#d97706 !important}
+#kanbanView .contract-freight-card.green{border-left-color:#059669 !important}
 #kanbanView .contract-freight-card.gray{border-left-color:#94a3b8 !important}
-#kanbanView .contract-freight-card:hover{transform:none !important;box-shadow:0 10px 20px rgba(0,83,131,.12) !important}
+#kanbanView .contract-freight-card:hover{transform:none !important;box-shadow:0 10px 22px rgba(10,46,61,.16) !important}
 #kanbanView .contract-compact-top{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) auto !important;
@@ -1909,53 +1909,56 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-compact-id{
   margin-bottom:3px !important;
-  color:#7a95a8 !important;
-  font-size:9px !important;
+  color:var(--muted) !important;
+  font-size:10px !important;
   line-height:1 !important;
   font-weight:900 !important;
   letter-spacing:.04em !important;
+  text-transform:uppercase !important;
 }
 #kanbanView .contract-compact-title{
-  color:#053451 !important;
-  font-size:11.5px !important;
-  line-height:1.08 !important;
-  font-weight:950 !important;
+  color:var(--text) !important;
+  font-size:13px !important;
+  line-height:1.15 !important;
+  font-weight:900 !important;
   text-transform:uppercase !important;
 }
 #kanbanView .contract-priority-bubble{
-  min-width:34px !important;
-  height:34px !important;
-  padding:0 6px !important;
-  display:grid !important;
-  place-items:center !important;
-  border-radius:11px !important;
-  font-size:9px !important;
+  min-width:0 !important;
+  height:24px !important;
+  padding:0 10px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:999px !important;
+  font-size:10px !important;
   line-height:1 !important;
-  font-weight:950 !important;
+  font-weight:900 !important;
 }
-#kanbanView .contract-priority-bubble.urgent{background:#fce7d7 !important;color:#f97316 !important}
-#kanbanView .contract-priority-bubble.normal{background:#dbeafe !important;color:#2563eb !important}
+#kanbanView .contract-priority-bubble.urgent{background:rgba(217,119,6,.14) !important;color:#d97706 !important}
+#kanbanView .contract-priority-bubble.normal{background:rgba(27,109,142,.12) !important;color:#1b6d8e !important}
 #kanbanView .contract-compact-lines{
   display:grid !important;
-  gap:3px !important;
-  margin-top:7px !important;
+  gap:5px !important;
+  margin-top:8px !important;
 }
 #kanbanView .contract-compact-lines > div{
   display:grid !important;
-  grid-template-columns:12px minmax(0,1fr) !important;
-  gap:5px !important;
+  grid-template-columns:14px minmax(0,1fr) !important;
+  gap:6px !important;
   align-items:start !important;
-  color:#617b8c !important;
-  font-size:10px !important;
-  line-height:1.2 !important;
+  color:var(--muted) !important;
+  font-size:10.5px !important;
+  font-weight:800 !important;
+  line-height:1.25 !important;
 }
-#kanbanView .contract-line-icon{color:#075985 !important;font-size:9px !important;text-align:center !important}
+#kanbanView .contract-line-icon{color:#1b6d8e !important;font-size:9px !important;text-align:center !important}
 #kanbanView .contract-compact-description{
   min-height:18px !important;
   max-height:24px !important;
   margin-top:7px !important;
-  color:#173248 !important;
-  font-size:10px !important;
+  color:var(--text) !important;
+  font-size:10.5px !important;
   line-height:1.2 !important;
   font-weight:800 !important;
 }
@@ -1978,67 +1981,75 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   margin-top:7px !important;
 }
 #kanbanView .contract-mini-badge{
-  padding:3px 6px !important;
+  padding:4px 8px !important;
   border-radius:999px !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1 !important;
   font-weight:900 !important;
 }
-#kanbanView .contract-mini-badge.urgent{background:#ffe5d0 !important;color:#f97316 !important}
-#kanbanView .contract-mini-badge.normal{background:#dbeafe !important;color:#2563eb !important}
-#kanbanView .contract-mini-badge.traffic-red{background:#fee2e2 !important;color:#dc2626 !important}
-#kanbanView .contract-mini-badge.traffic-yellow{background:#fef3c7 !important;color:#b45309 !important}
-#kanbanView .contract-mini-badge.traffic-green{background:#dcfce7 !important;color:#16a34a !important}
+#kanbanView .contract-mini-badge.urgent{background:rgba(217,119,6,.12) !important;color:#d97706 !important}
+#kanbanView .contract-mini-badge.normal{background:rgba(27,109,142,.1) !important;color:#1b6d8e !important}
+#kanbanView .contract-mini-badge.traffic-red{background:rgba(231,0,11,.1) !important;color:#e7000b !important}
+#kanbanView .contract-mini-badge.traffic-yellow{background:rgba(217,119,6,.12) !important;color:#d97706 !important}
+#kanbanView .contract-mini-badge.traffic-green{background:rgba(5,150,105,.1) !important;color:#059669 !important}
 #kanbanView .contract-mini-badge.traffic-gray{background:var(--card) !important;color:#475569 !important}
-#kanbanView .contract-mini-badge.process-one{background:#e0f2fe !important;color:#075985 !important}
-#kanbanView .contract-mini-badge.process-two{background:#ede9fe !important;color:#6d28d9 !important}
-#kanbanView .contract-mini-badge.kind{background:#faedcd !important;color:#9a6700 !important}
+#kanbanView .contract-mini-badge.process-one{background:rgba(27,109,142,.1) !important;color:#1b6d8e !important}
+#kanbanView .contract-mini-badge.process-two{background:rgba(10,46,61,.08) !important;color:#0a2e3d !important}
+#kanbanView .contract-mini-badge.kind{background:rgba(217,119,6,.12) !important;color:#d97706 !important}
 #kanbanView .contract-compact-meta{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) auto !important;
   gap:6px !important;
   align-items:center !important;
-  margin-top:7px !important;
-  color:#607988 !important;
-  font-size:9.5px !important;
+  margin-top:8px !important;
+  border:1px solid var(--border) !important;
+  border-radius:10px !important;
+  background:var(--bg) !important;
+  padding:6px 9px !important;
+  color:var(--muted) !important;
+  font-size:10.5px !important;
+  font-weight:800 !important;
   line-height:1.2 !important;
 }
-#kanbanView .contract-compact-meta strong{color:#053451 !important}
-#kanbanView .contract-meta-status{font-weight:950 !important;white-space:nowrap !important}
-#kanbanView .contract-meta-status.red{color:#dc2626 !important}
-#kanbanView .contract-meta-status.yellow{color:#b45309 !important}
-#kanbanView .contract-meta-status.green{color:#16a34a !important}
+#kanbanView .contract-compact-meta strong{color:var(--text) !important}
+#kanbanView .contract-meta-status{font-weight:900 !important;white-space:nowrap !important}
+#kanbanView .contract-meta-status.red{color:#e7000b !important}
+#kanbanView .contract-meta-status.yellow{color:#d97706 !important}
+#kanbanView .contract-meta-status.green{color:#059669 !important}
 #kanbanView .contract-meta-status.gray{color:#64748b !important}
 #kanbanView .contract-compact-timer{
   display:grid !important;
-  gap:3px !important;
-  margin-top:7px !important;
-  padding:7px 8px !important;
-  border:1px solid #d4e0e7 !important;
-  border-radius:11px !important;
-  background:var(--card) !important;
+  gap:5px !important;
+  margin-top:8px !important;
+  padding:8px 9px !important;
+  border:1px solid var(--border) !important;
+  border-radius:10px !important;
+  background:var(--bg) !important;
 }
 #kanbanView .contract-compact-timer > div{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) auto !important;
   gap:6px !important;
   align-items:center !important;
-  color:#698191 !important;
-  font-size:9px !important;
+  color:var(--muted) !important;
+  font-size:9.5px !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
   line-height:1.15 !important;
 }
 #kanbanView .contract-compact-timer strong{
-  color:#053451 !important;
-  font-size:9px !important;
+  color:var(--text) !important;
+  font-size:11px !important;
   line-height:1.15 !important;
-  font-weight:950 !important;
+  font-weight:900 !important;
   font-variant-numeric:tabular-nums !important;
   white-space:nowrap !important;
+  text-transform:none !important;
 }
-#kanbanView .contract-phase-selector-wrap{display:grid !important;gap:4px !important;margin-top:7px !important}
+#kanbanView .contract-phase-selector-wrap{display:grid !important;gap:4px !important;margin-top:8px !important}
 #kanbanView .contract-phase-selector-wrap label{
-  color:#698191 !important;
-  font-size:8px !important;
+  color:var(--muted) !important;
+  font-size:9px !important;
   line-height:1 !important;
   font-weight:900 !important;
   letter-spacing:.04em !important;
@@ -2046,35 +2057,38 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-phase-selector-wrap .contract-phase-select{
   width:100% !important;
-  height:30px !important;
-  min-height:30px !important;
-  padding:0 8px !important;
-  border:1px solid #bfcfd9 !important;
-  border-radius:9px !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:0 9px !important;
+  border:1px solid var(--border) !important;
+  border-radius:8px !important;
   background:var(--card) !important;
-  color:#053451 !important;
-  font-size:10px !important;
+  color:var(--text) !important;
+  font-size:11px !important;
   font-weight:800 !important;
 }
 #kanbanView .contract-compact-actions{
   display:grid !important;
   grid-template-columns:1fr !important;
-  gap:6px !important;
+  gap:7px !important;
   margin-top:8px !important;
 }
 #kanbanView .contract-compact-actions button{
   width:100% !important;
-  height:29px !important;
-  min-height:29px !important;
-  padding:0 8px !important;
-  border-radius:9px !important;
-  border:1px solid #075985 !important;
-  background:#075985 !important;
-  color:#fff !important;
-  font-size:9px !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:0 9px !important;
+  border-radius:8px !important;
+  border:1px solid var(--border) !important;
+  background:var(--card) !important;
+  color:#334155 !important;
+  font-size:10.5px !important;
   line-height:1 !important;
-  font-weight:900 !important;
+  font-weight:850 !important;
   box-shadow:none !important;
+}
+#kanbanView .contract-compact-actions button:hover{
+  background:var(--bg) !important;
 }
 </style>
 
@@ -2406,8 +2420,8 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-compact-actions .contract-edit-btn{
   background:var(--card) !important;
-  color:#075985 !important;
-  border:1px solid #075985 !important;
+  color:#1b6d8e !important;
+  border:1px solid rgba(27,109,142,.4) !important;
 }
 #kanbanView .contract-compact-actions .contract-edit-btn:hover{
   background:var(--card) !important;
