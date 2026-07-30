@@ -2075,7 +2075,7 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-compact-actions button{
   width:100% !important;
-  height:34px !important;
+  height:auto !important;
   min-height:34px !important;
   padding:0 9px !important;
   border-radius:8px !important;
@@ -2086,6 +2086,9 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   line-height:1 !important;
   font-weight:850 !important;
   box-shadow:none !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
 #kanbanView .contract-compact-actions button:hover{
   background:var(--bg) !important;
