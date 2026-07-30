@@ -4216,6 +4216,54 @@ html[data-theme="dark"] .data-hub-grid button.active {
   background: color-mix(in srgb, var(--green) 8%, var(--panel));
 }
 
+.orcamento-card-requester-edit {
+  display: grid;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--blue-700) 22%, var(--line));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--blue-700) 7%, var(--panel));
+  padding: 9px;
+}
+
+.orcamento-card-requester-edit > span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.orcamento-card-requester-edit > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.orcamento-card-requester-edit label {
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.orcamento-card-requester-edit input {
+  min-width: 0;
+  min-height: 32px;
+  border-radius: 8px;
+  padding: 0 8px;
+  color: var(--text);
+  background: var(--panel);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: none;
+}
+
+.orcamento-card-requester-edit small {
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
 .orcamento-timer-box--stacked {
   display: grid;
   gap: 5px;
@@ -4488,6 +4536,287 @@ html[data-theme="dark"] .data-hub-grid button.active {
   font-size: 0.78rem;
   font-weight: 800;
   line-height: 1.35;
+}
+
+.orcamento-critical-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.orcamento-critical-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.orcamento-critical-title > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--yellow);
+  background: var(--blue-700);
+  box-shadow: 0 10px 22px rgba(10, 46, 61, 0.12);
+}
+
+.orcamento-critical-title h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.orcamento-critical-title p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.orcamento-critical-summary {
+  display: grid;
+  grid-template-columns: minmax(280px, 2.2fr) repeat(3, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.orcamento-critical-summary-card {
+  min-height: 102px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--yellow);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.orcamento-critical-summary-card--wide {
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  align-content: center;
+  column-gap: 12px;
+}
+
+.orcamento-critical-summary-card--success {
+  border-top-color: var(--green);
+}
+
+.orcamento-critical-summary-card--warning {
+  border-top-color: var(--yellow);
+}
+
+.orcamento-critical-summary-card--danger {
+  border-top-color: var(--red);
+}
+
+.orcamento-critical-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 9%, var(--panel));
+}
+
+.orcamento-critical-summary-card--success .orcamento-critical-icon {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 10%, var(--panel));
+}
+
+.orcamento-critical-summary-card--warning .orcamento-critical-icon {
+  color: var(--amber);
+  background: color-mix(in srgb, var(--yellow) 16%, var(--panel));
+}
+
+.orcamento-critical-summary-card > span:not(.orcamento-critical-icon),
+.orcamento-analysis-card small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.orcamento-critical-summary-card h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.orcamento-critical-summary-card strong {
+  color: var(--text);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.orcamento-critical-summary-card p,
+.orcamento-critical-summary-card small {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.orcamento-analysis-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  color: var(--text);
+}
+
+.orcamento-analysis-head strong {
+  font-size: 0.98rem;
+}
+
+.orcamento-analysis-head span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.orcamento-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.orcamento-analysis-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--blue-700);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 13px;
+}
+
+.orcamento-analysis-card--success {
+  border-top-color: var(--green);
+}
+
+.orcamento-analysis-card--warning {
+  border-top-color: var(--yellow);
+}
+
+.orcamento-analysis-card--danger {
+  border-top-color: var(--red);
+}
+
+.orcamento-analysis-card--neutral {
+  border-top-color: #8aa2af;
+}
+
+.orcamento-analysis-card__head {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.orcamento-analysis-card__head > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--blue-700);
+  background: color-mix(in srgb, var(--blue-700) 8%, var(--panel));
+}
+
+.orcamento-analysis-card--success .orcamento-analysis-card__head > span {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 10%, var(--panel));
+}
+
+.orcamento-analysis-card--warning .orcamento-analysis-card__head > span {
+  color: var(--amber);
+  background: color-mix(in srgb, var(--yellow) 16%, var(--panel));
+}
+
+.orcamento-analysis-card--danger .orcamento-analysis-card__head > span {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 9%, var(--panel));
+}
+
+.orcamento-analysis-card__head strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.18;
+}
+
+.orcamento-analysis-card__head b {
+  min-height: 23px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 8px;
+  color: var(--blue-950);
+  background: color-mix(in srgb, var(--line) 38%, var(--panel));
+  font-size: 0.66rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.orcamento-analysis-card--success .orcamento-analysis-card__head b {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 10%, var(--panel));
+}
+
+.orcamento-analysis-card--warning .orcamento-analysis-card__head b {
+  color: #8a5a00;
+  background: color-mix(in srgb, var(--yellow) 18%, var(--panel));
+}
+
+.orcamento-analysis-card--danger .orcamento-analysis-card__head b {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 9%, var(--panel));
+}
+
+.orcamento-analysis-card__metric {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.orcamento-analysis-card__metric strong {
+  color: var(--text);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.orcamento-analysis-card__metric span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.orcamento-analysis-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.orcamento-analysis-card__action {
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.38;
+}
+
+.orcamento-analysis-card__action strong {
+  color: var(--blue-950);
 }
 
 .orcamento-dashboard-grid--executive {
@@ -4801,6 +5130,16 @@ html[data-theme="dark"] .data-hub-grid button.active {
   position: relative;
 }
 
+.alert-bell--active {
+  color: var(--yellow);
+  background: color-mix(in srgb, var(--yellow) 16%, var(--blue-950));
+  animation: alert-bell-pulse 1.2s ease-in-out infinite;
+}
+
+.alert-bell--active svg {
+  animation: alert-bell-ring 0.9s ease-in-out infinite;
+}
+
 .alert-bell span {
   position: absolute;
   top: -6px;
@@ -4816,6 +5155,35 @@ html[data-theme="dark"] .data-hub-grid button.active {
   font-size: 0.65rem;
   font-weight: 900;
   line-height: 1;
+}
+
+@keyframes alert-bell-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--yellow) 42%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+@keyframes alert-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-14deg);
+  }
+  40% {
+    transform: rotate(12deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(6deg);
+  }
 }
 
 .alert-toast-stack {
@@ -4885,6 +5253,8 @@ html[data-theme="dark"] .orcamento-drawer-summary article,
 html[data-theme="dark"] .orcamento-insight-card,
 html[data-theme="dark"] .orcamento-executive-card,
 html[data-theme="dark"] .orcamento-alert-panel,
+html[data-theme="dark"] .orcamento-critical-summary-card,
+html[data-theme="dark"] .orcamento-analysis-card,
 html[data-theme="dark"] .dashboard-alert-summary-card,
 html[data-theme="dark"] .dashboard-analysis-card,
 html[data-theme="dark"] .password-card,
@@ -4916,6 +5286,12 @@ html[data-theme="dark"] .orcamento-log-list article,
 html[data-theme="dark"] .orcamento-insight-list p,
 html[data-theme="dark"] .orcamento-trend-bars,
 html[data-theme="dark"] .orcamento-alert-panel__item,
+html[data-theme="dark"] .orcamento-card-requester-edit,
+html[data-theme="dark"] .orcamento-card-requester-edit input,
+html[data-theme="dark"] .orcamento-critical-title > span,
+html[data-theme="dark"] .orcamento-critical-icon,
+html[data-theme="dark"] .orcamento-analysis-card__head > span,
+html[data-theme="dark"] .orcamento-analysis-card__head b,
 html[data-theme="dark"] .dashboard-alerts-title > span,
 html[data-theme="dark"] .dashboard-analysis-card__head span,
 html[data-theme="dark"] .alertas-thread-meta span,
@@ -4986,6 +5362,16 @@ html[data-theme="dark"] .orcamento-process-strip article > div,
 html[data-theme="dark"] .orcamento-process-strip p,
 html[data-theme="dark"] .orcamento-executive-card span,
 html[data-theme="dark"] .orcamento-executive-card p,
+html[data-theme="dark"] .orcamento-critical-title p,
+html[data-theme="dark"] .orcamento-critical-summary-card > span:not(.orcamento-critical-icon),
+html[data-theme="dark"] .orcamento-critical-summary-card p,
+html[data-theme="dark"] .orcamento-critical-summary-card small,
+html[data-theme="dark"] .orcamento-analysis-head span,
+html[data-theme="dark"] .orcamento-analysis-card small,
+html[data-theme="dark"] .orcamento-analysis-card__metric span,
+html[data-theme="dark"] .orcamento-analysis-card p,
+html[data-theme="dark"] .orcamento-card-requester-edit > span,
+html[data-theme="dark"] .orcamento-card-requester-edit label,
 html[data-theme="dark"] .orcamento-column-title small,
 html[data-theme="dark"] .orcamento-column-metrics span,
 html[data-theme="dark"] .orcamento-card-label,
@@ -5008,6 +5394,15 @@ html[data-theme="dark"] .alertas-message small {
 html[data-theme="dark"] .orcamentos-hero-metric strong,
 html[data-theme="dark"] .orcamento-process-strip strong,
 html[data-theme="dark"] .orcamento-executive-card strong,
+html[data-theme="dark"] .orcamento-critical-title h3,
+html[data-theme="dark"] .orcamento-critical-summary-card h4,
+html[data-theme="dark"] .orcamento-critical-summary-card strong,
+html[data-theme="dark"] .orcamento-analysis-head strong,
+html[data-theme="dark"] .orcamento-analysis-card__head strong,
+html[data-theme="dark"] .orcamento-analysis-card__metric strong,
+html[data-theme="dark"] .orcamento-analysis-card__action,
+html[data-theme="dark"] .orcamento-analysis-card__action strong,
+html[data-theme="dark"] .orcamento-card-requester-edit input,
 html[data-theme="dark"] .orcamento-column-title strong,
 html[data-theme="dark"] .orcamento-card-top strong,
 html[data-theme="dark"] .orcamento-card-main strong,
@@ -5081,6 +5476,18 @@ html[data-theme="dark"] .orcamento-semaphore--neutral {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .orcamento-critical-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .orcamento-critical-summary-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .orcamento-analysis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .orcamento-process-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5133,6 +5540,8 @@ html[data-theme="dark"] .orcamento-semaphore--neutral {
 
   .orcamento-kpis,
   .orcamento-executive-grid,
+  .orcamento-critical-summary,
+  .orcamento-analysis-grid,
   .orcamento-process-strip,
   .orcamento-drawer-summary,
   .orcamento-card-grid,
@@ -5170,6 +5579,24 @@ html[data-theme="dark"] .orcamento-semaphore--neutral {
 
   .orcamento-trend-bars {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .orcamento-critical-title,
+  .orcamento-analysis-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .orcamento-critical-summary-card--wide,
+  .orcamento-analysis-card__head,
+  .orcamento-card-requester-edit > div {
+    grid-template-columns: 1fr;
+  }
+
+  .orcamento-critical-icon,
+  .orcamento-analysis-card__head > span {
+    width: 34px;
+    height: 34px;
   }
 
   .alert-toast-stack {
