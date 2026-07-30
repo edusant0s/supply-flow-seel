@@ -22,13 +22,18 @@ export function AlertNotificationBell() {
   const location = useLocation();
   const [unread, setUnread] = useState(0);
   const [toasts, setToasts] = useState<CommentEvent[]>([]);
+  const [bellActive, setBellActive] = useState(false);
   const initializedRef = useRef(false);
   const lastSeenRef = useRef("");
   const lastDataSignatureRef = useRef("");
+  const pulseTimerRef = useRef<number | undefined>();
   const storageKey = profile?.id ? `supply-flow:alerts:last-seen:${profile.id}` : "";
 
   useEffect(() => {
-    if (location.pathname === "/alertas") setUnread(0);
+    if (location.pathname === "/alertas") {
+      setUnread(0);
+      setBellActive(false);
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -36,6 +41,7 @@ export function AlertNotificationBell() {
     lastSeenRef.current = "";
     lastDataSignatureRef.current = "";
     setUnread(0);
+    setBellActive(false);
     setToasts([]);
   }, [storageKey]);
 
@@ -62,7 +68,8 @@ export function AlertNotificationBell() {
         }
 
         const lastSeen = lastSeenRef.current;
-        const fresh = events.filter((event) => event.at > lastSeen);
+        const lastSeenTime = eventTime(lastSeen);
+        const fresh = events.filter((event) => eventTime(event.at) > lastSeenTime);
         const dataChanged = dataSignature !== lastDataSignatureRef.current;
         if (dataChanged) lastDataSignatureRef.current = dataSignature;
 
@@ -72,6 +79,10 @@ export function AlertNotificationBell() {
           if (storageKey) window.localStorage.setItem(storageKey, nextSeen);
           setUnread((current) => (location.pathname === "/alertas" ? 0 : current + fresh.length));
           setToasts((current) => [...fresh.slice(-3), ...current].slice(0, 3));
+          playAlertTone();
+          setBellActive(true);
+          if (pulseTimerRef.current) window.clearTimeout(pulseTimerRef.current);
+          pulseTimerRef.current = window.setTimeout(() => setBellActive(false), 6500);
         }
 
         if ((fresh.length || dataChanged) && location.pathname === "/alertas") {
@@ -94,6 +105,7 @@ export function AlertNotificationBell() {
     return () => {
       stopped = true;
       window.clearInterval(timer);
+      if (pulseTimerRef.current) window.clearTimeout(pulseTimerRef.current);
       if (channel) void supabase?.removeChannel(channel);
     };
   }, [location.pathname, profile, storageKey]);
@@ -108,7 +120,16 @@ export function AlertNotificationBell() {
 
   return (
     <>
-      <NavLink className="icon-button alert-bell" to="/alertas" aria-label="Alertas" title="Alertas" onClick={() => setUnread(0)}>
+      <NavLink
+        className={`icon-button alert-bell ${unread || bellActive ? "alert-bell--active" : ""}`}
+        to="/alertas"
+        aria-label="Alertas"
+        title="Alertas"
+        onClick={() => {
+          setUnread(0);
+          setBellActive(false);
+        }}
+      >
         <BellRing size={18} />
         {unread ? <span>{unread > 9 ? "9+" : unread}</span> : null}
       </NavLink>
@@ -165,4 +186,44 @@ function buildDataSignature(rows: Orcamento[]) {
     .map((item) => `${item.id}:${item.updated_at || item.created_at || ""}:${getOrcamentoComments(item).length}`)
     .sort()
     .join("|");
+}
+
+function eventTime(value: string) {
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function playAlertTone() {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.navigator.vibrate?.([120, 40, 120]);
+    const AudioContextCtor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextCtor) return;
+
+    const context = new AudioContextCtor();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const startAt = context.currentTime;
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, startAt);
+    oscillator.frequency.setValueAtTime(660, startAt + 0.12);
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(0.06, startAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.24);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(startAt);
+    oscillator.stop(startAt + 0.26);
+    oscillator.onended = () => void context.close();
+    window.setTimeout(() => {
+      if (context.state !== "closed") void context.close().catch(() => undefined);
+    }, 900);
+
+    if (context.state === "suspended") void context.resume().catch(() => undefined);
+  } catch {
+    // O pulso visual continua funcionando quando o navegador bloqueia audio automatico.
+  }
 }

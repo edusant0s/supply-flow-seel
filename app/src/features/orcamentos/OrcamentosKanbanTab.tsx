@@ -25,7 +25,10 @@ import { invalidateAsyncData } from "../../hooks";
 import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import { deleteEntity, updateEntity } from "../../services/entities";
 import { signedAttachmentUrl, type AttachmentMeta } from "../../services/storage";
-import { appendOrcamentoComment as appendOrcamentoCommentRequest } from "../../services/orcamentos";
+import {
+  appendOrcamentoComment as appendOrcamentoCommentRequest,
+  updateOrcamentoRequesterFields as updateOrcamentoRequesterFieldsRequest,
+} from "../../services/orcamentos";
 import type { Orcamento, Profile } from "../../types";
 import {
   appendOrcamentoLog,
@@ -182,6 +185,17 @@ export function OrcamentosKanbanTab({
     }
   }
 
+  async function updateRequesterFields(item: Orcamento, fields: { dataEntregaCotacoes: string | null; atribuidoA: string | null }) {
+    setMovingId(item.id);
+    try {
+      await updateOrcamentoRequesterFieldsRequest(item.id, fields);
+      invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
+      refresh();
+    } finally {
+      setMovingId(null);
+    }
+  }
+
   return (
     <div className="orcamento-operacao page-stack">
       <section className="orcamento-commandbar">
@@ -252,11 +266,13 @@ export function OrcamentosKanbanTab({
               allItems={items}
               now={now}
               canEdit={canEdit}
+              currentUserId={profile?.id}
               currentUserEmail={profile?.email}
               movingId={movingId}
               updatingOutcomeId={updatingOutcomeId}
               onMove={moveOrcamento}
               onOutcomeChange={updateOutcome}
+              onRequesterFieldsSave={updateRequesterFields}
               onSelect={setSelectedId}
             />
           );
@@ -312,11 +328,13 @@ function OrcamentoColumn({
   allItems,
   now,
   canEdit,
+  currentUserId,
   currentUserEmail,
   movingId,
   updatingOutcomeId,
   onMove,
   onOutcomeChange,
+  onRequesterFieldsSave,
   onSelect,
 }: {
   statusKey: string;
@@ -325,11 +343,13 @@ function OrcamentoColumn({
   allItems: Orcamento[];
   now: number;
   canEdit: boolean;
+  currentUserId?: string;
   currentUserEmail?: string;
   movingId: string | null;
   updatingOutcomeId: string | null;
   onMove: (item: Orcamento, nextStatus: string) => Promise<void>;
   onOutcomeChange: (item: Orcamento, outcome: OrcamentoOutcome) => Promise<void>;
+  onRequesterFieldsSave: (item: Orcamento, fields: { dataEntregaCotacoes: string | null; atribuidoA: string | null }) => Promise<void>;
   onSelect: (id: string) => void;
 }) {
   const MetaIcon = statusMeta[statusKey]?.icon || ClipboardList;
@@ -368,10 +388,12 @@ function OrcamentoColumn({
               item={item}
               now={now}
               canEdit={canEdit}
+              currentUserId={currentUserId}
               currentUserEmail={currentUserEmail}
               moving={movingId === item.id || updatingOutcomeId === item.id}
               onMove={onMove}
               onOutcomeChange={onOutcomeChange}
+              onRequesterFieldsSave={onRequesterFieldsSave}
               onSelect={onSelect}
             />
           ))
@@ -387,21 +409,29 @@ function OrcamentoCard({
   item,
   now,
   canEdit,
+  currentUserId,
   currentUserEmail,
   moving,
   onMove,
   onOutcomeChange,
+  onRequesterFieldsSave,
   onSelect,
 }: {
   item: Orcamento;
   now: number;
   canEdit: boolean;
+  currentUserId?: string;
   currentUserEmail?: string;
   moving: boolean;
   onMove: (item: Orcamento, nextStatus: string) => Promise<void>;
   onOutcomeChange: (item: Orcamento, outcome: OrcamentoOutcome) => Promise<void>;
+  onRequesterFieldsSave: (item: Orcamento, fields: { dataEntregaCotacoes: string | null; atribuidoA: string | null }) => Promise<void>;
   onSelect: (id: string) => void;
 }) {
+  const [draftDueDate, setDraftDueDate] = useState(item.data_entrega_cotacoes || "");
+  const [draftAssignedTo, setDraftAssignedTo] = useState(getAssignedTo(item));
+  const [requesterMessage, setRequesterMessage] = useState("");
+  const [requesterSaving, setRequesterSaving] = useState(false);
   const sla = getOrcamentoSla(item, now);
   const due = getDueInfo(item);
   const attachments = getAttachments(item);
@@ -413,8 +443,32 @@ function OrcamentoCard({
   const comments = getOrcamentoComments(item);
   const commentCount = comments.length;
   const hasAlert = hasRequesterCommentAlert(item, currentUserEmail);
+  const requesterCanEditFields = canRequesterEditOrcamentoFields(item, currentUserId, currentUserEmail, canEdit);
   const cardAccent =
     due.tone === "danger" ? "var(--red)" : due.tone === "warning" ? "var(--yellow)" : due.tone === "success" ? "var(--green)" : "#94a3b8";
+
+  useEffect(() => {
+    setDraftDueDate(item.data_entrega_cotacoes || "");
+    setDraftAssignedTo(getAssignedTo(item));
+    setRequesterMessage("");
+  }, [item]);
+
+  async function saveRequesterFields() {
+    if (!requesterCanEditFields) return;
+    setRequesterSaving(true);
+    setRequesterMessage("");
+    try {
+      await onRequesterFieldsSave(item, {
+        dataEntregaCotacoes: draftDueDate || null,
+        atribuidoA: draftAssignedTo || null,
+      });
+      setRequesterMessage("Dados atualizados.");
+    } catch (err) {
+      setRequesterMessage(err instanceof Error ? err.message : "Nao foi possivel salvar.");
+    } finally {
+      setRequesterSaving(false);
+    }
+  }
 
   return (
     <article
@@ -489,6 +543,26 @@ function OrcamentoCard({
         <span>Prazo: {formatDateBr(item.data_entrega_cotacoes)}</span>
         <strong>{getDueRelativeLabel(item)}</strong>
       </div>
+
+      {requesterCanEditFields ? (
+        <div className="orcamento-card-requester-edit" onPointerDown={(event) => event.stopPropagation()}>
+          <span>Campos editaveis pelo solicitante</span>
+          <div>
+            <label>
+              Entrega cotacoes
+              <input type="date" value={draftDueDate} onChange={(event) => setDraftDueDate(event.target.value)} />
+            </label>
+            <label>
+              Atribuido a
+              <input value={draftAssignedTo} onChange={(event) => setDraftAssignedTo(event.target.value)} placeholder="Nome do orcamentista" />
+            </label>
+          </div>
+          {requesterMessage ? <small>{requesterMessage}</small> : null}
+          <button className="secondary-button" type="button" onClick={saveRequesterFields} disabled={requesterSaving || moving}>
+            {requesterSaving || moving ? "Salvando..." : "Salvar ajuste"}
+          </button>
+        </div>
+      ) : null}
 
       <div className="orcamento-timer-box orcamento-timer-box--stacked">
         <div className="orcamento-timer-row">
@@ -988,4 +1062,10 @@ function canCommentOrcamento(item: Orcamento, profile: Profile | null) {
   if (!profile) return false;
   if (item.criado_por && item.criado_por === profile.id) return true;
   return Boolean(item.email_solicitante && profile.email && item.email_solicitante.toLowerCase() === profile.email.toLowerCase());
+}
+
+function canRequesterEditOrcamentoFields(item: Orcamento, userId: string | undefined, email: string | undefined, canEdit: boolean) {
+  if (canEdit) return false;
+  if (userId && item.criado_por === userId) return true;
+  return Boolean(email && item.email_solicitante?.toLowerCase() === email.toLowerCase());
 }
