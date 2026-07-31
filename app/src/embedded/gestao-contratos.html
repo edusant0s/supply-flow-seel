@@ -1941,6 +1941,35 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-priority-bubble.urgent{background:rgba(217,119,6,.14) !important;color:#d97706 !important}
 #kanbanView .contract-priority-bubble.normal{background:rgba(27,109,142,.12) !important;color:#1b6d8e !important}
+#kanbanView .contract-status-chip{
+  min-height:22px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:999px !important;
+  padding:0 9px !important;
+  font-size:8.5px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+}
+#kanbanView .contract-status-chip--progress{background:rgba(217,119,6,.12) !important;color:#d97706 !important}
+#kanbanView .contract-status-chip--done{background:rgba(5,150,105,.1) !important;color:#059669 !important}
+#kanbanView .contract-value-pill{
+  min-height:22px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  width:fit-content !important;
+  border:1px solid rgba(5,150,105,.35) !important;
+  border-radius:999px !important;
+  padding:0 8px !important;
+  color:#059669 !important;
+  background:rgba(5,150,105,.1) !important;
+  font-size:8.5px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+}
+#kanbanView .card.contract-freight-card{cursor:grab !important}
 #kanbanView .contract-compact-lines{
   display:grid !important;
   gap:4px !important;
@@ -4280,7 +4309,7 @@ function renderKanban(){
         const processClass=groupIndex===0?'process-one':'process-two';
         const separatorClass=groupIndex===1&&stageIndex===0?' process-separator':'';
         const totalOpen=st==='Aprovado no Compor'?0:items.length;
-        return `<div class="col unified-col ${processClass}${separatorClass}">
+        return `<div class="col unified-col ${processClass}${separatorClass}" ondragover="event.preventDefault()" ondrop="handleContractKanbanDrop(event,'${esc(st)}')">
           <div class="process-column-label">${groupIndex===0?'Processo 1 · Contratos':'Processo 2 · Compor'}</div>
           <div class="col-head">
             <div class="col-icon">${meta.icon}</div>
@@ -4311,13 +4340,15 @@ function renderKanban(){
             const dueText=completed?'Processo concluído':(r.dataLimite||r.data_limite_atendimento||r.data?.data_limite_atendimento||'Não informado');
             const phaseNow=fmtDuration(activePhaseMs(r));
             const totalTime=fmtDuration(totalSlaMs(r));
-            return `<div class="card contract-freight-card ${trafficKey}${requestHasError?' request-error':''}" onclick="openRequestDetails('${r.id}')">
+            const valueRaw=contractValue(r);
+            const valueLabel=valueRaw?currencyFmt(valueRaw):'';
+            return `<div class="card contract-freight-card ${trafficKey}${requestHasError?' request-error':''}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${esc(r.id)}')" onclick="openRequestDetails('${r.id}')">
               <div class="contract-compact-top">
                 <div class="contract-compact-title-wrap">
                   <div class="contract-compact-id">${esc(r.id)}</div>
                   <div class="contract-compact-title">${esc(title)}</div>
                 </div>
-                <div class="contract-priority-bubble ${urgencyIsUrgent?'urgent':'normal'}">${urgencyShort}</div>
+                <span class="contract-status-chip contract-status-chip--${completed?'done':'progress'}">${esc(st)}</span>
               </div>
 
               <div class="contract-compact-lines">
@@ -4344,6 +4375,7 @@ function renderKanban(){
               </label>
 
               <div class="contract-compact-badges">
+                ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
                 <span class="contract-mini-badge ${urgencyIsUrgent?'urgent':'normal'}">${urgencyLabel}</span>
                 <span class="contract-mini-badge traffic-${trafficKey}">${esc(trafficLabel)}</span>
                 <span class="contract-mini-badge ${processBadgeClass}">${processLabel}</span>
@@ -4449,6 +4481,11 @@ function queueContractObservationSave(id,textarea){
   textarea._contractObservationTimer=setTimeout(()=>persistContractResponsibleObservation(id,textarea,false),550);
 }
 
+function handleContractKanbanDrop(event,newStage){
+  event.preventDefault();
+  const id=event.dataTransfer.getData('text/plain');
+  if(id)setReqStage(id,newStage);
+}
 function setReqStage(id,newStage){
   if(!stages.includes(newStage))return;
   const now=new Date().toISOString();
