@@ -1953,8 +1953,9 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   white-space:nowrap !important;
   flex:0 0 auto !important;
 }
-#kanbanView .contract-status-chip--progress{background:rgba(217,119,6,.12) !important;color:#d97706 !important}
-#kanbanView .contract-status-chip--done{background:rgba(5,150,105,.1) !important;color:#059669 !important}
+#kanbanView .contract-status-chip--nao-iniciado{background:rgba(245,158,11,.12) !important;color:#92400e !important}
+#kanbanView .contract-status-chip--em-andamento{background:rgba(14,165,233,.12) !important;color:#075985 !important}
+#kanbanView .contract-status-chip--finalizado{background:rgba(16,185,129,.12) !important;color:#047857 !important}
 #kanbanView .contract-value-pill{
   min-height:22px !important;
   display:inline-flex !important;
@@ -1969,6 +1970,54 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   font-weight:900 !important;
   white-space:nowrap !important;
 }
+#kanbanView .contract-attachment-count{
+  min-height:22px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  border-radius:999px !important;
+  padding:0 8px !important;
+  color:#334155 !important;
+  background:var(--bg) !important;
+  font-size:8.5px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+}
+#kanbanView .contract-route-pill{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:5px !important;
+  border:1px solid var(--border) !important;
+  border-radius:999px !important;
+  background:var(--bg) !important;
+  padding:6px 9px !important;
+  margin-top:6px !important;
+  color:var(--muted) !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+}
+#kanbanView .contract-route-pill span:not(:last-child)::after{content:"|" !important;margin-left:5px !important;color:var(--border) !important}
+#kanbanView .contract-deadline-strip{
+  min-height:28px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  border:1px solid var(--border) !important;
+  border-radius:9px !important;
+  background:var(--bg) !important;
+  padding:0 9px !important;
+  margin-top:8px !important;
+  font-size:9px !important;
+  font-weight:850 !important;
+  color:var(--text) !important;
+}
+#kanbanView .contract-deadline-strip strong{font-size:9.5px !important;white-space:nowrap !important}
+#kanbanView .contract-deadline-strip--red{border-color:rgba(231,0,11,.42) !important;background:rgba(231,0,11,.09) !important}
+#kanbanView .contract-deadline-strip--yellow{border-color:rgba(217,119,6,.58) !important;background:rgba(217,119,6,.12) !important}
+#kanbanView .contract-deadline-strip--green{border-color:rgba(5,150,105,.34) !important;background:rgba(5,150,105,.08) !important}
+#kanbanView .contract-deadline-strip--gray{border-color:var(--border) !important;background:var(--bg) !important}
+#kanbanView .contract-compact-lines b{color:var(--text) !important;font-weight:950 !important}
 #kanbanView .card.contract-freight-card{cursor:grab !important}
 #kanbanView .contract-compact-lines{
   display:grid !important;
@@ -4342,19 +4391,29 @@ function renderKanban(){
             const totalTime=fmtDuration(totalSlaMs(r));
             const valueRaw=contractValue(r);
             const valueLabel=valueRaw?currencyFmt(valueRaw):'';
+            const stageTone=CONTRACT_STAGE_TONE[st]||'em-andamento';
+            const createdLabel=r.createdAt?new Date(r.createdAt).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'Não informado';
+            const attachmentCount=contractAttachmentCount(r);
             return `<div class="card contract-freight-card ${trafficKey}${requestHasError?' request-error':''}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${esc(r.id)}')" onclick="openRequestDetails('${r.id}')">
               <div class="contract-compact-top">
                 <div class="contract-compact-title-wrap">
                   <div class="contract-compact-id">${esc(r.id)}</div>
                   <div class="contract-compact-title">${esc(title)}</div>
                 </div>
-                <span class="contract-status-chip contract-status-chip--${completed?'done':'progress'}">${esc(st)}</span>
+                <span class="contract-status-chip contract-status-chip--${stageTone}">${esc(st)}</span>
               </div>
 
               <div class="contract-compact-lines">
-                <div><span class="contract-line-icon">#</span><span>${esc(centerLabel)}</span></div>
-                <div><span class="contract-line-icon">▣</span><span>${esc(kind)}</span></div>
-                <div><span class="contract-line-icon">●</span><span>${esc(r.solicitante||'Solicitante não informado')}</span></div>
+                <div><span class="contract-line-icon">●</span><span><b>Solicitante:</b> ${esc(r.solicitante||'Não informado')}</span></div>
+                <div><span class="contract-line-icon">#</span><span><b>Obra / centro de custo:</b> ${esc(centerLabel)}</span></div>
+                <div><span class="contract-line-icon">📅</span><span><b>Prazo atendimento:</b> ${esc(dueText)}</span></div>
+                <div><span class="contract-line-icon">📅</span><span><b>Criado em:</b> ${esc(createdLabel)}</span></div>
+              </div>
+
+              <div class="contract-route-pill">
+                <span>${esc(kind)}</span>
+                <span>${esc(processLabel)}</span>
+                <span>${urgencyLabel}</span>
               </div>
 
               <div class="contract-compact-description" title="${esc(description)}">${esc(description)}</div>
@@ -4376,25 +4435,24 @@ function renderKanban(){
 
               <div class="contract-compact-badges">
                 ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
-                <span class="contract-mini-badge ${urgencyIsUrgent?'urgent':'normal'}">${urgencyLabel}</span>
                 <span class="contract-mini-badge traffic-${trafficKey}">${esc(trafficLabel)}</span>
-                <span class="contract-mini-badge ${processBadgeClass}">${processLabel}</span>
+                ${attachmentCount?`<span class="contract-attachment-count">📎 ${attachmentCount}</span>`:''}
                 <span class="contract-mini-badge request-error-badge ${requestHasError?'show':''}">SOLICITAÇÃO COM ERRO</span>
               </div>
 
-              <div class="contract-compact-meta">
-                <span>Prazo atendimento: <strong>${esc(dueText)}</strong></span>
-                <span class="contract-meta-status ${trafficKey}">${esc(trafficLabel)}</span>
+              <div class="contract-deadline-strip contract-deadline-strip--${trafficKey}">
+                <span>Prazo: ${esc(dueText)}</span>
+                <strong>${esc(due.text)}</strong>
               </div>
 
               <div class="contract-compact-timer">
                 <div><span>Na fase agora</span><strong data-contract-phase-timer="${esc(r.id)}">${phaseNow}</strong></div>
-                <div><span>Total acumulado</span><strong data-contract-total-timer="${esc(r.id)}">${totalTime}</strong></div>
+                <div><span>Acumulado da fase</span><strong data-contract-total-timer="${esc(r.id)}">${totalTime}</strong></div>
                 <div><span>SLA previsto</span><strong>${urgencyIsUrgent?'3 dias úteis':'5 dias úteis'}</strong></div>
               </div>
 
               <div class="contract-phase-selector-wrap" onclick="event.stopPropagation()">
-                <label>Selecionar fase</label>
+                <label>Fase da solicitação</label>
                 <select class="contract-phase-select" aria-label="Selecionar fase da solicitação ${esc(r.id)}" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="event.stopPropagation();setReqStage('${r.id}',this.value)">
                   ${stages.map(stage=>`<option value="${esc(stage)}" ${stage===r.status?'selected':''}>${esc(stage)}</option>`).join('')}
                 </select>
@@ -4481,6 +4539,19 @@ function queueContractObservationSave(id,textarea){
   textarea._contractObservationTimer=setTimeout(()=>persistContractResponsibleObservation(id,textarea,false),550);
 }
 
+const CONTRACT_STAGE_TONE={
+  'Não Iniciado':'nao-iniciado',
+  'Em Elaboração':'nao-iniciado',
+  'Aguardando Validação':'em-andamento',
+  'Enviado para Assinatura':'em-andamento',
+  'Contrato Assinado':'finalizado',
+  'Em Cadastro no Compor':'em-andamento',
+  'Aprovado no Compor':'finalizado'
+};
+function contractAttachmentCount(r){
+  const data=r.data||{};
+  return Object.keys(data).filter(k=>/anexo/i.test(k)&&data[k]!==undefined&&data[k]!==null&&String(data[k]).trim()!=='').length;
+}
 function handleContractKanbanDrop(event,newStage){
   event.preventDefault();
   const id=event.dataTransfer.getData('text/plain');
