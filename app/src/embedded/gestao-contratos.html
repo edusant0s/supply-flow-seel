@@ -469,6 +469,107 @@
   white-space:pre-wrap;
   word-break:break-word;
 }
+.detail-summary{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.detail-summary-tile{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.detail-summary-tile span{
+  color:var(--muted);
+  font-weight:800;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+.detail-summary-tile strong{
+  color:var(--blue2);
+  font-size:15px;
+  word-break:break-word;
+}
+.detail-summary-tile--red strong{color:#e7000b}
+.detail-summary-tile--yellow strong{color:#d97706}
+.detail-summary-tile--green strong{color:#059669}
+.detail-summary-tile--gray strong{color:#5c7888}
+.detail-comments-panel{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  margin-top:6px;
+  margin-bottom:12px;
+  background:var(--card);
+}
+.detail-comments-panel h3{
+  margin:0 0 10px;
+  color:var(--blue2);
+  font-size:16px;
+}
+.detail-comment-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:12px;
+}
+.detail-comment{
+  border:1px solid #dce8ef;
+  border-radius:14px;
+  padding:10px 12px;
+  background:#f7fbfd;
+}
+.detail-comment-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-weight:800;
+  color:var(--blue2);
+  font-size:13px;
+  margin-bottom:4px;
+}
+.detail-comment-head span{
+  color:var(--muted);
+  font-weight:600;
+  font-size:12px;
+}
+.detail-comment p{
+  margin:0;
+  color:#122f42;
+  white-space:pre-wrap;
+  word-break:break-word;
+  line-height:1.35;
+}
+.detail-comment-empty{
+  color:var(--muted);
+  font-size:13px;
+  padding:10px 0;
+}
+.detail-comment-form textarea{
+  width:100%;
+  min-height:70px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:10px;
+  font:inherit;
+  resize:vertical;
+  box-sizing:border-box;
+}
+.detail-comment-form button{
+  margin-top:8px;
+}
+@media(max-width:900px){
+  .detail-summary{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:560px){
+  .detail-summary{grid-template-columns:repeat(2,1fr)}
+}
 .card{
   cursor:pointer;
 }
@@ -1979,6 +2080,19 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   padding:0 8px !important;
   color:#334155 !important;
   background:var(--bg) !important;
+  font-size:8.5px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+}
+#kanbanView .contract-comment-badge{
+  min-height:22px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  border-radius:999px !important;
+  padding:0 8px !important;
+  color:#1b6d8e !important;
+  background:rgba(27,109,142,.12) !important;
   font-size:8.5px !important;
   font-weight:850 !important;
   white-space:nowrap !important;
@@ -4210,15 +4324,31 @@ function openRequestDetails(id){
   const title=document.getElementById('detailTitle');
   const subtitle=document.getElementById('detailSubtitle');
   const sections=allFilledDetails(r);
+  const traffic=contractTrafficInfo(r);
+  const requestHasError=contractRequestHasError(r);
+  const valueRaw=contractValue(r);
+  const valueLabel=valueRaw?currencyFmt(valueRaw):'Não informado';
+  const comments=getContractComments(r);
   title.textContent=`${r.id} - ${requestTitle(r)}`;
   subtitle.textContent=`${r.tipo||'Solicitação'} • ${r.status||''}`;
   body.innerHTML=`
     <div class="detail-edit-actions"><button type="button" onclick="startRequestEdit('${esc(r.id)}')">✏️ Editar informações</button></div>
+
+    <div class="detail-summary">
+      <div class="detail-summary-tile detail-summary-tile--${traffic.key}"><span>Semáforo</span><strong>${esc(traffic.label)}</strong></div>
+      <div class="detail-summary-tile"><span>Fase atual</span><strong>${esc(r.status||'')}</strong></div>
+      <div class="detail-summary-tile"><span>SLA total</span><strong>${fmtDuration(totalSlaMs(r))}</strong></div>
+      <div class="detail-summary-tile"><span>Tipo</span><strong>${esc(contractKindLabel(r))}</strong></div>
+      <div class="detail-summary-tile"><span>Valor</span><strong>${esc(valueLabel)}</strong></div>
+      <div class="detail-summary-tile detail-summary-tile--${requestHasError?'red':'green'}"><span>Situação</span><strong>${requestHasError?'Solicitação com erro':'Sem erro'}</strong></div>
+    </div>
+
     <div class="detail-grid">
       <div class="detail-kv"><small>Status atual</small><strong>${esc(r.status||'')}</strong></div>
       <div class="detail-kv"><small>Tipo</small><strong>${esc(r.tipo||'')}</strong></div>
       <div class="detail-kv"><small>Solicitante</small><strong>${esc(r.solicitante||'')}</strong></div>
       <div class="detail-kv"><small>Centro de custo</small><strong>${esc(r.centro||'')}</strong></div>
+      <div class="detail-kv"><small>Atribuído a</small><strong>${esc(String(r.atribuidoA||r.data?.atribuido_a||'—'))}</strong></div>
       <div class="detail-kv"><small>Urgência</small><strong>${esc(r.urgencia||'')}</strong></div>
       <div class="detail-kv"><small>Data da solicitação</small><strong>${esc(r.dataSolicitacao||'')}</strong></div>
       <div class="detail-kv"><small>Data limite</small><strong>${esc(r.dataLimite||'')}</strong></div>
@@ -4241,6 +4371,20 @@ function openRequestDetails(id){
       </div>
     `).join('') : '<div class="empty-col">Nenhuma informação preenchida encontrada para esta solicitação.</div>'}
     ${r.importedData ? `<div class="detail-section"><div class="detail-section-title"><span>Dados originais importados</span><span>${Object.keys(r.importedData).length} coluna(s)</span></div><div class="detail-section-content">${Object.entries(r.importedData).filter(([,value])=>String(value??'').trim()!=='').map(([key,value])=>`<div class="detail-answer ${String(value).length>90?'full':''}"><small>${esc(key)}</small><div>${esc(answerDisplay(value))}</div></div>`).join('')}</div></div>` : ''}
+
+    <div class="detail-comments-panel">
+      <h3>Comentários e alertas (${comments.length})</h3>
+      ${comments.length ? `<div class="detail-comment-list">${comments.map(comment=>`
+        <div class="detail-comment">
+          <div class="detail-comment-head"><strong>${esc(comment.authorName||'Equipe de contratos')}</strong><span>${comment.at?new Date(comment.at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</span></div>
+          <p>${esc(comment.text||'')}</p>
+        </div>
+      `).join('')}</div>` : '<div class="detail-comment-empty">Nenhum comentário registrado para esta solicitação.</div>'}
+      <div class="detail-comment-form">
+        <textarea id="contractCommentInput" placeholder="Registre uma orientação, pendência ou alerta sobre esta solicitação..."></textarea>
+        <button class="secondary" type="button" onclick="submitContractComment('${esc(r.id)}')">💬 Adicionar comentário</button>
+      </div>
+    </div>
   `;
   modal.classList.add('show');
 }
@@ -4406,6 +4550,7 @@ function renderKanban(){
             const stageTone=CONTRACT_STAGE_TONE[st]||'em-andamento';
             const createdLabel=r.createdAt?new Date(r.createdAt).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'Não informado';
             const attachmentCount=contractAttachmentCount(r);
+            const commentCount=getContractComments(r).length;
             return `<div class="card contract-freight-card ${trafficKey}${requestHasError?' request-error':''}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${esc(r.id)}')" onclick="openRequestDetails('${r.id}')">
               <div class="contract-compact-top">
                 <div class="contract-compact-title-wrap">
@@ -4417,7 +4562,7 @@ function renderKanban(){
 
               <div class="contract-compact-lines">
                 <div><span class="contract-line-icon">●</span><span><b>Solicitante:</b> ${esc(r.solicitante||'Não informado')}</span></div>
-                <div><span class="contract-line-icon">#</span><span><b>Obra / centro de custo:</b> ${esc(centerLabel)}</span></div>
+                <div><span class="contract-line-icon">➤</span><span><b>Atribuído a:</b> ${esc(String(r.atribuidoA||r.data?.atribuido_a||'—'))}</span></div>
                 <div><span class="contract-line-icon">📅</span><span><b>Prazo atendimento:</b> ${esc(dueText)}</span></div>
                 <div><span class="contract-line-icon">📅</span><span><b>Criado em:</b> ${esc(createdLabel)}</span></div>
               </div>
@@ -4426,6 +4571,7 @@ function renderKanban(){
                 <span>${esc(kind)}</span>
                 <span>${esc(processLabel)}</span>
                 <span>${urgencyLabel}</span>
+                <span>${esc(centerLabel)}</span>
               </div>
 
               <div class="contract-compact-description" title="${esc(description)}">${esc(description)}</div>
@@ -4443,6 +4589,7 @@ function renderKanban(){
                 ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
                 <span class="contract-mini-badge traffic-${trafficKey}">${esc(trafficLabel)}</span>
                 ${attachmentCount?`<span class="contract-attachment-count">📎 ${attachmentCount}</span>`:''}
+                ${commentCount?`<span class="contract-comment-badge">💬 ${commentCount}</span>`:''}
                 <span class="contract-mini-badge request-error-badge ${requestHasError?'show':''}">SOLICITAÇÃO COM ERRO</span>
               </div>
 
@@ -4565,6 +4712,47 @@ const CONTRACT_STAGE_TONE={
 function contractAttachmentCount(r){
   const data=r.data||{};
   return Object.keys(data).filter(k=>/anexo/i.test(k)&&data[k]!==undefined&&data[k]!==null&&String(data[k]).trim()!=='').length;
+}
+function getContractComments(r){
+  const raw=r?.comentarios;
+  return Array.isArray(raw)?raw:[];
+}
+function appendContractComment(id,text){
+  const trimmed=String(text||'').trim();
+  if(!trimmed)return false;
+  const identity=normalizeContractLoggedUser(contractLoggedRequesterIdentity)||{};
+  const comment={
+    id:`comment-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    at:new Date().toISOString(),
+    text:trimmed,
+    authorName:identity.name||identity.email||'Equipe de contratos'
+  };
+  let changed=false;
+  requests=requests.map(request=>{
+    if(String(request.id)!==String(id))return request;
+    changed=true;
+    return {...request,comentarios:[...getContractComments(request),comment]};
+  });
+  if(changed)saveRequests();
+  return changed;
+}
+function submitContractComment(id){
+  const textarea=document.getElementById('contractCommentInput');
+  const text=textarea?textarea.value:'';
+  if(!String(text||'').trim()){toast('Escreva um comentário antes de enviar.');return;}
+  const ok=appendContractComment(id,text);
+  if(!ok)return;
+  renderKanban();
+  renderDashboard();
+  openRequestDetails(id);
+  toast('Comentário registrado.');
+}
+function contractTrafficInfo(r){
+  const due=deadlineInfo(r);
+  const completed=r.status==='Aprovado no Compor';
+  const key=completed?'gray':(due.cls==='orange'?'yellow':due.cls==='blue'?'gray':due.cls);
+  const label=completed?'Finalizado':(due.status==='Em atraso'?'Atrasado':due.status==='Em alerta'?'Em alerta':due.status==='No prazo'?'No prazo':'Sem prazo');
+  return {key,label,due};
 }
 function handleContractKanbanDrop(event,newStage){
   event.preventDefault();
