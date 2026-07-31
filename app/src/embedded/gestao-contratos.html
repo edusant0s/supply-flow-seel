@@ -3027,7 +3027,8 @@ const CONTRACT_ICON_PATHS={
   paperclip:'<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
   message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   pencil:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
-  hash:'<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>'
+  hash:'<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+  building:'<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'
 };
 function contractIcon(name,size){
   const path=CONTRACT_ICON_PATHS[name];
@@ -4406,7 +4407,7 @@ function openRequestDetails(id){
   const valueLabel=valueRaw?currencyFmt(valueRaw):'Não informado';
   const comments=getContractComments(r);
   const responsibleObservation=String(r.observacoesResponsavel||r.data?.observacoesResponsavel||'').slice(0,240);
-  title.textContent=`${r.id} - ${requestTitle(r)}`;
+  title.textContent=`${contractDisplayTag(r)} - ${requestTitle(r)}`;
   subtitle.textContent=`${r.tipo||'Solicitação'} • ${r.status||''}`;
   body.innerHTML=`
     <div class="detail-edit-actions"><button type="button" onclick="startRequestEdit('${esc(r.id)}')">${contractIcon('pencil',14)} Editar informações</button></div>
@@ -4434,7 +4435,6 @@ function openRequestDetails(id){
       <div class="detail-kv"><small>Tipo</small><strong>${esc(r.tipo||'')}</strong></div>
       <div class="detail-kv"><small>Solicitante</small><strong>${esc(r.solicitante||'')}</strong></div>
       <div class="detail-kv"><small>Centro de custo</small><strong>${esc(r.centro||'')}</strong></div>
-      <div class="detail-kv"><small>Atribuído a</small><strong>${esc(String(r.atribuidoA||r.data?.atribuido_a||'—'))}</strong></div>
       <div class="detail-kv"><small>Urgência</small><strong>${esc(r.urgencia||'')}</strong></div>
       <div class="detail-kv"><small>Data da solicitação</small><strong>${esc(r.dataSolicitacao||'')}</strong></div>
       <div class="detail-kv"><small>Data limite</small><strong>${esc(r.dataLimite||'')}</strong></div>
@@ -4638,7 +4638,7 @@ function renderKanban(){
             return `<div class="card contract-freight-card ${trafficKey}${requestHasError?' request-error':''}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${esc(r.id)}')" onclick="openRequestDetails('${r.id}')">
               <div class="contract-compact-top">
                 <div class="contract-compact-title-wrap">
-                  <div class="contract-compact-id">${esc(r.id)}</div>
+                  <div class="contract-compact-id">${esc(contractDisplayTag(r))}</div>
                   <div class="contract-compact-title">${esc(title)}</div>
                 </div>
                 <span class="contract-status-chip contract-status-chip--${stageTone}">${esc(st)}</span>
@@ -4646,7 +4646,7 @@ function renderKanban(){
 
               <div class="contract-compact-lines">
                 <div><span class="contract-line-icon">${contractIcon('clipboard',11)}</span><span><b>Solicitante:</b> ${esc(r.solicitante||'Não informado')}</span></div>
-                <div><span class="contract-line-icon">${contractIcon('hash',11)}</span><span><b>Obra / centro de custo:</b> ${esc(centerLabel)}</span></div>
+                <div><span class="contract-line-icon">${contractIcon('building',11)}</span><span><b>Obra / centro de custo:</b> ${esc(centerLabel)}</span></div>
                 <div><span class="contract-line-icon">${contractIcon('calendar',11)}</span><span><b>Prazo atendimento:</b> ${esc(dueText)}</span></div>
                 <div><span class="contract-line-icon">${contractIcon('calendar',11)}</span><span><b>Criado em:</b> ${esc(createdLabel)}</span></div>
               </div>
@@ -4684,13 +4684,11 @@ function renderKanban(){
                 </select>
               </div>
 
-              <div class="contract-phase-selector-wrap" onclick="event.stopPropagation()">
-                <label>Situação da solicitação</label>
-                <select class="contract-error-select" aria-label="Marcar situação da solicitação ${esc(r.id)}" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="event.stopPropagation();toggleContractRequestError('${r.id}',this.value==='erro',this)">
-                  <option value="sem-erro" ${requestHasError?'':'selected'}>Sem erro</option>
-                  <option value="erro" ${requestHasError?'selected':''}>Solicitação com erro</option>
-                </select>
-              </div>
+              <label class="contract-error-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" ${requestHasError?'checked':''} onclick="event.stopPropagation()" onchange="event.stopPropagation();toggleContractRequestError('${r.id}',this.checked,this)">
+                <span class="contract-error-toggle-icon">⚠️</span>
+                <span>Solicitação com erro</span>
+              </label>
 
               <div class="contract-compact-actions" onclick="event.stopPropagation()">
                 <button class="contract-detail-btn secondary" type="button" onclick="event.stopPropagation();openRequestDetails('${r.id}')">Ver detalhes</button>
@@ -4826,6 +4824,23 @@ function contractTrafficInfo(r){
   const key=completed?'gray':(due.cls==='orange'?'yellow':due.cls==='blue'?'gray':due.cls);
   const label=completed?'Finalizado':(due.status==='Em atraso'?'Atrasado':due.status==='Em alerta'?'Em alerta':due.status==='No prazo'?'No prazo':'Sem prazo');
   return {key,label,due};
+}
+function contractDisplayTag(r){
+  const centro=String(r.centro||r.data?.centro_obra||r.data?.centro_departamento||'').trim()||'SC';
+  const raw=String(r.dataSolicitacao||r.data?.data_solicitacao||r.createdAt||'').trim();
+  let mm='--',yyyy='----';
+  const isoMatch=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(isoMatch){
+    yyyy=isoMatch[1];
+    mm=isoMatch[2];
+  }else if(raw){
+    const d=new Date(raw);
+    if(!Number.isNaN(d.getTime())){
+      mm=String(d.getMonth()+1).padStart(2,'0');
+      yyyy=String(d.getFullYear());
+    }
+  }
+  return `CT-${centro}-${mm}/${yyyy}`;
 }
 function handleContractKanbanDrop(event,newStage){
   event.preventDefault();
