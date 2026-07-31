@@ -2485,6 +2485,87 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 </style>
 
+<style id="contract-insights-styles">
+.contract-insight-section{
+  display:grid;
+  gap:14px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:var(--card);
+  box-shadow:0 9px 22px rgba(0,62,95,.08);
+  padding:16px;
+  margin-bottom:16px;
+}
+.contract-insight-section:empty{display:none}
+.contract-insight-title{display:flex;align-items:center;gap:10px}
+.contract-insight-title>span{
+  width:34px;height:34px;flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;background:#1b6d8e;color:#fcc800;font-size:16px;
+  box-shadow:0 10px 24px rgba(10,46,61,.13);
+}
+.contract-insight-title h3{margin:0;color:var(--text);font-size:1.05rem}
+.contract-insight-title p{margin:3px 0 0;color:var(--muted);font-size:.78rem;font-weight:800}
+
+.contract-insight-summary{display:grid;grid-template-columns:minmax(260px,1.4fr) repeat(3,minmax(150px,.6fr));gap:12px}
+.contract-insight-summary-card{
+  min-width:0;min-height:100px;display:grid;align-content:center;gap:5px;
+  border:1px solid var(--border);border-top:4px solid var(--insight-accent,#fcc800);
+  border-radius:13px;background:var(--card);box-shadow:0 8px 18px rgba(10,46,61,.08);padding:12px;
+}
+.contract-insight-summary-card--wide{grid-template-columns:38px minmax(0,1fr);align-items:center;gap:11px}
+.contract-insight-summary-card--danger{--insight-accent:#e7000b}
+.contract-insight-summary-card--warning{--insight-accent:#d97706}
+.contract-insight-summary-card--success{--insight-accent:#059669}
+.contract-insight-summary-icon{
+  width:38px;height:38px;border-radius:12px;font-size:18px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--insight-accent,#fcc800) 14%,#fff);
+  color:var(--insight-accent,#8a6d00);
+}
+.contract-insight-summary-card small{color:var(--muted);font-size:.65rem;font-weight:950;text-transform:uppercase}
+.contract-insight-summary-card h4{margin:0;color:var(--text);font-size:.94rem;line-height:1.2}
+.contract-insight-summary-card strong{color:var(--text);font-size:1.4rem;line-height:1}
+.contract-insight-summary-card p,.contract-insight-summary-card time{margin:0;color:var(--muted);font-size:.72rem;font-weight:800;line-height:1.35}
+.contract-insight-summary-card time{display:block;font-size:.62rem;margin-top:2px}
+
+.contract-insight-grid-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.contract-insight-grid-head h4{margin:0;color:var(--text);font-size:.92rem}
+.contract-insight-grid-head span{color:var(--muted);font-size:.7rem;font-weight:850;text-align:right}
+
+.contract-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.contract-insight-card{
+  min-width:0;display:grid;align-content:start;gap:7px;
+  border:1px solid var(--border);border-top:4px solid var(--insight-accent,#fcc800);
+  border-radius:13px;background:var(--card);box-shadow:0 8px 18px rgba(10,46,61,.08);padding:12px;
+}
+.contract-insight-card--danger{--insight-accent:#e7000b}
+.contract-insight-card--warning{--insight-accent:#d97706}
+.contract-insight-card--monitor{--insight-accent:#94a3b8}
+.contract-insight-card--success{--insight-accent:#059669}
+.contract-insight-card-head{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center}
+.contract-insight-card-icon{
+  width:30px;height:30px;border-radius:10px;font-size:15px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--insight-accent,#fcc800) 14%,#fff);
+}
+.contract-insight-card-head small{display:block;color:var(--muted);font-size:.62rem;font-weight:950;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.contract-insight-card-head strong{display:block;color:var(--text);font-size:.85rem;line-height:1.2}
+.contract-insight-priority{
+  border-radius:999px;padding:3px 7px;font-size:.6rem;font-style:normal;font-weight:950;white-space:nowrap;
+  background:color-mix(in srgb,var(--insight-accent,#fcc800) 14%,#fff);color:var(--insight-accent,#8a6d00);
+}
+.contract-insight-card-value{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.contract-insight-card-value strong{color:var(--text);font-size:1.3rem;font-weight:950;line-height:1}
+.contract-insight-card-value span{color:var(--muted);font-size:.7rem;font-weight:800}
+.contract-insight-card p{margin:0;color:var(--muted);font-size:.72rem;font-weight:800;line-height:1.4}
+.contract-insight-card footer{margin-top:2px;padding-top:7px;border-top:1px solid var(--border);color:var(--text);font-size:.72rem;font-weight:800;line-height:1.4}
+.contract-insight-card footer b{font-weight:950}
+
+@media(max-width:1300px){.contract-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.contract-insight-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.contract-insight-grid{grid-template-columns:1fr}.contract-insight-summary{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div class="sf-app" id="sfApp">
@@ -2559,6 +2640,7 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
       </div>
     </section>
     <section class="panel"><div class="head"><div><h2>Dashboard de Contratos</h2><p class="hint">Visão consolidada das solicitações, prazos, filas e desempenho das etapas.</p></div><div class="pill">Atualização automática</div></div><section class="kpi-grid" id="kanbanKpis"></section></section>
+    <section class="contract-insight-section" id="contractInsightsSection"></section>
     <section class="analytics-grid">
       <article class="analytics-card"><h3>Semáforo de filas</h3><p>Solicitações em aberto classificadas conforme a data limite em dias úteis.</p><div id="queueSemaphoreChart"></div></article>
       <article class="analytics-card"><h3>Média de tempo por fase</h3><p>Média acumulada dos tempos registrados em cada etapa, incluindo retornos.</p><div id="phaseAverageChart"></div></article>
@@ -3775,6 +3857,218 @@ function renderKanbanDashboard(list){
     {label:'Com erro', value:comErro, cls:'red'},
     {label:'Sem erro', value:Math.max(0,total-comErro), cls:'green'}
   ]);
+  renderContractInsights(list);
+}
+function pctShare(part,total){if(!total)return 0;return Math.round((part/total)*100)}
+function toneRank(tone){return {danger:0,warning:1,monitor:2,success:3}[tone]}
+function toneLabel(tone){return {danger:'Crítico',warning:'Atenção',monitor:'Monitorar',success:'Controlado'}[tone]}
+function parseContractValueNumber(r){
+  const raw=contractValue(r);
+  if(!raw)return 0;
+  const n=Number(String(raw).replace(/[^\d,.-]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));
+  return Number.isFinite(n)?n:0;
+}
+function topShareBy(items,keyFn){
+  const map=new Map();
+  items.forEach(item=>{
+    const key=keyFn(item)||'Não informado';
+    map.set(key,(map.get(key)||0)+1);
+  });
+  const top=[...map.entries()].sort((a,b)=>b[1]-a[1])[0];
+  if(!top)return {name:'',share:0,count:0};
+  return {name:top[0],share:pctShare(top[1],items.length),count:top[1]};
+}
+function buildContractInsights(list){
+  const total=list.length;
+  if(!total){
+    return {
+      total:0,healthScore:100,headlineTone:'success',headlineIcon:'✅',
+      headline:'Sem dados no filtro atual',
+      headlineText:'Ajuste os filtros para visualizar os alertas da carteira de contratos.',
+      criticalCount:0,warningCount:0,exposure:0,cards:[]
+    };
+  }
+
+  const open=list.filter(r=>r.status!=='Aprovado no Compor');
+  const finished=list.filter(r=>r.status==='Aprovado no Compor');
+  const late=open.filter(r=>deadlineInfo(r).status==='Em atraso');
+  const alertItems=open.filter(r=>deadlineInfo(r).status==='Em alerta');
+  const noDeadline=open.filter(r=>deadlineInfo(r).status==='Sem prazo');
+  const withError=list.filter(contractRequestHasError);
+  const urgent=list.filter(r=>String(r.urgencia||'').toUpperCase().includes('URGENTE'));
+  const noValue=list.filter(r=>!contractValue(r));
+
+  const exposure=[...late,...alertItems].reduce((sum,r)=>sum+parseContractValueNumber(r),0);
+
+  const finishRate=pctShare(finished.length,total);
+  const openShare=pctShare(open.length,total);
+  const errorShare=pctShare(withError.length,total);
+  const noDeadlineShare=pctShare(noDeadline.length,open.length||1);
+  const urgentShare=pctShare(urgent.length,total);
+
+  const centerShare=topShareBy(open,r=>String(r.centro||r.data?.centro_obra||r.data?.centro_departamento||'').trim());
+  const typeShare=topShareBy(list,r=>String(r.tipo||'Não informado'));
+
+  const stageAverages=averageTimeByStage(list).filter(s=>s.count>0);
+  const bottleneck=stageAverages.slice().sort((a,b)=>b.value-a.value)[0]||null;
+
+  const oldestOpen=open.slice().sort((a,b)=>totalSlaMs(b)-totalSlaMs(a))[0]||null;
+  const oldestMs=oldestOpen?totalSlaMs(oldestOpen):0;
+  const dayMs=24*60*60*1000;
+
+  let healthScore=100;
+  healthScore-=Math.min(30,pctShare(late.length,total)*1.3);
+  healthScore-=Math.min(14,pctShare(alertItems.length,total)*0.6);
+  healthScore-=Math.min(12,noDeadlineShare*0.5);
+  healthScore-=Math.min(12,errorShare*0.6);
+  healthScore-=Math.min(14,Math.max(0,60-finishRate)*0.3);
+  if(centerShare.share>=70)healthScore-=6;else if(centerShare.share>=50)healthScore-=3;
+  healthScore=Math.max(0,Math.min(100,Math.round(healthScore)));
+
+  let headlineTone='success',headlineIcon='✅',
+    headline='Fluxo de contratos sob controle',
+    headlineText='Não há atrasos críticos ou pendências relevantes no filtro atual.';
+
+  if(late.length){
+    headlineTone='danger';headlineIcon='⛔';
+    headline='Atraso de prazo exige atuação imediata';
+    headlineText=`${late.length} solicitação(ões) em aberto ${late.length===1?'está':'estão'} com o prazo de atendimento vencido, com exposição estimada de ${currencyFmt(exposure)}.`;
+  }else if(alertItems.length||noDeadline.length){
+    headlineTone='warning';headlineIcon='⏳';
+    headline='Prazos exigem atenção nos próximos dias';
+    headlineText=`${alertItems.length} solicitação(ões) vencem em breve e ${noDeadline.length} estão sem prazo definido.`;
+  }else if(errorShare>=15){
+    headlineTone='warning';headlineIcon='⚑';
+    headline='Qualidade das solicitações pede revisão';
+    headlineText=`${withError.length} solicitação(ões) estão marcadas com erro pelo responsável (${errorShare}% da carteira).`;
+  }else if(openShare>=65){
+    headlineTone='warning';headlineIcon='📥';
+    headline='Carteira em aberto acima do esperado';
+    headlineText=`${openShare}% das solicitações filtradas ainda estão em aberto.`;
+  }
+
+  const cards=[
+    {key:'late',tone:late.length?'danger':'success',icon:'⛔',eyebrow:'Risco de prazo',title:'Solicitações com prazo vencido',
+      value:String(late.length),meta:`${pctShare(late.length,total)}% da carteira - ${currencyFmt(exposure)} em exposição`,
+      description:late.length?'Há solicitações em aberto com o prazo de atendimento já vencido.':'Nenhuma solicitação em aberto está com prazo vencido.',
+      action:late.length?'Cobrar responsáveis e atualizar a fase no Kanban.':'Manter rotina diária de conferência dos prazos.'},
+    {key:'alert',tone:alertItems.length?'warning':'success',icon:'⏳',eyebrow:'Próximos dias',title:'Solicitações vencendo em breve',
+      value:String(alertItems.length),meta:`${pctShare(alertItems.length,total)}% da carteira filtrada`,
+      description:alertItems.length?'Janela curta para concluir a etapa atual antes do vencimento do prazo.':'Nenhuma solicitação com vencimento iminente.',
+      action:alertItems.length?'Priorizar a validação/assinatura dessas solicitações.':'Manter acompanhamento semanal do funil.'},
+    {key:'no-deadline',tone:noDeadline.length?'warning':'success',icon:'📥',eyebrow:'Qualidade de dados',title:'Solicitações sem prazo definido',
+      value:String(noDeadline.length),meta:`${noDeadlineShare}% do que está em aberto`,
+      description:noDeadline.length?'A ausência do prazo de atendimento impede alertas confiáveis de SLA.':'Todas as solicitações em aberto possuem prazo de atendimento informado.',
+      action:noDeadline.length?'Completar a data limite de atendimento de cada solicitação aberta.':'Manter o preenchimento obrigatório do prazo na abertura.'},
+    {key:'error',tone:withError.length?(errorShare>=15?'danger':'warning'):'success',icon:'⚑',eyebrow:'Qualidade das solicitações',title:'Solicitações marcadas com erro',
+      value:String(withError.length),meta:`${errorShare}% da carteira filtrada`,
+      description:withError.length?'Solicitações foram marcadas pelo responsável como contendo erro no formulário.':'Nenhuma solicitação foi marcada com erro no filtro atual.',
+      action:withError.length?'Corrigir ou orientar novo envio das solicitações marcadas.':'Manter a checagem do formulário na triagem inicial.'},
+    {key:'finish-rate',tone:finishRate<35?'danger':finishRate<60?'warning':'success',icon:'✅',eyebrow:'Eficiência de fluxo',title:'Taxa de finalização da carteira',
+      value:`${finishRate}%`,meta:`${finished.length} de ${total} solicitação(ões)`,
+      description:finishRate<60?'Parcela relevante das solicitações ainda não chegou ao fim do fluxo.':'A maior parte da carteira já foi finalizada no Compor.',
+      action:finishRate<60?'Revisar gargalos das etapas e priorizar as solicitações mais antigas.':'Manter a cadência atual de finalização.'},
+    {key:'center-concentration',tone:centerShare.share>=70?'danger':centerShare.share>=50?'warning':'success',icon:'🏗️',eyebrow:'Concentração operacional',title:'Dependência de uma obra/centro de custo',
+      value:centerShare.name?`${centerShare.share}%`:'-',meta:centerShare.name?`${esc(centerShare.name)} - ${centerShare.count} solicitação(ões) em aberto`:'Sem centro de custo informado no filtro',
+      description:centerShare.share>=50?'A carteira em aberto está concentrada em poucas obras/centros de custo.':'A carteira em aberto está distribuída entre obras e centros de custo.',
+      action:centerShare.share>=50?'Avaliar se a obra concentradora precisa de apoio dedicado.':'Manter o acompanhamento por obra/centro de custo.'},
+    {key:'type-mix',tone:typeShare.share>=70?'monitor':'success',icon:'📄',eyebrow:'Mix de demanda',title:'Concentração por tipo de documento',
+      value:typeShare.name?`${typeShare.share}%`:'-',meta:typeShare.name?esc(typeShare.name):'Sem tipo informado',
+      description:typeShare.share>=70?'A demanda filtrada está concentrada em um único tipo de documento.':'A demanda filtrada está distribuída entre os tipos de documento.',
+      action:typeShare.share>=70?'Avaliar se a concentração de tipo exige capacidade dedicada.':'Manter o acompanhamento periódico do mix de demanda.'},
+    {key:'urgency',tone:urgentShare>=40?'warning':'success',icon:'🚨',eyebrow:'Prioridade',title:'Solicitações urgentes',
+      value:String(urgent.length),meta:`${urgentShare}% da carteira filtrada`,
+      description:urgentShare>=40?'Parcela elevada da carteira está marcada como urgente, pressionando o SLA de 3 dias úteis.':'O volume de solicitações urgentes está em nível administrável.',
+      action:urgentShare>=40?'Confirmar critério de urgência e redistribuir capacidade.':'Manter o SLA diferenciado para urgências.'},
+    {key:'bottleneck',tone:bottleneck?'monitor':'success',icon:'🧭',eyebrow:'Gargalo de etapa',title:'Etapa com maior tempo médio',
+      value:bottleneck?fmtDuration(bottleneck.value):'-',meta:bottleneck?`${esc(bottleneck.stage)} - ${bottleneck.count} solicitação(ões)`:'Sem tempo suficiente registrado',
+      description:bottleneck?`A etapa "${bottleneck.stage}" concentra o maior tempo médio de permanência no filtro atual.`:'Ainda não há tempo suficiente registrado por etapa.',
+      action:bottleneck?'Investigar a causa da demora nesta etapa e redistribuir responsáveis se necessário.':'Manter o acompanhamento do tempo por etapa.'},
+    {key:'oldest-open',tone:oldestMs>10*dayMs?'danger':oldestMs>5*dayMs?'warning':'success',icon:'⏱️',eyebrow:'Prioridade de fila',title:'Maior tempo em aberto na fila',
+      value:oldestOpen?fmtDuration(oldestMs):'-',meta:oldestOpen?esc(requestTitle(oldestOpen)||oldestOpen.id):'Sem solicitações em aberto',
+      description:oldestOpen?'Esta é a solicitação em aberto mais antiga do filtro atual.':'Não há solicitações em aberto no filtro atual.',
+      action:oldestOpen?'Priorizar esta solicitação antes de iniciar novas tratativas.':'Manter o controle de entrada da fila.'},
+    {key:'no-value',tone:noValue.length?'monitor':'success',icon:'💰',eyebrow:'Visibilidade financeira',title:'Solicitações sem valor informado',
+      value:String(noValue.length),meta:`${pctShare(noValue.length,total)}% da carteira filtrada`,
+      description:noValue.length?'Solicitações sem valor contratual informado reduzem a visibilidade financeira da carteira.':'Todas as solicitações do filtro possuem valor contratual informado.',
+      action:noValue.length?'Completar o valor do contrato/aditivo nos formulários pendentes.':'Manter o preenchimento do valor na abertura.'},
+    {key:'exposure',tone:exposure>0?'warning':'success',icon:'💸',eyebrow:'Exposição financeira',title:'Valor em risco (atrasados + em alerta)',
+      value:currencyFmt(exposure),meta:`${late.length+alertItems.length} solicitação(ões) nesta condição`,
+      description:exposure>0?'Soma do valor contratual das solicitações atrasadas ou próximas do vencimento.':'Não há valor contratual em risco identificado no filtro atual.',
+      action:exposure>0?'Priorizar a tratativa das solicitações de maior valor primeiro.':'Manter o monitoramento de prazos e valores.'}
+  ];
+
+  cards.sort((a,b)=>toneRank(a.tone)-toneRank(b.tone));
+
+  return {
+    total,healthScore,headlineTone,headlineIcon,headline,headlineText,
+    criticalCount:cards.filter(c=>c.tone==='danger').length,
+    warningCount:cards.filter(c=>c.tone==='warning').length,
+    exposure,cards
+  };
+}
+function renderContractInsights(list){
+  const el=document.getElementById('contractInsightsSection');
+  if(!el)return;
+  const analysis=buildContractInsights(list);
+  const cardsHtml=analysis.cards.map(card=>`
+    <article class="contract-insight-card contract-insight-card--${card.tone}">
+      <div class="contract-insight-card-head">
+        <span class="contract-insight-card-icon">${card.icon}</span>
+        <div>
+          <small>${esc(card.eyebrow)}</small>
+          <strong>${esc(card.title)}</strong>
+        </div>
+        <em class="contract-insight-priority contract-insight-priority--${card.tone}">${toneLabel(card.tone)}</em>
+      </div>
+      <div class="contract-insight-card-value">
+        <strong>${esc(card.value)}</strong>
+        <span>${esc(card.meta)}</span>
+      </div>
+      <p>${esc(card.description)}</p>
+      <footer><b>Ação:</b> ${esc(card.action)}</footer>
+    </article>
+  `).join('');
+
+  el.innerHTML=`
+    <div class="contract-insight-title">
+      <span>⚠️</span>
+      <div>
+        <h3>Alertas de contratos</h3>
+        <p>Análises críticas recalculadas automaticamente conforme o Kanban e os filtros do dashboard.</p>
+      </div>
+    </div>
+    <div class="contract-insight-summary">
+      <article class="contract-insight-summary-card contract-insight-summary-card--wide contract-insight-summary-card--${analysis.headlineTone}">
+        <span class="contract-insight-summary-icon">${analysis.headlineIcon}</span>
+        <div>
+          <h4>${esc(analysis.headline)}</h4>
+          <p>${esc(analysis.headlineText)}</p>
+          <time>Recalculado automaticamente em ${esc(new Date().toLocaleString('pt-BR'))}</time>
+        </div>
+      </article>
+      <article class="contract-insight-summary-card contract-insight-summary-card--${analysis.healthScore>=80?'success':analysis.healthScore>=58?'warning':'danger'}">
+        <small>Índice de controle</small>
+        <strong>${analysis.healthScore}/100</strong>
+        <p>Composto por prazo, qualidade das solicitações, fluxo e concentração operacional.</p>
+      </article>
+      <article class="contract-insight-summary-card contract-insight-summary-card--${analysis.criticalCount?'danger':analysis.warningCount?'warning':'success'}">
+        <small>Análises críticas</small>
+        <strong>${analysis.criticalCount}</strong>
+        <p>${analysis.warningCount} análise(s) adicional(is) em atenção.</p>
+      </article>
+      <article class="contract-insight-summary-card contract-insight-summary-card--${analysis.exposure>0?'warning':'success'}">
+        <small>Exposição financeira</small>
+        <strong>${esc(currencyFmt(analysis.exposure))}</strong>
+        <p>Valor de solicitações vencidas ou próximas do vencimento.</p>
+      </article>
+    </div>
+    <div class="contract-insight-grid-head">
+      <h4>Análises automáticas priorizadas</h4>
+      <span>${analysis.total} solicitação(ões) consideradas no filtro atual</span>
+    </div>
+    <div class="contract-insight-grid">${cardsHtml || '<div class="empty-col">Sem solicitações no filtro atual.</div>'}</div>
+  `;
 }
 function stageSlaForList(list, stage){
   const active=list.filter(r=>r.status===stage).map(activePhaseMs);
