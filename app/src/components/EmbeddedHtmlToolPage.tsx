@@ -1156,11 +1156,23 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     });
   }
 
+  function deleteAllSupplierMapRecords() {
+    if (!canManage) {
+      alert("Apenas administradores de suprimentos podem excluir a base de fornecedores.");
+      return Promise.resolve(false);
+    }
+    return postgrestRequest("/rest/v1/fornecedores?id=not.is.null", {
+      method: "DELETE",
+      headers: { Prefer: "return=minimal" }
+    });
+  }
+
   window.SUPPLY_FLOW_SUPPLIER_MAP_BRIDGE = {
     getAll: function() { return Promise.resolve([]); },
     putMany: syncSupplierMapRows,
     put: function(item) { return syncSupplierMapRows([item]); },
-    delete: deleteSupplierMapRecord
+    delete: deleteSupplierMapRecord,
+    deleteAll: deleteAllSupplierMapRecords
   };
 
   function freightRecord(item) {

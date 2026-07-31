@@ -296,7 +296,7 @@ body{background:var(--sf-bg)}
   </div><div class="map-shell"><div class="map-banner"><strong>Google Maps • fornecedores e distâncias</strong><br>O mapa inicia com a visão do Brasil e é atualizado ao selecionar o fornecedor, localizar a obra ou calcular a rota.</div><iframe class="google-map-frame" id="googleMapFrame" src="https://www.google.com/maps?q=Brasil&output=embed" title="Google Maps - Brasil" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div class="leaflet-engine" id="mapEngine" aria-hidden="true"></div></div></div>
 </section>
 <section class="view" id="view-import">
-  <div class="panel"><div class="panel-head"><div><div class="panel-title">Importar novos fornecedores</div><div class="panel-sub">O aplicativo reconhece abas e colunas semelhantes à planilha inicial</div></div></div><div class="panel-body"><div class="import-zone"><div style="font-size:38px">📊</div><h3>Selecione uma planilha Excel</h3><p>Colunas reconhecidas: Nome/Nome do Fornecedor, Cidade, UF/Estado, Região, Categoria/Produto/Serviço, Contato, Telefone, Email, Site, Observações e Cadastro. Cada aba pode representar uma categoria.</p><input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" onclick="document.getElementById('fileInput').click()">Escolher arquivo</button></div><div style="height:14px"></div><div class="notice">A importação acrescenta os registros à base compartilhada do Supply Flow. Duplicidades são verificadas por nome + cidade + UF antes da gravação no Supabase.</div><div id="importPreview" style="margin-top:16px"></div></div></div>
+  <div class="panel"><div class="panel-head"><div><div class="panel-title">Importar novos fornecedores</div><div class="panel-sub">O aplicativo lê as colunas presentes na planilha automaticamente, não é preciso seguir um modelo fixo</div></div></div><div class="panel-body"><div class="import-zone"><div style="font-size:38px">📊</div><h3>Selecione uma planilha Excel</h3><p>Colunas reconhecidas automaticamente pelo título (em qualquer ordem, com variações de nome aceitas): Nome/Fornecedor/Razão Social/Empresa, Cidade, UF/Estado, Região, Categoria/Produto/Serviço/Segmento, Contato, Telefone/Celular/WhatsApp, Email, Site, Observações e Cadastro. Colunas que não forem reconhecidas são guardadas mesmo assim, no campo Observações. Cada aba pode representar uma categoria.</p><input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" onclick="document.getElementById('fileInput').click()">Escolher arquivo</button></div><div style="height:14px"></div><div class="notice">A importação acrescenta os registros à base compartilhada do Supply Flow. Duplicidades são verificadas por nome + cidade + UF antes da gravação no Supabase.</div><div id="importPreview" style="margin-top:16px"></div><div style="height:22px"></div><div class="panel" style="border-color:#ffd0d0"><div class="panel-head"><div><div class="panel-title" style="color:#a33">Apagar base de fornecedores</div><div class="panel-sub">Remove permanentemente todos os fornecedores da base compartilhada. Use antes de importar uma planilha totalmente nova, para começar do zero.</div></div></div><div class="panel-body"><button class="btn" data-action="delete-all-suppliers" style="background:#fff0f0;border:1px solid #ffb3b3;color:#a33">Apagar toda a base</button></div></div></div></div>
 </section>
 </div>
 </main>
@@ -340,12 +340,23 @@ function supplierBridge(){return window.SUPPLY_FLOW_SUPPLIER_MAP_BRIDGE||null}
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function dbGetAll(){const bridge=supplierBridge();if(bridge&&typeof bridge.getAll==='function')return bridge.getAll();const db=await openDB();return new Promise((res,rej)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function supplierStoragePayload(item){const clean={...(item||{})};delete clean.__searchIndex;delete clean.__mapSearchIndex;delete clean.__isLocated;delete clean.__isCartorio;return clean}
-async function dbPutMany(items){const payloads=(Array.isArray(items)?items:[]).map(supplierStoragePayload);const bridge=supplierBridge();if(bridge&&typeof bridge.putMany==='function')return bridge.putMany(payloads);const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite'),st=tx.objectStore(STORE);payloads.forEach(x=>st.put(x));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function dbPutMany(items){const payloads=(Array.isArray(items)?items:[]).map(supplierStoragePayload);const bridge=supplierBridge();if(bridge&&typeof bridge.putMany==='function')return bridge.putMany(payloads);const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite'),st=tx.objectStore(STORE);payloads.forEach(x=>st.put(x));tx.oncomplete=()=>res(true);tx.onerror=()=>rej(tx.error)})}
 async function dbPut(item){return dbPutMany([item])}
 async function dbDelete(id){const bridge=supplierBridge();if(bridge&&typeof bridge.delete==='function')return bridge.delete(id);return dbPut({id,_deleted:true,updatedAt:new Date().toISOString()})}
+async function dbDeleteAll(){
+  const bridge=supplierBridge();
+  if(bridge&&typeof bridge.deleteAll==='function')return bridge.deleteAll();
+  const db=await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).clear();
+    tx.oncomplete=()=>res(true);
+    tx.onerror=()=>rej(tx.error);
+  });
+}
 async function init(){showGoogleMapDefault();const mods=await dbGetAll(),modMap=new Map(mods.map(x=>[x.id,x])),baseIds=new Set(BASE_SUPPLIERS.map(x=>x.id));suppliers=BASE_SUPPLIERS.map(x=>modMap.has(x.id)?modMap.get(x.id):x).filter(x=>!x._deleted);mods.forEach(x=>{if(!baseIds.has(x.id)&&!x._deleted)suppliers.push(x)});prepareSuppliersForFastSearch(suppliers);sortSuppliersList(suppliers);populateOptions();renderAll();bindEvents()}
 function scheduleRenderMap(){clearTimeout(mapRenderTimer);mapRenderTimer=setTimeout(renderMap,220)}
-function bindEvents(){document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));document.querySelectorAll('[data-action="export"]').forEach(b=>b.addEventListener('click',exportBase));['dashboardSearch','dashboardCategory','dashboardUf','dashboardRegion','dashboardRegistration','dashboardLocation'].forEach(id=>$(id).addEventListener(id==='dashboardSearch'?'input':'change',renderDashboard));['searchInput','categoryFilter','ufFilter','regionFilter','registrationFilter'].forEach(id=>$(id).addEventListener(id==='searchInput'?'input':'change',()=>{currentPage=1;renderTable()}));['mapSearch','mapCategory','mapUf'].forEach(id=>$(id).addEventListener(id==='mapSearch'?'input':'change',scheduleRenderMap));$('mapSupplierSelect').addEventListener('change',e=>{if(e.target.value)selectSupplierForRoute(e.target.value,true);else clearSelectedSupplierForRoute()});$('workAddress').addEventListener('input',scheduleWorkAddressLookup);$('workAddress').addEventListener('blur',()=>{const value=$('workAddress').value.trim();if(value.length>=8&&normalize(value)!==lastLocatedWorkQuery){clearTimeout(workAddressTimer);locateWorkAddress({auto:true})}});$('workAddress').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(workAddressTimer);locateWorkAddress()}});$('fileInput').addEventListener('change',handleImport);$('fUf').addEventListener('change',()=>{if($('fUf').value)$('fRegion').value=UF_REGION[$('fUf').value]||''})}
+function bindEvents(){document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));document.querySelectorAll('[data-action="export"]').forEach(b=>b.addEventListener('click',exportBase));document.querySelectorAll('[data-action="delete-all-suppliers"]').forEach(b=>b.addEventListener('click',deleteAllSuppliers));['dashboardSearch','dashboardCategory','dashboardUf','dashboardRegion','dashboardRegistration','dashboardLocation'].forEach(id=>$(id).addEventListener(id==='dashboardSearch'?'input':'change',renderDashboard));['searchInput','categoryFilter','ufFilter','regionFilter','registrationFilter'].forEach(id=>$(id).addEventListener(id==='searchInput'?'input':'change',()=>{currentPage=1;renderTable()}));['mapSearch','mapCategory','mapUf'].forEach(id=>$(id).addEventListener(id==='mapSearch'?'input':'change',scheduleRenderMap));$('mapSupplierSelect').addEventListener('change',e=>{if(e.target.value)selectSupplierForRoute(e.target.value,true);else clearSelectedSupplierForRoute()});$('workAddress').addEventListener('input',scheduleWorkAddressLookup);$('workAddress').addEventListener('blur',()=>{const value=$('workAddress').value.trim();if(value.length>=8&&normalize(value)!==lastLocatedWorkQuery){clearTimeout(workAddressTimer);locateWorkAddress({auto:true})}});$('workAddress').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(workAddressTimer);locateWorkAddress()}});$('fileInput').addEventListener('change',handleImport);$('fUf').addEventListener('change',()=>{if($('fUf').value)$('fRegion').value=UF_REGION[$('fUf').value]||''})}
 function switchView(v){currentView=v;document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('view-'+v).classList.add('active');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));const meta={dashboard:['Visão executiva','Indicadores gerenciais, categorias e cobertura geográfica'],suppliers:['Base de fornecedores','Pesquisa, filtros, cadastro e gestão da base'],map:['Mapa e distâncias','Localização de fornecedores e cálculo da distância até a obra'],import:['Importar base','Adicionar fornecedores por Excel, XLS ou CSV']}[v];$('viewTitle').textContent=meta[0];$('viewSubtitle').textContent=meta[1];$('sidebar')?.classList.remove('open');if(v==='map')setTimeout(()=>{ensureMap();map.invalidateSize();renderMap()},80)}
 function populateOptions(){const cats=[...new Set(suppliers.flatMap(s=>s.categories||[]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),ufs=[...new Set(suppliers.map(s=>s.uf).filter(Boolean))].sort(),regions=[...new Set(suppliers.map(s=>s.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));const fill=(ids,items,allLabel='Todas')=>ids.forEach(id=>{const el=$(id);if(!el)return;const current=el.value;el.innerHTML=`<option value="">${allLabel}</option>`+items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(items.includes(current))el.value=current});fill(['categoryFilter','mapCategory','dashboardCategory'],cats);fill(['ufFilter','mapUf','dashboardUf'],ufs);fill(['regionFilter','dashboardRegion'],regions);const currentUf=$('fUf').value;$('fUf').innerHTML='<option value="">Selecione</option>'+Object.keys(UF_REGION).sort().map(x=>`<option>${x}</option>`).join('');if(Object.keys(UF_REGION).includes(currentUf))$('fUf').value=currentUf}
 function renderAll(){renderDashboard();renderTable();if(currentView==='map')renderMap()}
@@ -459,9 +470,163 @@ function clearRouteCalculation(){ensureMap();clearTimeout(workAddressTimer);if(w
 function openSupplierModal(id){$('supplierForm').reset();$('fId').value='';$('deleteBtn').style.display='none';$('modalTitle').textContent='Novo fornecedor';$('fRegistration').value='Não informado';$('fPrecision').value='Centro do município';if(id){const s=suppliers.find(x=>x.id===id);if(!s)return;$('modalTitle').textContent='Editar fornecedor';$('fId').value=s.id;$('fName').value=s.name||'';$('fCode').value=s.code||'';$('fCity').value=s.city||'';$('fUf').value=s.uf||'';$('fRegion').value=s.region||'';$('fCategories').value=(s.categories||[]).join(', ');$('fRegistration').value=s.registration||'Não informado';$('fContact').value=s.contact||'';$('fPhone').value=s.phone||'';$('fEmail').value=s.email||'';$('fSite').value=s.site||'';$('fLat').value=s.latitude??'';$('fLng').value=s.longitude??'';$('fPrecision').value=s.locationPrecision||'Não localizada';$('fNotes').value=s.notes||'';$('deleteBtn').style.display='inline-flex'}$('supplierModal').classList.add('open')}
 function closeSupplierModal(){$('supplierModal').classList.remove('open')}
 function autoLocateForm(){const key=cityKey($('fCity').value,$('fUf').value),coord=MUNICIPALITIES[key];if(coord){$('fLat').value=coord[0];$('fLng').value=coord[1];$('fPrecision').value='Centro do município';toast('Município localizado.','success')}else toast('Cidade/UF não encontrada na base geográfica.','error')}
-async function saveSupplier(){if(!$('fName').value.trim()){toast('Informe o nome do fornecedor.','error');return}let id=$('fId').value||'F-U'+Date.now();let s={id,code:$('fCode').value.trim(),name:$('fName').value.trim(),city:$('fCity').value.trim(),uf:$('fUf').value,region:$('fRegion').value,categories:$('fCategories').value.split(',').map(x=>x.trim()).filter(Boolean),contact:$('fContact').value.trim(),phone:$('fPhone').value.trim(),email:$('fEmail').value.trim(),site:$('fSite').value.trim(),notes:$('fNotes').value.trim(),registration:$('fRegistration').value,sourceSheets:['Cadastro manual'],latitude:$('fLat').value===''?null:+$('fLat').value,longitude:$('fLng').value===''?null:+$('fLng').value,locationPrecision:$('fPrecision').value,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};if(s.latitude==null){const coord=MUNICIPALITIES[cityKey(s.city,s.uf)];if(coord){s.latitude=coord[0];s.longitude=coord[1];s.locationPrecision='Centro do município'}}try{await dbPut(s);prepareSupplierForFastSearch(s);const i=suppliers.findIndex(x=>x.id===id);if(i>=0)suppliers[i]=s;else suppliers.push(s);sortSuppliersList(suppliers);populateOptions();renderAll();closeSupplierModal();toast('Fornecedor salvo com sucesso.','success')}catch(err){console.error(err);toast('Não foi possível salvar o fornecedor. Tente novamente.','error')}}
-async function deleteCurrentSupplier(){const id=$('fId').value;if(!id||!confirm('Excluir este fornecedor da base compartilhada?'))return;try{await dbDelete(id);suppliers=suppliers.filter(x=>x.id!==id);renderAll();closeSupplierModal();toast('Fornecedor excluído.','success')}catch(err){console.error(err);toast('Não foi possível excluir o fornecedor. Tente novamente.','error')}}
-async function handleImport(e){const file=e.target.files[0];if(!file)return;$('importPreview').innerHTML='<div class="notice">Lendo e consolidando a planilha...</div>';try{const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array'}),incoming=[];wb.SheetNames.forEach(sheetName=>{const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});let hr=rows.findIndex(row=>row.some(v=>['NOME','NOME DO FORNECEDOR','FORNECEDOR','RAZAO SOCIAL'].includes(normalize(v))));if(hr<0)return;const headers=rows[hr].map(normalize),ix=(...names)=>{for(const n of names){const i=headers.indexOf(normalize(n));if(i>=0)return i}return -1},get=(row,...names)=>{const i=ix(...names);return i>=0?String(row[i]??'').trim():''};rows.slice(hr+1).forEach(row=>{const name=get(row,'Nome','Nome do Fornecedor','Fornecedor','Razão Social');if(!name)return;let uf=get(row,'UF','Estado').toUpperCase().slice(0,2),city=get(row,'Cidade'),cat=get(row,'Categoria','Produto/Serviço')||(sheetName==='Diversos - Forn Sistema'?'Diversos':sheetName),coord=MUNICIPALITIES[cityKey(city,uf)];incoming.push({id:'F-I'+Date.now()+Math.random().toString(36).slice(2,7),code:get(row,'Código'),name,city,uf,region:get(row,'Região')||UF_REGION[uf]||'',categories:[cat],contact:get(row,'Contato'),phone:get(row,'Telefone'),email:get(row,'Email'),site:get(row,'Site'),notes:get(row,'Observações','Tipo de Serviço'),registration:normalize(get(row,'Tem Cadastro?','Tem Cadastro','Cadastro?','Tem Cadastro Ativo?'))==='SIM'?'Sim':normalize(get(row,'Tem Cadastro?','Tem Cadastro','Cadastro?','Tem Cadastro Ativo?'))==='NAO'?'Não':'Não informado',sourceSheets:[sheetName],latitude:coord?coord[0]:null,longitude:coord?coord[1]:null,locationPrecision:coord?'Centro do município':'Não localizada',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()})})});const existing=new Map(suppliers.map(s=>[normalize(s.name)+'|'+normalize(s.city)+'|'+s.uf,s])),changed=new Map();let added=0,updated=0;for(const s of incoming){const key=normalize(s.name)+'|'+normalize(s.city)+'|'+s.uf,old=existing.get(key);if(old){old.categories=[...new Set([...(old.categories||[]),...(s.categories||[])])];['phone','email','site','contact','notes'].forEach(f=>{if(!old[f]&&s[f])old[f]=s[f]});if(old.latitude==null&&s.latitude!=null){old.latitude=s.latitude;old.longitude=s.longitude;old.locationPrecision=s.locationPrecision}old.updatedAt=new Date().toISOString();changed.set(old.id,old);updated++}else{existing.set(key,s);suppliers.push(s);changed.set(s.id,s);added++}}await dbPutMany([...changed.values()]);prepareSuppliersForFastSearch(suppliers);populateOptions();renderAll();$('importPreview').innerHTML=`<div class="panel"><div class="panel-body"><strong>Importação concluída</strong><p class="muted">${added.toLocaleString('pt-BR')} novos fornecedores adicionados e ${updated.toLocaleString('pt-BR')} registros complementados.</p></div></div>`;toast('Planilha importada com sucesso.','success')}catch(err){console.error(err);$('importPreview').innerHTML='<div class="notice" style="background:#fff0f0;border-color:#ffd0d0;color:#a33">Não foi possível importar o arquivo. Verifique a estrutura da planilha.</div>';toast('Erro na importação.','error')}finally{e.target.value=''}}
+async function saveSupplier(){if(!$('fName').value.trim()){toast('Informe o nome do fornecedor.','error');return}let id=$('fId').value||'F-U'+Date.now();let s={id,code:$('fCode').value.trim(),name:$('fName').value.trim(),city:$('fCity').value.trim(),uf:$('fUf').value,region:$('fRegion').value,categories:$('fCategories').value.split(',').map(x=>x.trim()).filter(Boolean),contact:$('fContact').value.trim(),phone:$('fPhone').value.trim(),email:$('fEmail').value.trim(),site:$('fSite').value.trim(),notes:$('fNotes').value.trim(),registration:$('fRegistration').value,sourceSheets:['Cadastro manual'],latitude:$('fLat').value===''?null:+$('fLat').value,longitude:$('fLng').value===''?null:+$('fLng').value,locationPrecision:$('fPrecision').value,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};if(s.latitude==null){const coord=MUNICIPALITIES[cityKey(s.city,s.uf)];if(coord){s.latitude=coord[0];s.longitude=coord[1];s.locationPrecision='Centro do município'}}try{const ok=await dbPut(s);if(!ok){toast('Não foi possível salvar o fornecedor. Verifique sua permissão ou conexão e tente novamente.','error');return}prepareSupplierForFastSearch(s);const i=suppliers.findIndex(x=>x.id===id);if(i>=0)suppliers[i]=s;else suppliers.push(s);sortSuppliersList(suppliers);populateOptions();renderAll();closeSupplierModal();toast('Fornecedor salvo com sucesso.','success')}catch(err){console.error(err);toast('Não foi possível salvar o fornecedor. Tente novamente.','error')}}
+async function deleteCurrentSupplier(){const id=$('fId').value;if(!id||!confirm('Excluir este fornecedor da base compartilhada?'))return;try{const ok=await dbDelete(id);if(!ok){toast('Não foi possível excluir o fornecedor. Verifique sua permissão ou conexão e tente novamente.','error');return}suppliers=suppliers.filter(x=>x.id!==id);renderAll();closeSupplierModal();toast('Fornecedor excluído.','success')}catch(err){console.error(err);toast('Não foi possível excluir o fornecedor. Tente novamente.','error')}}
+
+async function deleteAllSuppliers(){
+  const total=suppliers.length;
+  if(!total){toast('A base já está vazia.','error');return}
+  const typed=prompt(`Esta ação vai excluir PERMANENTEMENTE os ${total.toLocaleString('pt-BR')} fornecedores da base compartilhada do Supply Flow (usada também no cadastro e nos relatórios). Não pode ser desfeita.\n\nDigite APAGAR para confirmar.`);
+  if(typed===null)return;
+  if(typed.trim().toUpperCase()!=='APAGAR'){toast('Exclusão cancelada: texto de confirmação não corresponde.','error');return}
+  const importPreview=$('importPreview');
+  if(importPreview)importPreview.innerHTML='<div class="notice">Apagando a base de fornecedores...</div>';
+  try{
+    const ok=await dbDeleteAll();
+    if(!ok){
+      toast('Não foi possível apagar a base. Verifique sua permissão ou conexão e tente novamente.','error');
+      if(importPreview)importPreview.innerHTML='';
+      return;
+    }
+    suppliers=[];
+    prepareSuppliersForFastSearch(suppliers);
+    populateOptions();
+    renderAll();
+    if(importPreview)importPreview.innerHTML='<div class="panel"><div class="panel-body"><strong>Base apagada</strong><p class="muted">Todos os fornecedores foram removidos. Importe uma nova planilha para recomeçar.</p></div></div>';
+    toast('Base de fornecedores apagada.','success');
+  }catch(err){
+    console.error(err);
+    toast('Não foi possível apagar a base. Tente novamente.','error');
+    if(importPreview)importPreview.innerHTML='';
+  }
+}
+async function handleImport(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  $('importPreview').innerHTML='<div class="notice">Lendo e consolidando a planilha...</div>';
+  try{
+    const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array'}),incoming=[];
+    const FIELD_ALIASES={
+      name:['Nome','Nome do Fornecedor','Fornecedor','Razão Social','Nome Fantasia','Empresa','Nome da Empresa','Prestador','Fornecedor/Prestador','Nome do Prestador','Nome do Cliente'],
+      code:['Código','Cod','Cód','ID','Código do Fornecedor'],
+      uf:['UF','Estado','UF/Estado'],
+      city:['Cidade','Município','Cidade/Município'],
+      category:['Categoria','Produto/Serviço','Segmento','Ramo','Ramo de Atividade','Atividade','Tipo','Produto','Serviço'],
+      region:['Região'],
+      contact:['Contato','Responsável','Pessoa de Contato'],
+      phone:['Telefone','Celular','WhatsApp','Fone','Tel'],
+      email:['Email','E-mail','Correio'],
+      site:['Site','Website','Instagram'],
+      notes:['Observações','Obs','Nota','Comentário','Observação','Tipo de Serviço'],
+      registration:['Tem Cadastro?','Tem Cadastro','Cadastro?','Tem Cadastro Ativo?','Cadastro Ativo?']
+    };
+    const NAME_HEADER_ALIASES=FIELD_ALIASES.name.map(normalize);
+    const guessedSheets=[];
+
+    wb.SheetNames.forEach(sheetName=>{
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});
+      if(!rows.length)return;
+
+      let hr=rows.findIndex(row=>row.some(v=>NAME_HEADER_ALIASES.includes(normalize(v))));
+      let guessedHeader=false;
+      if(hr<0){
+        hr=rows.findIndex(row=>row.some(v=>String(v||'').trim()!==''));
+        if(hr<0)return;
+        guessedHeader=true;
+        guessedSheets.push(sheetName);
+      }
+
+      const headers=rows[hr].map(normalize);
+      const ix=(...names)=>{for(const n of names){const i=headers.indexOf(normalize(n));if(i>=0)return i}return -1};
+      const get=(row,...names)=>{const i=ix(...names);return i>=0?String(row[i]??'').trim():''};
+
+      let nameIx=ix(...FIELD_ALIASES.name);
+      if(nameIx<0&&guessedHeader)nameIx=0;
+      if(nameIx<0)return;
+
+      const mappedIx=new Set([nameIx]);
+      Object.keys(FIELD_ALIASES).forEach(field=>{
+        if(field==='name')return;
+        const i=ix(...FIELD_ALIASES[field]);
+        if(i>=0)mappedIx.add(i);
+      });
+      const extraIx=headers.map((h,i)=>i).filter(i=>!mappedIx.has(i)&&String(rows[hr][i]||'').trim()!=='');
+
+      rows.slice(hr+1).forEach(row=>{
+        const name=String(row[nameIx]??'').trim();
+        if(!name)return;
+        let uf=get(row,...FIELD_ALIASES.uf).toUpperCase().slice(0,2),
+          city=get(row,...FIELD_ALIASES.city),
+          cat=get(row,...FIELD_ALIASES.category)||(sheetName==='Diversos - Forn Sistema'?'Diversos':sheetName),
+          coord=MUNICIPALITIES[cityKey(city,uf)];
+        const extraNotes=extraIx.map(i=>{
+          const label=String(rows[hr][i]||'').trim(),value=String(row[i]??'').trim();
+          return value?`${label}: ${value}`:'';
+        }).filter(Boolean).join(' | ');
+        const baseNotes=get(row,...FIELD_ALIASES.notes);
+        const registrationRaw=normalize(get(row,...FIELD_ALIASES.registration));
+        incoming.push({
+          id:'F-I'+Date.now()+Math.random().toString(36).slice(2,7),
+          code:get(row,...FIELD_ALIASES.code),
+          name,city,uf,
+          region:get(row,...FIELD_ALIASES.region)||UF_REGION[uf]||'',
+          categories:[cat],
+          contact:get(row,...FIELD_ALIASES.contact),
+          phone:get(row,...FIELD_ALIASES.phone),
+          email:get(row,...FIELD_ALIASES.email),
+          site:get(row,...FIELD_ALIASES.site),
+          notes:[baseNotes,extraNotes].filter(Boolean).join(' | '),
+          registration:registrationRaw==='SIM'?'Sim':registrationRaw==='NAO'?'Não':'Não informado',
+          sourceSheets:[sheetName],
+          latitude:coord?coord[0]:null,
+          longitude:coord?coord[1]:null,
+          locationPrecision:coord?'Centro do município':'Não localizada',
+          createdAt:new Date().toISOString(),
+          updatedAt:new Date().toISOString()
+        });
+      });
+    });
+
+    if(!incoming.length){
+      $('importPreview').innerHTML='<div class="notice" style="background:#fff8e1;border-color:#ffe082;color:#8a6d00">Nenhum fornecedor foi identificado nesta planilha. Verifique se há pelo menos uma coluna com o nome do fornecedor preenchida em alguma aba.</div>';
+      toast('Nenhum registro encontrado na planilha.','error');
+      return;
+    }
+
+    const existing=new Map(suppliers.map(s=>[normalize(s.name)+'|'+normalize(s.city)+'|'+s.uf,s])),changed=new Map();
+    let added=0,updated=0;
+    for(const s of incoming){
+      const key=normalize(s.name)+'|'+normalize(s.city)+'|'+s.uf,old=existing.get(key);
+      if(old){
+        old.categories=[...new Set([...(old.categories||[]),...(s.categories||[])])];
+        ['phone','email','site','contact','notes'].forEach(f=>{if(!old[f]&&s[f])old[f]=s[f]});
+        if(old.latitude==null&&s.latitude!=null){old.latitude=s.latitude;old.longitude=s.longitude;old.locationPrecision=s.locationPrecision}
+        old.updatedAt=new Date().toISOString();
+        changed.set(old.id,old);updated++;
+      }else{
+        existing.set(key,s);suppliers.push(s);changed.set(s.id,s);added++;
+      }
+    }
+
+    const ok=await dbPutMany([...changed.values()]);
+    if(!ok){
+      $('importPreview').innerHTML='<div class="notice" style="background:#fff0f0;border-color:#ffd0d0;color:#a33">Os registros foram lidos, mas não foi possível salvar na base compartilhada (verifique sua permissão ou conexão). Tente novamente.</div>';
+      toast('Falha ao salvar a importação.','error');
+      return;
+    }
+
+    prepareSuppliersForFastSearch(suppliers);populateOptions();renderAll();
+    const guessNote=guessedSheets.length?` A coluna de nome não foi identificada por título em ${guessedSheets.length===1?'"'+guessedSheets[0]+'"':guessedSheets.length+' abas'}; a primeira coluna preenchida foi usada.`:'';
+    $('importPreview').innerHTML=`<div class="panel"><div class="panel-body"><strong>Importação concluída</strong><p class="muted">${added.toLocaleString('pt-BR')} novos fornecedores adicionados e ${updated.toLocaleString('pt-BR')} registros complementados, lendo as colunas encontradas em cada aba da planilha.${guessNote}</p></div></div>`;
+    toast('Planilha importada com sucesso.','success');
+  }catch(err){
+    console.error(err);
+    $('importPreview').innerHTML='<div class="notice" style="background:#fff0f0;border-color:#ffd0d0;color:#a33">Não foi possível importar o arquivo. Verifique a estrutura da planilha.</div>';
+    toast('Erro na importação.','error');
+  }finally{
+    e.target.value='';
+  }
+}
 function exportBase(){const rows=suppliers.map(s=>({'Código':s.code,Fornecedor:s.name,Cidade:s.city,UF:s.uf,'Região':s.region,Categorias:(s.categories||[]).join(' | '),Contato:s.contact,Telefone:s.phone,Email:s.email,Site:s.site,'Tem Cadastro?':s.registration,Latitude:s.latitude,Longitude:s.longitude,'Precisão da localização':s.locationPrecision,'Observações':s.notes,'Origem':(s.sourceSheets||[]).join(' | ')}));const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Fornecedores');XLSX.writeFile(wb,'Base_Mapa_Fornecedores.xlsx')}
 function toast(msg,type='success'){const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;$('toasts').appendChild(el);setTimeout(()=>el.remove(),3200)}
 window.addEventListener('click',e=>{if(e.target===$('supplierModal'))closeSupplierModal()});
