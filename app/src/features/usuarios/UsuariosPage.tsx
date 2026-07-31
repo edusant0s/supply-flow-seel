@@ -126,7 +126,15 @@ export function UsuariosPage() {
               key: "ativo",
               label: "Status",
               render: (item) => (
-                <button className="table-action" type="button" onClick={() => updateProfile(item.id, { ativo: !item.ativo }).then(refreshAll)}>
+                <button
+                  className="table-action"
+                  type="button"
+                  onClick={() =>
+                    updateProfile(item.id, { ativo: !item.ativo })
+                      .then(refreshAll)
+                      .catch((err) => window.alert(getErrorMessage(err, "Falha ao alterar o status do usuario.")))
+                  }
+                >
                   {item.ativo ? "Ativo" : "Inativo"}
                 </button>
               ),
@@ -307,13 +315,25 @@ function UserPermissionsEditor({
   const [obraIds, setObraIds] = useState(initialObraIds);
   const [modulePermissions, setModulePermissions] = useState<ModulePermissions>(() => mergeWithRoleDefaults(profile.role, profile.module_permissions));
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
+  const [saving, setSaving] = useState(false);
 
   async function save() {
-    const nextRole = getScopedRole(role, allObras);
-    await updateProfile(profile.id, { role: nextRole, ativo, module_permissions: normalizeModulePermissions(modulePermissions) });
-    await setUserObras(profile.id, allObras ? [] : obraIds);
-    setMessage("Permissoes salvas.");
-    onSaved();
+    setSaving(true);
+    setMessage("");
+    try {
+      const nextRole = getScopedRole(role, allObras);
+      await updateProfile(profile.id, { role: nextRole, ativo, module_permissions: normalizeModulePermissions(modulePermissions) });
+      await setUserObras(profile.id, allObras ? [] : obraIds);
+      setMessageType("success");
+      setMessage("Permissoes salvas.");
+      onSaved();
+    } catch (err) {
+      setMessageType("error");
+      setMessage(getErrorMessage(err, "Falha ao salvar permissoes."));
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -369,10 +389,10 @@ function UserPermissionsEditor({
       </label>
       {!allObras ? <ObraCheckboxes obras={obras} selected={obraIds} onChange={setObraIds} /> : null}
       <ModulePermissionGrid role={getScopedRole(role, allObras)} value={modulePermissions} onChange={setModulePermissions} />
-      {message ? <div className="form-note">{message}</div> : null}
+      {message ? <div className={messageType === "error" ? "form-error" : "form-note"}>{message}</div> : null}
       <div className="form-actions">
-        <button className="primary-button" type="button" onClick={save}>
-          Salvar permissoes
+        <button className="primary-button" type="button" onClick={save} disabled={saving}>
+          {saving ? "Salvando..." : "Salvar permissoes"}
         </button>
       </div>
     </section>

@@ -161,6 +161,8 @@ export function OrcamentosKanbanTab({
       await updateEntity("orcamentos", item.id, { ...patch, payload });
       invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
       refresh();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "Nao foi possivel mudar a fase da solicitacao.");
     } finally {
       setMovingId(null);
     }
@@ -180,6 +182,8 @@ export function OrcamentosKanbanTab({
       await updateEntity("orcamentos", item.id, { payload });
       invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
       refresh();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "Nao foi possivel atualizar o resultado da obra.");
     } finally {
       setUpdatingOutcomeId(null);
     }
@@ -660,11 +664,14 @@ function OrcamentoDrawer({
   const [outcome, setOutcome] = useState<OrcamentoOutcome>(getOrcamentoOutcome(item));
   const [folderLink, setFolderLink] = useState(getFolderLink(item));
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
+  const [valorInicial, setValorInicial] = useState(String(item.valor_inicial ?? ""));
+  const [valorFinal, setValorFinal] = useState(String(item.valor_final ?? ""));
   const [saving, setSaving] = useState(String(item.saving || ""));
   const [status, setStatus] = useState(item.status || "nao_iniciado");
   const [commentText, setCommentText] = useState("");
   const [deleteMessage, setDeleteMessage] = useState("");
   const [savingMessage, setSavingMessage] = useState("");
+  const [savingAdmin, setSavingAdmin] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
   const sla = getOrcamentoSla(item, now);
@@ -681,58 +688,69 @@ function OrcamentoDrawer({
     setOutcome(getOrcamentoOutcome(item));
     setFolderLink(getFolderLink(item));
     setQtd(String(item.quantidade_req || ""));
+    setValorInicial(String(item.valor_inicial ?? ""));
+    setValorFinal(String(item.valor_final ?? ""));
     setSaving(String(item.saving || ""));
     setStatus(item.status || "nao_iniciado");
   }, [item]);
 
   async function saveAdminFields() {
     setSavingMessage("");
-    const nextStatus = status || "nao_iniciado";
-    const requestPatch = buildRequestDatePatch(item, requestDate);
-    const statusPatch = nextStatus !== (item.status || "nao_iniciado") ? buildStatusPatch(item, nextStatus) : {};
-    const finalizationValue =
-      nextStatus === "finalizado"
-        ? fromDateTimeLocal(finalizedAt) || String(statusPatch.data_finalizacao || getFinalizationDate(item) || new Date().toISOString())
-        : null;
-    const basePayload =
-      requestPatch.payload || statusPatch.payload
-        ? {
-            ...(item.payload || {}),
-            ...(requestPatch.payload || {}),
-            ...(statusPatch.payload || {}),
-          }
-        : item.payload;
-    const mergedPayload = appendOrcamentoLog(
-      {
-        ...basePayload,
-        data_solicitacao: requestDate || null,
+    setSavingAdmin(true);
+    try {
+      const nextStatus = status || "nao_iniciado";
+      const requestPatch = buildRequestDatePatch(item, requestDate);
+      const statusPatch = nextStatus !== (item.status || "nao_iniciado") ? buildStatusPatch(item, nextStatus) : {};
+      const finalizationValue =
+        nextStatus === "finalizado"
+          ? fromDateTimeLocal(finalizedAt) || String(statusPatch.data_finalizacao || getFinalizationDate(item) || new Date().toISOString())
+          : null;
+      const basePayload =
+        requestPatch.payload || statusPatch.payload
+          ? {
+              ...(item.payload || {}),
+              ...(requestPatch.payload || {}),
+              ...(statusPatch.payload || {}),
+            }
+          : item.payload;
+      const mergedPayload = appendOrcamentoLog(
+        {
+          ...basePayload,
+          data_solicitacao: requestDate || null,
+          data_entrega_cotacoes: dueDate || null,
+          data_finalizacao: finalizationValue,
+          atribuido_a: assignedTo || null,
+          orcamentista: assignedTo || null,
+          resultado_obra: outcome,
+          resultado_comercial: outcome,
+          link_pasta: folderLink || null,
+          quantidade_linhas: Number(qtd || 0),
+          quantidade_req: Number(qtd || 0),
+          saving: Number(saving || 0),
+        },
+        buildOrcamentoLog("Dados administrativos atualizados", profile)
+      );
+      await updateEntity("orcamentos", item.id, {
+        ...requestPatch,
+        ...statusPatch,
+        payload: mergedPayload,
         data_entrega_cotacoes: dueDate || null,
         data_finalizacao: finalizationValue,
         atribuido_a: assignedTo || null,
-        orcamentista: assignedTo || null,
-        resultado_obra: outcome,
-        resultado_comercial: outcome,
         link_pasta: folderLink || null,
-        quantidade_linhas: Number(qtd || 0),
         quantidade_req: Number(qtd || 0),
+        valor_inicial: valorInicial.trim() === "" ? null : Number(valorInicial),
+        valor_final: valorFinal.trim() === "" ? null : Number(valorFinal),
         saving: Number(saving || 0),
-      },
-      buildOrcamentoLog("Dados administrativos atualizados", profile)
-    );
-      await updateEntity("orcamentos", item.id, {
-      ...requestPatch,
-      ...statusPatch,
-      payload: mergedPayload,
-      data_entrega_cotacoes: dueDate || null,
-      data_finalizacao: finalizationValue,
-      atribuido_a: assignedTo || null,
-      link_pasta: folderLink || null,
-      quantidade_req: Number(qtd || 0),
-      saving: Number(saving || 0),
-    });
-    setSavingMessage("Dados salvos.");
-    invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
-    onSaved();
+      });
+      setSavingMessage("Dados salvos.");
+      invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
+      onSaved();
+    } catch (err) {
+      setSavingMessage(err instanceof Error ? err.message : "Falha ao salvar os dados administrativos.");
+    } finally {
+      setSavingAdmin(false);
+    }
   }
 
   async function addComment() {
@@ -746,6 +764,8 @@ function OrcamentoDrawer({
       setSavingMessage(canEdit ? "Comentario registrado e alerta disponibilizado ao solicitante." : "Resposta enviada para a equipe de orcamentos.");
       invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
       onSaved();
+    } catch (err) {
+      setSavingMessage(err instanceof Error ? err.message : "Falha ao registrar o comentario.");
     } finally {
       setPostingComment(false);
     }
@@ -867,12 +887,14 @@ function OrcamentoDrawer({
             </label>
             <Field label="Link da pasta" value={folderLink} onChange={setFolderLink} />
             <Field label="Quantidade de linhas" type="number" value={qtd} onChange={setQtd} />
+            <Field label="Valor inicial" type="number" value={valorInicial} onChange={setValorInicial} />
+            <Field label="Valor final" type="number" value={valorFinal} onChange={setValorFinal} />
             <Field label="Saving" type="number" value={saving} onChange={setSaving} />
           </div>
           {savingMessage ? <div className="form-note">{savingMessage}</div> : null}
           <div className="form-actions">
-            <button className="primary-button" type="button" onClick={saveAdminFields}>
-              Salvar dados
+            <button className="primary-button" type="button" onClick={saveAdminFields} disabled={savingAdmin}>
+              {savingAdmin ? "Salvando..." : "Salvar dados"}
             </button>
           </div>
         </section>

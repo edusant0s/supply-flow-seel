@@ -11780,6 +11780,18 @@
       border-color: rgba(27,109,142,.4) !important;
     }
 
+    #kanbanBoard .freight-compact-actions [data-action="delete"] {
+      grid-column: 1 / -1 !important;
+      background: var(--card-solid) !important;
+      color: #e7000b !important;
+      border-color: rgba(231,0,11,.4) !important;
+    }
+
+    #kanbanBoard .freight-compact-actions [data-action="delete"]:hover {
+      background: rgba(231,0,11,.08) !important;
+      border-color: rgba(231,0,11,.55) !important;
+    }
+
 
 
     #kanbanBoard .freight-compact-actions a.btn-email {
@@ -16393,7 +16405,8 @@
         edit: '<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
         note: '<path d="M4 4h16v13H8l-4 4z"/><path d="M8 9h8M8 13h6"/>',
         save: '<path d="M5 3h12l2 2v16H5z"/><path d="M8 3v6h8V3M8 17h8"/>',
-        route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M7.5 16.5 16.5 7.5M9 6H5v4"/>'
+        route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M7.5 16.5 16.5 7.5M9 6H5v4"/>',
+        trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/>'
       };
       return `<svg class="freight-ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${icons[name] || icons.file}</svg>`;
     }
@@ -16494,6 +16507,7 @@
           <a class="btn-email btn-email-correction btn-small" href="${escapeHtml(buildOutlookCorrectionUrl(freight))}" target="_blank" rel="noopener noreferrer" data-action="email-correction" title="Enviar solicitação de correção ao solicitante">${freightCardIcon("alert")}Enviar correção</a>
           <button class="btn-secondary btn-small" type="button" data-action="details">${freightCardIcon("eye")}Ver detalhes</button>
           <button class="btn-secondary btn-small" type="button" data-action="edit">${freightCardIcon("edit")}Editar</button>
+          <button class="btn-secondary btn-small" type="button" data-action="delete" title="Excluir esta solicitação de frete">${freightCardIcon("trash")}Excluir</button>
         </div>
       `;
 
@@ -16584,6 +16598,7 @@
       const correctionEmailButton = card.querySelector('[data-action="email-correction"]');
       const detailsButton = card.querySelector('[data-action="details"]');
       const editButton = card.querySelector('[data-action="edit"]');
+      const deleteButton = card.querySelector('[data-action="delete"]');
 
       emailButton?.addEventListener("click", event => {
         event.stopPropagation();
@@ -16602,6 +16617,10 @@
       editButton?.addEventListener("click", event => {
         event.stopPropagation();
         startFreightEdit(freight.id);
+      });
+      deleteButton?.addEventListener("click", event => {
+        event.stopPropagation();
+        deleteFreight(freight.id);
       });
 
       card.addEventListener("click", event => {

@@ -290,7 +290,11 @@ export function RequisicoesPage() {
       <KanbanBoard
         columns={columns}
         canDrag={canEdit}
-        onMove={(id, status) => updateEntity("requisicoes", id, { status }).then(refresh)}
+        onMove={(id, status) =>
+          updateEntity("requisicoes", id, { status })
+            .then(refresh)
+            .catch((err) => window.alert(err instanceof Error ? err.message : "Nao foi possivel mudar o status da requisicao."))
+        }
         renderCard={(item: Requisicao) => {
           const indexedItem = indexById.get(item.id);
           const sla = indexedItem?.sla || getSlaInfo(item);
@@ -377,10 +381,20 @@ function RequisicaoDrawer({
   const rows = getPayloadRows(item.payload);
   const sla = getSlaInfo(item);
   const [newBuyer, setNewBuyer] = useState(item.comprador || "Sem comprador");
+  const [savingBuyer, setSavingBuyer] = useState(false);
+  const [buyerMessage, setBuyerMessage] = useState("");
 
   async function saveBuyer() {
-    await updateEntity("requisicoes", item.id, { comprador: newBuyer });
-    onSaved();
+    setSavingBuyer(true);
+    setBuyerMessage("");
+    try {
+      await updateEntity("requisicoes", item.id, { comprador: newBuyer });
+      onSaved();
+    } catch (err) {
+      setBuyerMessage(err instanceof Error ? err.message : "Falha ao salvar o comprador.");
+    } finally {
+      setSavingBuyer(false);
+    }
   }
 
   return (
@@ -408,9 +422,10 @@ function RequisicaoDrawer({
               ))}
             </select>
           </label>
-          <button className="primary-button" type="button" onClick={saveBuyer}>
-            Salvar comprador
+          <button className="primary-button" type="button" onClick={saveBuyer} disabled={savingBuyer}>
+            {savingBuyer ? "Salvando..." : "Salvar comprador"}
           </button>
+          {buyerMessage ? <div className="form-error">{buyerMessage}</div> : null}
         </div>
       ) : null}
 

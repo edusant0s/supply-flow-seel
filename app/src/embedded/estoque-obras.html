@@ -3759,13 +3759,13 @@ window.renderApp = function(){
 
     const hookUsed = invokeParentHooks(payload);
     const domUsed = navigateParentDom();
-    try{ window.parent?.postMessage({type:'SEEL_FRETES_DRAFT_READY',payload},'*'); }catch(e){}
 
-    if(window.parent === window && !hookUsed && !domUsed){
+    if(hookUsed || domUsed){
+      try{ window.parent?.postMessage({type:'SEEL_FRETES_DRAFT_READY',payload},'*'); }catch(e){}
+      if(typeof toast === 'function') toast('Abrindo Fretes > Formulário...');
+    }else{
       try{ window.location.hash = 'fretes/formulario'; }catch(e){}
-      if(typeof toast === 'function') toast('Solicitação preparada. Abra Fretes > Formulário no aplicativo principal.');
-    }else if(typeof toast === 'function'){
-      toast('Abrindo Fretes > Formulário...');
+      if(typeof toast === 'function') toast('Não foi possível abrir o módulo de Fretes automaticamente. Acesse o módulo Fretes e crie a solicitação de entrega manualmente com os dados informados aqui.');
     }
   }
 
