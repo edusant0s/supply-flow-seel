@@ -2183,6 +2183,18 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   font-size:9.5px !important;
   font-weight:800 !important;
 }
+#kanbanView .contract-phase-selector-wrap .contract-error-select{
+  width:100% !important;
+  height:29px !important;
+  min-height:29px !important;
+  padding:0 8px !important;
+  border:1px solid rgba(231,0,11,.34) !important;
+  border-radius:8px !important;
+  background:var(--card) !important;
+  color:var(--text) !important;
+  font-size:9.5px !important;
+  font-weight:800 !important;
+}
 #kanbanView .contract-compact-actions{
   display:grid !important;
   grid-template-columns:1fr !important;
@@ -4427,12 +4439,6 @@ function renderKanban(){
                 </div>
               </div>
 
-              <label class="contract-error-toggle" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">
-                <input type="checkbox" ${requestHasError?'checked':''} aria-label="Marcar solicitação ${esc(r.id)} como contendo erro" onchange="event.stopPropagation();toggleContractRequestError('${r.id}',this.checked,this)">
-                <span class="contract-error-toggle-icon">⚑</span>
-                <span>Solicitação com erro</span>
-              </label>
-
               <div class="contract-compact-badges">
                 ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
                 <span class="contract-mini-badge traffic-${trafficKey}">${esc(trafficLabel)}</span>
@@ -4455,6 +4461,14 @@ function renderKanban(){
                 <label>Fase da solicitação</label>
                 <select class="contract-phase-select" aria-label="Selecionar fase da solicitação ${esc(r.id)}" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="event.stopPropagation();setReqStage('${r.id}',this.value)">
                   ${stages.map(stage=>`<option value="${esc(stage)}" ${stage===r.status?'selected':''}>${esc(stage)}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="contract-phase-selector-wrap" onclick="event.stopPropagation()">
+                <label>Situação da solicitação</label>
+                <select class="contract-error-select" aria-label="Marcar situação da solicitação ${esc(r.id)}" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="event.stopPropagation();toggleContractRequestError('${r.id}',this.value==='erro',this)">
+                  <option value="sem-erro" ${requestHasError?'':'selected'}>Sem erro</option>
+                  <option value="erro" ${requestHasError?'selected':''}>Solicitação com erro</option>
                 </select>
               </div>
 
