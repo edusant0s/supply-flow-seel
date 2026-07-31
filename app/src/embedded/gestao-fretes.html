@@ -14193,6 +14193,58 @@
     document.getElementById("addFreightCargoItem")?.addEventListener("click", () => addFreightCargoItemRow());
     renderFreightCargoItemRows();
 
+    (function loadMarketplaceDeliveryDraft() {
+      try {
+        const raw = sessionStorage.getItem("supply-flow:fretes-draft");
+        if (!raw) return;
+        sessionStorage.removeItem("supply-flow:fretes-draft");
+        const draft = JSON.parse(raw);
+        if (!draft || draft.targetModule !== "fretes") return;
+
+        const setValue = (id, value) => {
+          const el = document.getElementById(id);
+          if (el && value) el.value = value;
+        };
+        const mapsSearchLink = (address) =>
+          address ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address) : "";
+
+        setValue("solicitante", draft.requester?.name);
+        setValue("telefoneSolicitante", draft.requester?.phone);
+        setValue("emailSolicitante", draft.requester?.email);
+        setValue("tipoMovimentacao", "Entrega em obra");
+        setValue(
+          "particularidadeObra",
+          ["Origem: Marketplace (Estoque de obras).", draft.notes || ""].filter(Boolean).join(" ")
+        );
+
+        const modoColeta = document.getElementById("modoLocalColeta");
+        if (modoColeta) {
+          modoColeta.value = "LINK_MAPS";
+          modoColeta.dispatchEvent(new Event("change"));
+        }
+        setValue("linkGoogleMapsColeta", mapsSearchLink(draft.origin));
+
+        const modoEntrega = document.getElementById("modoLocalEntrega");
+        if (modoEntrega) {
+          modoEntrega.value = "LINK_MAPS";
+          modoEntrega.dispatchEvent(new Event("change"));
+        }
+        setValue("linkGoogleMapsEntrega", mapsSearchLink(draft.destination));
+
+        (draft.materials || []).forEach((material) => {
+          if (typeof addFreightCargoItemRow === "function") {
+            addFreightCargoItemRow({ description: material.description, quantity: material.quantity });
+          }
+        });
+
+        window.alert(
+          "Dados do pedido de entrega do Marketplace (Estoque de obras) foram carregados no formulário. Complete o número da RM, número da obra, tipo de veículo e o valor unitário da carga antes de enviar."
+        );
+      } catch (err) {
+        console.error("Erro ao carregar rascunho de entrega do Marketplace:", err);
+      }
+    })();
+
     document.getElementById("freightForm").addEventListener("submit", function(event) {
       event.preventDefault();
       setupLoggedRequesterFromHost(true);

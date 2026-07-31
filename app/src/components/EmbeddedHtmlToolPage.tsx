@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoadingState } from "./States";
 import { useAuth } from "../contexts/AuthContext";
 import { canManage } from "../lib/permissions";
@@ -2344,6 +2345,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
 }
 
 export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierMapBase = false }: EmbeddedHtmlToolPageProps) {
+  const navigate = useNavigate();
   const { session, profile, obras } = useAuth();
   const cacheKey = `${moduleKey}:${session?.user.id || "anon"}:${loadSupplierMapBase ? "suppliers" : "base"}`;
   const cached = embeddedPageCache.get(cacheKey);
@@ -2469,6 +2471,23 @@ export function EmbeddedHtmlToolPage({ title, moduleKey, loadHtml, loadSupplierM
     window.addEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
     return () => window.removeEventListener(embeddedToolInvalidationEvent, handleEmbeddedInvalidation);
   }, [moduleKey]);
+
+  useEffect(() => {
+    function handleOpenModuleRequest(event: MessageEvent) {
+      if (event.source !== frameRef.current?.contentWindow) return;
+      const data = event.data as { type?: string; module?: string; payload?: unknown } | null;
+      if (!data || data.type !== "SEEL_OPEN_MODULE" || typeof data.module !== "string") return;
+      try {
+        sessionStorage.setItem(`supply-flow:${data.module}-draft`, JSON.stringify(data.payload ?? {}));
+      } catch {
+        // ignore storage errors (e.g. private browsing quota) - navigation still proceeds
+      }
+      navigate(`/${data.module}`);
+    }
+
+    window.addEventListener("message", handleOpenModuleRequest);
+    return () => window.removeEventListener("message", handleOpenModuleRequest);
+  }, [navigate]);
 
   useEffect(() => {
     if (!html || !sharedStorage || supplierMapBase === null) {

@@ -3629,17 +3629,6 @@ window.renderApp = function(){
   const originalAddCart = window.addCart;
   const originalToggleDeliveryFields = window.toggleDeliveryFields;
 
-  function safeStore(key, value){
-    const serialized=JSON.stringify(value);
-    try{
-      if(typeof storageSet==='function') return storageSet(key,serialized);
-      localStorage.setItem(key,serialized);
-      return true;
-    }catch(e){
-      try{ MEMORY_STORAGE[key]=serialized; return true; }catch(ignore){ return false; }
-    }
-  }
-
   function deliveryDraft(itemId){
     const item = typeof getItem === 'function' ? getItem(itemId) : null;
     const qty = Math.max(1, Number(document.getElementById('rqQty')?.value || 1));
@@ -3677,94 +3666,19 @@ window.renderApp = function(){
     };
   }
 
-  function clickByText(root, terms){
-    if(!root) return false;
-    const nodes = root.querySelectorAll('button,a,[role="tab"],[data-module],[data-app],[data-page],[data-target]');
-    for(const node of nodes){
-      const txt = (node.textContent || '').trim().toLowerCase();
-      const attrs = [node.getAttribute('data-module'),node.getAttribute('data-app'),node.getAttribute('data-page'),node.getAttribute('data-target'),node.id].filter(Boolean).join(' ').toLowerCase();
-      if(terms.some(term => txt === term || txt.includes(term) || attrs.includes(term))){
-        try{ node.click(); return true; }catch(e){}
-      }
-    }
-    return false;
-  }
-
-  function clickFormTabInDocument(doc){
-    if(!doc) return false;
-    if(clickByText(doc, ['formulário','formulario','nova solicitação','nova solicitacao'])) return true;
-    const frames = doc.querySelectorAll('iframe');
-    for(const frame of frames){
-      try{
-        const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-        if(frameDoc && clickByText(frameDoc, ['formulário','formulario','nova solicitação','nova solicitacao'])) return true;
-      }catch(e){}
-    }
-    return false;
-  }
-
-  function invokeParentHooks(payload){
-    let invoked = false;
-    try{
-      const p = window.parent;
-      if(p && p !== window){
-        const hooks = ['openModule','navigateToModule','openApp','navigateTo','selectModule','activateModule'];
-        for(const name of hooks){
-          if(typeof p[name] === 'function'){
-            try{
-              if(name === 'openApp') p[name]('fretes',{tab:'formulario',payload});
-              else p[name]('fretes','formulario',payload);
-              invoked = true;
-              break;
-            }catch(e){}
-          }
-        }
-      }
-    }catch(e){}
-    return invoked;
-  }
-
-  function navigateParentDom(){
-    try{
-      const parentDoc = window.parent && window.parent !== window ? window.parent.document : null;
-      if(!parentDoc) return false;
-      const moduleClicked = clickByText(parentDoc, ['fretes','gestão de fretes','gestao de fretes']);
-      if(moduleClicked){
-        let attempts = 0;
-        const timer = setInterval(function(){
-          attempts += 1;
-          if(clickFormTabInDocument(parentDoc) || attempts >= 20) clearInterval(timer);
-        },150);
-      }
-      return moduleClicked;
-    }catch(e){ return false; }
-  }
 
   function openFretesForm(payload){
-    safeStore('seel_fretes_form_draft', payload);
-    safeStore('supply_flow_fretes_draft', payload);
-    safeStore('fretes_form_draft', payload);
+    let delivered = false;
+    try{
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({type:'SEEL_OPEN_MODULE', module:'fretes', payload}, window.location.origin);
+        delivered = true;
+      }
+    }catch(e){}
 
-    const messages = [
-      {type:'SEEL_OPEN_MODULE',module:'fretes',tab:'formulario',payload},
-      {type:'SUPPLY_FLOW_NAVIGATE',module:'fretes',tab:'formulario',payload},
-      {type:'OPEN_APP_MODULE',module:'fretes',tab:'formulario',payload},
-      {type:'FRETES_NEW_REQUEST',tab:'formulario',payload}
-    ];
-    for(const msg of messages){
-      try{ window.dispatchEvent(new CustomEvent(msg.type,{detail:msg})); }catch(e){}
-      try{ window.parent?.postMessage(msg,'*'); }catch(e){}
-      try{ if(window.top && window.top !== window.parent) window.top.postMessage(msg,'*'); }catch(e){}
-    }
-
-    const hookUsed = invokeParentHooks(payload);
-    const domUsed = navigateParentDom();
-
-    if(hookUsed || domUsed){
-      try{ window.parent?.postMessage({type:'SEEL_FRETES_DRAFT_READY',payload},'*'); }catch(e){}
+    if(delivered){
       if(typeof toast === 'function') toast('Abrindo Fretes > Formulário...');
     }else{
-      try{ window.location.hash = 'fretes/formulario'; }catch(e){}
       if(typeof toast === 'function') toast('Não foi possível abrir o módulo de Fretes automaticamente. Acesse o módulo Fretes e crie a solicitação de entrega manualmente com os dados informados aqui.');
     }
   }
