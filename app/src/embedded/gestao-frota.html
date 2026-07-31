@@ -4072,12 +4072,13 @@
       box-shadow:0 9px 22px rgba(0,62,95,.08)!important;overflow-x:auto!important
     }
     .tabs-shell .tab-button{
+      display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
       width:auto!important;min-height:43px!important;padding:0 13px!important;border:0!important;border-radius:13px!important;
       background:transparent!important;color:#536d7c!important;box-shadow:none!important;font-size:12px!important;font-weight:800!important;white-space:nowrap!important
     }
     .tabs-shell .tab-button:hover{background:#eef5f9!important;color:#003d63!important}
     .tabs-shell .tab-button.active{background:#ffdd00!important;color:#003d63!important;box-shadow:none!important}
-    .tabs-shell .tab-icon{font-size:14px!important}
+    .tabs-shell .tab-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;font-size:14px!important;line-height:1!important}
 
     @media(max-width:1040px){
       .sf-topbar{align-items:flex-start}.sf-breadcrumb{display:none}.sf-global-search{width:230px}.sf-user-chip>div:last-child{display:none}
@@ -6354,7 +6355,7 @@
       return normalized;
     });
     if (legacyVehicleDataMigrated) {
-      localStorage.setItem(STORAGE_VEHICLES, JSON.stringify(vehicles));
+      window.safeFleetLocalStorageSet(STORAGE_VEHICLES, JSON.stringify(vehicles));
     }
 
     const vehicleForm = document.getElementById("vehicleForm");
@@ -6765,10 +6766,11 @@
     }
 
     function saveData() {
-      window.safeFleetLocalStorageSet(STORAGE_VEHICLES, JSON.stringify(vehicles));
+      const vehiclesSaved = window.safeFleetLocalStorageSet(STORAGE_VEHICLES, JSON.stringify(vehicles));
       const manualFines = fines.filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
       window.safeFleetLocalStorageSet(STORAGE_FINES, JSON.stringify(manualFines));
       window.persistFleetMeasurements(measurements).catch(error => console.error("Falha ao salvar medições no banco local.", error));
+      return vehiclesSaved;
     }
 
     function formatDate(date) {
@@ -6882,9 +6884,56 @@
         }
 
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
+        reader.onload = () => {
+          const rawDataUrl = reader.result;
+          compressPhotoDataUrl(rawDataUrl)
+            .then(compressed => resolve(compressed || rawDataUrl))
+            .catch(() => resolve(rawDataUrl));
+        };
         reader.onerror = reject;
         reader.readAsDataURL(file);
+      });
+    }
+
+    function compressPhotoDataUrl(dataUrl, maxDimension = 1280, quality = 0.72) {
+      return new Promise(resolve => {
+        if (!dataUrl || typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+          resolve(dataUrl);
+          return;
+        }
+        try {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const { width, height } = img;
+              if (!width || !height) {
+                resolve(dataUrl);
+                return;
+              }
+              const scale = Math.min(1, maxDimension / Math.max(width, height));
+              const targetWidth = Math.max(1, Math.round(width * scale));
+              const targetHeight = Math.max(1, Math.round(height * scale));
+              const canvas = document.createElement("canvas");
+              canvas.width = targetWidth;
+              canvas.height = targetHeight;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) {
+                resolve(dataUrl);
+                return;
+              }
+              ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+              const compressed = canvas.toDataURL("image/jpeg", quality);
+              resolve(compressed && compressed.length < dataUrl.length ? compressed : dataUrl);
+            } catch (error) {
+              console.warn("Não foi possível comprimir a foto do veículo; usando o arquivo original.", error);
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        } catch (error) {
+          resolve(dataUrl);
+        }
       });
     }
 
@@ -8386,12 +8435,16 @@
         atualizadoEm: new Date().toISOString()
       };
 
-      saveData();
+      const saved = saveData();
       renderAll();
       closeVehicleEditModal();
-      alert(registerTransfer
-        ? "Transferência registrada com sucesso. Os dados anteriores foram preservados no histórico do veículo."
-        : "Veículo atualizado com sucesso. As alterações foram aplicadas ao card, dashboard e relatórios.");
+      if (!saved) {
+        alert("Não foi possível salvar todas as alterações: o armazenamento local do navegador está cheio. Remova fotos antigas de outros veículos ou use uma foto menor e tente novamente. Se você recarregar a página agora, esta alteração pode ser perdida.");
+      } else {
+        alert(registerTransfer
+          ? "Transferência registrada com sucesso. Os dados anteriores foram preservados no histórico do veículo."
+          : "Veículo atualizado com sucesso. As alterações foram aplicadas ao card, dashboard e relatórios.");
+      }
     }
 
     function deleteVehicleFromEdit() {
@@ -8479,9 +8532,13 @@
       };
 
       vehicles.push(vehicle);
-      saveData();
+      const saved = saveData();
       renderAll();
-      alert("Novo veículo cadastrado com sucesso. Dados e foto foram salvos.");
+      if (!saved) {
+        alert("O veículo foi cadastrado nesta tela, mas não foi possível salvar no armazenamento local do navegador (está cheio). Remova fotos antigas de outros veículos ou use uma foto menor e cadastre novamente. Se você recarregar a página agora, este cadastro pode ser perdido.");
+      } else {
+        alert("Novo veículo cadastrado com sucesso. Dados e foto foram salvos.");
+      }
       resetVehicleForm();
       openTabById("frotaTab");
     });
