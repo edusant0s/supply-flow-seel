@@ -564,6 +564,8 @@
 .detail-comment-form button{
   margin-top:8px;
 }
+.contract-icon{vertical-align:-2px}
+.detail-edit-actions button,.detail-comment-form button{display:inline-flex;align-items:center;gap:6px}
 @media(max-width:900px){
   .detail-summary{grid-template-columns:repeat(3,1fr)}
 }
@@ -1643,7 +1645,11 @@ body{
   font-size:8px !important;
   line-height:1.2 !important;
   text-align:center !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
 }
+#kanbanView .contract-icon{display:block !important;flex-shrink:0 !important}
 #kanbanView .contract-compact-description{
   min-height:19px !important;
   max-height:22px !important;
@@ -2154,7 +2160,7 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   text-overflow:ellipsis !important;
   white-space:nowrap !important;
 }
-#kanbanView .contract-line-icon{color:#1b6d8e !important;font-size:8px !important;text-align:center !important}
+#kanbanView .contract-line-icon{color:#1b6d8e !important;font-size:8px !important;text-align:center !important;display:inline-flex !important;align-items:center !important;justify-content:center !important}
 #kanbanView .contract-compact-description{
   min-height:0 !important;
   max-height:none !important;
@@ -2959,6 +2965,20 @@ const processGroups=[
 const stages=processGroups.flatMap(g=>g.stages);
 
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;")}
+const CONTRACT_ICON_PATHS={
+  clipboard:'<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  calendar:'<rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
+  paperclip:'<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  pencil:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>'
+};
+function contractIcon(name,size){
+  const path=CONTRACT_ICON_PATHS[name];
+  if(!path)return '';
+  const px=size||14;
+  return `<svg class="contract-icon" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.id);toast.id=setTimeout(()=>t.classList.remove('show'),2500)}
 function migrateUrgencyRules(spec){
   const next=JSON.parse(JSON.stringify(Array.isArray(spec)?spec:BASE_FORM));
@@ -4332,7 +4352,7 @@ function openRequestDetails(id){
   title.textContent=`${r.id} - ${requestTitle(r)}`;
   subtitle.textContent=`${r.tipo||'Solicitação'} • ${r.status||''}`;
   body.innerHTML=`
-    <div class="detail-edit-actions"><button type="button" onclick="startRequestEdit('${esc(r.id)}')">✏️ Editar informações</button></div>
+    <div class="detail-edit-actions"><button type="button" onclick="startRequestEdit('${esc(r.id)}')">${contractIcon('pencil',14)} Editar informações</button></div>
 
     <div class="detail-summary">
       <div class="detail-summary-tile detail-summary-tile--${traffic.key}"><span>Semáforo</span><strong>${esc(traffic.label)}</strong></div>
@@ -4382,7 +4402,7 @@ function openRequestDetails(id){
       `).join('')}</div>` : '<div class="detail-comment-empty">Nenhum comentário registrado para esta solicitação.</div>'}
       <div class="detail-comment-form">
         <textarea id="contractCommentInput" placeholder="Registre uma orientação, pendência ou alerta sobre esta solicitação..."></textarea>
-        <button class="secondary" type="button" onclick="submitContractComment('${esc(r.id)}')">💬 Adicionar comentário</button>
+        <button class="secondary" type="button" onclick="submitContractComment('${esc(r.id)}')">${contractIcon('message',14)} Adicionar comentário</button>
       </div>
     </div>
   `;
@@ -4561,10 +4581,10 @@ function renderKanban(){
               </div>
 
               <div class="contract-compact-lines">
-                <div><span class="contract-line-icon">●</span><span><b>Solicitante:</b> ${esc(r.solicitante||'Não informado')}</span></div>
-                <div><span class="contract-line-icon">➤</span><span><b>Atribuído a:</b> ${esc(String(r.atribuidoA||r.data?.atribuido_a||'—'))}</span></div>
-                <div><span class="contract-line-icon">📅</span><span><b>Prazo atendimento:</b> ${esc(dueText)}</span></div>
-                <div><span class="contract-line-icon">📅</span><span><b>Criado em:</b> ${esc(createdLabel)}</span></div>
+                <div><span class="contract-line-icon">${contractIcon('clipboard',11)}</span><span><b>Solicitante:</b> ${esc(r.solicitante||'Não informado')}</span></div>
+                <div><span class="contract-line-icon">${contractIcon('send',11)}</span><span><b>Atribuído a:</b> ${esc(String(r.atribuidoA||r.data?.atribuido_a||'—'))}</span></div>
+                <div><span class="contract-line-icon">${contractIcon('calendar',11)}</span><span><b>Prazo atendimento:</b> ${esc(dueText)}</span></div>
+                <div><span class="contract-line-icon">${contractIcon('calendar',11)}</span><span><b>Criado em:</b> ${esc(createdLabel)}</span></div>
               </div>
 
               <div class="contract-route-pill">
@@ -4588,8 +4608,8 @@ function renderKanban(){
               <div class="contract-compact-badges">
                 ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
                 <span class="contract-mini-badge traffic-${trafficKey}">${esc(trafficLabel)}</span>
-                ${attachmentCount?`<span class="contract-attachment-count">📎 ${attachmentCount}</span>`:''}
-                ${commentCount?`<span class="contract-comment-badge">💬 ${commentCount}</span>`:''}
+                ${attachmentCount?`<span class="contract-attachment-count">${contractIcon('paperclip',11)} ${attachmentCount}</span>`:''}
+                ${commentCount?`<span class="contract-comment-badge">${contractIcon('message',11)} ${commentCount}</span>`:''}
                 <span class="contract-mini-badge request-error-badge ${requestHasError?'show':''}">SOLICITAÇÃO COM ERRO</span>
               </div>
 
