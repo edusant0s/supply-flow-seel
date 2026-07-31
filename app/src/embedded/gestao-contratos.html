@@ -566,6 +566,61 @@
 }
 .contract-icon{vertical-align:-2px}
 .detail-edit-actions button,.detail-comment-form button{display:inline-flex;align-items:center;gap:6px}
+.detail-modal .contract-card-observation{
+  display:grid;
+  gap:8px;
+  margin:0 0 16px;
+  padding:14px;
+  border:1px solid #e2b900;
+  border-radius:14px;
+  background:#fff8cf;
+}
+.detail-modal .contract-card-observation label{
+  margin:0;
+  color:#6c5600;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.detail-modal .contract-card-observation textarea{
+  width:100%;
+  min-height:90px;
+  max-height:220px;
+  margin:0;
+  padding:10px 12px;
+  resize:vertical;
+  border:1px solid #d9c15a;
+  border-radius:12px;
+  background:var(--card);
+  color:#173248;
+  font-size:13px;
+  line-height:1.4;
+  font-weight:500;
+  box-sizing:border-box;
+}
+.detail-modal .contract-card-observation textarea:focus{
+  border-color:#075985;
+  box-shadow:0 0 0 3px rgba(7,89,133,.14);
+  outline:none;
+}
+.detail-modal .contract-observation-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.detail-modal .contract-observation-save-status{
+  color:#816b10;
+  font-size:12px;
+  font-weight:700;
+}
+.detail-modal .contract-observation-save-status.saved{color:#15803d}
+.detail-modal .contract-observation-counter{
+  color:#6c5600;
+  font-size:12px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
 @media(max-width:900px){
   .detail-summary{grid-template-columns:repeat(3,1fr)}
 }
@@ -4350,6 +4405,7 @@ function openRequestDetails(id){
   const valueRaw=contractValue(r);
   const valueLabel=valueRaw?currencyFmt(valueRaw):'Não informado';
   const comments=getContractComments(r);
+  const responsibleObservation=String(r.observacoesResponsavel||r.data?.observacoesResponsavel||'').slice(0,240);
   title.textContent=`${r.id} - ${requestTitle(r)}`;
   subtitle.textContent=`${r.tipo||'Solicitação'} • ${r.status||''}`;
   body.innerHTML=`
@@ -4362,6 +4418,15 @@ function openRequestDetails(id){
       <div class="detail-summary-tile"><span>Tipo</span><strong>${esc(contractKindLabel(r))}</strong></div>
       <div class="detail-summary-tile"><span>Valor</span><strong>${esc(valueLabel)}</strong></div>
       <div class="detail-summary-tile detail-summary-tile--${requestHasError?'red':'green'}"><span>Situação</span><strong>${requestHasError?'Solicitação com erro':'Sem erro'}</strong></div>
+    </div>
+
+    <div class="contract-card-observation">
+      <label for="contractObservation_${esc(r.id)}">Observações do responsável</label>
+      <textarea id="contractObservation_${esc(r.id)}" maxlength="240" placeholder="Registre orientações, pendências ou informações importantes..." oninput="updateContractObservationCounter(this);queueContractObservationSave('${esc(r.id)}',this)" onblur="persistContractResponsibleObservation('${esc(r.id)}',this,true)">${esc(responsibleObservation)}</textarea>
+      <div class="contract-observation-footer">
+        <span class="contract-observation-save-status">Salvo automaticamente</span>
+        <strong class="contract-observation-counter">${responsibleObservation.length}/240</strong>
+      </div>
     </div>
 
     <div class="detail-grid">
@@ -4561,7 +4626,6 @@ function renderKanban(){
             const title=requestTitle(r)||'Solicitação';
             const description=requestObject(r)||'Sem descrição informada';
             const centerLabel=r.centro||r.data?.centro_obra||r.data?.centro_departamento||'Centro de custo não informado';
-            const responsibleObservation=String(r.observacoesResponsavel||r.data?.observacoesResponsavel||'').slice(0,240);
             const requestHasError=contractRequestHasError(r);
             const dueText=completed?'Processo concluído':(r.dataLimite||r.data_limite_atendimento||r.data?.data_limite_atendimento||'Não informado');
             const phaseNow=fmtDuration(activePhaseMs(r));
@@ -4594,15 +4658,6 @@ function renderKanban(){
               </div>
 
               <div class="contract-compact-description" title="${esc(description)}">${esc(description)}</div>
-
-              <div class="contract-card-observation" onclick="event.stopPropagation()">
-                <label for="contractObservation_${esc(r.id)}">Observações do responsável</label>
-                <textarea id="contractObservation_${esc(r.id)}" maxlength="240" placeholder="Registre orientações, pendências ou informações importantes..." onpointerdown="event.stopPropagation()" onclick="event.stopPropagation()" oninput="event.stopPropagation();updateContractObservationCounter(this);queueContractObservationSave('${r.id}',this)" onblur="event.stopPropagation();persistContractResponsibleObservation('${r.id}',this,true)">${esc(responsibleObservation)}</textarea>
-                <div class="contract-observation-footer">
-                  <span class="contract-observation-save-status">Salvo automaticamente</span>
-                  <strong class="contract-observation-counter">${responsibleObservation.length}/240</strong>
-                </div>
-              </div>
 
               <div class="contract-compact-badges">
                 ${valueLabel?`<span class="contract-value-pill">${esc(valueLabel)}</span>`:''}
