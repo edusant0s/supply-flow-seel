@@ -1,16 +1,25 @@
 import { useEffect, useRef } from "react";
 import { Chart, type ChartData, type ChartOptions, type ChartType } from "chart.js/auto";
 
-export type DataLabelsOptions = {
+export type DataLabelsConfig = {
   color?: string;
   formatter?: (value: number, index: number) => string;
 };
 
+// Kept outside chart.options on purpose: Chart.js wraps the whole options tree in a
+// scriptable-options proxy and auto-invokes ANY function value it finds in there
+// (passing its own internal resolution context instead of our arguments), which
+// crashes formatters expecting a plain number. A WeakMap keyed by chart instance
+// never touches that proxy.
+type AnyChart = Chart<ChartType, unknown, unknown>;
+
+const dataLabelsRegistry = new WeakMap<AnyChart, DataLabelsConfig>();
+
 const dataLabelsPlugin = {
   id: "sfDataLabels",
-  afterDatasetsDraw(chart: Chart) {
-    const options = (chart.options.plugins as Record<string, unknown> | undefined)?.sfDataLabels as DataLabelsOptions | undefined;
-    if (!options) return;
+  afterDatasetsDraw(chart: AnyChart) {
+    const config = dataLabelsRegistry.get(chart);
+    if (!config) return;
     const ctx = chart.ctx;
     const chartType = (chart.config as unknown as { type?: string }).type;
     const isRadial = chartType === "doughnut" || chartType === "pie";
@@ -26,7 +35,7 @@ const dataLabelsPlugin = {
         const raw = (dataset.data as unknown[])[index];
         const value = typeof raw === "number" ? raw : undefined;
         if (value === undefined || value === null || value === 0) return;
-        const text = options.formatter ? options.formatter(value, index) : String(Math.round(value));
+        const text = config.formatter ? config.formatter(value, index) : String(Math.round(value));
         const position = (element as unknown as { tooltipPosition: () => { x: number; y: number } }).tooltipPosition();
 
         if (isRadial) {
@@ -38,12 +47,12 @@ const dataLabelsPlugin = {
           ctx.strokeText(text, position.x, position.y);
           ctx.fillText(text, position.x, position.y);
         } else if (isHorizontal) {
-          ctx.fillStyle = options.color || "#0a2e3d";
+          ctx.fillStyle = config.color || "#0a2e3d";
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
           ctx.fillText(text, position.x + 8, position.y);
         } else {
-          ctx.fillStyle = options.color || "#0a2e3d";
+          ctx.fillStyle = config.color || "#0a2e3d";
           ctx.textAlign = "center";
           ctx.textBaseline = "bottom";
           ctx.fillText(text, position.x, position.y - 6);
@@ -60,11 +69,13 @@ export function ChartCanvas({
   type,
   data,
   options,
+  dataLabels,
   height = 240,
 }: {
   type: ChartType;
   data: ChartData;
   options?: ChartOptions;
+  dataLabels?: DataLabelsConfig;
   height?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -82,8 +93,11 @@ export function ChartCanvas({
         ...options,
       },
     };
-    chartRef.current = new Chart(canvasRef.current, config as never);
+    const chart = new Chart(canvasRef.current, config as never);
+    chartRef.current = chart;
+    if (dataLabels) dataLabelsRegistry.set(chart, dataLabels);
     return () => {
+      if (chartRef.current) dataLabelsRegistry.delete(chartRef.current);
       chartRef.current?.destroy();
       chartRef.current = null;
     };
@@ -95,8 +109,10 @@ export function ChartCanvas({
     if (!chart) return;
     chart.data = data as never;
     if (options) chart.options = { ...chart.options, ...options } as never;
+    if (dataLabels) dataLabelsRegistry.set(chart, dataLabels);
+    else dataLabelsRegistry.delete(chart);
     chart.update();
-  }, [data, options]);
+  }, [data, options, dataLabels]);
 
   return (
     <div style={{ position: "relative", height, width: "100%" }}>

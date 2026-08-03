@@ -223,36 +223,35 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
       plugins: {
         legend: { display: false },
         tooltip: { intersect: false, mode: "index" as const },
-        sfDataLabels: { formatter: formatCountLabel, color: textColor },
       },
       scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
-    [scaleStyle, textColor]
+    [scaleStyle]
   );
 
   const countBarOptions = useMemo(
     () => ({
-      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatCountLabel, color: textColor } },
+      plugins: { legend: { display: false } },
       scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
-    [scaleStyle, textColor]
+    [scaleStyle]
   );
 
   const phaseSlaOptions = useMemo(
     () => ({
-      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
+      plugins: { legend: { display: false } },
       scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
-    [scaleStyle, textColor]
+    [scaleStyle]
   );
 
   const proposalSlaOptions = useMemo(
     () => ({
       indexAxis: "y" as const,
-      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
+      plugins: { legend: { display: false } },
       scales: { x: { ...scaleStyle, beginAtZero: true }, y: { ...scaleStyle } },
     }),
-    [scaleStyle, textColor]
+    [scaleStyle]
   );
 
   const doughnutOptions = useMemo(
@@ -260,11 +259,13 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
       cutout: "62%",
       plugins: {
         legend: { position: "bottom" as const, labels: { color: textColor, boxWidth: 12, padding: 12, font: { size: 11, weight: 700 as const } } },
-        sfDataLabels: { formatter: formatCountLabel },
       },
     }),
     [textColor]
   );
+
+  const countDataLabels = useMemo(() => ({ formatter: formatCountLabel, color: textColor }), [textColor]);
+  const hoursDataLabels = useMemo(() => ({ formatter: formatHoursLabel, color: textColor }), [textColor]);
 
   return (
     <div className="page-stack orcamento-dashboard">
@@ -314,7 +315,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Entrada de demandas</h3>
             </div>
           </div>
-          {monthlyRows.length ? <ChartCanvas type="line" data={trendChartData} options={lineOptions} /> : <div className="muted-box">Sem serie historica para este filtro.</div>}
+          {monthlyRows.length ? <ChartCanvas type="line" data={trendChartData} options={lineOptions} dataLabels={countDataLabels} /> : <div className="muted-box">Sem serie historica para este filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
@@ -324,7 +325,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Tipo de orcamento</h3>
             </div>
           </div>
-          {typeRows.length ? <ChartCanvas type="doughnut" data={typeChartData} options={doughnutOptions} /> : <div className="muted-box">Sem dados para este filtro.</div>}
+          {typeRows.length ? <ChartCanvas type="doughnut" data={typeChartData} options={doughnutOptions} dataLabels={countDataLabels} /> : <div className="muted-box">Sem dados para este filtro.</div>}
         </section>
 
         <section className="orcamento-insight-card orcamento-insight-card--wide">
@@ -360,7 +361,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
             </div>
           </div>
           {metrics.won + metrics.lost + metrics.waitingOutcome ? (
-            <ChartCanvas type="doughnut" data={outcomeChartData} options={doughnutOptions} />
+            <ChartCanvas type="doughnut" data={outcomeChartData} options={doughnutOptions} dataLabels={countDataLabels} />
           ) : (
             <div className="muted-box">Sem finalizados no filtro.</div>
           )}
@@ -373,7 +374,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Propostas por fase</h3>
             </div>
           </div>
-          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsPhaseChartData} options={countBarOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsPhaseChartData} options={countBarOptions} dataLabels={countDataLabels} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
@@ -383,7 +384,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Propostas por mes de emissao</h3>
             </div>
           </div>
-          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsMonthChartData} options={countBarOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsMonthChartData} options={countBarOptions} dataLabels={countDataLabels} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
@@ -393,7 +394,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>SLA por fase</h3>
             </div>
           </div>
-          {filtered.length ? <ChartCanvas type="bar" data={phaseSlaChartData} options={phaseSlaOptions} /> : <div className="muted-box">Sem dados para este filtro.</div>}
+          {filtered.length ? <ChartCanvas type="bar" data={phaseSlaChartData} options={phaseSlaOptions} dataLabels={hoursDataLabels} /> : <div className="muted-box">Sem dados para este filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
@@ -405,7 +406,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
           </div>
           {proposalSlaRows.length ? (
             <>
-              <ChartCanvas type="bar" data={proposalSlaChartData} options={proposalSlaOptions} height={Math.max(240, proposalSlaRows.length * 26)} />
+              <ChartCanvas type="bar" data={proposalSlaChartData} options={proposalSlaOptions} dataLabels={hoursDataLabels} height={Math.max(240, proposalSlaRows.length * 26)} />
               {proposalSlaTruncated ? (
                 <p className="muted-note">
                   Mostrando as {proposalSlaRows.length} propostas com maior SLA de {proposalItems.length} no filtro.
