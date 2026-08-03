@@ -6,7 +6,7 @@ import { ChartCanvas } from "../../components/ChartCanvas";
 import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import type { Orcamento } from "../../types";
 import { OrcamentosCriticalAnalysis } from "./OrcamentosCriticalAnalysis";
-import { averageOrcamentoSlaMs, formatBusinessDuration, statuses } from "./sla";
+import { averageOrcamentoSlaMs, formatBusinessDuration, getOrcamentoSla, statuses } from "./sla";
 import { getAssignedToList, getFilterDate, getLineCount, getOrcamentista, getOrcamentoOutcome, openStatuses } from "./model";
 
 type ChartRow = { label: string; value: number; meta?: string; accent?: string };
@@ -18,11 +18,36 @@ const PHASE_COLORS: Record<string, string> = {
   finalizado: "#059669",
   pausado: "#94a3b8",
 };
+const TIMED_PHASES = statuses.filter(([key]) => key === "nao_iniciado" || key === "em_cotacao");
+const MAX_PROPOSAL_SLA_BARS = 20;
 
 function readCssVar(name: string, fallback: string) {
   if (typeof window === "undefined") return fallback;
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
+}
+
+function formatHoursLabel(value: number) {
+  return `${value.toFixed(1)}h`;
+}
+
+function formatCountLabel(value: number) {
+  return String(Math.round(value));
+}
+
+function buildPhaseSlaRows(items: Orcamento[], now: number): ChartRow[] {
+  return TIMED_PHASES.map(([key, label]) => {
+    const durations = items.map((item) => getOrcamentoSla(item, now).phaseMs[key] || 0).filter((ms) => ms > 0);
+    const avgMs = durations.length ? durations.reduce((sum, ms) => sum + ms, 0) / durations.length : 0;
+    return { label, value: avgMs / 3_600_000 };
+  });
+}
+
+function buildProposalSlaRows(items: Orcamento[], now: number): ChartRow[] {
+  return items
+    .map((item) => ({ label: item.numero_proposta || "Sem proposta", value: getOrcamentoSla(item, now).totalMs / 3_600_000 }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, MAX_PROPOSAL_SLA_BARS);
 }
 
 export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now: number }) {
@@ -60,6 +85,9 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
     [proposalItems]
   );
   const proposalsByMonthRows = useMemo(() => buildMonthlyRows(proposalItems), [proposalItems]);
+  const phaseSlaRows = useMemo(() => buildPhaseSlaRows(filtered, now), [filtered, now]);
+  const proposalSlaRows = useMemo(() => buildProposalSlaRows(proposalItems, now), [proposalItems, now]);
+  const proposalSlaTruncated = proposalItems.length > proposalSlaRows.length;
 
   const textColor = readCssVar("--text", "#081b23");
   const mutedColor = readCssVar("--muted", "#526771");
@@ -150,6 +178,38 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
     [proposalsByMonthRows]
   );
 
+  const phaseSlaChartData = useMemo(
+    () => ({
+      labels: phaseSlaRows.map((row) => row.label),
+      datasets: [
+        {
+          label: "SLA medio (h)",
+          data: phaseSlaRows.map((row) => Number(row.value.toFixed(2))),
+          backgroundColor: ["#d97706", "#1b6d8e"],
+          borderRadius: 8,
+          maxBarThickness: 70,
+        },
+      ],
+    }),
+    [phaseSlaRows]
+  );
+
+  const proposalSlaChartData = useMemo(
+    () => ({
+      labels: proposalSlaRows.map((row) => row.label),
+      datasets: [
+        {
+          label: "SLA (h)",
+          data: proposalSlaRows.map((row) => Number(row.value.toFixed(2))),
+          backgroundColor: "#7c3aed",
+          borderRadius: 6,
+          maxBarThickness: 20,
+        },
+      ],
+    }),
+    [proposalSlaRows]
+  );
+
   const scaleStyle = useMemo(
     () => ({
       grid: { color: gridColor, drawTicks: false },
@@ -160,18 +220,39 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
 
   const lineOptions = useMemo(
     () => ({
-      plugins: { legend: { display: false }, tooltip: { intersect: false, mode: "index" as const } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { intersect: false, mode: "index" as const },
+        sfDataLabels: { formatter: formatCountLabel, color: textColor },
+      },
       scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
     }),
-    [scaleStyle]
+    [scaleStyle, textColor]
   );
 
-  const barOptions = useMemo(
+  const countBarOptions = useMemo(
     () => ({
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatCountLabel, color: textColor } },
       scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
     }),
-    [scaleStyle]
+    [scaleStyle, textColor]
+  );
+
+  const phaseSlaOptions = useMemo(
+    () => ({
+      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
+      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+    }),
+    [scaleStyle, textColor]
+  );
+
+  const proposalSlaOptions = useMemo(
+    () => ({
+      indexAxis: "y" as const,
+      plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
+      scales: { x: { ...scaleStyle, beginAtZero: true }, y: scaleStyle },
+    }),
+    [scaleStyle, textColor]
   );
 
   const doughnutOptions = useMemo(
@@ -179,6 +260,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
       cutout: "62%",
       plugins: {
         legend: { position: "bottom" as const, labels: { color: textColor, boxWidth: 12, padding: 12, font: { size: 11, weight: 700 as const } } },
+        sfDataLabels: { formatter: formatCountLabel },
       },
     }),
     [textColor]
@@ -291,7 +373,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Propostas por fase</h3>
             </div>
           </div>
-          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsPhaseChartData} options={barOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsPhaseChartData} options={countBarOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
@@ -301,7 +383,38 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>Propostas por mes de emissao</h3>
             </div>
           </div>
-          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsMonthChartData} options={barOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsMonthChartData} options={countBarOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+        </section>
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Performance</span>
+              <h3>SLA por fase</h3>
+            </div>
+          </div>
+          <ChartCanvas type="bar" data={phaseSlaChartData} options={phaseSlaOptions} />
+        </section>
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Proposta (PP)</span>
+              <h3>SLA por proposta</h3>
+            </div>
+          </div>
+          {proposalSlaRows.length ? (
+            <>
+              <ChartCanvas type="bar" data={proposalSlaChartData} options={proposalSlaOptions} height={Math.max(240, proposalSlaRows.length * 26)} />
+              {proposalSlaTruncated ? (
+                <p className="muted-note">
+                  Mostrando as {proposalSlaRows.length} propostas com maior SLA de {proposalItems.length} no filtro.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <div className="muted-box">Sem propostas numeradas no filtro.</div>
+          )}
         </section>
       </section>
     </div>
