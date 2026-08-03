@@ -2,21 +2,28 @@ import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { AlertTriangle, CheckCircle2, ClipboardList, Clock3, Target, TimerReset, TrendingUp } from "lucide-react";
 import { KpiCard } from "../../components/KpiCard";
+import { ChartCanvas } from "../../components/ChartCanvas";
 import { formatCurrency, formatDateBr, normalizeText, slaColorByDueDate } from "../../lib/format";
 import type { Orcamento } from "../../types";
 import { OrcamentosCriticalAnalysis } from "./OrcamentosCriticalAnalysis";
-import { averageOrcamentoSlaMs, formatBusinessDuration, getOrcamentoSla, phaseLabel } from "./sla";
-import {
-  getAssignedToList,
-  getFilterDate,
-  getLineCount,
-  getOrcamentista,
-  getOrcamentoOutcome,
-  openStatuses,
-  outcomeLabel,
-} from "./model";
+import { averageOrcamentoSlaMs, formatBusinessDuration, statuses } from "./sla";
+import { getAssignedToList, getFilterDate, getLineCount, getOrcamentista, getOrcamentoOutcome, openStatuses } from "./model";
 
 type ChartRow = { label: string; value: number; meta?: string; accent?: string };
+
+const BRAND_PALETTE = ["#1b6d8e", "#059669", "#d97706", "#e7000b", "#fcc800", "#0a2e3d", "#0891b2", "#7c3aed"];
+const PHASE_COLORS: Record<string, string> = {
+  nao_iniciado: "#d97706",
+  em_cotacao: "#1b6d8e",
+  finalizado: "#059669",
+  pausado: "#94a3b8",
+};
+
+function readCssVar(name: string, fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
 
 export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now: number }) {
   const [assignee, setAssignee] = useState("");
@@ -36,19 +43,146 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
   }, [assignee, endDate, items, startDate]);
 
   const metrics = useMemo(() => buildDashboardMetrics(filtered, now), [filtered, now]);
-  const statusRows = useMemo(() => groupRows(filtered, (item) => phaseLabel(item.status || "nao_iniciado")), [filtered]);
-  const outcomeRows = useMemo(
-    () =>
-      groupRows(
-        filtered.filter((item) => item.status === "finalizado"),
-        (item) => outcomeLabel(getOrcamentoOutcome(item))
-      ),
-    [filtered]
-  );
-  const assigneeRows = useMemo(() => groupRowsByAssignee(filtered), [filtered]);
-  const slaByAssigneeRows = useMemo(() => buildAssigneeSlaRows(filtered, now), [filtered, now]);
   const monthlyRows = useMemo(() => buildMonthlyRows(filtered), [filtered]);
   const typeRows = useMemo(() => groupRows(filtered, (item) => item.tipo_orcamento || "Tipo nao informado"), [filtered]);
+  const funnelRows = useMemo(
+    () =>
+      statuses.map(([key, label]) => ({
+        label,
+        value: filtered.filter((item) => (item.status || "nao_iniciado") === key).length,
+        accent: PHASE_COLORS[key],
+      })),
+    [filtered]
+  );
+  const proposalItems = useMemo(() => filtered.filter((item) => String(item.numero_proposta || "").trim() !== ""), [filtered]);
+  const proposalsByPhaseRows = useMemo(
+    () => statuses.map(([key, label]) => ({ label, value: proposalItems.filter((item) => (item.status || "nao_iniciado") === key).length })),
+    [proposalItems]
+  );
+  const proposalsByMonthRows = useMemo(() => buildMonthlyRows(proposalItems), [proposalItems]);
+
+  const textColor = readCssVar("--text", "#081b23");
+  const mutedColor = readCssVar("--muted", "#526771");
+  const gridColor = readCssVar("--line", "#d8e3e8");
+  const panelColor = readCssVar("--panel", "#ffffff");
+
+  const trendChartData = useMemo(
+    () => ({
+      labels: monthlyRows.map((row) => row.label),
+      datasets: [
+        {
+          label: "Solicitacoes",
+          data: monthlyRows.map((row) => row.value),
+          borderColor: "#1b6d8e",
+          backgroundColor: "rgba(27, 109, 142, 0.16)",
+          fill: true,
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: "#1b6d8e",
+          pointHoverRadius: 5,
+        },
+      ],
+    }),
+    [monthlyRows]
+  );
+
+  const typeChartData = useMemo(
+    () => ({
+      labels: typeRows.map((row) => row.label),
+      datasets: [
+        {
+          data: typeRows.map((row) => row.value),
+          backgroundColor: typeRows.map((_, index) => BRAND_PALETTE[index % BRAND_PALETTE.length]),
+          borderColor: panelColor,
+          borderWidth: 2,
+          hoverOffset: 8,
+        },
+      ],
+    }),
+    [typeRows, panelColor]
+  );
+
+  const outcomeChartData = useMemo(
+    () => ({
+      labels: ["Ganhas", "Perdidas", "Aguardando"],
+      datasets: [
+        {
+          data: [metrics.won, metrics.lost, metrics.waitingOutcome],
+          backgroundColor: ["#059669", "#e7000b", "#d97706"],
+          borderColor: panelColor,
+          borderWidth: 2,
+          hoverOffset: 8,
+        },
+      ],
+    }),
+    [metrics.won, metrics.lost, metrics.waitingOutcome, panelColor]
+  );
+
+  const proposalsPhaseChartData = useMemo(
+    () => ({
+      labels: proposalsByPhaseRows.map((row) => row.label),
+      datasets: [
+        {
+          label: "Propostas",
+          data: proposalsByPhaseRows.map((row) => row.value),
+          backgroundColor: "#1b6d8e",
+          borderRadius: 8,
+          maxBarThickness: 46,
+        },
+      ],
+    }),
+    [proposalsByPhaseRows]
+  );
+
+  const proposalsMonthChartData = useMemo(
+    () => ({
+      labels: proposalsByMonthRows.map((row) => row.label),
+      datasets: [
+        {
+          label: "Propostas emitidas",
+          data: proposalsByMonthRows.map((row) => row.value),
+          backgroundColor: "#d97706",
+          borderRadius: 8,
+          maxBarThickness: 46,
+        },
+      ],
+    }),
+    [proposalsByMonthRows]
+  );
+
+  const scaleStyle = useMemo(
+    () => ({
+      grid: { color: gridColor, drawTicks: false },
+      ticks: { color: mutedColor, font: { size: 10, weight: 700 as const }, precision: 0 },
+    }),
+    [gridColor, mutedColor]
+  );
+
+  const lineOptions = useMemo(
+    () => ({
+      plugins: { legend: { display: false }, tooltip: { intersect: false, mode: "index" as const } },
+      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+    }),
+    [scaleStyle]
+  );
+
+  const barOptions = useMemo(
+    () => ({
+      plugins: { legend: { display: false } },
+      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+    }),
+    [scaleStyle]
+  );
+
+  const doughnutOptions = useMemo(
+    () => ({
+      cutout: "62%",
+      plugins: {
+        legend: { position: "bottom" as const, labels: { color: textColor, boxWidth: 12, padding: 12, font: { size: 11, weight: 700 as const } } },
+      },
+    }),
+    [textColor]
+  );
 
   return (
     <div className="page-stack orcamento-dashboard">
@@ -91,12 +225,26 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
       <OrcamentosCriticalAnalysis items={filtered} now={now} />
 
       <section className="orcamento-dashboard-grid orcamento-dashboard-grid--executive">
-        <ChartCard title="Funil por fase" eyebrow="Operacao" rows={statusRows} accent="var(--yellow)" />
-        <ChartCard title="Resultado das obras finalizadas" eyebrow="Comercial" rows={outcomeRows} accent="var(--green)" emptyLabel="Sem finalizados no filtro." />
-        <ChartCard title="Carga por atribuido" eyebrow="Capacidade" rows={assigneeRows} accent="var(--blue-700)" />
-        <ChartCard title="SLA medio por atribuido" eyebrow="Performance" rows={slaByAssigneeRows} accent="var(--amber)" valueSuffix="h" />
-        <TrendCard rows={monthlyRows} />
-        <ChartCard title="Tipo de orcamento" eyebrow="Mix de demanda" rows={typeRows} accent="var(--blue-950)" />
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Tendencia mensal</span>
+              <h3>Entrada de demandas</h3>
+            </div>
+          </div>
+          {monthlyRows.length ? <ChartCanvas type="line" data={trendChartData} options={lineOptions} /> : <div className="muted-box">Sem serie historica para este filtro.</div>}
+        </section>
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Mix de demanda</span>
+              <h3>Tipo de orcamento</h3>
+            </div>
+          </div>
+          {typeRows.length ? <ChartCanvas type="doughnut" data={typeChartData} options={doughnutOptions} /> : <div className="muted-box">Sem dados para este filtro.</div>}
+        </section>
+
         <section className="orcamento-insight-card orcamento-insight-card--wide">
           <span className="eyebrow">Leitura executiva</span>
           <h3>Resumo analitico</h3>
@@ -119,6 +267,42 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
             </p>
           </div>
         </section>
+
+        <PhaseFunnel rows={funnelRows} />
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Comercial</span>
+              <h3>Resultado das obras finalizadas</h3>
+            </div>
+          </div>
+          {metrics.won + metrics.lost + metrics.waitingOutcome ? (
+            <ChartCanvas type="doughnut" data={outcomeChartData} options={doughnutOptions} />
+          ) : (
+            <div className="muted-box">Sem finalizados no filtro.</div>
+          )}
+        </section>
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Proposta (PP)</span>
+              <h3>Propostas por fase</h3>
+            </div>
+          </div>
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsPhaseChartData} options={barOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+        </section>
+
+        <section className="panel orcamento-chart-card orcamento-canvas-card">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Proposta (PP)</span>
+              <h3>Propostas por mes de emissao</h3>
+            </div>
+          </div>
+          {proposalItems.length ? <ChartCanvas type="bar" data={proposalsMonthChartData} options={barOptions} /> : <div className="muted-box">Sem propostas numeradas no filtro.</div>}
+        </section>
       </section>
     </div>
   );
@@ -134,76 +318,29 @@ function ExecutiveCard({ title, value, hint, accent }: { title: string; value: s
   );
 }
 
-function ChartCard({
-  title,
-  rows,
-  accent,
-  eyebrow = "Grafico dinamico",
-  valueSuffix = "",
-  emptyLabel = "Sem dados para este filtro.",
-}: {
-  title: string;
-  rows: ChartRow[];
-  accent: string;
-  eyebrow?: string;
-  valueSuffix?: string;
-  emptyLabel?: string;
-}) {
+function PhaseFunnel({ rows }: { rows: ChartRow[] }) {
   const max = Math.max(1, ...rows.map((row) => row.value));
   return (
-    <section className="panel orcamento-chart-card">
+    <section className="panel orcamento-chart-card orcamento-funnel-card">
       <div className="panel-heading">
         <div>
-          <span className="eyebrow">{eyebrow}</span>
-          <h3>{title}</h3>
+          <span className="eyebrow">Operacao</span>
+          <h3>Funil por fase</h3>
         </div>
       </div>
-      <div className="bar-chart orcamento-fluid-chart">
-        {rows.length ? (
-          rows.slice(0, 10).map((row) => (
-            <div className="bar-chart__row" key={row.label}>
-              <span>{row.label}</span>
-              <div>
-                <i style={{ width: `${Math.max(4, Math.round((row.value / max) * 100))}%`, "--bar-color": row.accent || accent } as CSSProperties} />
+      <div className="orcamento-funnel">
+        {rows.map((row) => {
+          const pct = Math.max(16, Math.round((row.value / max) * 100));
+          return (
+            <div className="orcamento-funnel-row" key={row.label}>
+              <div className="orcamento-funnel-bar" style={{ width: `${pct}%`, background: row.accent || "var(--blue-700)" }}>
+                <strong>{row.value}</strong>
               </div>
-              <strong>
-                {formatChartValue(row.value)}
-                {valueSuffix}
-              </strong>
-              {row.meta ? <small>{row.meta}</small> : null}
+              <span>{row.label}</span>
             </div>
-          ))
-        ) : (
-          <div className="muted-box">{emptyLabel}</div>
-        )}
+          );
+        })}
       </div>
-    </section>
-  );
-}
-
-function TrendCard({ rows }: { rows: ChartRow[] }) {
-  const max = Math.max(1, ...rows.map((row) => row.value));
-  return (
-    <section className="panel orcamento-chart-card orcamento-trend-card">
-      <div className="panel-heading">
-        <div>
-          <span className="eyebrow">Tendencia mensal</span>
-          <h3>Entrada de demandas</h3>
-        </div>
-      </div>
-      {rows.length ? (
-        <div className="orcamento-trend-bars">
-          {rows.slice(-8).map((row) => (
-            <div key={row.label}>
-              <span style={{ height: `${Math.max(12, Math.round((row.value / max) * 100))}%` }} />
-              <strong>{row.value}</strong>
-              <small>{row.label}</small>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="muted-box">Sem serie historica para este filtro.</div>
-      )}
     </section>
   );
 }
@@ -263,26 +400,6 @@ function groupRowsByAssignee(items: Orcamento[]): ChartRow[] {
     .sort((a, b) => b.value - a.value);
 }
 
-function buildAssigneeSlaRows(items: Orcamento[], now: number): ChartRow[] {
-  const map = new Map<string, { totalMs: number; count: number }>();
-  items.forEach((item) => {
-    const names = getAssignedToList(item);
-    (names.length ? names : ["Sem atribuido"]).forEach((name) => {
-      const current = map.get(name) || { totalMs: 0, count: 0 };
-      current.totalMs += getOrcamentoSla(item, now).totalMs;
-      current.count += 1;
-      map.set(name, current);
-    });
-  });
-  return Array.from(map.entries())
-    .map(([label, value]) => ({
-      label,
-      value: value.totalMs / value.count / 3_600_000,
-      meta: `${value.count} demanda(s)`,
-    }))
-    .sort((a, b) => b.value - a.value);
-}
-
 function buildMonthlyRows(items: Orcamento[]): ChartRow[] {
   return groupRows(items, (item) => {
     const date = getFilterDate(item);
@@ -297,8 +414,4 @@ function unique(values: string[]) {
 function formatPercent(value: number, total: number) {
   if (!total) return "0%";
   return `${((value / total) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
-}
-
-function formatChartValue(value: number) {
-  return value.toLocaleString("pt-BR", { maximumFractionDigits: value >= 10 ? 0 : 1 });
 }

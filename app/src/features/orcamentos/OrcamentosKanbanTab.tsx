@@ -480,6 +480,7 @@ function OrcamentoCard({
       style={{ "--card-accent": cardAccent } as CSSProperties}
       draggable={canEdit}
       onDragStart={(event) => event.dataTransfer.setData("text/plain", item.id)}
+      onClick={() => onSelect(item.id)}
     >
       <div className="orcamento-card-top">
         <div>
@@ -549,7 +550,7 @@ function OrcamentoCard({
       </div>
 
       {requesterCanEditFields ? (
-        <div className="orcamento-card-requester-edit" onPointerDown={(event) => event.stopPropagation()}>
+        <div className="orcamento-card-requester-edit" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()}>
           <span>Campos editaveis pelo solicitante</span>
           <div>
             <label>
@@ -583,7 +584,7 @@ function OrcamentoCard({
         </div>
       </div>
 
-      <div className="orcamento-card-actions orcamento-card-actions--stacked">
+      <div className="orcamento-card-actions orcamento-card-actions--stacked" onClick={(event) => event.stopPropagation()}>
         {canEdit ? (
           <label className="orcamento-select-block">
             <span>Fase da solicitacao</span>

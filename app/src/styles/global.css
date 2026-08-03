@@ -3803,6 +3803,7 @@ html[data-theme="dark"] .data-hub-grid button.active {
   background: var(--panel);
   box-shadow: 0 8px 18px rgba(10, 46, 61, 0.08);
   padding: 11px;
+  cursor: pointer;
 }
 
 .orcamento-card--success {
@@ -4980,6 +4981,62 @@ html[data-theme="dark"] .data-hub-grid button.active {
 
 .orcamento-insight-card--wide {
   min-height: 310px;
+}
+
+.orcamento-canvas-card {
+  min-height: 330px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.orcamento-funnel-card {
+  min-height: 330px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.orcamento-funnel {
+  display: grid;
+  gap: 14px;
+  align-content: center;
+  padding: 6px 4px;
+}
+
+.orcamento-funnel-row {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.orcamento-funnel-bar {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0% 100%);
+  transition: width 550ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease;
+  box-shadow: 0 8px 18px rgba(10, 46, 61, 0.12);
+}
+
+.orcamento-funnel-bar strong {
+  color: #fff;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.orcamento-funnel-row span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+html[data-theme="dark"] .orcamento-funnel-row span {
+  color: var(--muted);
 }
 
 .password-page {
