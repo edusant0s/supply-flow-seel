@@ -298,6 +298,7 @@ export function OrcamentosKanbanTab({
         </div>
         <DataTable
           data={filtered.slice(0, 100)}
+          className="orcamento-table-scroll"
           columns={[
             { key: "proposta", label: "Proposta", render: (item) => item.numero_proposta || "-" },
             { key: "status", label: "Fase", render: (item) => phaseLabel(item.status) },

@@ -897,12 +897,12 @@ th {
   padding: 28px;
 }
 
-.orcamento-report-table-scroll {
+.orcamento-table-scroll {
   max-height: 480px;
   overflow-y: auto;
 }
 
-.orcamento-report-table-scroll thead th {
+.orcamento-table-scroll thead th {
   position: sticky;
   top: 0;
   z-index: 1;
