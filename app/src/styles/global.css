@@ -5025,7 +5025,7 @@ html[data-theme="dark"] .data-hub-grid button.active {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0% 100%);
+  clip-path: polygon(2% 0, 98% 0, 94% 100%, 6% 100%);
   transition: width 550ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease;
   box-shadow: 0 8px 18px rgba(10, 46, 61, 0.12);
 }

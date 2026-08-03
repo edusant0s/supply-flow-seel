@@ -225,7 +225,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
         tooltip: { intersect: false, mode: "index" as const },
         sfDataLabels: { formatter: formatCountLabel, color: textColor },
       },
-      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+      scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
     [scaleStyle, textColor]
   );
@@ -233,7 +233,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
   const countBarOptions = useMemo(
     () => ({
       plugins: { legend: { display: false }, sfDataLabels: { formatter: formatCountLabel, color: textColor } },
-      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+      scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
     [scaleStyle, textColor]
   );
@@ -241,7 +241,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
   const phaseSlaOptions = useMemo(
     () => ({
       plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
-      scales: { x: scaleStyle, y: { ...scaleStyle, beginAtZero: true } },
+      scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
     }),
     [scaleStyle, textColor]
   );
@@ -250,7 +250,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
     () => ({
       indexAxis: "y" as const,
       plugins: { legend: { display: false }, sfDataLabels: { formatter: formatHoursLabel, color: textColor } },
-      scales: { x: { ...scaleStyle, beginAtZero: true }, y: scaleStyle },
+      scales: { x: { ...scaleStyle, beginAtZero: true }, y: { ...scaleStyle } },
     }),
     [scaleStyle, textColor]
   );
@@ -393,7 +393,7 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
               <h3>SLA por fase</h3>
             </div>
           </div>
-          <ChartCanvas type="bar" data={phaseSlaChartData} options={phaseSlaOptions} />
+          {filtered.length ? <ChartCanvas type="bar" data={phaseSlaChartData} options={phaseSlaOptions} /> : <div className="muted-box">Sem dados para este filtro.</div>}
         </section>
 
         <section className="panel orcamento-chart-card orcamento-canvas-card">
