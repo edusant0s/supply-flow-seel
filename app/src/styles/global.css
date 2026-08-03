@@ -567,6 +567,15 @@ html[data-theme="dark"] .module-tabs button.active {
   box-shadow: var(--shadow);
 }
 
+.kpi-card > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.kpi-card > svg {
+  flex-shrink: 0;
+}
+
 .kpi-card span {
   display: block;
   color: var(--muted);
@@ -580,6 +589,8 @@ html[data-theme="dark"] .module-tabs button.active {
   margin-top: 6px;
   color: var(--text);
   font-size: 1.45rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .kpi-card--success {
@@ -5048,50 +5059,6 @@ html[data-theme="dark"] .data-hub-grid button.active {
   line-height: 1.4;
 }
 
-.orcamento-insight-card {
-  display: grid;
-  align-content: start;
-  gap: 12px;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--blue-950);
-  border-radius: 8px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
-  padding: 16px;
-}
-
-.orcamento-insight-card h3 {
-  margin: 0;
-  color: var(--text);
-  font-size: 1rem;
-}
-
-.orcamento-insight-list {
-  display: grid;
-  gap: 9px;
-}
-
-.orcamento-insight-list p {
-  margin: 0;
-  display: grid;
-  gap: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--soft);
-  padding: 10px;
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-
-.orcamento-insight-list strong {
-  color: var(--text);
-  font-size: 1.1rem;
-}
-
-.orcamento-insight-card--wide {
-  min-height: 310px;
-}
-
 .orcamento-canvas-card {
   min-height: 330px;
   display: grid;
@@ -5099,53 +5066,9 @@ html[data-theme="dark"] .data-hub-grid button.active {
   gap: 12px;
 }
 
-.orcamento-funnel-card {
-  min-height: 330px;
-  display: grid;
-  align-content: start;
-  gap: 12px;
-}
-
-.orcamento-funnel {
-  display: grid;
-  gap: 14px;
-  align-content: center;
-  padding: 6px 4px;
-}
-
-.orcamento-funnel-row {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-}
-
-.orcamento-funnel-bar {
-  width: 100%;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  clip-path: polygon(2% 0, 98% 0, 94% 100%, 6% 100%);
-  transition: width 550ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease;
-  box-shadow: 0 8px 18px rgba(10, 46, 61, 0.12);
-}
-
-.orcamento-funnel-bar strong {
-  color: #fff;
-  font-size: 0.95rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-}
-
-.orcamento-funnel-row span {
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-align: center;
-}
-
-html[data-theme="dark"] .orcamento-funnel-row span {
-  color: var(--muted);
+.orcamento-chart-scroll {
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .password-page {
@@ -5416,7 +5339,6 @@ html[data-theme="dark"] .orcamento-commandbar,
 html[data-theme="dark"] .orcamento-process-strip article,
 html[data-theme="dark"] .orcamento-card,
 html[data-theme="dark"] .orcamento-drawer-summary article,
-html[data-theme="dark"] .orcamento-insight-card,
 html[data-theme="dark"] .orcamento-executive-card,
 html[data-theme="dark"] .orcamento-alert-panel,
 html[data-theme="dark"] .orcamento-critical-summary-card,
@@ -5449,7 +5371,6 @@ html[data-theme="dark"] .orcamento-comment-badge,
 html[data-theme="dark"] .orcamento-date-filter,
 html[data-theme="dark"] .orcamento-comment-list article,
 html[data-theme="dark"] .orcamento-log-list article,
-html[data-theme="dark"] .orcamento-insight-list p,
 html[data-theme="dark"] .orcamento-trend-bars,
 html[data-theme="dark"] .orcamento-alert-panel__item,
 html[data-theme="dark"] .orcamento-card-requester-edit,
@@ -5583,8 +5504,6 @@ html[data-theme="dark"] .orcamento-log-list p,
 html[data-theme="dark"] .orcamento-alert-panel h3,
 html[data-theme="dark"] .orcamento-alert-panel__item strong,
 html[data-theme="dark"] .orcamento-trend-bars strong,
-html[data-theme="dark"] .orcamento-insight-card h3,
-html[data-theme="dark"] .orcamento-insight-list strong,
 html[data-theme="dark"] .password-card h2,
 html[data-theme="dark"] .alertas-message strong,
 html[data-theme="dark"] .alertas-message p {
