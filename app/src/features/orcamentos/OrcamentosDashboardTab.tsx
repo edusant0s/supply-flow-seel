@@ -28,7 +28,11 @@ function readCssVar(name: string, fallback: string) {
 }
 
 function formatHoursLabel(value: number) {
-  return `${value.toFixed(1)}h`;
+  return formatBusinessDuration(value * 3_600_000);
+}
+
+function durationTickCallback(value: number | string) {
+  return formatBusinessDuration(Number(value) * 3_600_000);
 }
 
 function formatCountLabel(value: number) {
@@ -239,8 +243,11 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
 
   const phaseSlaOptions = useMemo(
     () => ({
-      plugins: { legend: { display: false } },
-      scales: { x: { ...scaleStyle }, y: { ...scaleStyle, beginAtZero: true } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: { raw: unknown }) => formatHoursLabel(Number(item.raw)) } } },
+      scales: {
+        x: { ...scaleStyle },
+        y: { ...scaleStyle, beginAtZero: true, ticks: { ...scaleStyle.ticks, callback: durationTickCallback } },
+      },
     }),
     [scaleStyle]
   );
@@ -248,8 +255,11 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
   const proposalSlaOptions = useMemo(
     () => ({
       indexAxis: "y" as const,
-      plugins: { legend: { display: false } },
-      scales: { x: { ...scaleStyle, beginAtZero: true }, y: { ...scaleStyle } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: { raw: unknown }) => formatHoursLabel(Number(item.raw)) } } },
+      scales: {
+        x: { ...scaleStyle, beginAtZero: true, ticks: { ...scaleStyle.ticks, callback: durationTickCallback } },
+        y: { ...scaleStyle },
+      },
     }),
     [scaleStyle]
   );
