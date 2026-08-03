@@ -1,98 +1,33 @@
 import { useMemo } from "react";
 import type React from "react";
-import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   AlertTriangle,
   ArrowUpRight,
   BarChart3,
-  Car,
   CheckCircle2,
   ClipboardList,
   Clock3,
-  DollarSign,
-  FileSpreadsheet,
-  FileText,
-  Gauge,
-  MapPinned,
-  PackageCheck,
   RefreshCw,
-  ShieldCheck,
   Star,
   Target,
-  Truck,
-  Users,
-  Warehouse,
 } from "lucide-react";
 import { KpiCard } from "../../components/KpiCard";
 import { EmptyState, LoadingState } from "../../components/States";
-import { formatCurrency, normalizeText, parseMoney } from "../../lib/format";
 import { useAsyncData, useSessionState } from "../../hooks";
-import {
-  AVALIACAO_DB_STORAGE_KEY,
-  ESTOQUE_STATE_STORAGE_KEY,
-  FRETES_STORAGE_KEY,
-  FROTA_FINES_STORAGE_KEY,
-  FROTA_VEHICLES_STORAGE_KEY,
-  loadEmbeddedStorageSnapshot,
-  type EmbeddedStorageSnapshot,
-} from "../../services/embeddedSync";
+import { loadEmbeddedStorageSnapshot } from "../../services/embeddedSync";
 import { listEntities } from "../../services/entities";
-import type { Contrato, Fornecedor, Orcamento, Requisicao } from "../../types";
-
-type ProcessKey =
-  | "todos"
-  | "requisicoes"
-  | "orcamentos"
-  | "contratos"
-  | "fornecedores"
-  | "fretes"
-  | "frota"
-  | "estoque"
-  | "avaliacao";
-
-type DashboardFamily = "operacao" | "ativo" | "base";
-type KpiTone = "neutral" | "success" | "warning" | "danger" | "blue";
-
-type DashboardMetric = {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  tone?: KpiTone;
-  chartValue?: number;
-};
-
-type CriticalTone = "success" | "monitor" | "warning" | "danger";
-
-type CriticalInsight = {
-  key: string;
-  category: string;
-  title: string;
-  value: string;
-  meta: string;
-  description: string;
-  action: string;
-  tone: CriticalTone;
-  icon: LucideIcon;
-  priority: number;
-};
-
-type DashboardRow = {
-  key: Exclude<ProcessKey, "todos">;
-  processo: string;
-  family: DashboardFamily;
-  familyLabel: string;
-  demanda: number;
-  emAberto: number;
-  finalizados: number;
-  riscoSla: number;
-  primaryLabel: string;
-  openLabel: string;
-  doneLabel: string;
-  riskLabel: string;
-  indicador: string;
-  metrics: DashboardMetric[];
-};
+import {
+  buildControlledInsight,
+  buildCriticalInsights,
+  buildDashboardRows,
+  formatCount,
+  rowTotals,
+  sumRows,
+  type DashboardMetric,
+  type DashboardRow,
+  type ProcessKey,
+} from "./dashboardModel";
 
 const processOptions: Array<{ key: ProcessKey; label: string }> = [
   { key: "todos", label: "Todas as areas" },
@@ -105,12 +40,6 @@ const processOptions: Array<{ key: ProcessKey; label: string }> = [
   { key: "estoque", label: "Estoque de obras" },
   { key: "avaliacao", label: "Avaliacao de fornecedores" },
 ];
-
-const familyLabels: Record<DashboardFamily, string> = {
-  operacao: "Processo de atendimento",
-  ativo: "Ativos e contratos",
-  base: "Base cadastral",
-};
 
 export function DashboardPage() {
   const [processFilter, setProcessFilter] = useSessionState<ProcessKey>("supply-flow:dashboard:process-filter", "todos");
@@ -183,39 +112,6 @@ export function DashboardPage() {
       <DashboardCriticalAnalysis rows={rows} selectedRow={selectedRow} updatedAt={lastUpdatedAt} />
     </div>
   );
-}
-
-function buildDashboardRows(data: {
-  requisicoes: Requisicao[];
-  orcamentos: Orcamento[];
-  contratos: Contrato[];
-  fornecedores: Fornecedor[];
-  fretesState: EmbeddedStorageSnapshot;
-  frotaState: EmbeddedStorageSnapshot;
-  estoqueState: EmbeddedStorageSnapshot;
-  avaliacaoState: EmbeddedStorageSnapshot;
-}): DashboardRow[] {
-  const fretes = arrayFromSnapshot(data.fretesState, FRETES_STORAGE_KEY, "gestao_fretes_solicitacoes_v1");
-  const frota = arrayFromSnapshot(data.frotaState, FROTA_VEHICLES_STORAGE_KEY, "frota_veiculos_v4_importacao_inicial");
-  const multasFrota = arrayFromSnapshot(data.frotaState, FROTA_FINES_STORAGE_KEY, "frota_multas_v4_importacao_inicial");
-  const estoque = objectFromSnapshot(data.estoqueState, ESTOQUE_STATE_STORAGE_KEY, "obrastock_clean_state_v1");
-  const avaliacao = objectFromSnapshot(data.avaliacaoState, AVALIACAO_DB_STORAGE_KEY, "seel_supplier_evaluation_db_v10");
-
-  const estoquePedidos = Array.isArray(estoque.orders) ? estoque.orders : [];
-  const estoqueItens = Array.isArray(estoque.items) ? estoque.items : [];
-  const fornecedoresAvaliacao = Array.isArray(avaliacao.suppliers) ? avaliacao.suppliers : [];
-  const avaliacoes = Array.isArray(avaliacao.evaluations) ? avaliacao.evaluations : [];
-
-  return [
-    summarizeRequisicoes(data.requisicoes),
-    summarizeOrcamentos(data.orcamentos),
-    summarizeContratos(data.contratos),
-    summarizeFornecedores(data.fornecedores),
-    summarizeFretes(fretes),
-    summarizeFrota(frota, multasFrota),
-    summarizeEstoque(estoquePedidos, estoqueItens),
-    summarizeAvaliacao(fornecedoresAvaliacao, avaliacoes),
-  ];
 }
 
 function buildSupplyMetrics(rows: DashboardRow[]): DashboardMetric[] {
@@ -393,158 +289,7 @@ function DashboardCriticalAnalysis({
   );
 }
 
-function buildCriticalInsights(rows: DashboardRow[]): CriticalInsight[] {
-  if (!rows.length) return [buildControlledInsight(rows)];
-  const insights: CriticalInsight[] = [];
-  const totals = rowTotals(rows);
-  const riskLeader = rows.slice().sort((a, b) => criticalPriorityScore(b) - criticalPriorityScore(a))[0];
-  const backlogLeader = rows.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
-  const baseRows = rows.filter((row) => row.family === "base");
-  const assetRows = rows.filter((row) => row.family === "ativo");
-
-  rows.forEach((row) => {
-    const total = Math.max(row.demanda, 1);
-    const riskPercent = Math.round((row.riscoSla / total) * 100);
-    const openPercent = Math.round((row.emAberto / total) * 100);
-    const donePercent = Math.round((row.finalizados / total) * 100);
-
-    insights.push({
-      key: `${row.key}-risk`,
-      category: row.family === "base" ? "Governanca de dados" : row.family === "ativo" ? "Risco de ativos" : "Risco operacional",
-      title: row.riscoSla ? `${row.processo} com alertas` : `${row.processo} sob controle`,
-      value: formatCount(row.riscoSla),
-      meta: `${riskPercent}% de exposicao`,
-      description: row.riscoSla
-        ? `${formatCount(row.riscoSla)} ${row.riskLabel} exigem acompanhamento para evitar perda de prazo, contrato ou qualidade.`
-        : `Nao ha ${row.riskLabel} relevantes no recorte atual.`,
-      action: row.riscoSla ? `Priorizar ${row.riskLabel} e atualizar responsaveis no modulo.` : "Manter rotina de acompanhamento e validacao da base.",
-      tone: row.riscoSla ? (riskPercent >= 18 || row.riscoSla >= 10 ? "danger" : "warning") : "success",
-      icon: row.riscoSla ? AlertTriangle : CheckCircle2,
-      priority: row.riscoSla ? 100 + row.riscoSla * 3 + riskPercent : 15,
-    });
-
-    insights.push({
-      key: `${row.key}-backlog`,
-      category: row.family === "base" ? "Qualidade cadastral" : row.family === "ativo" ? "Utilizacao" : "Fila de atendimento",
-      title: row.family === "base" ? `${row.processo}: registros pendentes` : `${row.processo}: carteira em aberto`,
-      value: formatCount(row.emAberto),
-      meta: `${openPercent}% do total`,
-      description: row.emAberto
-        ? `${formatCount(row.emAberto)} ${row.openLabel} ainda precisam de tratativa ou saneamento.`
-        : `Nao ha ${row.openLabel} pendentes neste momento.`,
-      action: row.emAberto ? "Definir responsavel e revisar itens mais antigos antes de novas entradas." : "Manter controle de entrada para preservar o fluxo.",
-      tone: row.emAberto ? (openPercent >= 45 ? "warning" : "monitor") : "success",
-      icon: row.emAberto ? Clock3 : ShieldCheck,
-      priority: row.emAberto ? 60 + row.emAberto + openPercent : 10,
-    });
-
-    insights.push({
-      key: `${row.key}-conversion`,
-      category: row.family === "ativo" ? "Disponibilidade" : row.family === "base" ? "Cobertura" : "Eficiencia",
-      title: row.family === "ativo" ? `Disponibilidade de ${row.processo}` : `${row.processo}: conclusao do fluxo`,
-      value: `${donePercent}%`,
-      meta: `${formatCount(row.finalizados)} ${row.doneLabel}`,
-      description: row.family === "base"
-        ? `A base possui ${formatCount(row.finalizados)} ${row.doneLabel} para uso operacional.`
-        : `Percentual de ${row.doneLabel} em relacao ao volume principal do modulo.`,
-      action: donePercent < 35 && row.family === "operacao" ? "Revisar gargalos do Kanban e redistribuir demandas abertas." : "Manter revisao periodica para preservar o indice.",
-      tone: donePercent >= 65 ? "success" : donePercent >= 35 ? "monitor" : "warning",
-      icon: donePercent >= 65 ? CheckCircle2 : Gauge,
-      priority: donePercent >= 65 ? 5 : 40 + (65 - donePercent),
-    });
-  });
-
-  if (riskLeader && riskLeader.riscoSla) {
-    insights.push({
-      key: "portfolio-risk-leader",
-      category: "Priorizacao executiva",
-      title: `${riskLeader.processo} concentra o maior risco`,
-      value: formatCount(riskLeader.riscoSla),
-      meta: riskLeader.riskLabel,
-      description: `Esta area lidera os alertas no recorte atual e deve ser atacada antes das filas de baixo risco.`,
-      action: "Abrir o modulo, filtrar os itens criticos e registrar plano de tratativa.",
-      tone: "danger",
-      icon: Target,
-      priority: 180 + riskLeader.riscoSla,
-    });
-  }
-
-  if (backlogLeader && backlogLeader.emAberto) {
-    insights.push({
-      key: "portfolio-backlog-leader",
-      category: "Capacidade operacional",
-      title: `${backlogLeader.processo} tem o maior volume aberto`,
-      value: formatCount(backlogLeader.emAberto),
-      meta: backlogLeader.openLabel,
-      description: `O volume aberto pode pressionar SLA e qualidade caso nao seja redistribuido.`,
-      action: "Avaliar capacidade, responsaveis e idade dos itens em aberto.",
-      tone: backlogLeader.emAberto > Math.max(8, totals.emAberto * 0.35) ? "warning" : "monitor",
-      icon: ClipboardList,
-      priority: 95 + backlogLeader.emAberto,
-    });
-  }
-
-  if (baseRows.length) {
-    const baseRisk = sumRows(baseRows, "riscoSla");
-    insights.push({
-      key: "portfolio-data-governance",
-      category: "Governanca de dados",
-      title: baseRisk ? "Bases cadastrais precisam de saneamento" : "Qualidade cadastral controlada",
-      value: formatCount(baseRisk),
-      meta: "pendencia(s) cadastrais",
-      description: baseRisk ? "Cadastros sem contato, inativos ou incompletos reduzem a velocidade de acionamento." : "As bases cadastrais estao em nivel adequado para consulta.",
-      action: baseRisk ? "Completar e-mails, telefones, status e classificacoes antes de novas importacoes." : "Manter validacoes na entrada e edicao dos cadastros.",
-      tone: baseRisk ? "warning" : "success",
-      icon: Users,
-      priority: baseRisk ? 88 + baseRisk : 8,
-    });
-  }
-
-  if (assetRows.length) {
-    const assetRisk = sumRows(assetRows, "riscoSla");
-    insights.push({
-      key: "portfolio-assets",
-      category: "Ativos e contratos",
-      title: assetRisk ? "Ativos com exposicao contratual" : "Ativos operacionais controlados",
-      value: formatCount(assetRisk),
-      meta: "alerta(s) de ativo",
-      description: assetRisk ? "Contratos, multas ou manutencoes pedem acompanhamento para evitar ruptura operacional." : "Nao ha exposicoes relevantes nos ativos filtrados.",
-      action: assetRisk ? "Revisar vencimentos, multas e disponibilidade por centro de custo." : "Manter agenda preventiva e controle de disponibilidade.",
-      tone: assetRisk ? "warning" : "success",
-      icon: ShieldCheck,
-      priority: assetRisk ? 86 + assetRisk : 7,
-    });
-  }
-
-  if (!insights.some((item) => item.tone === "danger" || item.tone === "warning")) insights.unshift(buildControlledInsight(rows));
-
-  return insights
-    .sort((a, b) => b.priority - a.priority || toneRank(b.tone) - toneRank(a.tone))
-    .slice(0, 12);
-}
-
-function buildControlledInsight(rows: DashboardRow[]): CriticalInsight {
-  const totals = rowTotals(rows);
-  return {
-    key: "portfolio-controlled",
-    category: "Operacao controlada",
-    title: "Sem alerta critico no recorte",
-    value: formatCount(totals.demanda),
-    meta: "registro(s) monitorado(s)",
-    description: "Os principais indicadores estao sem desvio critico para o filtro atual.",
-    action: "Manter rotina de acompanhamento e revisar filtros com frequencia.",
-    tone: "success",
-    icon: CheckCircle2,
-    priority: 1,
-  };
-}
-
-function criticalPriorityScore(row: DashboardRow) {
-  const total = Math.max(row.demanda, 1);
-  return row.riscoSla * 4 + row.emAberto + Math.round((row.riscoSla / total) * 100);
-}
-
-function criticalToneLabel(tone: CriticalTone) {
+function criticalToneLabel(tone: DashboardRow extends never ? never : ReturnType<typeof buildCriticalInsights>[number]["tone"]) {
   return {
     danger: "Critico",
     warning: "Atencao",
@@ -553,51 +298,8 @@ function criticalToneLabel(tone: CriticalTone) {
   }[tone];
 }
 
-function toneRank(tone: CriticalTone) {
-  return { danger: 4, warning: 3, monitor: 2, success: 1 }[tone];
-}
-
 function formatDashboardTimestamp(value: Date) {
   return `${value.toLocaleDateString("pt-BR")} ${value.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
-}
-
-function OperationalPulse({ rows }: { rows: DashboardRow[] }) {
-  const ranked = rows
-    .slice()
-    .sort((a, b) => b.riscoSla - a.riscoSla || b.emAberto - a.emAberto || b.demanda - a.demanda)
-    .slice(0, 6);
-  if (!ranked.length) return null;
-
-  return (
-    <section className="dashboard-pulse-grid">
-      {ranked.map((row, index) => {
-        const total = Math.max(row.demanda, 1);
-        const openPercent = Math.min(100, Math.round((row.emAberto / total) * 100));
-        const donePercent = Math.min(100, Math.round((row.finalizados / total) * 100));
-        const riskPercent = Math.min(100, Math.round((row.riscoSla / total) * 100));
-        const status = row.riscoSla > 0 ? "Atencao" : row.emAberto > 0 ? "Em fluxo" : "Estavel";
-
-        return (
-          <article key={row.key} className="dashboard-pulse-card">
-            <div className="dashboard-pulse-card__head">
-              <span>{index + 1}</span>
-              <strong>{row.processo}</strong>
-              <b>{status}</b>
-            </div>
-            <div className="dashboard-pulse-bars" aria-label={`Pulso operacional de ${row.processo}`}>
-              <span style={{ width: `${Math.max(3, openPercent)}%` }} />
-              <span style={{ width: `${Math.max(3, donePercent)}%` }} />
-              <span style={{ width: `${Math.max(3, riskPercent)}%` }} />
-            </div>
-            <div className="dashboard-pulse-card__meta">
-              <span>{formatCount(row.emAberto)} {row.openLabel}</span>
-              <span>{formatCount(row.riscoSla)} {row.riskLabel}</span>
-            </div>
-          </article>
-        );
-      })}
-    </section>
-  );
 }
 
 function AreaDashboardPanel({ row }: { row: DashboardRow }) {
@@ -614,34 +316,6 @@ function AreaDashboardPanel({ row }: { row: DashboardRow }) {
         <span>{formatCount(row.finalizados)} {row.doneLabel}</span>
         <span>{formatCount(row.riscoSla)} {row.riskLabel}</span>
       </div>
-    </section>
-  );
-}
-
-function SupplyPortfolioOverview({ rows }: { rows: DashboardRow[] }) {
-  const groups: Array<{ family: DashboardFamily; title: string; rows: DashboardRow[]; icon: LucideIcon }> = [
-    { family: "operacao", title: "Processos de atendimento", rows: rows.filter((row) => row.family === "operacao"), icon: ClipboardList },
-    { family: "ativo", title: "Ativos e contratos", rows: rows.filter((row) => row.family === "ativo"), icon: Car },
-    { family: "base", title: "Bases cadastrais", rows: rows.filter((row) => row.family === "base"), icon: Users },
-  ];
-
-  return (
-    <section className="dashboard-segment-grid">
-      {groups.map((group) => {
-        const Icon = group.icon;
-        return (
-          <article key={group.family} className={`dashboard-segment-card dashboard-segment-card--${group.family}`}>
-            <div>
-              <Icon size={22} />
-              <strong>{group.title}</strong>
-            </div>
-            <span>{group.rows.map((row) => row.processo).join(", ") || "Sem fonte ativa"}</span>
-            <p>
-              {formatCount(sumRows(group.rows, "demanda"))} registros principais, {formatCount(sumRows(group.rows, "riscoSla"))} alertas para acompanhamento.
-            </p>
-          </article>
-        );
-      })}
     </section>
   );
 }
@@ -752,334 +426,6 @@ function AreaBreakdownCharts({ row }: { row: DashboardRow }) {
   );
 }
 
-function StrategicInsights({ rows, fornecedores }: { rows: DashboardRow[]; fornecedores: Fornecedor[] }) {
-  const operacao = rows.filter((row) => row.family === "operacao");
-  const totalDemandas = sumRows(operacao, "demanda");
-  const finalizados = sumRows(operacao, "finalizados");
-  const risco = totalDemandas ? Math.round((sumRows(operacao, "riscoSla") / totalDemandas) * 100) : 0;
-  const completion = totalDemandas ? Math.round((finalizados / totalDemandas) * 100) : 0;
-  const contactCoverage = fornecedores.length
-    ? Math.round((fornecedores.filter((item) => item.email || item.telefone).length / fornecedores.length) * 100)
-    : 0;
-  const topBacklog = operacao.slice().sort((a, b) => b.emAberto - a.emAberto)[0];
-  const frota = rows.find((row) => row.key === "frota");
-
-  return (
-    <section className="strategic-grid">
-      <article>
-        <span>Conversao operacional</span>
-        <strong>{completion}%</strong>
-        <p>Demandas finalizadas apenas sobre os processos de atendimento.</p>
-      </article>
-      <article>
-        <span>Risco operacional</span>
-        <strong>{risco}%</strong>
-        <p>Percentual de processos em risco de SLA para priorizacao diaria.</p>
-      </article>
-      <article>
-        <span>Maior backlog</span>
-        <strong>{topBacklog?.processo || "-"}</strong>
-        <p>{topBacklog ? `${formatCount(topBacklog.emAberto)} ${topBacklog.openLabel}.` : "Sem processos em aberto."}</p>
-      </article>
-      <article>
-        <span>Disponibilidade da frota</span>
-        <strong>{frota ? formatPercent(frota.finalizados, frota.demanda) : "0%"}</strong>
-        <p>Veiculos disponiveis sobre o total cadastrado, fora do calculo de demandas.</p>
-      </article>
-      <article>
-        <span>Base de fornecedores</span>
-        <strong>{contactCoverage}%</strong>
-        <p>Cadastros com telefone ou e-mail para acionar fornecedores rapidamente.</p>
-      </article>
-    </section>
-  );
-}
-
-function summarizeRequisicoes(rows: Requisicao[]): DashboardRow {
-  const finalizados = rows.filter((item) => isFinalStatus(item.status)).length;
-  const emAberto = rows.length - finalizados;
-  const atrasadas = rows.filter((item) => !isFinalStatus(item.status) && isPastDate(item.data_necessidade)).length;
-  const urgentes = rows.filter((item) => normalizeText(item.prioridade).includes("urgent")).length;
-
-  return {
-    key: "requisicoes",
-    processo: "Requisicoes",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: rows.length,
-    emAberto,
-    finalizados,
-    riscoSla: atrasadas,
-    primaryLabel: "RMs",
-    openLabel: "RMs abertas",
-    doneLabel: "RMs em OC/finalizadas",
-    riskLabel: "RMs atrasadas",
-    indicador: "RMs abertas, compras em andamento, OCs e prazos vencidos.",
-    metrics: [
-      { title: "RMs importadas", value: rows.length, icon: ClipboardList, tone: "blue" },
-      { title: "Em aberto", value: emAberto, icon: Clock3, tone: emAberto ? "warning" : "success" },
-      { title: "OCs/finalizadas", value: finalizados, icon: PackageCheck, tone: "success" },
-      { title: "Atrasadas", value: atrasadas, icon: AlertTriangle, tone: atrasadas ? "danger" : "success" },
-      { title: "Urgentes", value: urgentes, icon: Gauge, tone: urgentes ? "warning" : "neutral" },
-    ],
-  };
-}
-
-function summarizeOrcamentos(rows: Orcamento[]): DashboardRow {
-  const finalizados = rows.filter((item) => isFinalStatus(item.status)).length;
-  const emAberto = rows.length - finalizados;
-  const atrasados = rows.filter((item) => !isFinalStatus(item.status) && isPastDate(item.data_entrega_cotacoes)).length;
-  const saving = rows.reduce((acc, item) => acc + Number(item.saving || 0), 0);
-
-  return {
-    key: "orcamentos",
-    processo: "Orcamentos",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: rows.length,
-    emAberto,
-    finalizados,
-    riscoSla: atrasados,
-    primaryLabel: "solicitacoes",
-    openLabel: "em aberto",
-    doneLabel: "finalizadas",
-    riskLabel: "com prazo vencido",
-    indicador: "Solicitacoes, cotacoes, saving e tempo ate finalizacao.",
-    metrics: [
-      { title: "Solicitacoes", value: rows.length, icon: FileSpreadsheet, tone: "blue" },
-      { title: "Em aberto", value: emAberto, icon: Clock3, tone: emAberto ? "warning" : "success" },
-      { title: "Finalizadas", value: finalizados, icon: CheckCircle2, tone: "success" },
-      { title: "Prazo vencido", value: atrasados, icon: AlertTriangle, tone: atrasados ? "danger" : "success" },
-      { title: "Saving", value: formatCurrency(saving), icon: DollarSign, tone: "success", chartValue: saving },
-    ],
-  };
-}
-
-function summarizeContratos(rows: Contrato[]): DashboardRow {
-  const finalizados = rows.filter((item) => isFinalStatus(item.status)).length;
-  const emAberto = rows.length - finalizados;
-  const urgentesVencidos = rows.filter((item) => !isFinalStatus(item.status) && isPastDate(item.prazo_urgencia)).length;
-
-  return {
-    key: "contratos",
-    processo: "Contratos",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: rows.length,
-    emAberto,
-    finalizados,
-    riscoSla: urgentesVencidos,
-    primaryLabel: "solicitacoes",
-    openLabel: "em andamento",
-    doneLabel: "finalizadas",
-    riskLabel: "urgencias vencidas",
-    indicador: "Solicitacoes contratuais, fase Compor, urgencia e prazo.",
-    metrics: [
-      { title: "Solicitacoes", value: rows.length, icon: FileText, tone: "blue" },
-      { title: "Em andamento", value: emAberto, icon: Clock3, tone: emAberto ? "warning" : "success" },
-      { title: "Finalizadas", value: finalizados, icon: CheckCircle2, tone: "success" },
-      { title: "Urgencias vencidas", value: urgentesVencidos, icon: AlertTriangle, tone: urgentesVencidos ? "danger" : "success" },
-    ],
-  };
-}
-
-function summarizeFornecedores(rows: Fornecedor[]): DashboardRow {
-  const ativos = rows.filter((item) => item.cadastro_ativo).length;
-  const inativos = rows.length - ativos;
-  const semContato = rows.filter((item) => !item.email && !item.telefone).length;
-  const ufs = new Set(rows.map((item) => item.uf).filter(Boolean)).size;
-
-  return {
-    key: "fornecedores",
-    processo: "Mapa de fornecedores",
-    family: "base",
-    familyLabel: familyLabels.base,
-    demanda: rows.length,
-    emAberto: inativos,
-    finalizados: ativos,
-    riscoSla: semContato,
-    primaryLabel: "fornecedores",
-    openLabel: "inativos",
-    doneLabel: "ativos",
-    riskLabel: "sem contato",
-    indicador: "Base de consulta e cadastro, sem contabilizar como demanda operacional.",
-    metrics: [
-      { title: "Fornecedores", value: rows.length, icon: Users, tone: "blue" },
-      { title: "Ativos", value: ativos, icon: CheckCircle2, tone: "success" },
-      { title: "Inativos", value: inativos, icon: Clock3, tone: inativos ? "warning" : "success" },
-      { title: "Sem contato", value: semContato, icon: AlertTriangle, tone: semContato ? "danger" : "success" },
-      { title: "UFs cobertas", value: ufs, icon: MapPinned, tone: "neutral" },
-    ],
-  };
-}
-
-function summarizeFretes(rows: Array<Record<string, unknown>>): DashboardRow {
-  const finalizados = rows.filter((item) => isFinalStatus(getText(item, ["status", "situacao", "fase"]))).length;
-  const emAberto = rows.length - finalizados;
-  const vencidos = rows.filter((item) => !isFinalStatus(getText(item, ["status", "situacao", "fase"])) && isPastDate(firstDefined(item, ["dataLimiteEntrega", "prazoEntrega", "dataEntrega", "dataColetaMaterial"]))).length;
-  const emTransporte = rows.filter((item) => normalizeText(getText(item, ["status", "situacao", "fase"])).includes("transporte")).length;
-
-  return {
-    key: "fretes",
-    processo: "Fretes",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: rows.length,
-    emAberto,
-    finalizados,
-    riscoSla: vencidos,
-    primaryLabel: "fretes",
-    openLabel: "em andamento",
-    doneLabel: "entregues/finalizados",
-    riskLabel: "vencidos",
-    indicador: "Solicitacoes logisticas, cotacoes, rotas e prazos de entrega.",
-    metrics: [
-      { title: "Fretes cadastrados", value: rows.length, icon: Truck, tone: "blue" },
-      { title: "Em andamento", value: emAberto, icon: Clock3, tone: emAberto ? "warning" : "success" },
-      { title: "Entregues", value: finalizados, icon: CheckCircle2, tone: "success" },
-      { title: "Vencidos", value: vencidos, icon: AlertTriangle, tone: vencidos ? "danger" : "success" },
-      { title: "Em transporte", value: emTransporte, icon: Gauge, tone: "neutral" },
-    ],
-  };
-}
-
-function summarizeFrota(vehicles: Array<Record<string, unknown>>, fines: Array<Record<string, unknown>>): DashboardRow {
-  const disponiveis = vehicles.filter((item) => isVehicleAvailable(item)).length;
-  const emUso = vehicles.filter((item) => isVehicleInUse(item)).length;
-  const manutencao = vehicles.filter((item) => normalizeText(getText(item, ["statusCarro", "status", "situacao"])).includes("manut")).length;
-  const contratosVencendo = vehicles.filter((item) => isWithinDays(firstDefined(item, ["terminoContrato", "fimContrato", "dataFimContrato", "vencimentoContrato"]), 45)).length;
-  const multasPendentes = fines.filter((item) => !isFinalStatus(getText(item, ["status", "situacao"]))).length;
-
-  return {
-    key: "frota",
-    processo: "Frota",
-    family: "ativo",
-    familyLabel: familyLabels.ativo,
-    demanda: vehicles.length,
-    emAberto: emUso,
-    finalizados: disponiveis,
-    riscoSla: contratosVencendo + multasPendentes,
-    primaryLabel: "veiculos",
-    openLabel: "em uso",
-    doneLabel: "disponiveis",
-    riskLabel: "alertas de contrato/multa",
-    indicador: "Veiculos, disponibilidade, contratos proximos do fim, manutencao e multas.",
-    metrics: [
-      { title: "Veiculos cadastrados", value: vehicles.length, icon: Car, tone: "blue" },
-      { title: "Em uso", value: emUso, icon: Gauge, tone: "neutral" },
-      { title: "Disponiveis", value: disponiveis, icon: CheckCircle2, tone: "success" },
-      { title: "Contratos <=45 dias", value: contratosVencendo, icon: Clock3, tone: contratosVencendo ? "warning" : "success" },
-      { title: "Manutencao", value: manutencao, icon: ShieldCheck, tone: manutencao ? "warning" : "success" },
-      { title: "Multas pendentes", value: multasPendentes, icon: AlertTriangle, tone: multasPendentes ? "danger" : "success" },
-    ],
-  };
-}
-
-function summarizeEstoque(pedidos: Array<Record<string, unknown>>, itens: Array<Record<string, unknown>>): DashboardRow {
-  const pedidosFinalizados = pedidos.filter((item) => isFinalStatus(getText(item, ["status", "situacao"]))).length;
-  const pedidosAbertos = pedidos.length - pedidosFinalizados;
-  const abaixoMinimo = itens.filter((item) => getNumber(item, ["qty", "quantidade", "saldo", "estoque"]) <= getNumber(item, ["min", "minimo", "estoqueMinimo"])).length;
-
-  return {
-    key: "estoque",
-    processo: "Estoque de obras",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: pedidos.length,
-    emAberto: pedidosAbertos,
-    finalizados: pedidosFinalizados,
-    riscoSla: abaixoMinimo,
-    primaryLabel: "pedidos",
-    openLabel: "pedidos abertos",
-    doneLabel: "pedidos concluidos",
-    riskLabel: "itens abaixo do minimo",
-    indicador: "Pedidos, itens em estoque, saldo minimo e reposicao por obra.",
-    metrics: [
-      { title: "Pedidos", value: pedidos.length, icon: Warehouse, tone: "blue" },
-      { title: "Itens cadastrados", value: itens.length, icon: PackageCheck, tone: "neutral" },
-      { title: "Pedidos abertos", value: pedidosAbertos, icon: Clock3, tone: pedidosAbertos ? "warning" : "success" },
-      { title: "Pedidos concluidos", value: pedidosFinalizados, icon: CheckCircle2, tone: "success" },
-      { title: "Abaixo do minimo", value: abaixoMinimo, icon: AlertTriangle, tone: abaixoMinimo ? "danger" : "success" },
-    ],
-  };
-}
-
-function summarizeAvaliacao(suppliers: Array<Record<string, unknown>>, evaluations: Array<Record<string, unknown>>): DashboardRow {
-  const pendentes = Math.max(suppliers.length - evaluations.length, 0);
-  const notasCriticas = evaluations.filter((item) => Number(item.average ?? item.media ?? 1) < 0.6).length;
-
-  return {
-    key: "avaliacao",
-    processo: "Avaliacao de fornecedores",
-    family: "operacao",
-    familyLabel: familyLabels.operacao,
-    demanda: suppliers.length,
-    emAberto: pendentes,
-    finalizados: evaluations.length,
-    riscoSla: notasCriticas,
-    primaryLabel: "fornecedores avaliaveis",
-    openLabel: "pendentes",
-    doneLabel: "avaliacoes realizadas",
-    riskLabel: "notas criticas",
-    indicador: "Acompanhamento de avaliacoes, pendencias por obra e fornecedores criticos.",
-    metrics: [
-      { title: "Fornecedores avaliaveis", value: suppliers.length, icon: Users, tone: "blue" },
-      { title: "Avaliacoes feitas", value: evaluations.length, icon: Star, tone: "success" },
-      { title: "Pendentes", value: pendentes, icon: Clock3, tone: pendentes ? "warning" : "success" },
-      { title: "Notas criticas", value: notasCriticas, icon: AlertTriangle, tone: notasCriticas ? "danger" : "success" },
-    ],
-  };
-}
-
-function safeLocalValue(key: string): unknown {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(window.localStorage.getItem(key) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function safeLocalArray(key: string): Array<Record<string, unknown>> {
-  const value = safeLocalValue(key);
-  return Array.isArray(value) ? value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item)) : [];
-}
-
-function safeLocalObject(key: string): Record<string, any> {
-  const value = safeLocalValue(key);
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, any>) : {};
-}
-
-function arrayFromSnapshot(snapshot: EmbeddedStorageSnapshot, storageKey: string, fallbackLocalKey: string): Array<Record<string, unknown>> {
-  const value = snapshot[storageKey];
-  if (Array.isArray(value)) {
-    return value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item));
-  }
-  return safeLocalArray(fallbackLocalKey);
-}
-
-function objectFromSnapshot(snapshot: EmbeddedStorageSnapshot, storageKey: string, fallbackLocalKey: string): Record<string, any> {
-  const value = snapshot[storageKey];
-  if (value && typeof value === "object" && !Array.isArray(value)) return value as Record<string, any>;
-  return safeLocalObject(fallbackLocalKey);
-}
-
-function sumRows(rows: DashboardRow[], key: "demanda" | "emAberto" | "finalizados" | "riscoSla") {
-  return rows.reduce((acc, row) => acc + row[key], 0);
-}
-
-function rowTotals(rows: DashboardRow[]) {
-  return rows.reduce(
-    (acc, row) => ({
-      demanda: acc.demanda + row.demanda,
-      emAberto: acc.emAberto + row.emAberto,
-      finalizados: acc.finalizados + row.finalizados,
-      riscoSla: acc.riscoSla + row.riscoSla,
-    }),
-    { demanda: 0, emAberto: 0, finalizados: 0, riscoSla: 0 }
-  );
-}
-
 function calculateHealthScore(rows: DashboardRow[]) {
   const totals = rowTotals(rows);
   if (!totals.demanda) return 100;
@@ -1088,90 +434,6 @@ function calculateHealthScore(rows: DashboardRow[]) {
   const backlogRate = totals.emAberto / totals.demanda;
   const score = 100 - riskRate * 48 - backlogRate * 22 + completionRate * 18;
   return Math.max(0, Math.min(100, Math.round(score)));
-}
-
-function getText(row: Record<string, unknown>, keys: string[]) {
-  const value = firstDefined(row, keys);
-  return String(value ?? "");
-}
-
-function getNumber(row: Record<string, unknown>, keys: string[]) {
-  const value = firstDefined(row, keys);
-  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
-  return parseMoney(value);
-}
-
-function firstDefined(row: Record<string, unknown>, keys: string[]) {
-  for (const key of keys) {
-    if (row[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
-  }
-  return null;
-}
-
-function isVehicleAvailable(item: Record<string, unknown>) {
-  const status = normalizeText(getText(item, ["statusCarro", "status", "situacao"]));
-  return status.includes("disponivel") || status.includes("livre");
-}
-
-function isVehicleInUse(item: Record<string, unknown>) {
-  const status = normalizeText(getText(item, ["statusCarro", "status", "situacao"]));
-  return status.includes("uso") || status.includes("locado") || status.includes("alocado") || status.includes("reservado");
-}
-
-function isPastDate(value: unknown) {
-  const date = parseDate(value);
-  if (!date) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today;
-}
-
-function isWithinDays(value: unknown, days: number) {
-  const date = parseDate(value);
-  if (!date) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const limit = new Date(today);
-  limit.setDate(limit.getDate() + days);
-  return date >= today && date <= limit;
-}
-
-function parseDate(value: unknown) {
-  if (!value) return null;
-  const text = String(value).trim();
-  const brDate = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
-  if (brDate) {
-    const year = brDate[3].length === 2 ? `20${brDate[3]}` : brDate[3];
-    const date = new Date(`${year}-${brDate[2].padStart(2, "0")}-${brDate[1].padStart(2, "0")}T00:00:00`);
-    return Number.isNaN(date.getTime()) ? null : date;
-  }
-  const date = new Date(text);
-  if (Number.isNaN(date.getTime())) return null;
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-function isFinalStatus(value: unknown) {
-  const status = normalizeText(value);
-  return ["final", "finalizado", "entregue", "oc", "cancel", "concluido", "aprovado", "disponivel", "pago", "baixado"].some((item) => status.includes(item));
-}
-
-function processIcon(key: DashboardRow["key"]) {
-  const icons = {
-    requisicoes: <ClipboardList size={22} />,
-    orcamentos: <FileSpreadsheet size={22} />,
-    contratos: <FileText size={22} />,
-    fornecedores: <MapPinned size={22} />,
-    fretes: <Truck size={22} />,
-    frota: <Car size={22} />,
-    estoque: <Warehouse size={22} />,
-    avaliacao: <Star size={22} />,
-  };
-  return icons[key];
-}
-
-function formatCount(value: number) {
-  return Number(value || 0).toLocaleString("pt-BR");
 }
 
 function formatPercent(part: number, total: number) {

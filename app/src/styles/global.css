@@ -5690,3 +5690,196 @@ html[data-theme="dark"] .orcamento-semaphore--neutral {
     width: calc(100vw - 20px);
   }
 }
+
+/* JARVIS SUPPLY */
+
+.jarvis-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 12px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--blue-950), var(--blue-700));
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 26px rgba(10, 46, 61, 0.32), 0 0 0 3px color-mix(in srgb, var(--yellow) 55%, transparent);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.jarvis-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(10, 46, 61, 0.38), 0 0 0 3px var(--yellow);
+}
+
+.jarvis-drawer > header {
+  margin: -20px -20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--blue-950), var(--blue-700));
+  border-bottom: 4px solid var(--yellow);
+  border-radius: 0;
+}
+
+.jarvis-drawer > header .eyebrow {
+  color: var(--yellow);
+}
+
+.jarvis-drawer > header h2 {
+  color: #ffffff;
+}
+
+.jarvis-drawer > header .icon-button {
+  background: var(--yellow);
+  color: var(--blue-950);
+  border-color: transparent;
+}
+
+.jarvis-chat {
+  display: grid;
+  gap: 12px;
+  height: calc(100vh - 140px);
+  grid-template-rows: minmax(0, 1fr) auto auto;
+}
+
+.jarvis-chat-messages {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 2px;
+}
+
+.jarvis-chat-empty {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--muted);
+  background: var(--soft);
+}
+
+.jarvis-chat-empty p {
+  margin: 0 0 8px;
+}
+
+.jarvis-chat-empty ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.jarvis-message {
+  max-width: 88%;
+  border-radius: 14px;
+  padding: 10px 13px;
+}
+
+.jarvis-message p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
+.jarvis-message--user {
+  align-self: flex-end;
+  background: var(--blue-700);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.jarvis-message--assistant {
+  align-self: flex-start;
+  background: var(--soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+
+.jarvis-message--typing {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 13px 15px;
+}
+
+.jarvis-message--typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  animation: jarvis-typing 1.1s infinite ease-in-out;
+}
+
+.jarvis-message--typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.jarvis-message--typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes jarvis-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.jarvis-chat-error {
+  margin: 0;
+}
+
+.jarvis-chat-form {
+  display: flex;
+  gap: 8px;
+}
+
+.jarvis-chat-form input {
+  flex: 1;
+}
+
+.jarvis-chat-form button {
+  flex-shrink: 0;
+  width: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jarvis-reset {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 560px) {
+  .jarvis-fab span {
+    display: none;
+  }
+
+  .jarvis-fab {
+    padding: 12px;
+    right: 14px;
+    bottom: 14px;
+  }
+}

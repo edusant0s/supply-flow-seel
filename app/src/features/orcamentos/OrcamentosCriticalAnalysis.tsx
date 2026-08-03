@@ -17,9 +17,9 @@ import type { Orcamento } from "../../types";
 import { averageOrcamentoSlaMs, formatBusinessDuration, getOrcamentoSla } from "./sla";
 import { getAssignedToList, getOrcamentoOutcome, openStatuses } from "./model";
 
-type OrcamentoTone = "success" | "monitor" | "warning" | "danger";
+export type OrcamentoTone = "success" | "monitor" | "warning" | "danger";
 
-type OrcamentoAnalysisCard = {
+export type OrcamentoAnalysisCard = {
   key: string;
   tone: OrcamentoTone;
   icon: LucideIcon;
@@ -31,7 +31,7 @@ type OrcamentoAnalysisCard = {
   action: string;
 };
 
-type OrcamentoAnalysis = {
+export type OrcamentoAnalysis = {
   total: number;
   healthScore: number;
   headlineTone: OrcamentoTone;
@@ -132,7 +132,7 @@ export function OrcamentosCriticalAnalysis({ items, now }: { items: Orcamento[];
   );
 }
 
-function buildOrcamentoCriticalAnalysis(items: Orcamento[], now: number): OrcamentoAnalysis {
+export function buildOrcamentoCriticalAnalysis(items: Orcamento[], now: number): OrcamentoAnalysis {
   const total = items.length;
   if (!total) return emptyAnalysis();
 
