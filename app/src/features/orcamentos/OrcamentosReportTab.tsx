@@ -58,6 +58,7 @@ export function OrcamentosReportTab({ items, now }: { items: Orcamento[]; now: n
         </div>
         <DataTable
           data={filtered}
+          className="orcamento-report-table-scroll"
           columns={[
             { key: "proposta", label: "Proposta", render: (item) => item.numero_proposta || "-" },
             { key: "cliente", label: "Cliente", render: (item) => item.cliente || "-" },

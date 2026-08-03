@@ -897,6 +897,17 @@ th {
   padding: 28px;
 }
 
+.orcamento-report-table-scroll {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.orcamento-report-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .state-panel {
   width: min(720px, calc(100% - 32px));
   margin: 12vh auto;

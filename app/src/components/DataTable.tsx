@@ -11,13 +11,15 @@ export function DataTable<T>({
   columns,
   data,
   empty = "Nenhum registro encontrado.",
+  className,
 }: {
   columns: DataColumn<T>[];
   data: T[];
   empty?: string;
+  className?: string;
 }) {
   return (
-    <div className="table-shell">
+    <div className={`table-shell${className ? ` ${className}` : ""}`}>
       <table>
         <thead>
           <tr>
