@@ -66,6 +66,12 @@ import {
 type DueTone = "success" | "warning" | "danger" | "neutral";
 type DueFilter = "todos" | DueTone;
 
+const OUTCOME_TONE: Record<OrcamentoOutcome, string> = {
+  ganha: "success",
+  perdida: "danger",
+  aguardando: "warning",
+};
+
 const statusMeta: Record<string, { icon: LucideIcon; subtitle: string; accent: string }> = {
   nao_iniciado: {
     icon: ClipboardList,
@@ -665,8 +671,6 @@ function OrcamentoDrawer({
   const [outcome, setOutcome] = useState<OrcamentoOutcome>(getOrcamentoOutcome(item));
   const [folderLink, setFolderLink] = useState(getFolderLink(item));
   const [qtd, setQtd] = useState(String(item.quantidade_req || ""));
-  const [valorInicial, setValorInicial] = useState(String(item.valor_inicial ?? ""));
-  const [valorFinal, setValorFinal] = useState(String(item.valor_final ?? ""));
   const [saving, setSaving] = useState(String(item.saving || ""));
   const [status, setStatus] = useState(item.status || "nao_iniciado");
   const [commentText, setCommentText] = useState("");
@@ -675,6 +679,16 @@ function OrcamentoDrawer({
   const [savingAdmin, setSavingAdmin] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
+  const isSuperAdmin = profile?.role === "super_admin";
+  const [infoSolicitante, setInfoSolicitante] = useState(item.nome_solicitante || "");
+  const [infoEmail, setInfoEmail] = useState(item.email_solicitante || "");
+  const [infoNomeObra, setInfoNomeObra] = useState(String(item.payload?.nome_obra || item.local_obra || ""));
+  const [infoCliente, setInfoCliente] = useState(item.cliente || "");
+  const [infoLocalObra, setInfoLocalObra] = useState(item.local_obra || "");
+  const [infoTipo, setInfoTipo] = useState(item.tipo_orcamento || "");
+  const [infoObservacoes, setInfoObservacoes] = useState(item.observacoes || String(item.payload?.observacoes || ""));
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [infoMessage, setInfoMessage] = useState("");
   const sla = getOrcamentoSla(item, now);
   const due = getDueInfo(item);
   const comments = getOrcamentoComments(item);
@@ -689,11 +703,43 @@ function OrcamentoDrawer({
     setOutcome(getOrcamentoOutcome(item));
     setFolderLink(getFolderLink(item));
     setQtd(String(item.quantidade_req || ""));
-    setValorInicial(String(item.valor_inicial ?? ""));
-    setValorFinal(String(item.valor_final ?? ""));
     setSaving(String(item.saving || ""));
     setStatus(item.status || "nao_iniciado");
+    setInfoSolicitante(item.nome_solicitante || "");
+    setInfoEmail(item.email_solicitante || "");
+    setInfoNomeObra(String(item.payload?.nome_obra || item.local_obra || ""));
+    setInfoCliente(item.cliente || "");
+    setInfoLocalObra(item.local_obra || "");
+    setInfoTipo(item.tipo_orcamento || "");
+    setInfoObservacoes(item.observacoes || String(item.payload?.observacoes || ""));
   }, [item]);
+
+  async function saveInfoFields() {
+    setInfoMessage("");
+    setSavingInfo(true);
+    try {
+      const mergedPayload = appendOrcamentoLog(
+        { ...(item.payload || {}), nome_obra: infoNomeObra || null, observacoes: infoObservacoes || null },
+        buildOrcamentoLog("Informacoes da solicitacao atualizadas", profile)
+      );
+      await updateEntity("orcamentos", item.id, {
+        nome_solicitante: infoSolicitante || null,
+        email_solicitante: infoEmail || null,
+        cliente: infoCliente || null,
+        local_obra: infoLocalObra || null,
+        tipo_orcamento: infoTipo || null,
+        observacoes: infoObservacoes || null,
+        payload: mergedPayload,
+      });
+      setInfoMessage("Informacoes atualizadas.");
+      invalidateAsyncData(["orcamentos", "alertas:orcamentos", "dashboard:summary"]);
+      onSaved();
+    } catch (err) {
+      setInfoMessage(err instanceof Error ? err.message : "Falha ao salvar as informacoes.");
+    } finally {
+      setSavingInfo(false);
+    }
+  }
 
   async function saveAdminFields() {
     setSavingMessage("");
@@ -740,8 +786,6 @@ function OrcamentoDrawer({
         atribuido_a: assignedTo || null,
         link_pasta: folderLink || null,
         quantidade_req: Number(qtd || 0),
-        valor_inicial: valorInicial.trim() === "" ? null : Number(valorInicial),
-        valor_final: valorFinal.trim() === "" ? null : Number(valorFinal),
         saving: Number(saving || 0),
       });
       setSavingMessage("Dados salvos.");
@@ -799,42 +843,42 @@ function OrcamentoDrawer({
   }
 
   return (
-    <DetailDrawer eyebrow="Solicitacao de orcamento" title={item.numero_proposta || "Sem proposta"} onClose={onClose}>
+    <DetailDrawer eyebrow="Solicitacao de orcamento" title={item.numero_proposta || "Sem proposta"} onClose={onClose} className="orcamento-detail-drawer">
       <section className="orcamento-drawer-summary">
-        <article>
+        <article className={`orcamento-summary-article orcamento-summary-article--${due.tone}`}>
           <span>Semaforo</span>
           <strong className={`orcamento-summary-tone orcamento-summary-tone--${due.tone}`}>{due.label}</strong>
         </article>
-        <article>
+        <article className="orcamento-summary-article orcamento-summary-article--blue">
           <span>Fase atual</span>
           <strong>{phaseLabel(item.status)}</strong>
         </article>
-        <article>
+        <article className="orcamento-summary-article orcamento-summary-article--navy">
           <span>SLA total</span>
           <strong>{formatBusinessDuration(sla.totalMs)}</strong>
         </article>
-        <article>
+        <article className="orcamento-summary-article">
           <span>Linhas</span>
           <strong>{getLineCount(item)}</strong>
         </article>
-        <article>
+        <article className="orcamento-summary-article orcamento-summary-article--success">
           <span>Saving</span>
           <strong>{formatCurrency(item.saving || 0)}</strong>
         </article>
-        <article>
+        <article className={`orcamento-summary-article orcamento-summary-article--${OUTCOME_TONE[outcome]}`}>
           <span>Resultado</span>
-          <strong>{outcomeLabel(getOrcamentoOutcome(item))}</strong>
+          <strong>{outcomeLabel(outcome)}</strong>
         </article>
       </section>
 
       <div className="drawer-grid">
-        <InfoField label="Solicitante" value={item.nome_solicitante || "-"} />
-        <InfoField label="E-mail" value={item.email_solicitante || "-"} />
+        <EditableInfoField label="Solicitante" value={infoSolicitante} onChange={setInfoSolicitante} editable={isSuperAdmin} fallback={item.nome_solicitante} />
+        <EditableInfoField label="E-mail" value={infoEmail} onChange={setInfoEmail} editable={isSuperAdmin} type="email" fallback={item.email_solicitante} />
         <InfoField label="Data solicitacao" value={formatDateBr(item.data_solicitacao)} />
-        <InfoField label="Nome da obra" value={String(item.payload?.nome_obra || item.local_obra || "-")} />
-        <InfoField label="Cliente" value={item.cliente || "-"} />
-        <InfoField label="Local/obra" value={item.local_obra || "-"} />
-        <InfoField label="Tipo" value={item.tipo_orcamento || "-"} />
+        <EditableInfoField label="Nome da obra" value={infoNomeObra} onChange={setInfoNomeObra} editable={isSuperAdmin} fallback={String(item.payload?.nome_obra || item.local_obra || "")} />
+        <EditableInfoField label="Cliente" value={infoCliente} onChange={setInfoCliente} editable={isSuperAdmin} fallback={item.cliente} />
+        <EditableInfoField label="Local/obra" value={infoLocalObra} onChange={setInfoLocalObra} editable={isSuperAdmin} fallback={item.local_obra} />
+        <EditableInfoField label="Tipo" value={infoTipo} onChange={setInfoTipo} editable={isSuperAdmin} fallback={item.tipo_orcamento} />
         <InfoField label="Atribuido a" value={getAssignedTo(item) || "-"} />
         <InfoField label="Entrega cotacoes" value={formatDateBr(item.data_entrega_cotacoes)} />
         <InfoField label="Finalizado em" value={formatDateTimeBr(getFinalizationDate(item))} />
@@ -843,8 +887,25 @@ function OrcamentoDrawer({
         <InfoField label="Em cotacao" value={formatBusinessDuration(sla.phaseMs.em_cotacao || 0)} />
         <InfoField label="Cronometro atual" value={formatBusinessDuration(sla.currentMs)} />
         <InfoField label="Total processo" value={formatBusinessDuration(sla.totalMs)} />
-        <InfoField label="Observacoes" value={item.observacoes || String(item.payload?.observacoes || "-")} />
+        <EditableInfoField
+          label="Observacoes"
+          value={infoObservacoes}
+          onChange={setInfoObservacoes}
+          editable={isSuperAdmin}
+          fallback={item.observacoes || String(item.payload?.observacoes || "")}
+          textarea
+        />
       </div>
+
+      {isSuperAdmin ? (
+        <div className="drawer-grid-actions">
+          <span className="drawer-grid-actions-hint">Campos editaveis pelo super admin.</span>
+          {infoMessage ? <div className="form-note">{infoMessage}</div> : null}
+          <button className="secondary-button" type="button" onClick={saveInfoFields} disabled={savingInfo}>
+            {savingInfo ? "Salvando..." : "Salvar informacoes"}
+          </button>
+        </div>
+      ) : null}
 
       {getFolderLink(item) ? (
         <a className="secondary-button orcamento-folder-link" href={getFolderLink(item)} target="_blank" rel="noreferrer">
@@ -888,8 +949,6 @@ function OrcamentoDrawer({
             </label>
             <Field label="Link da pasta" value={folderLink} onChange={setFolderLink} />
             <Field label="Quantidade de linhas" type="number" value={qtd} onChange={setQtd} />
-            <Field label="Valor inicial" type="number" value={valorInicial} onChange={setValorInicial} />
-            <Field label="Valor final" type="number" value={valorFinal} onChange={setValorFinal} />
             <Field label="Saving" type="number" value={saving} onChange={setSaving} />
           </div>
           {savingMessage ? <div className="form-note">{savingMessage}</div> : null}
@@ -976,7 +1035,7 @@ function OrcamentoDrawer({
         )}
       </section>
 
-      <section className="panel panel--flat">
+      <section className="panel panel--flat orcamento-attachments-panel">
         <div className="panel-heading">
           <div>
             <span className="eyebrow">Anexos</span>
@@ -1055,6 +1114,36 @@ function Field({
     <label>
       {label}
       <input type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function EditableInfoField({
+  label,
+  value,
+  onChange,
+  editable,
+  fallback,
+  type = "text",
+  textarea = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  editable: boolean;
+  fallback?: string | null;
+  type?: string;
+  textarea?: boolean;
+}) {
+  if (!editable) return <InfoField label={label} value={fallback || "-"} />;
+  return (
+    <label className="info-field info-field--editable">
+      <span>{label}</span>
+      {textarea ? (
+        <textarea value={value} onChange={(event) => onChange(event.target.value)} />
+      ) : (
+        <input type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+      )}
     </label>
   );
 }

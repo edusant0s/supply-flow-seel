@@ -6,15 +6,17 @@ export function DetailDrawer({
   title,
   onClose,
   children,
+  className,
 }: {
   eyebrow: string;
   title: React.ReactNode;
   onClose: () => void;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div className="drawer-backdrop">
-      <aside className="detail-drawer">
+      <aside className={`detail-drawer${className ? ` ${className}` : ""}`}>
         <header>
           <div>
             <span className="eyebrow">{eyebrow}</span>

@@ -4366,9 +4366,31 @@ html[data-theme="dark"] .data-hub-grid button.active {
   align-content: center;
   gap: 4px;
   border: 1px solid var(--line);
+  border-top: 3px solid var(--line);
   border-radius: 8px;
   background: var(--soft);
   padding: 10px;
+}
+
+.orcamento-summary-article--success {
+  border-top-color: var(--green);
+}
+
+.orcamento-summary-article--warning {
+  border-top-color: var(--amber);
+}
+
+.orcamento-summary-article--danger {
+  border-top-color: var(--red);
+}
+
+.orcamento-summary-article--neutral,
+.orcamento-summary-article--blue {
+  border-top-color: var(--blue-700);
+}
+
+.orcamento-summary-article--navy {
+  border-top-color: var(--blue-950);
 }
 
 .orcamento-drawer-summary span {
@@ -4399,8 +4421,69 @@ html[data-theme="dark"] .data-hub-grid button.active {
   color: var(--blue-700) !important;
 }
 
+.orcamento-detail-drawer > header {
+  margin: -20px -20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--blue-950), var(--blue-700));
+  border-bottom: 4px solid var(--yellow);
+  border-radius: 0;
+}
+
+.orcamento-detail-drawer > header .eyebrow {
+  color: var(--yellow);
+}
+
+.orcamento-detail-drawer > header h2 {
+  color: #ffffff;
+}
+
+.orcamento-detail-drawer > header .icon-button {
+  background: var(--yellow);
+  color: var(--blue-950);
+  border-color: transparent;
+}
+
+.info-field--editable {
+  cursor: text;
+}
+
+.orcamento-detail-drawer .info-field--editable input,
+.orcamento-detail-drawer .info-field--editable textarea {
+  margin: 0;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.orcamento-detail-drawer .info-field--editable textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.drawer-grid-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--yellow) 45%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--yellow) 12%, var(--panel));
+}
+
+.drawer-grid-actions-hint {
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
 .orcamento-admin-panel {
-  border-left: 3px solid var(--yellow);
+  border-left: 3px solid var(--blue-700);
 }
 
 .orcamento-folder-link {
@@ -4427,7 +4510,7 @@ html[data-theme="dark"] .data-hub-grid button.active {
   justify-content: center;
   border-radius: 999px;
   background: currentColor;
-  color: var(--panel);
+  color: #ffffff;
   font-size: 0.66rem;
   line-height: 1;
 }
@@ -4435,12 +4518,19 @@ html[data-theme="dark"] .data-hub-grid button.active {
 .orcamento-comment-badge--alert {
   border-color: color-mix(in srgb, var(--yellow) 52%, transparent);
   color: var(--blue-950);
-  background: color-mix(in srgb, var(--yellow) 24%, var(--panel));
+  background: color-mix(in srgb, var(--yellow) 26%, white);
 }
 
-.orcamento-comments-panel,
+.orcamento-comments-panel {
+  border-left: 3px solid var(--green);
+}
+
 .orcamento-log-panel {
-  border-left: 3px solid var(--yellow);
+  border-left: 3px solid var(--blue-950);
+}
+
+.orcamento-attachments-panel {
+  border-left: 3px solid var(--amber);
 }
 
 .orcamento-comment-list,
