@@ -89,8 +89,13 @@ export function OrcamentosDashboardTab({ items, now }: { items: Orcamento[]; now
     [proposalItems]
   );
   const proposalsByMonthRows = useMemo(() => buildMonthlyRows(proposalItems), [proposalItems]);
-  const phaseSlaRows = useMemo(() => buildPhaseSlaRows(filtered, now), [filtered, now]);
-  const proposalSlaRows = useMemo(() => buildProposalSlaRows(proposalItems, now), [proposalItems, now]);
+  // "now" ticks every second in the parent page; excluding it here on purpose so these
+  // SLA charts only recompute (and re-animate) when the request list or filters actually
+  // change, instead of re-animating every second for an imperceptible time delta.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const phaseSlaRows = useMemo(() => buildPhaseSlaRows(filtered, now), [filtered]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const proposalSlaRows = useMemo(() => buildProposalSlaRows(proposalItems, now), [proposalItems]);
   const proposalSlaTruncated = proposalItems.length > proposalSlaRows.length;
 
   const textColor = readCssVar("--text", "#081b23");
