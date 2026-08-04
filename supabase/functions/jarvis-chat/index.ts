@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
 
-const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
-const GEMINI_MAX_TOKENS = 1536;
+const DEFAULT_GEMINI_MODEL = "gemini-flash-latest";
+const GEMINI_MAX_TOKENS = 2048;
+const GEMINI_THINKING_BUDGET = 512;
 const MAX_MESSAGES = 40;
 
 const defaultAllowedOrigins = [
@@ -190,10 +191,14 @@ function toGeminiContents(messages: JarvisMessage[]) {
 }
 
 function fromGeminiResponse(payload: {
-  candidates?: Array<{ content?: { parts?: Array<{ text?: string; functionCall?: { name: string; args?: Record<string, unknown> } }> } }>;
+  candidates?: Array<{
+    content?: { parts?: Array<{ text?: string; functionCall?: { name: string; args?: Record<string, unknown> } }> };
+    finishReason?: string;
+  }>;
   usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
 }) {
-  const parts = payload.candidates?.[0]?.content?.parts || [];
+  const candidate = payload.candidates?.[0];
+  const parts = candidate?.content?.parts || [];
   let hasToolUse = false;
 
   const content: ContentBlock[] = parts.map((part) => {
@@ -203,6 +208,13 @@ function fromGeminiResponse(payload: {
     }
     return { type: "text", text: part.text || "" };
   });
+
+  if (!content.length && candidate?.finishReason === "MAX_TOKENS") {
+    content.push({
+      type: "text",
+      text: "A resposta foi interrompida por exceder o limite de tokens antes de gerar texto visivel. Tente reformular a pergunta de forma mais direta.",
+    });
+  }
 
   return {
     content,
@@ -287,7 +299,10 @@ serve(async (req) => {
           contents: toGeminiContents(messages),
           systemInstruction: { parts: [{ text: systemPrompt }] },
           tools: toGeminiTools(),
-          generationConfig: { maxOutputTokens: GEMINI_MAX_TOKENS },
+          generationConfig: {
+            maxOutputTokens: GEMINI_MAX_TOKENS,
+            thinkingConfig: { thinkingBudget: GEMINI_THINKING_BUDGET },
+          },
         }),
       }
     );

@@ -25,9 +25,15 @@ informação.
   `Authorization`, checagem de usuário ativo em `profiles`), converte as mensagens
   para o formato da Gemini API (`toGeminiContents`/`toGeminiTools`) e repassa a
   conversa para a API do Gemini (`generativelanguage.googleapis.com`), usando o
-  modelo `gemini-2.0-flash` por padrão (configurável via secret `GEMINI_MODEL`). Ela
-  não tem acesso de service-role e não executa nenhuma ferramenta — só monta o system
-  prompt e faz o relay.
+  modelo `gemini-flash-latest` por padrão (configurável via secret `GEMINI_MODEL`).
+  Testado e confirmado com chamadas reais: `gemini-2.0-flash` (pinado) tinha cota
+  gratuita zerada nesta conta — `gemini-flash-latest` é o alias que de fato tem cota
+  gratuita disponível (hoje resolve para `gemini-3.6-flash`). Esse modelo usa
+  "thinking" por padrão, que pode consumir todo o limite de tokens antes de gerar
+  texto visível — por isso `generationConfig.thinkingConfig.thinkingBudget` é
+  limitado a 512 tokens, deixando o restante do orçamento (2048 no total) para a
+  resposta real. Ela não tem acesso de service-role e não executa nenhuma
+  ferramenta — só monta o system prompt e faz o relay.
 - **Auditoria leve.** Cada pergunta feita ao JARVIS grava uma linha em
   `public.jarvis_interactions` (migration `025_jarvis_interactions.sql`):
   usuário, módulo, pergunta e quais ferramentas foram usadas. É best-effort — se a
