@@ -28,7 +28,6 @@ import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import type React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { AlertNotificationBell } from "../features/alertas/AlertNotificationBell";
-import { JarvisAssistant } from "../features/jarvis/JarvisAssistant";
 import { canView, roleLabel } from "../lib/permissions";
 import { useSupplyFlowRealtime } from "../useSupplyFlowRealtime";
 import type { ModuleKey } from "../types";
@@ -219,8 +218,6 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
-
-      <JarvisAssistant />
     </div>
   );
 }

@@ -31,9 +31,8 @@ import type { Contrato, Fornecedor, Orcamento, Requisicao } from "../../types";
 
 /**
  * Pure, framework-agnostic dashboard aggregation logic (no JSX, no React import).
- * Kept separate from DashboardPage.tsx so other consumers (e.g. the JARVIS tools
- * layer) can reuse it without pulling the whole Dashboard page/component into
- * their bundle chunk.
+ * Kept separate from DashboardPage.tsx so it can be reused without pulling the
+ * whole Dashboard page/component into another bundle chunk.
  */
 
 export type ProcessKey =
