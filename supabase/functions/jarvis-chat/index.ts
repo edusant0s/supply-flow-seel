@@ -147,8 +147,8 @@ Regras invioláveis:
 }
 
 type ContentBlock =
-  | { type: "text"; text: string }
-  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
+  | { type: "text"; text: string; thoughtSignature?: string }
+  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown>; thoughtSignature?: string }
   | { type: "tool_result"; tool_use_id: string; name?: string; content: string };
 
 type JarvisMessage = { role: "user" | "assistant"; content: string | ContentBlock[] };
@@ -181,8 +181,9 @@ function toGeminiContents(messages: JarvisMessage[]) {
     }
 
     const parts = message.content.map((block) => {
-      if (block.type === "text") return { text: block.text };
-      if (block.type === "tool_use") return { functionCall: { name: block.name, args: block.input || {} } };
+      const signature = block.type !== "tool_result" && block.thoughtSignature ? { thoughtSignature: block.thoughtSignature } : {};
+      if (block.type === "text") return { text: block.text, ...signature };
+      if (block.type === "tool_use") return { functionCall: { name: block.name, args: block.input || {} }, ...signature };
       return { functionResponse: { name: block.name || "", response: { result: safeParseJson(block.content) } } };
     });
 
@@ -192,7 +193,9 @@ function toGeminiContents(messages: JarvisMessage[]) {
 
 function fromGeminiResponse(payload: {
   candidates?: Array<{
-    content?: { parts?: Array<{ text?: string; functionCall?: { name: string; args?: Record<string, unknown> } }> };
+    content?: {
+      parts?: Array<{ text?: string; functionCall?: { name: string; args?: Record<string, unknown> }; thoughtSignature?: string }>;
+    };
     finishReason?: string;
   }>;
   usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
@@ -204,9 +207,15 @@ function fromGeminiResponse(payload: {
   const content: ContentBlock[] = parts.map((part) => {
     if (part.functionCall) {
       hasToolUse = true;
-      return { type: "tool_use", id: crypto.randomUUID(), name: part.functionCall.name, input: part.functionCall.args || {} };
+      return {
+        type: "tool_use",
+        id: crypto.randomUUID(),
+        name: part.functionCall.name,
+        input: part.functionCall.args || {},
+        thoughtSignature: part.thoughtSignature,
+      };
     }
-    return { type: "text", text: part.text || "" };
+    return { type: "text", text: part.text || "", thoughtSignature: part.thoughtSignature };
   });
 
   if (!content.length && candidate?.finishReason === "MAX_TOKENS") {

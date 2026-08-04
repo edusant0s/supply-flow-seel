@@ -1,8 +1,8 @@
 import { requireSupabase, supabaseAnonKey, supabaseUrl } from "../../services/supabase";
 
 export type JarvisContentBlock =
-  | { type: "text"; text: string }
-  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
+  | { type: "text"; text: string; thoughtSignature?: string }
+  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown>; thoughtSignature?: string }
   | { type: "tool_result"; tool_use_id: string; name: string; content: string };
 
 export type JarvisMessage = { role: "user" | "assistant"; content: string | JarvisContentBlock[] };
