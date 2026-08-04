@@ -30,7 +30,7 @@ const baseTabs: { key: OrcamentosTab; label: string; icon: LucideIcon }[] = [
 
 export function OrcamentosPage() {
   const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useSessionState<OrcamentosTab>("supply-flow:orcamentos:tab", "dashboard");
+  const [activeTab, setActiveTab] = useSessionState<OrcamentosTab>("supply-flow:orcamentos:tab", "kanban");
   const [now, setNow] = useState(() => Date.now());
   const { data, loading, error, refresh } = useAsyncData(() => listEntities("orcamentos"), [], { cacheKey: "orcamentos" });
   const specState = useAsyncData(() => listEmbeddedStateValue<OrcamentoFormSpec>(ORCAMENTOS_FORM_STORAGE_KEY), [], {
