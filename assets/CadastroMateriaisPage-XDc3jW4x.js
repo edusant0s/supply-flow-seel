@@ -1,0 +1,1 @@
+import{o as e,s as t}from"./supabase-BTP2KvF4.js";import{t as n}from"./index-lbeaqrJY.js";var r=t(),i=()=>e(()=>import(`./cadastro-materiais-DlsNcEsd.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`Cadastro de materiais`,moduleKey:`cadastro_materiais`,loadHtml:i})}export{a as CadastroMateriaisPage};

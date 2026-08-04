@@ -1,0 +1,1 @@
+import{o as e,s as t}from"./supabase-BTP2KvF4.js";import{t as n}from"./index-lbeaqrJY.js";var r=t(),i=()=>e(()=>import(`./nota-fiscal-BxB0v-1U.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`NF de simples remessa`,moduleKey:`nota_fiscal`,loadHtml:i})}export{a as NotaFiscalPage};

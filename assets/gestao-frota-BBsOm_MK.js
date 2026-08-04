@@ -1,0 +1,20860 @@
+var e=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Frota - Obras</title>
+  <style>
+    :root {
+      --green-950: #003c71;
+      --green-900: #00518f;
+      --green-800: #0069b4;
+      --green-600: #0079c8;
+      --lime: #ffd900;
+      --lime-soft: #fff4b8;
+      --bg: #eef3f8;
+
+      --seel-blue-dark: #003c71;
+      --seel-blue: #00518f;
+      --seel-blue-bright: #0069b4;
+      --seel-yellow: #ffd900;
+      --seel-yellow-soft: #fff4b8;
+      --surface: rgba(255,255,255,.86);
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --muted-2: #98a2b3;
+      --border: #dce3dc;
+      --danger: #d92d20;
+      --warning: #b54708;
+      --success: #027a48;
+      --blue: #175cd3;
+      --shadow-sm: 0 4px 12px rgba(16, 24, 40, 0.06);
+      --shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+      --shadow-lg: 0 28px 70px rgba(0, 75, 37, 0.20);
+      --radius-sm: 10px;
+      --radius: 18px;
+      --radius-lg: 28px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,217,0,.18), transparent 28%),
+        radial-gradient(circle at 92% 6%, rgba(0,122,51,.12), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 42%, #eef3ed 100%);
+      color: var(--text);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,75,37,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,75,37,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.6), transparent 65%);
+      z-index: -1;
+    }
+
+    .topbar {
+      background:
+        linear-gradient(135deg, var(--green-950), var(--green-900) 58%, #073b22);
+      color: white;
+      padding: 18px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 10px 35px rgba(0,40,80,.20);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-content {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      box-shadow: inset 0 -4px 10px rgba(0,60,113,.18), 0 10px 20px rgba(255,217,0,.16);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: rgba(255,255,255,.9);
+    }
+
+    .top-actions span:nth-child(2) {
+      color: var(--seel-yellow);
+    }
+
+    .hero {
+      padding: 44px 24px 34px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72)),
+        radial-gradient(circle at 50% 0%, rgba(255,217,0,.20), transparent 38%);
+      border-bottom: 1px solid rgba(0,60,113,.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -140px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.14);
+      filter: blur(2px);
+    }
+
+    .hero-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: var(--green-950);
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.04;
+      letter-spacing: -1.4px;
+    }
+
+    .hero p {
+      margin: 14px auto 30px;
+      font-size: 16px;
+      max-width: 780px;
+      color: #3b4a3f;
+      line-height: 1.55;
+    }
+
+    .booking-bar {
+      background:
+        linear-gradient(135deg, var(--green-950), var(--green-900));
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr auto;
+      gap: 14px;
+      text-align: left;
+      align-items: stretch;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .booking-field {
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 18px;
+      padding: 13px 16px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    .booking-field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin-bottom: 7px;
+    }
+
+    .booking-field input, .booking-field select {
+      border: 0;
+      outline: 0;
+      font-size: 16px;
+      padding: 0;
+      background: transparent;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .booking-button {
+      min-width: 180px;
+      min-height: 70px;
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      border: 0;
+      border-radius: 18px;
+      font-size: 14px;
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(255,217,0,.22);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .booking-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(255,217,0,.30);
+    }
+
+    main {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 30px 24px 58px;
+    }
+
+    .breadcrumb {
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .breadcrumb strong {
+      color: var(--green-900);
+    }
+
+    .section-title-row {
+      display: block;
+      margin-bottom: 22px;
+      padding: 22px;
+      background: var(--surface);
+      border: 1px solid rgba(220,227,220,.85);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(18px);
+    }
+
+    .section-title-row h2 {
+      margin: 0 0 16px;
+      color: var(--green-950);
+      font-size: clamp(28px, 3vw, 40px);
+      letter-spacing: -.8px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.6fr) repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .filter-field label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+    }
+
+    .filters input, .filters select {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      width: 100%;
+      background: white;
+      outline: none;
+      font-weight: 700;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .filters input:focus, .filters select:focus,
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green-600);
+      box-shadow: 0 0 0 4px rgba(0,105,180,.12);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .stat {
+      background:
+        linear-gradient(180deg, #ffffff, #fbfdf9);
+      border: 1px solid rgba(220,227,220,.9);
+      border-radius: 22px;
+      padding: 18px 18px 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -28px;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.22);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      font-size: 11px;
+    }
+
+    .stat strong {
+      color: var(--green-950);
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .import-panel {
+      background: var(--surface);
+      border: 1px solid rgba(220,227,220,.9);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(16px);
+    }
+
+    .import-panel h2 {
+      color: var(--green-950);
+      margin: 0 0 8px;
+      font-size: 25px;
+      letter-spacing: -.3px;
+    }
+
+    .import-panel p {
+      color: var(--muted);
+      margin: 0 0 18px;
+      line-height: 1.55;
+      max-width: 980px;
+    }
+
+    .import-grid {
+      display: grid;
+      grid-template-columns: 1.5fr auto auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .import-status {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--green-900);
+      font-weight: 800;
+    }
+
+    .locked-import {
+      background: #f2f4f3;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+      align-items: stretch;
+    }
+
+    .vehicle-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.96);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      min-height: 500px;
+      position: relative;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,105,180,.25);
+    }
+
+    .vehicle-card-top {
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.08), rgba(255,217,0,.20));
+      padding: 11px 16px;
+      text-align: center;
+      color: var(--green-950);
+      font-size: 12px;
+      font-weight: 900;
+      border-bottom: 1px solid rgba(220,227,220,.75);
+      letter-spacing: .2px;
+    }
+
+    .vehicle-content {
+      padding: 16px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .vehicle-content h3 {
+      color: var(--green-950);
+      margin: 0 0 8px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      font-size: 16px;
+      line-height: 1.22;
+      letter-spacing: -.3px;
+    }
+
+    .vehicle-content .subtitle {
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: #3b4a3f;
+      background: var(--lime-soft);
+      border: 1px solid rgba(255,217,0,.34);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      max-width: 100%;
+    }
+
+    .vehicle-image-wrap {
+      width: 100%;
+      height: 130px;
+      display: grid;
+      place-items: center;
+      margin: 6px 0 10px;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(0,60,113,.08), transparent 45%),
+        linear-gradient(180deg, #f9fbf8, #ffffff);
+      border-radius: 16px;
+      border: 1px solid #edf1ec;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vehicle-image-wrap::before {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 22px;
+      background: rgba(0,0,0,.08);
+      filter: blur(14px);
+      border-radius: 50%;
+      bottom: 22px;
+      left: 11%;
+    }
+
+    .vehicle-image {
+      max-width: 92%;
+      max-height: 118px;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 18px 18px rgba(16,24,40,.16));
+    }
+
+    .image-placeholder {
+      width: 190px;
+      height: 95px;
+      border-radius: 14px;
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,.72);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .plate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+      background: linear-gradient(135deg, var(--green-950), var(--green-800));
+      color: white;
+      border-radius: 9px;
+      padding: 5px 10px;
+      font-weight: 1000;
+      margin-bottom: 8px;
+      letter-spacing: 1.2px;
+      box-shadow: 0 8px 18px rgba(0,40,80,.24);
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 1000;
+      margin: 4px 0 10px;
+      border: 1px solid rgba(255,255,255,.8);
+    }
+
+    .disponivel, .ativo { background: #e8f7ef; color: #16794d; border-color: #b7e4c7; }
+    .alugado, .locado, .emuso { background: #e9f2ff; color: #0a4f8a; border-color: #b8d2f0; }
+    .manutencao, .emmanutencao { background: #fff4db; color: #9a6700; border-color: #f4d28c; }
+    .devolvido, .inativo { background: #edf2f7; color: #5f6f82; border-color: #c9d3df; }
+    .vencido { background: #fee4e2; color: var(--danger); border-color: #f3b8b2; }
+
+    .vehicle-meta {
+      width: 100%;
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #344054;
+      margin-top: 4px;
+      display: grid;
+      gap: 4px;
+      background: #fbfcfa;
+      border: 1px solid #eef2ed;
+      border-radius: 14px;
+      padding: 9px;
+    }
+
+    .vehicle-meta div {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 8px;
+      align-items: start;
+      border-bottom: 1px solid #eef1f4;
+      padding-bottom: 4px;
+    }
+
+    .vehicle-meta div:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .vehicle-meta strong {
+      color: var(--green-900);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .15px;
+    }
+
+    .vehicle-meta span {
+      text-align: right;
+      font-weight: 700;
+      color: #27364a;
+      overflow-wrap: anywhere;
+    }
+
+    .card-actions {
+      padding: 0 16px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    button, .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 1000;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .reserve-btn {
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      width: 100%;
+      box-shadow: 0 10px 22px rgba(255,217,0,.20);
+    }
+
+    .outline-btn {
+      background: white;
+      border: 1px solid rgba(0,105,180,.45);
+      color: var(--green-900);
+    }
+
+    .outline-btn:hover {
+      border-color: var(--green-600);
+      box-shadow: 0 8px 18px rgba(0,105,180,.10);
+    }
+
+    .secondary-btn {
+      background: linear-gradient(135deg, #475467, #344054);
+      color: white;
+    }
+
+    .danger-btn {
+      background: linear-gradient(135deg, var(--danger), #b42318);
+      color: white;
+    }
+
+    .admin-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(360px, .72fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-card h2 {
+      color: var(--green-950);
+      margin: 0 0 18px;
+      font-size: 26px;
+      letter-spacing: -.4px;
+    }
+
+    .form-section-title {
+      grid-column: 1 / -1;
+      color: var(--green-950);
+      font-weight: 1000;
+      padding: 16px 0 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      letter-spacing: -.2px;
+      font-size: 15px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(170px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-size: 14px;
+      background: white;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 84px;
+      line-height: 1.45;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .photo-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .photo-preview img {
+      width: 138px;
+      height: 92px;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #f8faf9;
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #edf1ec;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: linear-gradient(180deg, #f4f8f2, #eef4ec);
+      color: var(--green-950);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr:hover td {
+      background: #fbfdf9;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 16px;
+    }
+
+    .export-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .floating-help {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-800), var(--green-950));
+      color: var(--seel-yellow);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-lg);
+      font-size: 30px;
+      font-weight: 1000;
+      z-index: 10;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .empty {
+      background: rgba(255,255,255,.9);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
+    }
+
+
+    .vehicle-meta div:nth-child(n+9) {
+      display: none;
+    }
+
+    .vehicle-card.compact-open .vehicle-meta div {
+      display: grid;
+    }
+
+    .vehicle-card.compact-open {
+      min-height: 620px;
+    }
+
+
+    .tabs-shell {
+      margin-bottom: 24px;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 88px;
+      z-index: 15;
+      backdrop-filter: blur(16px);
+    }
+
+    .tab-button {
+      width: auto;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--green-900);
+      border: 1px solid transparent;
+      padding: 12px 16px;
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+    .tab-button:hover {
+      background: #f4f8f2;
+      border-color: rgba(0,105,180,.18);
+    }
+
+    .tab-button.active {
+      background: linear-gradient(135deg, var(--green-950), var(--green-800));
+      color: white;
+      box-shadow: 0 10px 24px rgba(0,60,113,.18);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeInTab .22s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-heading h2 {
+      margin: 0;
+      color: var(--green-950);
+      font-size: clamp(26px, 3vw, 38px);
+      letter-spacing: -.8px;
+    }
+
+    .tab-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .single-column-panel {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+
+    .fleet-manager-card {
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.96), rgba(0,81,143,.94)),
+        radial-gradient(circle at 90% 10%, rgba(255,217,0,.30), transparent 30%);
+      color: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .fleet-manager-card h2 {
+      margin: 0 0 8px;
+      color: white;
+      font-size: 24px;
+    }
+
+    .fleet-manager-card p {
+      margin: 0 0 16px;
+      color: rgba(255,255,255,.82);
+      line-height: 1.5;
+    }
+
+    .manager-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+    }
+
+    .manager-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .manager-fields label {
+      color: rgba(255,255,255,.82);
+    }
+
+    .manager-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 1000;
+      border: 0;
+      min-width: 145px;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .outlook-btn {
+      background: #0078d4;
+      color: white;
+      box-shadow: 0 10px 22px rgba(0,120,212,.22);
+    }
+
+    .whatsapp-btn {
+      background: #25d366;
+      color: #063b1c;
+      box-shadow: 0 10px 22px rgba(37,211,102,.22);
+    }
+
+    .save-manager-btn {
+      background: linear-gradient(135deg, var(--lime), #ffe94a);
+      color: var(--green-950);
+      box-shadow: 0 10px 22px rgba(255,217,0,.20);
+    }
+
+    .manager-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,.82);
+      font-weight: 700;
+    }
+
+
+    .dashboard-filter-panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-filter-panel h2 {
+      margin: 0 0 14px;
+      color: var(--green-950);
+      font-size: 22px;
+    }
+
+    .dashboard-filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 22px 0;
+    }
+
+    .chart-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      min-height: 330px;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 4px;
+      color: var(--green-950);
+      font-size: 20px;
+    }
+
+    .chart-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chart-card canvas {
+      width: 100%;
+      max-height: 250px;
+    }
+
+    .indicator-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .indicator-card {
+      background: linear-gradient(180deg, #ffffff, #fbfdf9);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .indicator-card small {
+      display: block;
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .indicator-card strong {
+      color: var(--green-950);
+      font-size: 27px;
+      letter-spacing: -.6px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .bar-item {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #344054;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #edf2ec;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green-800), var(--lime));
+      transition: width .25s ease;
+    }
+
+
+    .powerbi-dashboard {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,217,0,.20), transparent 24%),
+        radial-gradient(circle at 90% 10%, rgba(0,105,180,.18), transparent 28%),
+        linear-gradient(135deg, #061b34 0%, #082d52 48%, #031326 100%);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 30px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0, 40, 80, .36);
+      margin-bottom: 28px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .powerbi-dashboard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      opacity: .55;
+    }
+
+    .powerbi-dashboard > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .powerbi-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .powerbi-header h2 {
+      margin: 0;
+      color: white;
+      font-size: clamp(28px, 3vw, 42px);
+      letter-spacing: -.9px;
+    }
+
+    .powerbi-header p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.72);
+      line-height: 1.5;
+      max-width: 780px;
+    }
+
+    .powerbi-badge {
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+      border: 1px solid rgba(255,217,0,.38);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      white-space: nowrap;
+    }
+
+    .dashboard-filter-panel.powerbi-filters {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: none;
+      backdrop-filter: blur(12px);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters h2 {
+      color: white;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .powerbi-filters label {
+      color: rgba(255,255,255,.72);
+    }
+
+    .powerbi-filters select,
+    .powerbi-filters input {
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .powerbi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .powerbi-kpi {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.07));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      padding: 16px;
+      min-height: 122px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.18);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .powerbi-kpi::after {
+      content: "";
+      position: absolute;
+      right: -34px;
+      top: -34px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.14);
+    }
+
+    .powerbi-kpi small {
+      display: block;
+      color: rgba(255,255,255,.68);
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi strong {
+      display: block;
+      color: white;
+      font-size: 29px;
+      line-height: 1;
+      letter-spacing: -.8px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--seel-yellow);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .powerbi-main-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .powerbi-secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .powerbi-visual {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.16);
+      backdrop-filter: blur(14px);
+      min-height: 360px;
+      overflow: hidden;
+    }
+
+    .powerbi-visual.large {
+      min-height: 430px;
+    }
+
+    .powerbi-visual h3 {
+      margin: 0;
+      color: white;
+      font-size: 18px;
+      letter-spacing: -.25px;
+    }
+
+    .powerbi-visual p {
+      margin: 5px 0 16px;
+      color: rgba(255,255,255,.62);
+      font-size: 13px;
+    }
+
+    .powerbi-visual canvas {
+      width: 100%;
+      height: 300px !important;
+      max-height: 300px;
+    }
+
+    .powerbi-visual.large canvas {
+      height: 360px !important;
+      max-height: 360px;
+    }
+
+    .powerbi-bars {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .powerbi-bar-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .powerbi-bar-label {
+      color: rgba(255,255,255,.84);
+      font-weight: 850;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .powerbi-bar-value {
+      color: white;
+      font-weight: 1000;
+      font-size: 13px;
+    }
+
+    .powerbi-bar-track {
+      grid-column: 1 / -1;
+      height: 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .powerbi-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--lime), #ffe94a);
+      box-shadow: 0 0 18px rgba(255,217,0,.28);
+    }
+
+    .contract-risk-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .risk-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      color: white;
+      font-size: 13px;
+    }
+
+    .risk-item strong {
+      color: var(--seel-yellow);
+    }
+
+    .risk-item.danger strong {
+      color: #ffb4ab;
+    }
+
+    .risk-item.warning strong {
+      color: #ffd666;
+    }
+
+
+    .seel-logo {
+      height: 54px;
+      width: auto;
+      display: block;
+      border-radius: 4px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.20);
+      background: var(--seel-blue-dark);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 1000;
+      letter-spacing: -.4px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--seel-yellow);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin-top: 4px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(238,243,248,.86)),
+        radial-gradient(circle at 50% 0%, rgba(255,217,0,.22), transparent 38%);
+    }
+
+    .topbar {
+      border-bottom: 4px solid var(--seel-yellow);
+    }
+
+    .powerbi-badge {
+      background: rgba(255,217,0,.14);
+      color: var(--seel-yellow);
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    .seel-logo-hero {
+      height: 76px;
+      width: auto;
+      margin: 0 auto 18px;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 18px 34px rgba(0,60,113,.25);
+    }
+
+
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .api-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .api-card h2 {
+      color: var(--seel-blue-dark);
+      margin: 0 0 8px;
+      font-size: 23px;
+    }
+
+    .api-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .api-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .api-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .api-status {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: #eef3f8;
+      color: var(--seel-blue-dark);
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid rgba(0,60,113,.12);
+    }
+
+    .measure-filter-panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .measure-filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .measure-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .measure-kpi {
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      border: 1px solid rgba(220,227,220,.95);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .measure-kpi small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .measure-kpi strong {
+      color: var(--seel-blue-dark);
+      font-size: 27px;
+      letter-spacing: -.6px;
+    }
+
+    .measurement-source {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-weight: 1000;
+      font-size: 11px;
+      background: var(--seel-yellow-soft);
+      color: var(--seel-blue-dark);
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    .api-note {
+      background: #fff8cf;
+      border: 1px solid rgba(255,217,0,.55);
+      border-radius: 18px;
+      padding: 14px;
+      color: #4c3f00;
+      font-weight: 750;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+
+    .link-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .linked-ok {
+      background: #e6f4ff;
+      color: var(--seel-blue-dark);
+      border: 1px solid rgba(0,60,113,.18);
+    }
+
+    .linked-warning {
+      background: #fff4b8;
+      color: #6a5300;
+      border: 1px solid rgba(255,217,0,.45);
+    }
+
+    @media (max-width: 1100px) {
+      .api-grid,
+      .measure-filters,
+      .measure-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    .hero-visual-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      max-width: 1180px;
+      margin: 0 auto 26px;
+      text-align: left;
+    }
+
+    .hero-copy {
+      min-width: 0;
+    }
+
+    .fleet-illustration {
+      width: min(360px, 34vw);
+      min-width: 240px;
+      filter: drop-shadow(0 24px 32px rgba(0,60,113,.22));
+    }
+
+    .icon-badge {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--seel-yellow), #ffe94a);
+      color: var(--seel-blue-dark);
+      font-size: 22px;
+      box-shadow: 0 12px 24px rgba(255,217,0,.22);
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .tab-button .tab-icon {
+      margin-right: 7px;
+      font-size: 16px;
+    }
+
+    .visual-empty {
+      display: grid;
+      place-items: center;
+      gap: 10px;
+      padding: 34px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .visual-empty svg {
+      width: 120px;
+      height: auto;
+      opacity: .9;
+      filter: drop-shadow(0 12px 20px rgba(0,60,113,.14));
+    }
+
+    .card-visual-accent {
+      height: 5px;
+      background: linear-gradient(90deg, var(--seel-blue-dark), var(--seel-blue-bright), var(--seel-yellow));
+    }
+
+    .vehicle-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--seel-blue-dark), var(--seel-blue-bright), var(--seel-yellow));
+      z-index: 2;
+    }
+
+    .vehicle-image-wrap {
+      background:
+        radial-gradient(circle at 50% 58%, rgba(0,60,113,.10), transparent 44%),
+        radial-gradient(circle at 18% 14%, rgba(255,217,0,.18), transparent 30%),
+        linear-gradient(180deg, #f9fbff, #ffffff);
+    }
+
+    .image-placeholder {
+      border: 0;
+      background:
+        linear-gradient(135deg, rgba(0,60,113,.08), rgba(255,217,0,.18));
+      color: var(--seel-blue-dark);
+      font-weight: 1000;
+    }
+
+    .image-placeholder::before {
+      content: "🚗";
+      display: block;
+      font-size: 34px;
+      margin-bottom: 4px;
+    }
+
+    .section-visual-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .api-card,
+    .panel-card,
+    .import-panel,
+    .section-title-row,
+    .fleet-manager-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-card::after,
+    .panel-card::after,
+    .import-panel::after,
+    .section-title-row::after {
+      content: "";
+      position: absolute;
+      right: -44px;
+      top: -44px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,217,0,.10);
+      pointer-events: none;
+    }
+
+    .metric-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+      display: inline-flex;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+    }
+
+    .powerbi-kpi .metric-icon {
+      background: rgba(255,217,0,.16);
+      color: var(--seel-yellow);
+      margin-bottom: 9px;
+    }
+
+    .measure-kpi::before,
+    .indicator-card::before,
+    .stat::before {
+      content: "◆";
+      color: var(--seel-yellow);
+      font-size: 18px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .decorative-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    .decorative-tile {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      padding: 14px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .decorative-tile span {
+      font-size: 26px;
+    }
+
+    .decorative-tile strong {
+      display: block;
+      font-size: 13px;
+      color: white;
+    }
+
+    .decorative-tile small {
+      color: rgba(255,255,255,.65);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .hero-visual-wrap {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .fleet-illustration {
+        width: min(320px, 86vw);
+        margin: 0 auto;
+      }
+
+      .decorative-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    .powerbi-dashboard {
+      background: linear-gradient(180deg, #f3f5f7, #eef2f6);
+      border: 1px solid #d8dee7;
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 18px 36px rgba(12, 31, 58, .08);
+      color: #0f2744;
+      margin-bottom: 28px;
+    }
+
+    .powerbi-dashboard::before,
+    .powerbi-dashboard::after {
+      display: none;
+    }
+
+    .powerbi-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .powerbi-header h2 {
+      margin: 0;
+      color: var(--seel-blue-dark);
+      font-size: clamp(24px, 2.4vw, 34px);
+      letter-spacing: -.7px;
+    }
+
+    .powerbi-header p {
+      margin: 8px 0 0;
+      color: #5f6f82;
+      max-width: 780px;
+      line-height: 1.5;
+    }
+
+    .powerbi-badge {
+      background: #ffffff;
+      color: var(--seel-blue-dark);
+      border: 1px solid #d8dee7;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .05);
+      font-size: 12px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      margin-bottom: 14px;
+    }
+
+    .dashboard-filter-panel.powerbi-filters h2 {
+      color: var(--seel-blue-dark);
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .powerbi-filters label {
+      color: #4f6074;
+      font-weight: 900;
+    }
+
+    .dashboard-chip-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dashboard-chip {
+      border: 1px solid #d8dee7;
+      background: #ffffff;
+      color: #527090;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    .dashboard-chip.active {
+      background: var(--seel-blue);
+      color: white;
+      border-color: var(--seel-blue);
+    }
+
+    .powerbi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .powerbi-kpi {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-top: 4px solid var(--seel-blue-bright);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      min-height: 112px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .powerbi-kpi:nth-child(2) { border-top-color: #00a6d6; }
+    .powerbi-kpi:nth-child(3) { border-top-color: #ffd900; }
+    .powerbi-kpi:nth-child(4) { border-top-color: #2f80ed; }
+    .powerbi-kpi:nth-child(5) { border-top-color: #8ec5ff; }
+    .powerbi-kpi:nth-child(6) { border-top-color: #00518f; }
+
+    .powerbi-kpi::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      width: 74px;
+      height: 18px;
+      background: linear-gradient(180deg, rgba(0,105,180,.08), rgba(255,217,0,.10));
+      border-radius: 999px;
+    }
+
+    .powerbi-kpi small {
+      display: block;
+      color: #5f6f82;
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi strong {
+      display: block;
+      color: #102846;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.6px;
+      margin-bottom: 8px;
+    }
+
+    .powerbi-kpi span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--seel-blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .powerbi-kpi .metric-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .dashboard-bi-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .bi-span-3 { grid-column: span 3; }
+    .bi-span-4 { grid-column: span 4; }
+    .bi-span-6 { grid-column: span 6; }
+    .bi-span-12 { grid-column: span 12; }
+
+    .powerbi-visual {
+      background: #ffffff;
+      border: 1px solid #d8dee7;
+      border-top: 4px solid var(--seel-blue-bright);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 18px rgba(12, 31, 58, .04);
+      min-height: 290px;
+      overflow: hidden;
+    }
+
+    .powerbi-visual.large {
+      min-height: 320px;
+    }
+
+    .powerbi-visual h3 {
+      margin: 0;
+      color: #17365d;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+    }
+
+    .powerbi-visual p {
+      margin: 4px 0 12px;
+      color: #66788b;
+      font-size: 12px;
+    }
+
+    .visual-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+
+    .visual-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: inline-grid;
+      place-items: center;
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .powerbi-visual canvas {
+      width: 100%;
+      height: 230px !important;
+      max-height: 230px;
+    }
+
+    .powerbi-visual.large canvas {
+      height: 250px !important;
+      max-height: 250px;
+    }
+
+    .powerbi-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .powerbi-bar-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .powerbi-bar-label {
+      color: #334a67;
+      font-weight: 850;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .powerbi-bar-value {
+      color: #17365d;
+      font-weight: 1000;
+      font-size: 12px;
+    }
+
+    .powerbi-bar-track {
+      grid-column: 1 / -1;
+      height: 10px;
+      border-radius: 999px;
+      background: #ebf0f6;
+      overflow: hidden;
+    }
+
+    .powerbi-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--seel-blue), var(--seel-yellow));
+    }
+
+    .contract-risk-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .risk-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #f8fbff;
+      border: 1px solid #dde6ef;
+      border-radius: 12px;
+      color: #334a67;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .risk-item strong {
+      color: var(--seel-blue-dark);
+    }
+
+    .risk-item.danger {
+      background: #fff7da;
+      border-color: #ffe27b;
+    }
+
+    .risk-item.warning {
+      background: #eef6ff;
+      border-color: #c9dff6;
+    }
+
+    .risk-item.danger strong {
+      color: #8a6d00;
+    }
+
+    .risk-item.warning strong {
+      color: var(--seel-blue-dark);
+    }
+
+    @media (max-width: 1220px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+      }
+
+      .bi-span-6,
+      .bi-span-4,
+      .bi-span-3 {
+        grid-column: span 12;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1220px) {
+      .powerbi-kpi-grid {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+      }
+
+      .powerbi-main-grid,
+      .powerbi-secondary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-dashboard {
+        padding: 16px;
+        border-radius: 22px;
+      }
+
+      .powerbi-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .powerbi-visual,
+      .powerbi-visual.large {
+        min-height: 330px;
+      }
+
+      .powerbi-visual canvas,
+      .powerbi-visual.large canvas {
+        height: 250px !important;
+        max-height: 250px;
+      }
+    }
+
+    @media (max-width: 1220px) {
+      .filters {
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+      }
+
+      .admin-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar-content {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .booking-bar, .stats, .fleet-grid, .admin-panel, form, .import-grid, .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .booking-button {
+        width: 100%;
+      }
+
+      .fleet-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vehicle-card {
+        min-height: auto;
+      }
+
+      .vehicle-meta div {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .vehicle-meta span {
+        text-align: left;
+      }
+
+      main {
+        padding: 22px 14px 50px;
+      }
+
+      .hero {
+        padding: 34px 14px 24px;
+      }
+
+      .topbar {
+        padding: 16px 14px;
+      }
+
+      .floating-help {
+        width: 54px;
+        height: 54px;
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .tabs-nav {
+        top: 78px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .manager-layout, .manager-fields, .dashboard-filters, .chart-grid, .indicator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .manager-actions {
+        justify-content: stretch;
+      }
+
+      .contact-btn, .manager-actions button {
+        width: 100%;
+      }
+    }
+
+    /* Ajuste compacto dos cards da aba Frota */
+    .fleet-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+
+    .vehicle-card {
+      min-height: 390px;
+      border-radius: 16px;
+    }
+
+    .vehicle-card-top {
+      padding: 8px 12px;
+      font-size: 11px;
+    }
+
+    .vehicle-content {
+      padding: 12px 12px 8px;
+    }
+
+    .vehicle-content h3 {
+      font-size: 14px;
+      min-height: 36px;
+      margin-bottom: 6px;
+      line-height: 1.18;
+    }
+
+    .vehicle-content .subtitle {
+      font-size: 10px;
+      padding: 4px 8px;
+      margin-bottom: 6px;
+    }
+
+    .vehicle-image-wrap {
+      height: 96px;
+      margin: 4px 0 8px;
+      border-radius: 12px;
+    }
+
+    .vehicle-image {
+      max-height: 86px;
+      max-width: 92%;
+    }
+
+    .image-placeholder {
+      width: 150px;
+      height: 72px;
+      font-size: 11px;
+      border-radius: 12px;
+    }
+
+    .image-placeholder::before {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+
+    .plate {
+      min-width: 92px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-bottom: 5px;
+      border-radius: 7px;
+    }
+
+    .status {
+      padding: 4px 8px;
+      font-size: 10px;
+      margin: 3px 0 8px;
+    }
+
+    .vehicle-meta {
+      font-size: 11px;
+      gap: 3px;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .vehicle-meta div {
+      grid-template-columns: 82px 1fr;
+      gap: 6px;
+      padding-bottom: 3px;
+    }
+
+    .vehicle-meta strong {
+      font-size: 9px;
+    }
+
+    .vehicle-meta div:nth-child(n+7) {
+      display: none;
+    }
+
+    .vehicle-card.compact-open .vehicle-meta div {
+      display: grid;
+    }
+
+    .vehicle-card.compact-open {
+      min-height: 520px;
+    }
+
+    .card-actions {
+      padding: 0 12px 12px;
+      gap: 6px;
+    }
+
+    .card-actions button {
+      padding: 8px 9px;
+      font-size: 11px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .fleet-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+
+    .photo-input-hidden {
+      display: none;
+    }
+
+    .photo-upload-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px dashed var(--seel-blue-bright);
+      background: #edf5ff;
+      color: var(--seel-blue-dark);
+      cursor: pointer;
+      font-weight: 1000;
+      text-align: center;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .photo-upload-button:hover {
+      transform: translateY(-1px);
+      background: #e3f0ff;
+      box-shadow: 0 10px 18px rgba(0,60,113,.08);
+    }
+
+    #vehicleForm button {
+      min-height: 44px;
+    }
+
+    #vehicleForm .danger-btn {
+      grid-column: auto;
+    }
+
+    .form-action-note {
+      grid-column: 1 / -1;
+      background: #eef3f8;
+      border: 1px solid rgba(0,60,113,.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--seel-blue-dark);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+
+
+    /* Dashboard da Frota - gráficos dimensionados para ocupar toda a área útil */
+    .powerbi-dashboard {
+      width: 100%;
+    }
+
+    .dashboard-bi-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+      grid-auto-flow: row dense;
+      grid-auto-rows: minmax(350px, auto);
+      gap: 16px !important;
+      align-items: stretch;
+    }
+
+    .bi-span-5 { grid-column: span 5; }
+    .bi-span-7 { grid-column: span 7; }
+    .bi-span-8 { grid-column: span 8; }
+
+    .powerbi-visual,
+    .powerbi-visual.large {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 350px !important;
+      padding: 16px !important;
+    }
+
+    .powerbi-visual.large {
+      min-height: 390px !important;
+    }
+
+    .visual-title-row {
+      flex: 0 0 auto;
+      min-height: 52px;
+      align-items: flex-start;
+    }
+
+    .powerbi-visual > p,
+    .visual-title-row + p {
+      flex: 0 0 auto;
+    }
+
+    .dashboard-chart-stage {
+      position: relative;
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 285px;
+      margin-top: 4px;
+    }
+
+    .dashboard-chart-stage-large {
+      min-height: 320px;
+    }
+
+    .dashboard-chart-stage canvas,
+    .powerbi-visual canvas,
+    .powerbi-visual.large canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    .dashboard-visual-status .dashboard-chart-stage {
+      min-height: 320px;
+    }
+
+    .dashboard-visual-category .dashboard-chart-stage,
+    .dashboard-visual-locadora .dashboard-chart-stage {
+      min-height: 300px;
+    }
+
+    .dashboard-visual-contract .dashboard-chart-stage {
+      min-height: 300px;
+    }
+
+    .dashboard-visual-centers .powerbi-bars {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      gap: 10px;
+      min-height: 285px;
+      margin-top: 4px;
+    }
+
+    .dashboard-visual-centers .powerbi-bar-item {
+      flex: 0 0 auto;
+    }
+
+    .dashboard-visual-alerts {
+      min-height: 220px !important;
+    }
+
+    .dashboard-visual-alerts .contract-risk-list {
+      flex: 1 1 auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: stretch;
+      gap: 10px;
+    }
+
+    .dashboard-visual-alerts .risk-item {
+      min-height: 64px;
+      align-items: center;
+    }
+
+    @media (max-width: 1220px) {
+      .bi-span-5,
+      .bi-span-7,
+      .bi-span-8 {
+        grid-column: span 12;
+      }
+
+      .dashboard-bi-grid {
+        grid-auto-rows: auto;
+      }
+
+      .dashboard-visual-alerts .contract-risk-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .powerbi-visual,
+      .powerbi-visual.large {
+        min-height: 340px !important;
+      }
+
+      .dashboard-chart-stage,
+      .dashboard-chart-stage-large {
+        min-height: 270px;
+      }
+
+      .dashboard-visual-alerts .contract-risk-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+
+    /* ===== Layout alinhado aos apps de Cadastro, Contratos e Fretes ===== */
+    :root {
+      --page-bg: #eef3f8;
+      --line: #d5dfeb;
+      --text-main: #19324d;
+      --text-soft: #5f7388;
+      --brand-dark: #003c71;
+      --brand-mid: #00518f;
+      --brand-bright: #0069b4;
+      --accent: #ffd900;
+      --panel-bg: #ffffff;
+      --shadow-soft: 0 12px 30px rgba(0, 60, 113, 0.10);
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f6f9fc 0%, var(--page-bg) 45%, #edf2f7 100%);
+      color: var(--text-main);
+    }
+
+    body::before {
+      display: none;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand-mid) 72%);
+      border-bottom: 5px solid var(--accent);
+      padding: 14px 0;
+      box-shadow: 0 14px 36px rgba(0, 40, 80, 0.22);
+      backdrop-filter: none;
+      z-index: 40;
+    }
+
+    .topbar-content,
+    .hero-inner,
+    .tabs-shell,
+    main {
+      width: min(1320px, calc(100% - 28px));
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .topbar-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      gap: 14px;
+      align-items: center;
+    }
+
+    .seel-logo {
+      width: 140px;
+      height: 68px;
+      object-fit: contain;
+      padding: 8px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .brand-title {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: #ffffff;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.82);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #dceaf7;
+    }
+
+    .top-actions span:first-child {
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .top-actions span:nth-child(2) {
+      opacity: .55;
+    }
+
+    .contact-btn,
+    .booking-button,
+    .save-manager-btn,
+    .secondary-btn,
+    .outline-btn,
+    .danger-btn,
+    .photo-upload-button,
+    .api-actions button,
+    .card-actions button,
+    .filter-actions button,
+    .manager-actions button,
+    .export-row button,
+    .import-panel button {
+      border-radius: 12px !important;
+      font-weight: 800;
+      box-shadow: none !important;
+    }
+
+    .hero {
+      padding: 20px 0 0;
+      background: transparent;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-visual-wrap,
+    .booking-bar,
+    .tabs-shell,
+    .panel-card,
+    .api-card,
+    .import-panel,
+    .powerbi-dashboard,
+    .powerbi-visual,
+    .vehicle-image-wrap,
+    .fleet-manager-card,
+    .dashboard-filter-panel,
+    .measure-filter-panel,
+    .table-wrap,
+    .floating-help {
+      background: var(--panel-bg) !important;
+      border: 1px solid var(--line) !important;
+      box-shadow: var(--shadow-soft) !important;
+      border-radius: 22px !important;
+      backdrop-filter: none !important;
+    }
+
+    .hero-visual-wrap {
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .hero-copy {
+      max-width: 700px;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.1;
+      color: var(--brand-dark);
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 640px;
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .seel-logo-hero {
+      display: none;
+    }
+
+    .fleet-illustration {
+      width: min(100%, 300px);
+      flex: 0 0 300px;
+    }
+
+    .booking-bar {
+      margin-top: 0;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    .booking-field label,
+    .filter-field label,
+    .manager-fields label,
+    .api-form label {
+      font-weight: 700;
+      color: var(--brand-dark);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .booking-field input,
+    .booking-field select,
+    .filter-field input,
+    .filter-field select,
+    .manager-fields input,
+    .manager-fields select,
+    .manager-fields textarea,
+    .api-form input,
+    .api-form select,
+    .api-form textarea {
+      border-radius: 12px !important;
+      border: 1px solid #c8d6e5 !important;
+      background: #fbfdff !important;
+      color: var(--text-main) !important;
+      min-height: 44px;
+    }
+
+    .booking-field input:focus,
+    .booking-field select:focus,
+    .filter-field input:focus,
+    .filter-field select:focus,
+    .manager-fields input:focus,
+    .manager-fields select:focus,
+    .manager-fields textarea:focus,
+    .api-form input:focus,
+    .api-form select:focus,
+    .api-form textarea:focus {
+      outline: none;
+      border-color: var(--brand-bright) !important;
+      box-shadow: 0 0 0 3px rgba(0,105,180,.14) !important;
+    }
+
+    .tabs-shell {
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .tab-heading {
+      margin-bottom: 14px;
+    }
+
+    .tab-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--brand-dark);
+      font-weight: 800;
+    }
+
+    .tab-heading p,
+    .subtitle,
+    .api-note,
+    .manager-note,
+    .form-action-note,
+    .import-status,
+    .link-status,
+    .visual-badge,
+    .powerbi-badge,
+    .breadcrumb {
+      color: var(--text-soft) !important;
+    }
+
+    .tabs-nav {
+      background: #eef4f9 !important;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 5px;
+      gap: 6px;
+    }
+
+    .tab-button {
+      min-height: 48px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--brand-dark);
+      font-weight: 800;
+      border: none;
+    }
+
+    .tab-button.active {
+      background: var(--accent) !important;
+      color: var(--brand-dark) !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    main {
+      padding: 24px 0 48px;
+    }
+
+    .powerbi-kpi,
+    .measure-kpi,
+    .stat,
+    .dashboard-visual-alerts,
+    .dashboard-visual-category,
+    .dashboard-visual-centers,
+    .dashboard-visual-contract,
+    .dashboard-visual-locadora,
+    .dashboard-visual-status,
+    .dashboard-visual-year,
+    .measurement-source,
+    .metric-card,
+    .quick-actions > *,
+    .stats > * {
+      background: #ffffff !important;
+      border: 1px solid var(--line) !important;
+      border-top: 5px solid var(--accent) !important;
+      border-radius: 18px !important;
+      box-shadow: none !important;
+    }
+
+    .powerbi-dashboard,
+    .powerbi-visual,
+    .dashboard-chart-stage,
+    .dashboard-chart-stage-large,
+    .chart-card,
+    canvas {
+      border-radius: 18px;
+    }
+
+    .section-title-row,
+    .powerbi-header,
+    .visual-title-row {
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-title-row h3,
+    .powerbi-header h3,
+    .visual-title-row h3,
+    .form-section-title,
+    .manager-layout h3,
+    .api-card h3,
+    .import-panel h3 {
+      margin: 0;
+      color: var(--brand-dark);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .vehicle-card-top {
+      background: linear-gradient(135deg, #f7fbff, #eef5fb) !important;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .vehicle-content,
+    .manager-layout,
+    .dashboard-filters,
+    .measure-filters,
+    .api-grid,
+    .import-grid,
+    .fleet-grid,
+    .dashboard-bi-grid,
+    .powerbi-kpi-grid,
+    .measure-kpi-grid {
+      gap: 14px;
+    }
+
+    .api-status,
+    .status,
+    .risk-item,
+    .measurement-source {
+      border-radius: 14px !important;
+    }
+
+    .floating-help {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .fleet-illustration {
+        width: min(100%, 360px);
+        flex-basis: auto;
+      }
+
+      .booking-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .topbar-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-content,
+      .hero-inner,
+      .tabs-shell,
+      main {
+        width: min(100%, calc(100% - 20px));
+      }
+
+      .brand-title {
+        font-size: 24px;
+      }
+
+      .hero-copy h1 {
+        font-size: 28px;
+      }
+
+      .booking-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs-shell,
+      .hero-visual-wrap,
+      .booking-bar,
+      .panel-card,
+      .api-card,
+      .import-panel,
+      .powerbi-dashboard,
+      .powerbi-visual,
+      .vehicle-image-wrap,
+      .fleet-manager-card,
+      .dashboard-filter-panel,
+      .measure-filter-panel,
+      .table-wrap {
+        border-radius: 18px !important;
+      }
+    }
+
+
+
+    /* ===== ADAPTACAO COMPLETA: PADRAO CADASTRO | CONTRATOS | FRETES ===== */
+    :root{
+      --app-blue:#005383;
+      --app-blue-dark:#003d63;
+      --app-blue-soft:#e9f2f7;
+      --app-yellow:#ffdd00;
+      --app-bg:#eaf1f5;
+      --app-card:#ffffff;
+      --app-text:#102333;
+      --app-muted:#667b88;
+      --app-border:#d5e2e9;
+      --app-shadow:0 12px 28px rgba(0,62,95,.12);
+      --app-radius:18px;
+    }
+
+    html{scroll-padding-top:150px}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--app-bg)!important;
+      color:var(--app-text)!important;
+    }
+
+    .hero{display:none!important}
+    .breadcrumb{display:none!important}
+    .tabs-shell{display:none!important}
+
+    .topbar{
+      position:sticky!important;
+      top:0!important;
+      z-index:100!important;
+      padding:0!important;
+      background:linear-gradient(135deg,var(--app-blue-dark),var(--app-blue))!important;
+      border-bottom:6px solid var(--app-yellow)!important;
+      box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+    }
+
+    .topbar-content{
+      width:min(1360px,calc(100% - 28px))!important;
+      max-width:none!important;
+      margin:auto!important;
+      padding:12px 0 10px!important;
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) auto!important;
+      align-items:center!important;
+      gap:12px 18px!important;
+    }
+
+    .brand{
+      display:flex!important;
+      align-items:center!important;
+      gap:15px!important;
+      min-width:0!important;
+    }
+
+    .seel-logo{
+      width:132px!important;
+      height:62px!important;
+      padding:7px 10px!important;
+      object-fit:contain!important;
+      border-radius:12px!important;
+      background:#00324f!important;
+      border:2px solid rgba(255,221,0,.72)!important;
+      box-shadow:none!important;
+      flex:0 0 auto!important;
+    }
+
+    .brand-text{min-width:0!important}
+    .brand-title{
+      color:#fff!important;
+      font-size:clamp(22px,2.3vw,30px)!important;
+      font-weight:900!important;
+      line-height:1.08!important;
+      letter-spacing:-.4px!important;
+      white-space:nowrap!important;
+    }
+    .brand-subtitle{
+      margin-top:5px!important;
+      color:#dceef7!important;
+      font-size:12px!important;
+      font-weight:700!important;
+      text-transform:none!important;
+      letter-spacing:.15px!important;
+    }
+
+    .top-actions{
+      display:flex!important;
+      align-items:center!important;
+      justify-content:flex-end!important;
+      gap:8px!important;
+      padding:0!important;
+      background:transparent!important;
+      border:0!important;
+    }
+    .top-actions>span{display:none!important}
+    .top-actions .contact-btn{
+      width:auto!important;
+      min-width:108px!important;
+      min-height:38px!important;
+      padding:0 14px!important;
+      border-radius:12px!important;
+      font-size:12px!important;
+      font-weight:900!important;
+      border:1px solid rgba(255,255,255,.24)!important;
+    }
+    .top-actions .outlook-btn{background:#fff!important;color:var(--app-blue-dark)!important}
+    .top-actions .whatsapp-btn{background:var(--app-yellow)!important;color:var(--app-blue-dark)!important}
+
+    .topbar .tabs-nav{
+      grid-column:1/-1!important;
+      width:100%!important;
+      position:static!important;
+      top:auto!important;
+      z-index:auto!important;
+      display:flex!important;
+      flex-wrap:wrap!important;
+      gap:6px!important;
+      padding:5px!important;
+      border-radius:16px!important;
+      background:rgba(255,255,255,.12)!important;
+      border:1px solid rgba(255,255,255,.14)!important;
+      box-shadow:none!important;
+      backdrop-filter:none!important;
+      overflow-x:auto!important;
+      scrollbar-width:thin!important;
+    }
+
+    .topbar .tab-button{
+      width:auto!important;
+      min-height:42px!important;
+      padding:0 13px!important;
+      border:0!important;
+      border-radius:12px!important;
+      background:transparent!important;
+      color:#dceef7!important;
+      box-shadow:none!important;
+      font-size:12px!important;
+      font-weight:800!important;
+      white-space:nowrap!important;
+    }
+    .topbar .tab-button:hover{background:rgba(255,255,255,.11)!important;color:#fff!important}
+    .topbar .tab-button.active{
+      background:var(--app-yellow)!important;
+      color:var(--app-blue-dark)!important;
+      box-shadow:none!important;
+    }
+    .topbar .tab-icon{font-size:15px!important}
+
+    main{
+      width:min(1360px,calc(100% - 28px))!important;
+      max-width:none!important;
+      margin:auto!important;
+      padding:24px 0 46px!important;
+    }
+
+    .tab-content{animation:none!important}
+    .tab-heading{
+      display:flex!important;
+      justify-content:space-between!important;
+      align-items:flex-start!important;
+      gap:16px!important;
+      margin:0 0 16px!important;
+      padding:20px!important;
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:var(--app-shadow)!important;
+    }
+    .tab-heading h2{
+      margin:0!important;
+      color:var(--app-blue-dark)!important;
+      font-size:25px!important;
+      font-weight:900!important;
+      letter-spacing:-.3px!important;
+    }
+    .tab-heading p{
+      margin:5px 0 0!important;
+      color:var(--app-muted)!important;
+      font-size:14px!important;
+      line-height:1.45!important;
+    }
+    .icon-badge{
+      display:inline-grid!important;
+      place-items:center!important;
+      width:38px!important;
+      height:38px!important;
+      margin-right:9px!important;
+      border-radius:12px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      border:2px solid var(--app-yellow)!important;
+      vertical-align:middle!important;
+    }
+
+    .panel-card,.import-panel,.api-card,.powerbi-dashboard,.fleet-manager-card,
+    .dashboard-filter-panel,.measure-filter-panel,.section-title-row,.table-wrap,
+    .powerbi-visual,.vehicle-card,.api-note{
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:var(--app-shadow)!important;
+      backdrop-filter:none!important;
+    }
+
+    .panel-card,.import-panel,.api-card,.powerbi-dashboard,.fleet-manager-card,
+    .dashboard-filter-panel,.measure-filter-panel{
+      padding:18px!important;
+      margin-bottom:16px!important;
+    }
+
+    .panel-card::after,.import-panel::after,.section-title-row::after,
+    .powerbi-dashboard::before,.powerbi-dashboard::after,.powerbi-kpi::after,
+    .vehicle-card::before{display:none!important}
+
+    .panel-card h2,.import-panel h2,.api-card h2,.fleet-manager-card h2,
+    .dashboard-filter-panel h2,.measure-filter-panel h2,.powerbi-header h2{
+      margin:0 0 8px!important;
+      color:var(--app-blue-dark)!important;
+      font-size:22px!important;
+      font-weight:900!important;
+      letter-spacing:-.2px!important;
+    }
+    .panel-card p,.import-panel p,.api-card p,.fleet-manager-card p,
+    .powerbi-header p,.visual-title-row p{
+      color:var(--app-muted)!important;
+      line-height:1.45!important;
+    }
+
+    .quick-actions{display:flex!important;gap:8px!important;flex-wrap:wrap!important}
+    button,.reserve-btn,.outline-btn,.secondary-btn,.danger-btn,.save-manager-btn,
+    .photo-upload-button,.api-actions button,.card-actions button,.filter-actions button{
+      min-height:40px!important;
+      border-radius:12px!important;
+      padding:0 15px!important;
+      font-family:inherit!important;
+      font-size:12px!important;
+      font-weight:900!important;
+      letter-spacing:.1px!important;
+      box-shadow:none!important;
+      cursor:pointer!important;
+    }
+    .reserve-btn,.save-manager-btn,.booking-button{
+      background:var(--app-blue)!important;
+      color:#fff!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+    }
+    .outline-btn,.secondary-btn{
+      background:#fff!important;
+      color:var(--app-blue-dark)!important;
+      border:1px solid var(--app-border)!important;
+    }
+    .danger-btn{background:#dc2626!important;color:#fff!important;border:0!important}
+
+    label{
+      color:#263d4b!important;
+      font-size:12px!important;
+      font-weight:800!important;
+      text-transform:none!important;
+      letter-spacing:0!important;
+      margin-bottom:6px!important;
+    }
+    input,select,textarea{
+      width:100%!important;
+      min-height:42px!important;
+      padding:10px 11px!important;
+      border:1px solid var(--app-border)!important;
+      border-radius:10px!important;
+      background:#fff!important;
+      color:var(--app-text)!important;
+      font-family:inherit!important;
+      font-size:13px!important;
+      box-shadow:none!important;
+    }
+    textarea{min-height:88px!important}
+    input:focus,select:focus,textarea:focus{
+      outline:none!important;
+      border-color:var(--app-blue)!important;
+      box-shadow:0 0 0 3px rgba(0,83,131,.14)!important;
+    }
+
+    form{gap:14px!important}
+    .form-section-title{
+      grid-column:1/-1!important;
+      margin:10px 0 0!important;
+      padding:13px 16px!important;
+      color:#fff!important;
+      background:var(--app-blue)!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+      border-radius:12px!important;
+      font-size:14px!important;
+      font-weight:900!important;
+    }
+    .photo-upload-button{
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      width:auto!important;
+      background:#fff!important;
+      color:var(--app-blue-dark)!important;
+      border:1px dashed #8eafc0!important;
+    }
+    .photo-preview img{border-radius:12px!important;border:1px solid var(--app-border)!important}
+
+    .fleet-manager-card{
+      color:var(--app-text)!important;
+      border-top:5px solid var(--app-yellow)!important;
+    }
+    .fleet-manager-card h2{color:var(--app-blue-dark)!important}
+    .fleet-manager-card p,.manager-note{color:var(--app-muted)!important}
+    .manager-fields label{color:#263d4b!important}
+    .manager-actions .outlook-btn{background:#0078d4!important;color:#fff!important}
+    .manager-actions .whatsapp-btn{background:#25d366!important;color:#063b1c!important}
+
+    .powerbi-dashboard{
+      color:var(--app-text)!important;
+      overflow:visible!important;
+    }
+    .powerbi-header{
+      margin:0 0 14px!important;
+      padding-bottom:13px!important;
+      border-bottom:1px solid var(--app-border)!important;
+    }
+    .powerbi-badge{
+      background:var(--app-blue)!important;
+      color:#fff!important;
+      border:0!important;
+      border-bottom:4px solid var(--app-yellow)!important;
+      border-radius:12px!important;
+      padding:9px 12px!important;
+      font-size:11px!important;
+      font-weight:900!important;
+    }
+    .dashboard-filter-panel.powerbi-filters{
+      background:#f6fafc!important;
+      border:1px solid var(--app-border)!important;
+      box-shadow:none!important;
+      padding:14px!important;
+    }
+    .dashboard-filter-panel.powerbi-filters h2{color:var(--app-blue-dark)!important}
+    .powerbi-filters label{color:#263d4b!important}
+
+    .powerbi-kpi-grid{
+      display:grid!important;
+      grid-template-columns:repeat(6,minmax(145px,1fr))!important;
+      gap:12px!important;
+      margin-bottom:16px!important;
+    }
+    .powerbi-kpi,.measure-kpi,.stat{
+      min-height:112px!important;
+      padding:14px!important;
+      background:#fff!important;
+      border:1px solid var(--app-border)!important;
+      border-top:5px solid var(--app-yellow)!important;
+      border-radius:var(--app-radius)!important;
+      box-shadow:none!important;
+      color:var(--app-text)!important;
+    }
+    .powerbi-kpi small,.measure-kpi small,.stat small{
+      color:var(--app-muted)!important;
+      font-size:11px!important;
+      font-weight:800!important;
+    }
+    .powerbi-kpi strong,.measure-kpi strong,.stat strong{
+      color:var(--app-blue-dark)!important;
+      font-size:25px!important;
+      font-weight:900!important;
+    }
+    .powerbi-kpi span,.measure-kpi span{
+      color:var(--app-muted)!important;
+      font-size:11px!important;
+      font-weight:700!important;
+    }
+    .metric-icon{
+      width:34px!important;
+      height:34px!important;
+      border-radius:11px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      font-size:18px!important;
+    }
+
+    .dashboard-bi-grid{
+      display:grid!important;
+      grid-template-columns:repeat(12,minmax(0,1fr))!important;
+      gap:14px!important;
+      align-items:stretch!important;
+    }
+    .powerbi-visual,.powerbi-visual.large{
+      min-height:350px!important;
+      padding:16px!important;
+      box-shadow:none!important;
+      color:var(--app-text)!important;
+      overflow:hidden!important;
+    }
+    .visual-title-row{
+      display:flex!important;
+      gap:10px!important;
+      align-items:flex-start!important;
+      margin-bottom:10px!important;
+    }
+    .visual-title-row h3{
+      margin:0!important;
+      color:var(--app-blue-dark)!important;
+      font-size:18px!important;
+      font-weight:900!important;
+    }
+    .visual-title-row p{margin:3px 0 0!important;font-size:12px!important}
+    .visual-badge{
+      width:36px!important;
+      height:36px!important;
+      display:grid!important;
+      place-items:center!important;
+      flex:0 0 auto!important;
+      border-radius:11px!important;
+      background:var(--app-blue)!important;
+      color:var(--app-yellow)!important;
+      font-size:17px!important;
+    }
+    .dashboard-chart-stage,.dashboard-chart-stage-large{
+      height:285px!important;
+      min-height:285px!important;
+    }
+    .powerbi-visual canvas,.powerbi-visual.large canvas{
+      width:100%!important;
+      height:100%!important;
+      max-height:none!important;
+    }
+    .dashboard-visual-alerts{min-height:auto!important}
+    .contract-risk-list{color:var(--app-text)!important}
+    .risk-item{
+      background:#f7fafc!important;
+      border:1px solid var(--app-border)!important;
+      color:var(--app-text)!important;
+      box-shadow:none!important;
+    }
+    .risk-item strong{color:var(--app-blue-dark)!important}
+
+    .stats{
+      display:grid!important;
+      grid-template-columns:repeat(5,minmax(145px,1fr))!important;
+      gap:12px!important;
+      margin:0 0 16px!important;
+    }
+
+    .filters,.dashboard-filters,.measure-filters{
+      gap:12px!important;
+    }
+    .section-title-row{
+      padding:18px!important;
+      margin-bottom:14px!important;
+      box-shadow:var(--app-shadow)!important;
+    }
+    .section-title-row h2{
+      color:var(--app-blue-dark)!important;
+      font-size:22px!important;
+      margin:0 0 12px!important;
+    }
+
+    .fleet-grid{
+      display:grid!important;
+      grid-template-columns:repeat(auto-fit,minmax(270px,1fr))!important;
+      gap:14px!important;
+      align-items:start!important;
+    }
+    .vehicle-card{
+      min-height:0!important;
+      overflow:hidden!important;
+      border-left:6px solid var(--app-blue)!important;
+      box-shadow:0 10px 24px rgba(0,83,131,.10)!important;
+      transition:.15s ease!important;
+    }
+    .vehicle-card:hover{
+      transform:translateY(-2px)!important;
+      box-shadow:0 14px 30px rgba(0,83,131,.15)!important;
+    }
+    .vehicle-card-top{
+      padding:10px 12px!important;
+      background:#eef5f9!important;
+      color:var(--app-blue-dark)!important;
+      border-bottom:1px solid var(--app-border)!important;
+      text-align:left!important;
+      font-size:11px!important;
+    }
+    .vehicle-content{
+      padding:13px!important;
+      align-items:stretch!important;
+      text-align:left!important;
+    }
+    .vehicle-content h3{
+      min-height:auto!important;
+      justify-content:flex-start!important;
+      color:var(--app-blue-dark)!important;
+      font-size:15px!important;
+      margin-bottom:6px!important;
+    }
+    .vehicle-content .subtitle{
+      display:inline-flex!important;
+      width:max-content!important;
+      max-width:100%!important;
+      padding:5px 9px!important;
+      border-radius:999px!important;
+      background:#eef7fb!important;
+      color:var(--app-blue-dark)!important;
+      border:1px solid var(--app-border)!important;
+      font-size:11px!important;
+    }
+    .vehicle-image-wrap{
+      min-height:150px!important;
+      padding:8px!important;
+      margin:8px 0 10px!important;
+      box-shadow:none!important;
+    }
+    .vehicle-image{height:145px!important;object-fit:contain!important}
+    .vehicle-meta{font-size:11px!important;gap:7px!important}
+    .card-actions{gap:7px!important;margin-top:10px!important}
+    .card-actions button{min-height:34px!important;padding:0 10px!important;font-size:10px!important}
+
+    table{border:0!important;border-radius:14px!important}
+    th{
+      padding:11px!important;
+      background:#eef5f9!important;
+      color:var(--app-blue-dark)!important;
+      font-size:10px!important;
+      font-weight:900!important;
+    }
+    td{padding:11px!important;font-size:12px!important;color:var(--app-text)!important}
+    tr:hover td{background:#f8fbfd!important}
+
+    .api-note{
+      padding:14px!important;
+      color:var(--app-muted)!important;
+      border-left:5px solid var(--app-yellow)!important;
+      box-shadow:none!important;
+    }
+    .api-grid{gap:14px!important}
+    .api-card{box-shadow:none!important;border-top:5px solid var(--app-yellow)!important}
+    .api-status,.link-status,.import-status,.form-action-note{
+      border-radius:10px!important;
+      background:#f2f8fb!important;
+      border:1px solid var(--app-border)!important;
+      color:var(--app-muted)!important;
+      padding:9px 11px!important;
+    }
+
+    .floating-help{
+      display:none!important;
+    }
+
+    footer{
+      width:min(1360px,calc(100% - 28px))!important;
+      color:var(--app-muted)!important;
+      font-size:12px!important;
+    }
+
+    @media(max-width:1180px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(3,minmax(150px,1fr))!important}
+      .stats{grid-template-columns:repeat(3,minmax(150px,1fr))!important}
+      .topbar-content{grid-template-columns:1fr!important}
+      .top-actions{justify-content:flex-start!important}
+    }
+    @media(max-width:900px){
+      .dashboard-bi-grid{grid-template-columns:1fr!important}
+      .dashboard-bi-grid>.powerbi-visual{grid-column:1/-1!important}
+      .powerbi-visual,.powerbi-visual.large{min-height:330px!important}
+      .manager-layout,.manager-fields,.dashboard-filters,.measure-filters,.api-grid{
+        grid-template-columns:1fr!important;
+      }
+    }
+    @media(max-width:680px){
+      .topbar-content,main,footer{width:min(100%,calc(100% - 18px))!important}
+      .brand-title{white-space:normal!important}
+      .seel-logo{width:104px!important;height:54px!important}
+      .top-actions{width:100%!important}
+      .top-actions .contact-btn{flex:1!important}
+      .powerbi-kpi-grid,.stats{grid-template-columns:repeat(2,minmax(130px,1fr))!important}
+      .tab-heading{padding:16px!important}
+      .fleet-grid{grid-template-columns:1fr!important}
+      form{grid-template-columns:1fr!important}
+      .full,.form-section-title{grid-column:1!important}
+    }
+
+
+
+    /* Compactação extra dos cards de veículos */
+    .fleet-grid{
+      grid-template-columns:repeat(auto-fit,minmax(235px,1fr))!important;
+      gap:12px!important;
+    }
+    .vehicle-card{
+      border-left-width:5px!important;
+      border-radius:16px!important;
+      box-shadow:0 8px 18px rgba(0,83,131,.09)!important;
+    }
+    .vehicle-card-top{
+      padding:8px 10px!important;
+      font-size:10px!important;
+    }
+    .vehicle-content{
+      padding:10px!important;
+      gap:8px!important;
+    }
+    .vehicle-content h3{
+      font-size:14px!important;
+      margin-bottom:4px!important;
+      line-height:1.2!important;
+    }
+    .vehicle-content .subtitle{
+      padding:4px 8px!important;
+      font-size:10px!important;
+      line-height:1.1!important;
+    }
+    .vehicle-image-wrap{
+      min-height:120px!important;
+      padding:6px!important;
+      margin:6px 0 8px!important;
+      border-radius:14px!important;
+    }
+    .vehicle-image{height:112px!important;object-fit:contain!important}
+    .plate{
+      padding:5px 8px!important;
+      font-size:11px!important;
+      border-radius:10px!important;
+    }
+    .vehicle-meta{
+      gap:5px!important;
+      font-size:10px!important;
+    }
+    .vehicle-meta div{
+      padding:0!important;
+      gap:4px!important;
+      grid-template-columns:76px 1fr!important;
+    }
+    .vehicle-meta strong{
+      font-size:10px!important;
+      line-height:1.15!important;
+    }
+    .vehicle-meta span{
+      font-size:10px!important;
+      line-height:1.2!important;
+    }
+    .card-actions{
+      gap:6px!important;
+      margin-top:8px!important;
+    }
+    .card-actions button{
+      min-height:30px!important;
+      padding:0 8px!important;
+      font-size:9px!important;
+      border-radius:10px!important;
+    }
+    @media (max-width: 900px){
+      .fleet-grid{
+        grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+      }
+    }
+
+
+
+    /* Redução adicional da altura dos cards de veículos */
+    .fleet-grid{
+      align-items:start!important;
+    }
+    .vehicle-card{
+      min-height:0!important;
+      height:auto!important;
+      max-height:none!important;
+    }
+    .vehicle-card-top{
+      padding:6px 9px!important;
+      min-height:28px!important;
+      line-height:1.15!important;
+    }
+    .vehicle-content{
+      padding:8px 9px!important;
+      gap:5px!important;
+    }
+    .vehicle-content h3{
+      font-size:13px!important;
+      margin:0 0 2px!important;
+      line-height:1.12!important;
+    }
+    .vehicle-content .subtitle{
+      padding:3px 7px!important;
+      font-size:9px!important;
+      margin-bottom:1px!important;
+    }
+    .vehicle-image-wrap{
+      min-height:88px!important;
+      height:88px!important;
+      padding:4px!important;
+      margin:4px 0 6px!important;
+      overflow:hidden!important;
+    }
+    .vehicle-image{
+      height:80px!important;
+      max-height:80px!important;
+      width:100%!important;
+      object-fit:contain!important;
+    }
+    .image-placeholder{
+      min-height:80px!important;
+      height:80px!important;
+      font-size:10px!important;
+    }
+    .image-placeholder::before{
+      font-size:24px!important;
+      margin-bottom:1px!important;
+    }
+    .plate{
+      padding:3px 7px!important;
+      font-size:10px!important;
+      line-height:1.1!important;
+      margin:1px 0!important;
+    }
+    .vehicle-meta{
+      gap:3px!important;
+      margin-top:3px!important;
+      font-size:9px!important;
+    }
+    .vehicle-meta div{
+      min-height:0!important;
+      line-height:1.1!important;
+      grid-template-columns:68px 1fr!important;
+    }
+    .vehicle-meta strong,
+    .vehicle-meta span{
+      font-size:9px!important;
+      line-height:1.12!important;
+    }
+    .vehicle-meta div:nth-child(n+5){
+      display:none!important;
+    }
+    .vehicle-card.compact-open .vehicle-meta div{
+      display:grid!important;
+    }
+    .vehicle-card.compact-open .vehicle-image-wrap{
+      height:112px!important;
+      min-height:112px!important;
+    }
+    .vehicle-card.compact-open .vehicle-image{
+      height:104px!important;
+      max-height:104px!important;
+    }
+    .card-actions{
+      gap:4px!important;
+      margin-top:5px!important;
+    }
+    .card-actions button{
+      min-height:27px!important;
+      height:27px!important;
+      padding:0 7px!important;
+      font-size:8px!important;
+      line-height:1!important;
+    }
+
+
+
+    /* Cards resumidos e modal completo do veículo */
+    .vehicle-meta.vehicle-meta-summary{
+      display:grid!important;
+      gap:5px!important;
+      margin-top:5px!important;
+    }
+    .vehicle-meta.vehicle-meta-summary div{
+      display:grid!important;
+      grid-template-columns:72px minmax(0,1fr)!important;
+      gap:6px!important;
+      align-items:start!important;
+    }
+    .vehicle-meta.vehicle-meta-summary strong,
+    .vehicle-meta.vehicle-meta-summary span{
+      font-size:9px!important;
+      line-height:1.18!important;
+    }
+    .vehicle-card.compact-open .vehicle-meta.vehicle-meta-summary div{
+      display:grid!important;
+    }
+
+    .vehicle-detail-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(7,35,58,.62);
+      backdrop-filter:blur(5px);
+      z-index:9999;
+    }
+    .vehicle-detail-modal.open{display:flex}
+    .vehicle-detail-dialog{
+      width:min(1040px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border:1px solid #cbd9e6;
+      border-radius:24px;
+      box-shadow:0 28px 80px rgba(0,35,70,.30);
+    }
+    .vehicle-detail-header{
+      position:sticky;
+      top:0;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      padding:18px 20px;
+      color:#fff;
+      background:linear-gradient(135deg,#003c71,#00518f);
+      border-bottom:5px solid #ffd900;
+    }
+    .vehicle-detail-header h2{
+      margin:0;
+      color:#fff;
+      font-size:24px;
+    }
+    .vehicle-detail-header p{
+      margin:5px 0 0;
+      color:#dcebf6;
+      font-size:13px;
+    }
+    .vehicle-detail-close{
+      width:40px!important;
+      height:40px!important;
+      min-height:40px!important;
+      padding:0!important;
+      border:1px solid rgba(255,255,255,.35)!important;
+      border-radius:12px!important;
+      background:rgba(255,255,255,.12)!important;
+      color:#fff!important;
+      font-size:24px!important;
+      line-height:1!important;
+      cursor:pointer;
+    }
+    .vehicle-detail-body{padding:20px}
+    .vehicle-detail-overview{
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      gap:20px;
+      align-items:start;
+      margin-bottom:18px;
+    }
+    .vehicle-detail-photo{
+      min-height:190px;
+      display:grid;
+      place-items:center;
+      padding:10px;
+      border:1px solid #d5e2e9;
+      border-radius:18px;
+      background:#f6fafc;
+    }
+    .vehicle-detail-photo .vehicle-image{
+      width:100%!important;
+      height:180px!important;
+      max-height:180px!important;
+      object-fit:contain!important;
+    }
+    .vehicle-detail-photo .image-placeholder{
+      width:100%;
+      min-height:180px!important;
+      height:180px!important;
+    }
+    .vehicle-detail-highlight{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+    .vehicle-detail-highlight-card{
+      padding:12px;
+      border:1px solid #d5e2e9;
+      border-top:4px solid #ffd900;
+      border-radius:14px;
+      background:#fff;
+    }
+    .vehicle-detail-highlight-card small{
+      display:block;
+      margin-bottom:5px;
+      color:#667b88;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+    }
+    .vehicle-detail-highlight-card strong{
+      color:#003c71;
+      font-size:14px;
+      overflow-wrap:anywhere;
+    }
+    .vehicle-detail-section{
+      margin-top:14px;
+      overflow:hidden;
+      border:1px solid #d5e2e9;
+      border-radius:18px;
+      background:#fff;
+    }
+    .vehicle-detail-section-title{
+      padding:11px 15px;
+      color:#fff;
+      background:#00518f;
+      border-bottom:4px solid #ffd900;
+      font-size:14px;
+      font-weight:900;
+    }
+    .vehicle-detail-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:0;
+    }
+    .vehicle-detail-item{
+      min-height:66px;
+      padding:12px 14px;
+      border-right:1px solid #e2eaf0;
+      border-bottom:1px solid #e2eaf0;
+    }
+    .vehicle-detail-item:nth-child(3n){border-right:0}
+    .vehicle-detail-item small{
+      display:block;
+      margin-bottom:5px;
+      color:#667b88;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    .vehicle-detail-item strong{
+      color:#16344a;
+      font-size:13px;
+      line-height:1.35;
+      overflow-wrap:anywhere;
+    }
+    .vehicle-detail-item.full{grid-column:1/-1;border-right:0}
+    .vehicle-detail-footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      flex-wrap:wrap;
+      padding:16px 20px 20px;
+    }
+    .vehicle-detail-footer button{
+      min-height:38px!important;
+      height:auto!important;
+      padding:0 14px!important;
+      font-size:11px!important;
+    }
+    @media(max-width:760px){
+      .vehicle-detail-overview{grid-template-columns:1fr}
+      .vehicle-detail-highlight,.vehicle-detail-grid{grid-template-columns:1fr}
+      .vehicle-detail-item,.vehicle-detail-item:nth-child(3n){border-right:0}
+      .vehicle-detail-dialog{max-height:95vh;border-radius:18px}
+    }
+
+
+
+    /* ===== Cabeçalho padrão Supply Flow: Cadastro | Contratos | Fretes ===== */
+    .sf-topbar{
+      width:min(1360px,calc(100% - 28px));
+      margin:14px auto 0;
+      min-height:74px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      position:sticky;
+      top:10px;
+      z-index:120;
+      background:rgba(255,255,255,.96);
+      border:1px solid #d5e2e9;
+      border-radius:20px;
+      box-shadow:0 12px 30px rgba(0,62,95,.13);
+      backdrop-filter:blur(14px);
+    }
+    .sf-topbar-left,.sf-topbar-actions,.sf-module-brand,.sf-breadcrumb,.sf-user-chip,.sf-global-search{display:flex;align-items:center}
+    .sf-topbar-left{gap:20px;min-width:0}
+    .sf-module-brand{gap:11px;min-width:max-content}
+    .sf-module-mark{
+      width:46px;height:46px;display:grid;place-items:center;flex:0 0 auto;
+      border-radius:14px;background:#005383;color:#ffdd00;border:3px solid #ffdd00;
+      box-shadow:0 8px 18px rgba(0,83,131,.18)
+    }
+    .sf-module-mark svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .sf-module-brand strong{display:block;color:#003d63;font-size:15px;line-height:1.1;letter-spacing:.08em}
+    .sf-module-brand small{display:block;margin-top:3px;color:#667b88;font-size:12px;font-weight:700}
+    .sf-breadcrumb{gap:8px;color:#8196a4;font-size:12px;font-weight:700;white-space:nowrap}
+    .sf-breadcrumb strong{color:#005383}.sf-breadcrumb b{color:#b6c5cf}
+    .sf-topbar-actions{gap:9px;justify-content:flex-end;min-width:0}
+    .sf-global-search{
+      width:min(310px,28vw);height:42px;gap:8px;padding:0 12px;
+      border:1px solid #d5e2e9;border-radius:13px;background:#f6fafc;
+      transition:border-color .15s,box-shadow .15s,background .15s
+    }
+    .sf-global-search:focus-within{background:#fff;border-color:#005383;box-shadow:0 0 0 3px rgba(0,83,131,.12)}
+    .sf-global-search svg,.sf-icon-btn svg,.sf-primary-action svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .sf-global-search svg{width:18px;height:18px;color:#668091;flex:0 0 auto}
+    .sf-global-search input{
+      min-height:0!important;height:auto!important;padding:0!important;margin:0!important;border:0!important;
+      border-radius:0!important;background:transparent!important;box-shadow:none!important;color:#18354a!important;
+      font-size:13px!important;font-weight:600!important
+    }
+    .sf-global-search input:focus{box-shadow:none!important}
+    .sf-icon-btn{
+      position:relative;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+      padding:0!important;display:grid!important;place-items:center;border-radius:13px!important;
+      border:1px solid #d5e2e9!important;background:#fff!important;color:#005383!important;box-shadow:none!important
+    }
+    .sf-icon-btn:hover{background:#eef6fa!important;border-color:#aac2d0!important}
+    .sf-icon-btn svg{width:19px;height:19px}
+    .sf-whatsapp-btn{color:#128c4a!important}
+    .sf-notification span{position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:50%;background:#ffdd00;border:1px solid #fff}
+    .sf-user-chip{gap:9px;padding:4px 8px 4px 5px;border-left:1px solid #dbe5eb;min-width:max-content}
+    .sf-user-avatar{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#003d63;color:#ffdd00;font-size:12px;font-weight:900}
+    .sf-user-chip strong{display:block;color:#18354a;font-size:12px;line-height:1.15}.sf-user-chip span{display:block;margin-top:2px;color:#78909f;font-size:10px;font-weight:700}
+
+    .sf-page-head{
+      width:min(1360px,calc(100% - 28px));margin:18px auto 0;padding:22px 24px;
+      display:flex;align-items:center;justify-content:space-between;gap:20px;
+      background:linear-gradient(135deg,#003d63,#005383);color:#fff;
+      border-radius:22px;border-bottom:5px solid #ffdd00;box-shadow:0 14px 32px rgba(0,62,95,.18)
+    }
+    .sf-eyebrow{margin-bottom:6px;color:#ffdd00;font-size:11px;font-weight:900;letter-spacing:.13em}
+    .sf-page-head h1{margin:0;font-size:clamp(25px,3vw,34px);line-height:1.1;letter-spacing:-.035em}
+    .sf-page-head p{margin:7px 0 0;max-width:760px;color:#dceef7;font-size:14px;line-height:1.45}
+    .sf-primary-action{
+      min-height:44px!important;padding:0 17px!important;display:inline-flex!important;align-items:center!important;gap:9px!important;
+      white-space:nowrap;border:0!important;border-radius:13px!important;background:#ffdd00!important;color:#003d63!important;
+      font-size:12px!important;font-weight:900!important;box-shadow:0 10px 22px rgba(0,0,0,.16)!important
+    }
+    .sf-primary-action svg{width:18px;height:18px}
+
+    .tabs-shell{
+      display:block!important;width:100%!important;margin:0 0 18px!important;padding:0!important;
+      background:transparent!important;border:0!important;box-shadow:none!important
+    }
+    .tabs-shell .tabs-nav{
+      position:static!important;top:auto!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;
+      padding:5px!important;background:#fff!important;border:1px solid #d5e2e9!important;border-radius:18px!important;
+      box-shadow:0 9px 22px rgba(0,62,95,.08)!important;overflow-x:auto!important
+    }
+    .tabs-shell .tab-button{
+      display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+      width:auto!important;min-height:43px!important;padding:0 13px!important;border:0!important;border-radius:13px!important;
+      background:transparent!important;color:#536d7c!important;box-shadow:none!important;font-size:12px!important;font-weight:800!important;white-space:nowrap!important
+    }
+    .tabs-shell .tab-button:hover{background:#eef5f9!important;color:#003d63!important}
+    .tabs-shell .tab-button.active{background:#ffdd00!important;color:#003d63!important;box-shadow:none!important}
+    .tabs-shell .tab-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;font-size:14px!important;line-height:1!important}
+
+    @media(max-width:1040px){
+      .sf-topbar{align-items:flex-start}.sf-breadcrumb{display:none}.sf-global-search{width:230px}.sf-user-chip>div:last-child{display:none}
+    }
+    @media(max-width:760px){
+      .sf-topbar{width:calc(100% - 18px);margin-top:9px;top:6px;flex-direction:column;align-items:stretch;padding:10px}
+      .sf-topbar-left,.sf-topbar-actions{width:100%}.sf-topbar-actions{justify-content:stretch}.sf-global-search{width:auto;flex:1}
+      .sf-user-chip{display:none}.sf-page-head{width:calc(100% - 18px);padding:18px;align-items:flex-start;flex-direction:column}
+      .sf-primary-action{width:100%;justify-content:center!important}
+    }
+
+
+
+    /* Ícones dos KPIs em branco */
+    .metric-icon,
+    .powerbi-kpi .metric-icon,
+    .measure-kpi .metric-icon {
+      color: #ffffff !important;
+    }
+
+
+
+    /* Campos automáticos de vencimento contratual */
+    #diasFinalContrato,
+    #mesesFimContrato,
+    #situacaoContrato {
+      background: #eef5f9 !important;
+      color: #003c71 !important;
+      font-weight: 800 !important;
+      cursor: not-allowed !important;
+    }
+
+
+
+    /* Ações simplificadas nos cards da frota */
+    .vehicle-card-actions{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:6px!important;
+    }
+    .vehicle-card-actions button{
+      width:100%!important;
+      min-width:0!important;
+    }
+
+
+
+    /* Sete indicadores do painel com faixas de vencimento exatas */
+    .powerbi-kpi-grid{
+      grid-template-columns:repeat(7,minmax(135px,1fr))!important;
+    }
+    @media (max-width:1250px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(4,minmax(145px,1fr))!important}
+    }
+    @media (max-width:780px){
+      .powerbi-kpi-grid{grid-template-columns:repeat(2,minmax(130px,1fr))!important}
+    }
+    @media (max-width:480px){
+      .powerbi-kpi-grid{grid-template-columns:1fr!important}
+    }
+
+
+
+    /* Ajuste fino dos textos dos KPIs do dashboard */
+    .powerbi-kpi{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:flex-start!important;
+      justify-content:flex-start!important;
+      gap:6px!important;
+      overflow:hidden!important;
+    }
+    .powerbi-kpi .metric-icon{
+      flex:0 0 auto!important;
+      margin-bottom:2px!important;
+    }
+    .powerbi-kpi small{
+      display:block!important;
+      width:100%!important;
+      min-height:34px!important;
+      font-size:10px!important;
+      line-height:1.18!important;
+      letter-spacing:.35px!important;
+      font-weight:800!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+      text-transform:uppercase!important;
+    }
+    .powerbi-kpi strong{
+      display:block!important;
+      width:100%!important;
+      font-size:22px!important;
+      line-height:1.02!important;
+      letter-spacing:-.3px!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+      white-space:normal!important;
+    }
+    .powerbi-kpi span{
+      display:block!important;
+      width:100%!important;
+      min-height:26px!important;
+      font-size:10px!important;
+      line-height:1.2!important;
+      font-weight:700!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+    }
+    .powerbi-kpi:nth-child(2) strong{
+      font-size:17px!important;
+      line-height:1.06!important;
+      letter-spacing:-.2px!important;
+    }
+    .powerbi-kpi:nth-child(2) span{
+      font-size:9px!important;
+      line-height:1.2!important;
+    }
+    .powerbi-kpi:nth-child(4) small,
+    .powerbi-kpi:nth-child(5) small{
+      min-height:36px!important;
+    }
+
+
+
+    /* Edição exclusiva do veículo em janela própria */
+    .vehicle-edit-dialog{
+      width:min(1120px,100%);
+    }
+    .vehicle-edit-form{
+      display:block!important;
+    }
+    .vehicle-edit-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+    .vehicle-edit-grid .form-section-title{
+      grid-column:1/-1;
+      margin-top:4px!important;
+    }
+    .vehicle-edit-grid .full{
+      grid-column:1/-1;
+    }
+    .vehicle-edit-photo-box{
+      grid-column:span 1;
+      padding:12px;
+      border:1px solid #d5e2e9;
+      border-radius:16px;
+      background:#f7fafc;
+    }
+    .vehicle-edit-photo-box .photo-preview{
+      margin-top:10px;
+    }
+    .vehicle-edit-photo-box .photo-preview img{
+      width:180px;
+      height:110px;
+      object-fit:contain;
+    }
+    .vehicle-edit-help{
+      grid-column:1/-1;
+      padding:11px 13px;
+      border:1px solid #cfe0eb;
+      border-left:5px solid #00518f;
+      border-radius:12px;
+      background:#f4f9fc;
+      color:#31546b;
+      font-size:12px;
+      font-weight:750;
+      line-height:1.45;
+    }
+    .vehicle-edit-footer{
+      position:sticky;
+      bottom:0;
+      z-index:2;
+      background:#fff;
+      border-top:1px solid #d5e2e9;
+      padding-top:14px;
+    }
+    @media(max-width:900px){
+      .vehicle-edit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:620px){
+      .vehicle-edit-grid{grid-template-columns:1fr}
+      .vehicle-edit-grid .full,.vehicle-edit-grid .form-section-title,.vehicle-edit-help{grid-column:1}
+    }
+
+
+    /* Histórico de movimentação e transferência por veículo */
+    .vehicle-transfer-panel{
+      grid-column:1/-1;
+      padding:15px;
+      border:1px solid #c9dbe7;
+      border-radius:16px;
+      background:linear-gradient(135deg,#f7fbfe,#ffffff);
+    }
+    .vehicle-transfer-toggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      margin:0!important;
+      color:#003c71!important;
+      font-size:13px!important;
+      font-weight:900!important;
+    }
+    .vehicle-transfer-toggle input{
+      width:18px!important;
+      min-height:18px!important;
+      height:18px!important;
+      margin:0;
+      flex:0 0 18px;
+      accent-color:#00518f;
+    }
+    .vehicle-transfer-note{
+      margin:8px 0 0 28px;
+      color:#667b88;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .vehicle-transfer-fields{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid #d9e5ec;
+    }
+    .vehicle-transfer-fields.hidden{display:none!important}
+    .vehicle-transfer-previous{
+      grid-column:1/-1;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      padding:11px 12px;
+      border-radius:13px;
+      background:#eef5f9;
+      border:1px solid #d2e1ea;
+    }
+    .vehicle-transfer-previous div{
+      min-width:0;
+      color:#5a7181;
+      font-size:11px;
+      font-weight:800;
+    }
+    .vehicle-transfer-previous strong{
+      display:block;
+      margin-top:4px;
+      color:#16344a;
+      font-size:13px;
+      overflow-wrap:anywhere;
+    }
+    .vehicle-history-list{
+      display:grid;
+      gap:10px;
+      padding:14px;
+      background:#f7fafc;
+    }
+    .vehicle-history-empty{
+      padding:16px;
+      border:1px dashed #b9cbd7;
+      border-radius:14px;
+      background:#ffffff;
+      color:#667b88;
+      text-align:center;
+      font-size:12px;
+      font-weight:800;
+    }
+    .vehicle-history-item{
+      position:relative;
+      padding:13px 14px 13px 18px;
+      border:1px solid #d5e2e9;
+      border-left:5px solid #00518f;
+      border-radius:14px;
+      background:#ffffff;
+      box-shadow:0 7px 16px rgba(0,60,113,.05);
+    }
+    .vehicle-history-item::before{
+      content:"";
+      position:absolute;
+      left:-8px;
+      top:18px;
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      background:#ffd900;
+      border:2px solid #00518f;
+    }
+    .vehicle-history-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:9px;
+    }
+    .vehicle-history-header strong{
+      color:#003c71;
+      font-size:13px;
+    }
+    .vehicle-history-header span{
+      padding:5px 8px;
+      border-radius:999px;
+      background:#eaf3f8;
+      color:#00518f;
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.25px;
+    }
+    .vehicle-history-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+    .vehicle-history-grid div{
+      padding:9px 10px;
+      border-radius:11px;
+      background:#f7fafc;
+      border:1px solid #e1e9ee;
+      min-width:0;
+    }
+    .vehicle-history-grid small{
+      display:block;
+      margin-bottom:3px;
+      color:#718594;
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    .vehicle-history-grid strong{
+      display:block;
+      color:#17384f;
+      font-size:12px;
+      overflow-wrap:anywhere;
+    }
+    @media(max-width:760px){
+      .vehicle-transfer-fields,
+      .vehicle-transfer-previous,
+      .vehicle-history-grid{grid-template-columns:1fr}
+    }
+
+
+
+    /* Importações recorrentes ALD / ARVAL */
+    .operational-import-section {
+      margin: 18px 0;
+      padding: 18px;
+      background: #f7fafc;
+      border: 1px solid var(--app-border, #d5e2e9);
+      border-radius: 18px;
+    }
+
+    .operational-import-section > h2 {
+      margin: 0 0 6px;
+      color: var(--app-blue-dark, #003d63);
+      font-size: 21px;
+    }
+
+    .operational-import-section > p {
+      margin: 0 0 15px;
+      color: var(--app-muted, #667b88);
+      line-height: 1.45;
+    }
+
+    .operational-import-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .operational-import-card {
+      background: #fff;
+      border: 1px solid var(--app-border, #d5e2e9);
+      border-top: 5px solid var(--app-yellow, #ffdd00);
+      border-radius: 16px;
+      padding: 15px;
+      min-width: 0;
+    }
+
+    .operational-import-card h3 {
+      margin: 0 0 5px;
+      color: var(--app-blue-dark, #003d63);
+      font-size: 17px;
+    }
+
+    .operational-import-card p {
+      margin: 0 0 12px;
+      color: var(--app-muted, #667b88);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .operational-import-card input[type="file"] {
+      margin-bottom: 10px;
+      background: #fbfdff !important;
+    }
+
+    .operational-import-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .operational-import-status {
+      min-height: 34px;
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #eef5f9;
+      color: #39566a;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .operational-import-status.success {
+      background: #eaf8ef;
+      color: #166534;
+    }
+
+    .operational-import-status.error {
+      background: #fff0ef;
+      color: #991b1b;
+    }
+
+    .import-history-panel {
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--app-border, #d5e2e9);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .import-history-panel h3 {
+      margin: 0 0 10px;
+      color: var(--app-blue-dark, #003d63);
+      font-size: 17px;
+    }
+
+    .import-history-panel table th,
+    .import-history-panel table td {
+      white-space: nowrap;
+      font-size: 11px;
+      padding: 9px;
+    }
+
+    .source-method-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 68px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      background: #e9f2f7;
+      color: #003d63;
+      border: 1px solid #c6d9e5;
+    }
+
+    .source-method-badge.planilha {
+      background: #fff8cf;
+      color: #6a5300;
+      border-color: #ffe27b;
+    }
+
+    .source-file-cell {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .operational-dashboard-kpi {
+      border-top-color: #0069b4 !important;
+    }
+
+    .operational-dashboard-kpi:nth-last-child(-n+2) {
+      border-top-color: #ffd900 !important;
+    }
+
+    .fine-operational-filter-panel {
+      margin-bottom: 16px;
+      padding: 14px;
+      border: 1px solid var(--app-border, #d5e2e9);
+      border-radius: 16px;
+      background: #f7fafc;
+    }
+
+    .fine-operational-filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr)) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (max-width: 980px) {
+      .operational-import-grid,
+      .fine-operational-filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .operational-import-grid,
+      .fine-operational-filters {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+
+    /* Ícones monocromáticos nos cards da aba Frota */
+    .sf-icon{
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:14px 14px!important;
+      flex:0 0 auto!important;
+    }
+    .sf-icon-building{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='3.5' width='10' height='17' rx='1.5'/><path d='M9 20.5V17h2v3.5M8 8h0M12 8h0M8 12h0M12 12h0'/><path d='M15 9.5h4v11h-4'/></svg>")!important; }
+    .sf-icon-vehicle{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 14.5 5.5 9a2 2 0 0 1 1.88-1.3h9.24A2 2 0 0 1 18.5 9l2 5.5'/><path d='M5 14.5h14v3a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1H8.5v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z'/><circle cx='7.5' cy='15.5' r='1.5'/><circle cx='16.5' cy='15.5' r='1.5'/></svg>")!important; }
+    .sf-icon-category{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M11 3H6a2 2 0 0 0-2 2v5l9 9 7-7-9-9Z'/><path d='M8 8h0'/></svg>")!important; background-size:12px 12px!important; }
+    .sf-icon-plate{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3.5' y='6.5' width='17' height='11' rx='2'/><path d='M7 10.5h10M7 13.5h5'/></svg>")!important; background-size:13px 13px!important; }
+    .sf-icon-person{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='3.2'/><path d='M5.5 19a6.5 6.5 0 0 1 13 0'/></svg>")!important; }
+    .sf-icon-location{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z'/><circle cx='12' cy='10' r='2.2'/></svg>")!important; }
+    .sf-icon-transfer{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 7h11l-2.5-2.5M17 17H6l2.5 2.5'/><path d='M18 7l-2.5 2.5M6 17l2.5-2.5'/></svg>")!important; }
+    .sf-icon-eye{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z'/><circle cx='12' cy='12' r='2.5'/></svg>")!important; }
+    .sf-icon-edit{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='m4 20 4.2-1 9.3-9.3a2 2 0 0 0-2.8-2.8L5.4 16.2 4 20Z'/><path d='m13.5 6.5 4 4'/></svg>")!important; }
+    .sf-icon-status{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><circle cx='12' cy='12' r='4.2'/></svg>")!important; background-size:8px 8px!important; }
+
+    .vehicle-card-top{
+      display:flex!important;
+      align-items:center!important;
+      gap:8px!important;
+      min-width:0!important;
+    }
+    .vehicle-card-top .vehicle-top-icon{
+      width:22px!important;
+      height:22px!important;
+      border-radius:7px!important;
+      background-color:#edf5fb!important;
+      border:1px solid #c9dceb!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.65)!important;
+      flex:0 0 22px!important;
+    }
+    .vehicle-card-top span:last-child{
+      min-width:0!important;
+      overflow:hidden!important;
+      text-overflow:ellipsis!important;
+      white-space:nowrap!important;
+    }
+    .vehicle-card .vehicle-title-line{
+      display:flex!important;
+      align-items:flex-start!important;
+      justify-content:space-between!important;
+      gap:8px!important;
+      margin-bottom:4px!important;
+    }
+    .vehicle-card .vehicle-mini-icon{
+      width:26px!important;
+      height:26px!important;
+      border-radius:8px!important;
+      background-color:#edf5fb!important;
+      border:1px solid #c9dceb!important;
+      color:transparent!important;
+      flex:0 0 26px!important;
+    }
+    .vehicle-content .subtitle{
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:5px!important;
+      padding:4px 10px!important;
+      border-radius:999px!important;
+      background:#edf5fb!important;
+      border:1px solid #cddde8!important;
+      color:var(--app-blue-dark)!important;
+      font-size:10px!important;
+      font-weight:800!important;
+      line-height:1.1!important;
+      max-width:fit-content!important;
+      margin-bottom:6px!important;
+    }
+    .vehicle-content .subtitle::before{
+      content:''!important;
+      width:12px!important;
+      height:12px!important;
+      display:inline-flex!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:12px 12px!important;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M11 3H6a2 2 0 0 0-2 2v5l9 9 7-7-9-9Z'/><path d='M8 8h0'/></svg>")!important;
+    }
+    .vehicle-card .plate{
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:6px!important;
+    }
+    .vehicle-card .plate::before{
+      content:''!important;
+      width:14px!important;
+      height:14px!important;
+      display:inline-flex!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:14px 14px!important;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3.5' y='6.5' width='17' height='11' rx='2'/><path d='M7 10.5h10M7 13.5h5'/></svg>")!important;
+    }
+    .vehicle-card .status{
+      display:inline-flex!important;
+      align-items:center!important;
+      gap:6px!important;
+    }
+    .vehicle-card.vehicle-card-status-disponivel{ border-top:3px solid #2a9d8f!important; }
+    .vehicle-card.vehicle-card-status-alugado{ border-top:3px solid #0b5cab!important; }
+    .vehicle-card.vehicle-card-status-manutencao{ border-top:3px solid #d4a017!important; }
+    .vehicle-card.vehicle-card-status-devolvido{ border-top:3px solid #7a8ea5!important; }
+
+    .vehicle-card.vehicle-card-status-disponivel .plate{
+      background:linear-gradient(135deg,#2a9d8f,#21867a)!important;
+      box-shadow:0 8px 18px rgba(42,157,143,.22)!important;
+    }
+    .vehicle-card.vehicle-card-status-alugado .plate{
+      background:linear-gradient(135deg,#0b5cab,#084f86)!important;
+      box-shadow:0 8px 18px rgba(11,92,171,.24)!important;
+    }
+    .vehicle-card.vehicle-card-status-manutencao .plate{
+      background:linear-gradient(135deg,#d4a017,#b78305)!important;
+      box-shadow:0 8px 18px rgba(212,160,23,.24)!important;
+    }
+    .vehicle-card.vehicle-card-status-devolvido .plate{
+      background:linear-gradient(135deg,#7a8ea5,#5f738a)!important;
+      box-shadow:0 8px 18px rgba(122,142,165,.22)!important;
+    }
+
+    .vehicle-card .status::before{
+      content:''!important;
+      width:10px!important;
+      height:10px!important;
+      display:inline-flex!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:8px 8px!important;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><circle cx='12' cy='12' r='4.2'/></svg>")!important;
+      opacity:.95!important;
+    }
+    .vehicle-meta.vehicle-meta-summary{
+      display:grid!important;
+      gap:6px!important;
+      margin-top:8px!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .vehicle-summary-line{
+      display:flex!important;
+      align-items:flex-start!important;
+      gap:8px!important;
+      padding:7px 8px!important;
+      border-radius:12px!important;
+      background:#f7fbfd!important;
+      border:1px solid #d9e7ef!important;
+      min-width:0!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box{
+      width:24px!important;
+      height:24px!important;
+      border-radius:8px!important;
+      background:#edf5fb!important;
+      border:1px solid #cddde8!important;
+      color:transparent!important;
+      flex:0 0 24px!important;
+      margin-top:1px!important;
+    }
+
+    /* Correção de visibilidade dos ícones de Condutor, Centro de Custo e Transferências */
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-person,
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-location,
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-transfer{
+      background-image:none!important;
+      position:relative!important;
+      overflow:hidden!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-person::before,
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-location::before,
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-transfer::before{
+      content:''!important;
+      position:absolute!important;
+      inset:0!important;
+      margin:auto!important;
+      width:14px!important;
+      height:14px!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:14px 14px!important;
+      opacity:1!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-person::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='3'/><path d='M6.5 18c1.4-3 3.7-4.5 5.5-4.5s4.1 1.5 5.5 4.5'/></svg>")!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-location::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20c3-3.5 5-6.4 5-9a5 5 0 1 0-10 0c0 2.6 2 5.5 5 9Z'/><circle cx='12' cy='11' r='1.8'/></svg>")!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-icon-box.sf-icon-transfer::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23084f86' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M7 7h10'/><path d='m14 4 3 3-3 3'/><path d='M17 17H7'/><path d='m10 14-3 3 3 3'/></svg>")!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-copy{
+      min-width:0!important;
+      flex:1 1 auto!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:2px!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-copy strong{
+      display:block!important;
+      margin:0!important;
+      font-size:9px!important;
+      letter-spacing:.06em!important;
+      text-transform:uppercase!important;
+      color:#5a7385!important;
+      line-height:1.15!important;
+    }
+    .vehicle-meta.vehicle-meta-summary .meta-copy span{
+      display:block!important;
+      margin:0!important;
+      padding:0!important;
+      color:var(--app-blue-dark)!important;
+      font-size:10px!important;
+      font-weight:800!important;
+      line-height:1.25!important;
+      word-break:break-word!important;
+      overflow-wrap:anywhere!important;
+    }
+    .vehicle-card-actions button{
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:6px!important;
+    }
+    .vehicle-card-actions button .btn-icon{
+      width:14px!important;
+      height:14px!important;
+      color:transparent!important;
+      background-repeat:no-repeat!important;
+      background-position:center!important;
+      background-size:14px 14px!important;
+      flex:0 0 14px!important;
+    }
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"><\/script>
+
+<style id="indexeddb-storage-note-style">
+  .billing-storage-badge { background:#e7f7ee!important; color:#11643a!important; border:1px solid #a9dfbf!important; }
+  .operational-import-card::after { content:"Armazenamento ampliado ativo"; display:inline-flex; margin-top:10px; padding:5px 9px; border-radius:999px; background:#e7f7ee; color:#11643a; border:1px solid #a9dfbf; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.25px; }
+</style>
+
+
+<style id="vehicle-measurement-placement-anchor-style">
+  .vehicle-measurement-placement-anchor {
+    display: block;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  #vehicleMeasurementPlacementAnchor + #vehicleMeasurementLoadingFinal,
+  #vehicleMeasurementPlacementAnchor + #vehicleMeasurementDetailsFinal {
+    margin-top: 14px !important;
+  }
+</style>
+
+
+<style id="measurement-cards-white-blue-line-final-style">
+  /* Cartões claros com somente a linha azul superior. */
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi {
+    color: #17384d !important;
+    background: #ffffff !important;
+    border: 1px solid #d9e5ec !important;
+    border-top: 5px solid #005383 !important;
+    box-shadow: 0 7px 18px rgba(0, 65, 103, .09) !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:hover {
+    transform: translateY(-1px) !important;
+    border-color: #c6d9e4 !important;
+    border-top-color: #005383 !important;
+    box-shadow: 0 10px 22px rgba(0, 65, 103, .13) !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid .metric-icon {
+    color: #005383 !important;
+    background: #eaf3f8 !important;
+    border: 1px solid #cfe0e9 !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid small {
+    color: #5f7482 !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong,
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-long-value,
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-extra-long-value,
+  #medicoesTab #measurementDashboardKpiGrid #measurementLastSync {
+    color: #003f68 !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span {
+    color: #71838f !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span b,
+  #medicoesTab #measurementDashboardKpiGrid span strong {
+    color: #005383 !important;
+  }
+</style>
+
+
+<style id="measurement-cards-dashboard-white-final">
+  /* Cartões da aba Medições no mesmo padrão visual do Dashboard. */
+  #medicoesTab #measurementDashboardKpiGrid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(118px, auto) !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    margin: 0 0 18px !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 118px !important;
+    height: auto !important;
+    padding: 14px 15px 13px !important;
+    gap: 5px !important;
+    overflow: visible !important;
+    color: #203746 !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid #dce6ed !important;
+    border-top: 5px solid #00518f !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 12px rgba(17, 45, 64, .07) !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi::before,
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid .metric-icon {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    margin: 0 !important;
+    color: #00518f !important;
+    background: #edf6fb !important;
+    border: 1px solid #d7e8f2 !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid small {
+    display: block !important;
+    width: calc(100% - 42px) !important;
+    min-height: 25px !important;
+    margin: 0 !important;
+    color: #607685 !important;
+    font-size: 10px !important;
+    font-weight: 850 !important;
+    line-height: 1.25 !important;
+    letter-spacing: .04em !important;
+    text-transform: uppercase !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong {
+    display: block !important;
+    width: 100% !important;
+    min-height: 32px !important;
+    margin: 9px 0 3px !important;
+    padding: 0 !important;
+    color: #004b78 !important;
+    font-size: clamp(22px, 1.45vw, 29px) !important;
+    font-weight: 1000 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.03em !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-long-value {
+    font-size: clamp(18px, 1.2vw, 24px) !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-extra-long-value,
+  #medicoesTab #measurementLastSync {
+    font-size: clamp(15px, 1vw, 20px) !important;
+    line-height: 1.14 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span {
+    display: block !important;
+    width: 100% !important;
+    min-height: 22px !important;
+    margin: auto 0 0 !important;
+    color: #728795 !important;
+    font-size: 9.5px !important;
+    font-weight: 650 !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span b,
+  #medicoesTab #measurementDashboardKpiGrid span strong {
+    display: inline !important;
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    color: #004b78 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: normal !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 7px 18px rgba(17, 45, 64, .10) !important;
+  }
+
+  @media (max-width: 1320px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 1040px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 720px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 460px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+
+<style id="dashboard-summary-sticky-header-final-style">
+  /* Cabeçalho fixo dentro da rolagem da tabela Todos os veículos cadastrados. */
+  #dashboardTab .dashboard-summary-scroll {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-height: 520px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    isolation: isolate !important;
+    overscroll-behavior: contain !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll table {
+    position: relative !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll thead {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 30 !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll thead tr {
+    position: relative !important;
+    z-index: 31 !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 32 !important;
+    background: #edf4fa !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 2px 0 #cbd9e6, 0 7px 14px rgba(23, 54, 93, .10) !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll tbody tr:first-child td {
+    border-top: 0 !important;
+  }
+</style>
+
+</head>
+<body>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-visual-wrap">
+        <div class="hero-copy">
+          <img class="seel-logo-hero" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAACYCAIAAABVkPPyAAAQAElEQVR4Aey9B3wdx3UvfGZmy21oFx0ESbATBJsoUSLVe2MTLcU1knsS23ESy44dFfvFee/L75U4TmJbthzHsVPcq1xUKYqk2AtAsKIQvXfcum1mvrP3gpeoBAgCkmlj/cdg5syZ0+bM7OwuBdOQEe+LhHsjoYFwdCAUS6E/FOsdjCL6B6OhYXRk6EvQsQsxkOhFhiQGQ7HhvcgwLlAmyhmOqYwaV9RliP2hER6huqloGWsbOpX0DkvsTWnEOlKGAymp3okqaAMKRKA9Y4F0FIg8Ew1P0VEXck4EnJcU5/AKSh6lFKM0nCFVH8s5fGDSTrQB+ZETm4gUQyp5kr0perIyXCOOTRJTZVImDhyFsZypIViJxE1bCCE5rWrq2F1R+8bJujcq6vZUXEhhb8WFAyfrEG+eRHrdnspLeLOy/sBF7DtZnxqCFRy1/2Qdjro89rkyL+nCgajl8kMu9VbWp7QfOFl/YGJ1e0d6hFpG2DaBnLG24cAUhtuJ9RQ9WRkemQMjbLtk8/7K+r0n6zDgySGjSpd+sg55JvVxrPbhotCLA+NFBiMwnA3re9HOEaGoSw4cy4nMKbyBsT1Zl/QXrd17sm4P4mL+YBokhWA5Vs6+iiEV2DvWi4ksH8u556K6PeW15xo6HCkFCPqtXx758N//+MP/9xcf/IeffeBLI/DEl342hH/86Qf++ecf+JchvP8rP38ihX+6yJNinkLl/SMVoV6kDOmadDhqnJp2FDsKI1T88/heoCWjRiFlxMDLWPhP48t84ss/uxSxhPEf+McRob6k8R9Hcz6B/l5G45V3XdKVnIXhtmFMhgkczZnkT5b/+NMn/mWYs1/5+fv/aYRHwyM2Ss7weGL9Mr3DhYzlvDTw//zgW78+BImLRgVEhLSlsCSfGMJyHMseD+Iyo2ani/NLllyN9uEeXY2c4XHjw0I0XCbWR0UPKcMHpupIH8WJ/qZ6Z6OC8lMaMSYwxVkTo1MC5cyGeVOQGRYS0ziRz0BBYVRTdP2y0JiuTACVTTL28pKn0YsaU8ZgfRoSkkNw7IzISUpLlhPJHBtApCSHjCqRnrIqWUHKKJ6ZbaL8pCIs0f5JkyGpffgoHIjAscmut7zEBMY0hsRFE+Vc8QcQgT8MF+cS+g9jnv9gvJxL6D+Yqf7DcHQuof8w5vkPxsu5hP6Dmeo/DEfnEvoPY57/YLzEhJborASCZQocqAXEkkKA5BIsh1r27zHmXPtdjYDFLIRDuRiRn6lEHVuhQIQEKSQdntOGZBHJotJxCLc5MUzFNKgZn8NcBN7iCDAzqsZN1eF0bO6OS5mAT3IQUkpv3FFXzrM+eX/Hl58o/9qHjs5hLgJvZQS+/if7/vlPX/+Te+qWFERj9pQ26fETWgGpA3gIHjhYflr05qVND6+v2rqheut1tXOYi8BbE4Et19U+vK7uwTVN1y/pDqYbHECOuyePJE6Q0IToVHqpTTnx0HiOv70gs6Mws6sws6cws7cgs+ciurGClDnMRWAGI4BJVZDZnZ/emx8I53nMrEDco9swfqqOTGeYgMsEahIpSQwo4dJj2n4pdCEUzhnnui2pI5kQGirhEok6EucwF4EZi4DQLCAOlYJc3JSlBH6xPjqHR7QpSEqAUIKPkZcG4JFDASBSw12eCEHd50ZCJKEuBOMeJlRCOANJQVBqURabw1wEZiYCAJTrVKhUUMwxYCazBHEwOREw6YX7OEEmPC1jmQImNJNgSxUfDInExBXIRIAQAALCtvW+SKC5L72tN6sdyz5/W/8c5iIwAxFo6k8biKkcXxtLyiTF7RLw3OtIImCKFyb0+JwOyIh0OG7RI/txmfSYSnl7/q8q17xUWfZaRenuirLdJ9bOYS4CVxmB106s+3X5hjMdWVEnDmC7Z17cP0em36StCRM6MRKzN/E7VRCJ94PuXt/eitxvvFjy1V0rv7ZvxdfeXPalPSvmMBeBq4zAl3ev+Mavlu0/X9RnZ0hQJVEw21KpN8UKJrSbtXKqSwEZpWmR9j7P2ZaM853+c51pZzvSz3XOYS4CVx2BjrQzreldoYDDNULwuQ23TzzkTjGTh9gouCNHfykc6pzgF1Fs6q4f4tHiKrMUKvwKn8M1HoG3fwZ9qqC6YJSoQCi1MacnSMDLkenlOi/Th+d1VQW44gUEc9dcBGYzAtNNaELAxWyaNid7LgJXHgFMaIKjyJi3GUi8DPB1HuAhR16GZa5rLgIzGwE3USeVSEFSAqM/rEwyjAAIDrYNV7gMJhE71z0XgYkiIDFRMe0m6r5Exx36UmOKtYv7spzL5ylGbI7tLYvAdBL6LTPud0TRnBnXUARmMqFx50ag89J9F0gEfrCU7klbzG6J7xyJRK3j3y+wR+KPeCuMQZddf6Wc5OYoAW12OYWc7VKi725sJv5BBuHO17iWoEcI7JJisvNlQg5yIn8SWL8IuFhxn70mNmUmemYyoW0potIRIE2uRCxPJK5GLBKxIGLR2UKMRyJOxNYt1EssIamES8kkiRDUFiQWc5SIjcbMmhkWSmYR2xMxwYXjcUCi9nEniLv/poBHHJGIDEmUMx4iiBg0EmERwzIdLvAAOq4pCaItacSNDx1njmw9YuoRg0VMM8KJIZXEiHEKVGFKGeE8YigRS4/Y2ghpDo1YSgRNMhwb/R82R+PIujrSdBLa3Q/xPTRTgFzKHjSDAqGSmZzl+KN3rmx46o8OP7vj6Oe3H/38tiOzhGfecexjD51blWd4GLO4ApTDsH1aSsq5x+RZSwpij9107gs7d39+++FZsuTZ7Uee2XHwb3YefmhDjcPjAjfpMWmEi83GTweqvHPZwMfvPvOFRw5+ftvRZ3YceXb7TIdo+9Gndxz+zDuOfOzhqlULBwxJ4lLhMGKycL4QlqALg6EP3HT2rx86jkOeGR6f7Ue/sP3gs+84+Lmdx/78/uqluf2cOzhkLCSA5dAVuZEPbap/ZtuRZ3ccfGb7oc9vuzjp6N3W40/tOPKZbUf/4t7ThQHTtpSxQiajSHDTbjIuADo5y3gchFD3r4kRGH4xQlXCTMHy/PF7lrU89ciRZ7Ydf2bLiWe2Hp8tPFL+sQeqy3IiXkYtd86Gm4O3OdyfNcvxLcuLvHNj1ed3vPnM1qOzZcnWo09vPfg3205sua4BhJVYViOigxPiSGoK6tHEXcsH/+yuc89uO4LGPL31xNMzHp8tJ57efvyzO459/IGaVQsGTQEWMAEj7ElGyuJkflb4/RurP/PQkae3IYZN1pZjz249jKn51ztOfOK+2hV5g8BFctToUmJCw/LcyAc31z+19dgz2w4/vfXIMymnthx/5uHyv9l29K+3nvjk3bWFaYbjXHnWudksR+sdr33loseTMkQjglAH1wgVXtXxa6akYkpGDA2/8l+Mg2I4Ih6XMu4QERUejuovysFZNMEE0qQ7turoILww3qTCTFwYRxWkh6sa94H0u59tCU8JlkC4pHFBbbyDUKxi11ByMIyZHCfVUmOnV1EF9duK7hDmAOPSD46SWGSjpUkBgknpUZSISmwm1BEMnIKN4AKPG1QH4hvRm2qg+VQIzeE6lwQnXWFi+B4sAWxFSkWoVPqI6oCKYUgNnuEKTsRVSBw5FFcRkYQIKanEKOExcmT/bLQ4IQ6A1AjzEeKlJgWRUqOC8BLiU7yK1IkbYgx8qnOGKxJnUlBBuCAm3uENzmzBhukQuNQlcIkJJHGCEdiJwceJny2rXLnEwiXMCYtLm6Nq1DkOiARGuN+F0AAHQOoi6IMmqJd7GA4nEyQieoPnK0kkqkSv3V9YuyQE8G6OE0BNCQbygsuQ6p3hCp2ePHdiuADXuuECCEHHCDqDHRwIxxoBbM8aiEQtmNAgGQWqgaAgUwYxpBIAcilpiJw1SwA/tuIjqZREECJQawKQvFwrQKpEokm44AGjhPyAP7NmjxsG/HHANQbcEGExDtC0BFWqaBU2CJFuCUnDAL1igKVC3J2Cw0RXchAqFJRI5Md2UgKW7hiXKIXAJSElYKdLm5Wf6SS0a48Q4Njj7MEYDIZJRXAzAmoRwM2aUDlbIHIoKJYk+HxDLibKEBWAg4gBPrFgvzsZFGbLkqSP6D0AA+LxUqERTOuUIaiXeghRCVIIEYxIQgCDw6kEOgvxIZhUqAohbQa2j2gMH3uwOQpoBQKJxJbMQlAqKAyZhGSEIGASwVGgJNicFAQE3qFTThF3lCMFExy3/0lHXy0DGn+1IubG/z5EQGogGe6eArMRc/eadWnWEhrXJd7FruXQXLNzOg3DCbjz5W7AmNNw8b43DUFv+xBMaNd8eSWZ5/qNP3gLS96txncCY+SeGMfvnIwqwY1qqhzFPpyOdbwbutMwNGIU7xSbRAJiiDlRx+aVAo3GiGBoQAARQ8Ku9pdEqeBakhQkE/XLl0lOcDkB3Nc+Q7OMjWljkoHStdLlQUvdKv4aAriphQYQSF7uyknWZqWkkHhIEXiccxVPTQdaTxmoI1/xjB4qgOIrs0mmVYIU6DgAloikjARRCDIEfMySyY5EKQgOSXVJASQGio0PqIILKsBN6wTflRSC0AQEqpaAdSbIlQJHYRAVKlVJaFQQS5ArMWEEL/qIliBJuEFAya4xEjBSQ/XLm5fiBHdOcZo0oDbM2BKDcS4BgECPGc4CGWUeAD6X06FR+B4Q3wYONWb+10U1VyiZYKQIYAETXdgLcqJOidHFDZ4KwJnCz3uUkwSAchdMUHoJhGJ8EvREL3KmeoFIfKj26AK/WgK+YhJMXs6micwBia/bqINiiWIRxaTUvnJYVDEotSgxiTR06igUZ3hCjRN2uEnrvh1C1yTFBaYQImjCHsIcYGiknWxepiSM4wcufFkHBG3AWyUF/Got3SmZUO9VdhBQGOioRxIiJQU+zDwr8fc6LEIl4IVTlKxgfRYwzYSe3BKJcWQwUXoRfAtCOkNpzb1ZDT3ZF3py6lxkX+gNIup6gnU92cNxocelYxdiOL2+O7etP9uWCmOgYGrja7GJNMLlLgEibtPm7qw6VITau9EArGfW9VwBLvRk1PVk9YZ9KuWUoDr3B39dKSTmNMBA3FeHMenOrXND4ZpxAQ3rmZJVF3qyLnQH6zszG7rTIwZRmAWYY5eLjHRTn8jLmUoIIMblIACKjNpKW1+gvj3nQlciet3BuhR6M+u6sxu7s1t7sgy0RMFlNq6gGSDSGZAxvggCAh+c0ddxugnhtuDH6xa8dmrlixWrXyhf/8uKtb88ueZK8ZuKdXvOlbZH/LjHenD/HkfVVEm9If/rFSt/U77ulyeuS9iz5pcVV4BfnFzz84rVvyxfd6plkV/TLaHbAtfzVLWn+KQE4Z6cRE1n7gsn1v365KoXKsouhWXKJv3q+PrfHFr/SsXi9gHmUUMp+RNW8A0x4RP2uh04lQi3NvaHKKJp0Pv6uXkvHi/9NRpc6c4phjGJX564/oXy635bsWbfqaUDhgfYNZnQSDqlGAAAEABJREFUAih+pprAdGIaIvL6mbzvvFnyld2LvvHG0uffWPy8W654/o0klicoExGXJNm+tnvpfxwqru71RGwAgvsinlslTOvqCPt+Urn4398sev71om+8vvD53VeGb+5e/K97Vj2/d/HrVRmSxHzUwo+T0zCEAB7FCFVDlfX6N3617Bt75j+/d/7zu1NYMEXDvr5v4b8eW/jrikUN3TkctKjAD+5kGvZcGiIFwPixRbkeCs093l+czPvmkaVf34ezs/AbbxQPAV14Y9E39iz85v553z4e7Iso+uVvBZdUTqeGpx60Bwi4R4TpCJhoDEq9zIrHZx1w+iJ6Q1+gujvQ1Ks39XibukfB19SNGJc4RG/s8bUOeC0HcGMDIOgFTOvC+5RlsY4BT3OvvwnR52nq8U8VFzmb0ZEeX29EJ0AVIvEEBNO6cLoxeH1RtabTjw66Qbio4gpM6vU19vlb+wNRw0MlU8hES/1ijuJpTWIYLmtxIsrjcihEmqbSNeBr6vM29XqbenxuiRUEziw2EX3elpDfdihD98aVMhNE9AHPe4QSXH8zIW/KMjD5PBpXFEIZ9aqmT3ESwEoSlk/hCSA9ScFyLBF7hY9yfIomuCSnrH0UI45VpfQQlE99GoL7VOFT5RVAEWiGj3GdEiI9ABjYUUqm3sTY4HsJRjXuZcKngE8hQ1BhqiYp0kvdDEXXGBC0DT9OwtgLcxQBqFEBl30sx5QoOF4jqAXtxBgmJkUdFr2hqUTjNUavJjKTGzO70ifXP8cxF4EZjcBcQs9oOK9VYRKIA+StvkvPRrTe5oTG+yAC8JYHM38JIBKoCpTOjvyZt/jtkyhd1QIf+4gbK+K2rs0f+vaareJ5k0gh8VX7zAfRBMqBpeF7WHeS3l5Hf7e1SyK4LgUl4FBJZn4m3kLvZzWh30I/5lRdTQQI4FsBgvczuOavtzmhuQQrAS4xnNPEDE6CdE8prhmjZCbpo4iz3MSNEjHLSn7vxGNCy7fJKXxfB5g/HAR+ecbtgRFy5QCWmHS8TSJg5IXvkpCAB0MsJwcBQoREg9x7LiEENy1JiQsCeEkJgMDa9CAhIWZKgyUgc8ICACDEtSFpSbJEQ1JEwAaASL6Ix8Z0IXFDkWghLubpivjdGEfdGYTZOsVO6KNUKXgz/U5hulOSzpelWQv91jy/eaWYHzAK/XF8rNTxBTAb/eVWB6GAE5a2gzM+oSnJDkYIURWDEQdFBTTLrzp+lSfBKH6ZsDVPBNwlgrOeHHIFpQRcKxTLScdInAsipVSBSdAMQbnGhsxIGuNROFCRJPpUTgkxpYwKzjEj0b5JFUzAQKgk+AOKQO0gJ+C6BsgUEtZLmM48Td8/wXxUeWjthU/cc+xvthz+7Jbjf73l2GcePnrF2HLkg7efXpYeJUIxHQ0nmw7bYhIuSQ5STm4omZ8T+ch9lZ/dcfjZRw4/s+044ultx5/aduxzOw4988jBZ3cc/uzD5e+9sX5RTth0EoInlzkeByG488PElyTucxkIdtvKtr9795tf3Hn089uPoyUpPLv9+N/uOP757Uf/9M6zm0vCPp1bgiR8vAqrAKc/FaRUBa7FCxP67TBbMo2Sm5c1Prbx/PtvPve+286879bTf3zleO+tlds2nCtOD0sQUYcKTIdpeiPzM6OP3dTw4TvO/cndpz5055kP35HAnWc+dMeZP7u78mN3nf7wLTUPre0oyjJMTJ9pagHAhEbAZJdQri/p/qsHT/z53Wf+5M6zQ8YkTPronWc+ftfpP7mr4rEbz68pinlU4Uz1UDWZ0qvp/50Z+/YktAQpMP1UgwClwkOpRZgNiX/ve2WlEpPqANfiUo0aYHbFNYtPxyOR+P/B06x0lXuJJJzik6oNYBMpFKGrXNE4U4XiUD8nKszmhXd+1EW4TxOKFw1wdeFRyjXGtYdYhJhYoUqYKGG3c+5nZASmM/0jJUynRYBQSaXjc4i0lZgQmDkM+JVDaMD91Er3SD3AiE8ReJ6ehkFMEkUKUMOEWExKhVOSkIJnZio5p8Ld/YErIs4k5laib3qFkCAm31EFiyMfOB6QhADGagi42KQkrmY8ZEvNrcz9jIzA25PQaAPODT6zYcYQwFs4BUFBXjkEA6kIqWASEsBjjCCJ6YYrvIgkqBuIjcZQic9jKCYBCcR9oCT4C5/rMJsTzSuUnmAnIBO/5dDvRGOigoADmLlCwVEEK5AwBtwWSFxsWHEdn2j4FdBR8BVwXwOsb1tCY2wo7skCn6spldOPqyTSZFZMgolLAoVOG5KAuzxIUgCahCCYQwBUuu85KBXJrmmUxE1DgeUUxxLAgBDAUZIPH0Xg4lYNZIqiJmMjQMhkPNdS/9uZ0DMaJ8w2xIyKnBN2DUZg1hIaNzw858FbufqT9/TftUmYZXswwDOwxUogDp6pZtnWt0I8JjSGBPNOzoi2xAnxoiiJFSJhinDPlkPMBBK3Z4JmIZA4I7ZdXghajo+mCV1kFCd2uU7gCQDvAXJU56w0Jbrtwo3JBAoEIZyCAOKeqZWrz+nkLAFqHe0+XFMXBTcghBJBQF6l5ZIIFwITQAKxQe0XlAuiTA0gCBrhMjsE8K2CIExSiXArGOerNO6ywzGVOZU2wxcaaAMu8hHcgjoc3+tJ4thE4Du0EZ2z0pCECuKa4cZz3HnBF50kpkoLn0NUAn6iuNzTt4WAUEEyAoRKguX0Jb3dI68uDiOtd6RiSNXDbEKZDT4QHkItqkSmhjhVYkOcuPfgcxi18ROwlARmOZvBvXBhMyoIJQ4uK/wNignMAvyczjgjghEOzOY6YM1ln7Uf3AkEYe6bDWK54cRspiJpRqK0QDEAX9jj3gHEAVW6/5gF33sAJZIg89UYJq9m8O/K2JlMaPTJjSrImMPaI+mnm5ecbS4+21wwNRSdbUa4zOeai841zzvdml/bkds96CPUJGR2g42LxrS05s6CC525Ve0551vyq1vza9oKarBsza9rz7vQmVfTmdPe749ZCsxwzDBso0Go3RXWTzYVVHfk17QPmeEa05Zf05Zbg2VLcX1HYUfYY3IF7xk2vkS/ymwebcK12p7JyVFBeIljctYdp5Vtmd8/uOkHb978o323JPHDfbdMET/av/FHB9d97/D1L5avqmrNxm0bcIOcboQJ4D10ksGEOP1RzxuVa359cvXPj5X9fH/ZLw9sfOHg9S8c2oD4zYk1vz6x9tfl646fye/px9vOJNKupht3WSodYEZlc+533rjpFyfWvXB03QuHrrsEtOrghhcObHrtxNrTbf6IxRwiY5KLuYROxH0mE1riPkqEl0LEEic7le8dy/9JRc5PK3N+Upn7s8rs75/M+W75CFym+R/lef99tGhPTX5jvw9oDIAnrL2ywpSSS5JGFAbk8iMdIM0hz49OFn77wIJvHlz4rRPFXz9c9NyR4ueOzn/ucMlX9i7/6p5l/3ag5De1ue1h3YfHzMuLu/peatS06j/bV/xfB+b/66Fi15Jj859DHJ7/HDYPz3vuyMIfnSmq6fNwGwIAfopn6El8vHqjrgkJM5nQbj4DqAQTm1gW6xnU2ge1tpDWHlLbQlpnSOsOTxVdIa1rQBuIaYatglRgsoyE8S6Bn0SAKoA79CSTLQEMBzoHoaNf6xjwtIe97SG93bU8YfyA1t7v6RzwDBqqI2b3z0oM+SFZxNTbBn2t/ViiJTpG0oVrVcK2Qb0rouH2DFIqRCZ8HBo6s78E4GmdqPiUOrNyZ00anVHJhEh8QJEaIV5CvTTx2AxDDyuY6EiZOjxUKlRQSkHoIKdlJ6GAmJqHBIRKTQ/lXiY9zP2bEl6GdxvHq1gumO3FLgVNmpq4q+IiIFUgKuDbOCI1KryMu9rRACa9CngVl6ITAQDIioBZu1AHQpWU4jTOmpYZFExnUNY1LYoSN4MoZsg17cYfvPH09zgCGgjEVBykEqggeE2F+Q+KB/MDYREhCJ7LrgHX0VrXUPn7uDMpRKiJ+7IQ7hvty8wGAfeDAsghllm9iQ/puEZ+UZD4hhtfpIirMvitG0zdQz+85f9N4VviIOYlArPUcSTn+HtKWnEITSyDKXFf60z4AltONTLXhK/0mrByzsi5CEwxArOY0BLItCEkWBxPClP0YsbYLElsfOt4FZajyzNjDYbAwZPS9GOIliQxM/bgWw6JzxpXa8/MGDOxFExogr14n8XyauE6i1lIpSSUgM6mD41JRrnKBEtaB9O8JID7CQ2FEPy5nBA8RGuqYEziZxidEZ1Nz3iioucJpagahl0SJjFgGC9W3X/PoVGuM7QEMU1jNCYowVMFCpwIo62SwxkJthKnaBAaBQ+bnhnJUegFBgcmmwe4ygvNRRWYf+Lqc5oym2pG1NEsofhVviI7ujJnmliVE9tQYC3KsjM9EoMJ0/r3E0JSS0JYOkQBllgZEwULH+E1nc/PsVbnmmtz7NIcsTInPoHxsZU5xkWM5inNsYsCUgLgt2hT8pQ6CUQktjd3PhlN0cdWkJMTBUt/wC4qNFa4llgrL2lE7amQYj1lSbKClKHe0hyrNJsvyxrwakaMk7GKhiju5F/qlfg0RSSWQ71UgFCp7dOEVeSPL8++JH+C4AxpX5mDnEmThsrSHGd5lrMgLephl8IypGVGf2FwL/lzlZKFUISj69QpzojfvrL1U+945ckdLz+5/cqxdc+nt775mR0vv/f2/esXNQBM30KZ2CxRwOVF4E40Pzj4gbsO/eWWXZ/e/sqTW3c9uXXPk1v3ToA3ntyaxBieR16+Z0N53MHkZQwYjL0wgUYSR7XwvMOpg2l028rmv3v3i5/Z8eqTW3dfVIdKh5uE2pEyHJd6P7V1919uff3DDx1eNb9LOEygRRiFUcrGb2LMLnbgQgegip0ViL7z5sqndqKuSyomCE6SYYxt217+2Jbd77yjJis9bnFyUcHM/6YzKFIKxh2NUJHl5auKBrbeWLHthjPbrj83FWy9/vzW66uS2HLD+S03YP38LaV1C/N6pcTMmMUQYAQI0Gy/cUdZ7QMbzm654fSW609vu/78tuurxgPSh+MSz9brqx/eeHp1SbPp4Pd2qoxrssTtb1jGwNgLe7kUCgbwPTef3TYUwPE1bnONHN6F9SF7tl5/7sEbTt+1rqE4JywFsXChoOCx2i5PkZgegjLL57E2rWh+5CacyiH528YPzvBeNGYIW244h1G9f33V5tJOn8d2rpWExuDg28ooV+KOx7E9YANY6WDmTgXSyhdWQRIOD9gC73J5ws4S3C+ELuW42YEKZwpMgmoJ3XIyHCddOGi8D+wrgLT9wkl3jEzHTAeuEsJh3Hd/UoK4XGZRSTSOC1gRPE1YGIEMlHxFliSZBffY3ONYASkUTnhMSGdaoSKAu7QQgjpC4/yKw4LGSMdrC93BqbSyuaVJroDEdTIta6YwiGLcJZ6cJJVTvSVdRqqg1PEz209jmrTAyQKpXoZ7eBeRgkonCUWAKgiVnCacQIUAABAASURBVF6kkNQ3j+FjEnUiwcOBScx4miBMp6BSMCkxkzTbrzhe6kobX44bK7R1DKSbvrZ7wMEK5RLvKvKSPWg/Rfr4IselOgSGooGS3Zwao/HyRNSIoadSB6Lg6cdH8TliPEW4wBCXejDslABJEpIqJMHkIIqgTNAkJVViNJKco0oJiXWQsBnrKmeKxFTgPoXj6Qdw2xs1YOaaGHTUCPKiD1cjGcOAcRTuMVFQQK9xp0HalETiwBSoBCpRikxRLiOCEJwxldIr0DWeNJw1d9ooqgbUO1Wzh4tCa4eaJClhhBDsRQwxTPaLSLRHIL8LKSdjH6cfTaACUxPHojGgEiBkHDYAZLhERxZEqk0SnVgSwEQnxJWU6kxWSPLX5UsiGUg0QKgUReAqkJfnv5peTOirGT5qLMafGVK1JS5IIvHhBmbR9CHdhFBVJXSGHKEmENxoh2SP/UUSU4vzMi7IxQEE1/NV+E6AIJLCsDKurssTiUxsKWCB5CCSkq64TKrGMjmSgLvRDNdLkh1jSqSn2NASQXBrxzvU7CcDwAzlwRiXXMlCAwzrOF1TI02RCw94Zhw/bU+RfY7t9zsC001oIcDhMHbJIYXjYUMQwglxgGB7dgOICkzchSQBVIa7wDCb3Hsk0rkmQUq3C96Ky3VZSDQG0KQxCtEexBjyzBPQDCoSJshR54rxdQkKs2MYATzLCSpxbxsvIONbM33qNBNaSgHcwTwZoxmPSxyJ0s0mrGA0Qbp8cjZKAMxTauEdLaFi1MxhKAlOqXC/U0gCeKE1s2FGQia6SSSqA0qIxgh+q5Ko8fKQgENw4AwHJ6EUHcbnCqyiEiwnBBqPn0+STDJxOpFuHGfGpKRWSTg6KiVxBPpLAM9TyY5ZKKeV0GRCQyiRPtUGpprSn2SSINGL2QIue/d1kiIIZrVBcDXBJeOETOxR+HAkKUVOgNkyg6CPKBwTCLV7CAR9KmioPBmC4aU7oZgwLkkCEYQJggNx+EwCYw5cAzsN3IBMsvUKwm38oorv5ZjNqfv8IF13ZswelGZT4RBhg4w6jFMC00o6mNo1HdlyAtE20CjguZlpYGkk7LbUfqL3Uq1vtuDpp3rEByRAmIdgPo2wzBKGyePgpjIBZoMemS0zXAd7qNalqL0K7Zdy0HCkjakKQ5eEYZ++cdHjez3VIFqUKmGq9VN3+EyGCGMOng7wtlB9kDALjaC4akBiZSw0oqQrHuaJMK1fUftA7yHajE0ZiiLqgEocpkQVNfzWvLYb6+O0KQLAtoQSs2hbv2//+WV7zy3Zc27x3lnEkuN1xSFLASAMN0cYcRECKoUAEz0R9VRz3r6zy/adWzJLxuw7t3h/1cL9Z0outGWpSlzgmUyOMEgO3ToIfkds6VbL64r2nV2691zJ3rOLZtwkN+ZVJQdqistri/tCaYy6/1djODcjopNoKJSE455TTXkHq0vePLt0/+llb1Yt2nd+Rqfs/KL95xe9eW7xgaoFFXW5cUtlTCaUXypmsDadHdqdKPzBfMFymC0KsXQSszjrinmPN837xsv3fu3F+7/621nEc7+57/t7b2qMqDF8SB2zA6nEE1C0LN260OP91Ynlz/36/q/+ZtaMefH+516677nf3LvnZKlXw/vq+HNGJInHlRO1aT/cu/5rv737qy/d9tUX752NEH3tt/c9//I939t1S11rkcogLggfucCS86YxaO33//DIgn99+bbnfvXAc79+8LkX78exX/3tDAbq3q+/tulrL93x/Cu3fv/NpX1xj6qOH5ykSVdZUpB4qMEnGLxBTlkNMhIGCn6KIsPVE6ky6fErdtwhVf2+Vy5kvVaf8XrDLOLVusz9zem9hu5whYyZMIr3eQlRW4nYanWv/9ULmbtmzZhd9Rno76uNwTN9aVTgNjEyMoBRFmiPzjgjpHEw62Bz8LULmbMXnNfqM1+pzUJ/W0KqSmUaExig4ZOVrKNJIZOe6fbvrs94tSHt1ebAKxcycewMGoY2oCUo80BzelWvL267yZbUPhvlUOjJmO3t8soIIeAuBBh5uVRGcLeUlkNiBoubsw7DZK4+94Y+IoeShuHSw51JSHDtmWVj0N+YpdicgWsMjLowwghK3GVncha3WGy27UnId/D1KUhGxrMpYaKDNw2b4EzF0CSLzoZVQzItijsdzkVC7WwVmNAzLxpnjhHppW8FdIqbH2YJpu6EjqA96ltlDyqa0I6LHWiP9lbZo5CLWif4jcbgMsMwzvZ8oQrUNYEVM0aelYSeMevmBM1F4AojMJfQVxiwt5h9Tt0VRmAuoa8wYHPsv9sRmEvo3+35mbPuCiMwl9BXGLA59t/tCEwzoaUAYhMi3H8BEBdsDnMRuPoIGALfwCogp5mTyYU2ncGMSr/iBDUr6HHSPU5gDnMRmIkIpHmcLJ/t1XCn5MnvIpO9ckzm8IhyOgmdrsgVedG7V3Xetaj7wcWd2xe3vx2YU/r7FoGtS9ruKa1bkNdBlRhwhQr8ei1GZOsUGleY0NI9ZuRkD965/vTHt7z6kQcOfuSBfR95cO9HHjg0h7kIXGUEPvrAoT9/+MjtK5uyvcbFvfly38vGTe8rTGj8gCppms9YVtR7+8rmzSsbN61o3bS87aYVrXOYi8BVRmDTytbbS9uW5Ub97n9Te8WpnMzvyya0vLhOXN5LCpgk1E6HeBFwH5g50iwUTtoc5iJw1REISPdvofgl9wki3f9MwU285HE6UZtCQd1/eg6j/z40oZzgZswDwNx/pmUTKqktiftf0AgiUJMklmDuv9mUzCBKhFKTEAvcPy1jDy+RngTAOL0wjJ8Q8/KcKD/JgJXUQKyPJaZ6UxXkQc5kM6VoODHZhSUSxyI1FhmwPpZhOAXlI9sVYZTM5NhRxKQKJCZ7h5dIvEzvcM6rrKcUJdVNpcQhY5UicezYRNwcidnFDFCimLoOFQ4hIDXhoQIY2PgCBMmTgEJiAUhM35GcDECnhDLbAog4WsxU4xaN2xC3iYFwZNzhWI/bMmbzuCURhi1HIW4B0hGGDaO6xjQn40yoQFGIS2PHJY5nhmGlbBtS5Mq5RBzqTRmMvcMxrsbhDKn6FDwd0jWBzIuBGubaJeFjDHaFXOQc5uMYFWNi4g68QmLKjKlXxjfposHD5STjFncTTMRtYWCOIUwWM5W4kJw44GJkjo7XwoQeh0wkYQQ8zFKoHTJpbU96RWNBeWN+RVN2RVOwwi1zKppclDfmJoB17EJg5RLKG3PKEwyJIaN7kxKSZbnLicw4doT8RC8OzC5vyi4fEpWbICJnTnlTboKIdZcnRb9YQSJKC5Y3ZuPwCtfyoFu/qCtFTHZhOaLXZUP5eRVNwzW6RpYPdWFvqpmqDClFacOARDRyfJQ3pcZiBTkTNrv+YnMkEjGvGFmWu0HIK2/Mw8qoruk2h2yoGDbRSVEJx9EkdBwxvIL1scgtd01FaYhLviPxopycYRXkSTruEiuagpWNOScbc082Zdd1eQdNCYn/lmycZB1JGj+hhaQSgDDbQ5QLrcHnX1/+4e9uec+3HnnPt3a851tbEyXWU0gSkb4twZOiYwUpCKxg7/YxvUhPAdmQJ4mxnEk6lin+4RWkI1DCcCLWkYL0qwTKGQ60LSkQvUYk65OWaMlwIaPqKZlXKWeU2Gk30dqkJaMkpPxFg7ELeZCCwMq4wC7kxC5kHo4kEenjAntx4Nb3fPOR9/zrzg9+Z+s/vbi2siUfmA5TuMZPaELwU6CICyElmDbri+o9YbU9pLSF1J6wpzeE0HtDCYS1rrDaPKh3hby9IV/3oLdlwNPcT9sGoDeEDN7esNYTxrqnN4w8WvOApzNEesK0x+VHhiGEo3o46ukN+XpRfhiJOEoNR5VYTInG1L6I3jHoax3woih3bBjNcNERUloH1R53lLczpDUPKoj2Qa0n5OlxeVhnSGke8HeFcKDHlRzy9YT8LsIetwz5e11KoAfLsLdnMIBARejORaBM1hXSel0v1J6w2uva5sNRvS5F60E5CQwT7kOiyxBKsA2Vnh4c6wYEXXOD6TYTlNZBpWMQiSlm11SUMATXQjQyQQyh5VhRe1FOUnvIG46qoSjFsPQmjERTMcJdrkCUmUAYjU8OUXvDWk9IR40YpY6QEo0pA2GtF2MV8vaGMMJq86CKwzuRknQqQWwdRPkSw47DXb/cLtYTJj1oTxgjzJoH0poHPe0h9AvdTMLbEwokhig9IV/LgLd5QG1zZ8rbgxoTMUQH2wf8bf1+rPSiARj/sAflhyJ6JKr1YdzCmCpqa4hFDZUKpjNCpp/QyYN14i2HBIKgRDBqKsykTGqK7WGWzmxGOSUIiS/BdcZ1ZmlKXGWWykyNIoOjMIdSZLM1JnSGdAOP7Cq1EZTYOt4BEtCZozKUD4xKzeVEUY7OkM1RKFepQKJH4R7FoQQFcoXZumLqinsiQvl+1cEulXEgNlCToXZmM+QEzohAusa4ygR1hUufIrwKxzrSdSY8TGhUKkwy1KKgXqExoVBBqAQqCcXhrv0KtTUFJTuUCIUgG0d+rGOpJ4QzJnXF0hk6IhkBDS1kDgoPqFxjqFow6vhUy6cYuhLXma0wlGboLK4xS2PDOSUlklIEDpEalTpDCZxS1zAMBSMO8qME3R2IIXUYdZCIoMRhzNLVuK6aKkbAHYgBRCIa7OjMjSdD+ykSbYViE2XaOg5xYSsMn8GQiBTUKBgDnaEuW6EOJdyj2AjURQlRXWMsSqRKUZEJlABxA6gznOUkUAJnBMeid8hjqQqaaunUVghqT/IIj8J9Kg+oOH1CpTj7GDfuVRyExiSq0xkOt3VFeJjUiIQpXHQiHsX92wCKSjC+uFGTmO3D+VWIiAqvg1mJW7gkUcEils+2/H6ioVOSmpRGfYoVUFQP8wpJ8T1IhCsxJ90RigAO4BCBhvm40OIC8HUJapeAT7Z0wNF7HT3KFSEYkQQAFagDptYZ83TF/Laj47vJTJUYdjDKA6bUAIAIClKhoPgUTEEJgE0PSIodqCtmq1Ej4Fg+v+IohDhcjXONS6oxN7mjji5AEsJxGACYXDGFQqhNKNcI8RIdCyA+hXjTiOIIaggigcSFHnFYjEtBuYHWWt6YpUmh2EKLS0WQGFDTkSRq+zhYAp0lKII7ICMcR2kaE6qCh0ETh5icGMLBCPkI0QgDIF6F4wdflB+1tKitRx0tjilBBBCBb46ijoLhwtdMMVvjruOUACHUHrCVPjMtYmWFbS1iqVyQLH9YUSyLkKhUHckwVmg2zgVIhkGIOR4NdHe+pBtYQ1BJHUDHQWIwGegBJlUgjlSjQudAVVA06Y2Z2QquLCrCkkcsj237pfDGHYrOAu6blAIoIFSZAJEsaZvh+Ex0gcZ9iu1n0kuBEmE4iun6wpA5TRU5Hjug4JxRy9Filvu2zhQQdxgajAFXCfUThQKBKV90Uk4CEu0AalpcM2wdZCzOCcYdM9JHcXmZKrOilhScOrYaF2glAAAQAElEQVQ3GkuPhr2ROIuYEDUYFx7gmjSE4USjNkEJPq3PNvClH8vRHMtgYUNH64FGPDSmc4fEmJfiOUdGLBLFrMFYK3FQIoTYUZsOWMSj9vmVCAMedfSIo4AkGpCeuH/A8BgOBWKCUGzO8LAkhADGHUqilp8LplJHp5bh8D5DG4hrYMdBGpaQEdsTFeBw4dgQtTSHM4tD3ObScsByHEuE46rjMEfgsvSIOGgS9wwrhpwiAnRQUjvqpEvXDCNmBaOmz7S45KG47XGE5kjoMnUMFIAtudNr6X1mRtzKlDhDQuVOIGoFuVQwwgKg2/bg0z1wKzEjSJAAUhJhCOa65sTjHBcek46M80gEXzFxRQrVg37hh2IWBhkBKWzb0z+QFY75MKOlbRsmsa04iEFM2XhcMxwHvJ2UmrYEQ3BJeg0po47HdUdiiLhGnajtCcc0x+Q+6v51kSgnceBSCQ/aPGayAFEYmCaYBlheNcwjijPoCdB4rmZ7UFQcZ82KCDC4QgQDKm3hiZlBwXXT8mFMBOEgwLYhanNEzCYhS+0wPKEYE9z0qQNEUtNRIraMOqGITQ2uJqJxBQW9DK8EYklhCKkr1t3LW953U82f3nH2T+84VeiL5Pmt25f3vvuGmsdvqnl8c9V7bqvMyYjkZVh3rep558YL795U/Y6NF7asbs33RxfnDuy8seG+VZ3FGdxxdCHgllUN965tKM2PPrC+5b7VbavnDXLOQJDFueE/2nThiVur3ndL1f1rG/P8UY3ZC7LDj13f+IFbq9+7qe6e0s5Cv6WB1AkvCkQfXN3y/luqPnTr2fvKGvPTwoBhoxL/l+N3NizseycadvP599987o83nV1f3J/js4M+c8vatvfdXP2+W87vvL4ly+PMS489vLrxvTc0/PGmundc13zzglCAOQX++P2l7e/bWP34pnPv3Xz+nZurirLiQlJFsTcu7HvHdQ0fvPXch+84fdvS7g1FkTuX9O+4oWF5fkjiuga6Iif2UGnrE5vPXVccCnrdpCTMumV567a1resLLVXIRdmRnTc0f+D204/fcv62FW2q6tgEVy3OAn4KsG5c0v745toPbKp7340ND6/qXJNvAHilJIWZkW3Xtb7rhsbHb6p93+bqB69vL8qNOlLiViOEUphm372i+703Xnj/5vNPbD7/xzdVrcwNLc817ivrffTG2psW9OWo0pZ884rme0pbF6dZFJhfhVX54ffcVP+hW6s/evvZP775/LLc8JJMc/OCwUdvrH7Ppqr33lT12A0X1hYMrsqP3rKs6723Vm5c1BX0cibpHSs7ESvyI/PTnfvXtT6wvgn3pgKfc9OSjh0bz5fmR3yqIABBnW8pa/qjG+pvWdHNiG07kOmz71zV+c6NtU9sqnnPxoaH1zTlZxiUkhV54Yc31Gxc1sioZQuS5+ebFg68c1PtA6s6luTETE7Q0ctk6aguDCVqxx1DjuqQQLikuIIl5fOyoh+99fyzW47/z0eO/t2OE0szwisyo4/f2Py5h47/zYMVf/1g5TM7D87LHlxSEProPTVffPTo53cc/+zDlX/9QMV1Re23LGt9cvuZT9zZvH5enAiNSu/77qp8/K7K1UWRjz109hP3nblveadt+NM1cvuqjqfefeyzW099duvJj9xxdknmYEGasXlJ71MPn3lqS/kz28r//O6q6+bFfYykqfZtC9s/ee+ZZ7cd/+sHj3/09lPL87sZcB9h6M/CLGP72o5nHjnyha3HPv/g0S9s2X/L4o7irNiKgsFP3X/+CzuOPbW1/OP3NucHYFVe+K/urvziwxVf2Fb56QfPfmTTheJApDQ3/PHbG764/cQXtp/43JaKz22vWFYQ0hVnXubguzfXfuoBVFr+v95x6NHruh5YFn18fedntx26aVGnHfPr1L5rafdf3lX9v95xbOe6toXBOCGQ6Ylicnzy7up7lsXneeL3Lm1+aisacPRzW489urEq3Rt2qDAlToHw0dhjG2u/+I4Tf7ut8umHz/z5nTXbV3dkefBhSK4oGPiLh+q+sOXU324p/5uHKj96d8fK4jDuNjhlpq2XBPkTGzv/dtuZ/7Ht+DMPH/nC9kObS7puWjj44Tuan33H4XduaFuSjlsd+aNbz37k1poN6YSBujAz/sia9me2V//dtor/uePIM1uP3VDcty7f2Lqq6/OP7P/CzkOf23byz+6uubOk785F/e+9sflv37H/vTfWr8g1OKfvvrHp8Zuabl8UWp5FPvrAmY8+VFHg4Xk+56ENFz6788Bdi8L5XsfHREmG+ed3nPrC9sNP3HZaU2MOd4ozw49vrn/q4RNf3HH881vOfuaByhsX9xRl2Pcs6frUtsPbbqzClDMEXZ5jvHdD+xd3nv6Lu2o2l/TGbSrQzymDgsSwE0pwVcnUKCEpwm1ybd0844lbW29c29YWz3zlbOmh2sUDZkBXeZY3mpPZ32/Smta8jqbFVizgV3lRRjQ3LR6LBqIxbd2K8ndtbrl1SZwJsqKwOdc3kEHlzQucpTkRHeyBXl+Bb6A4fTBLNWkUHr+x7sN3VBVmD9Z0LK5qX9QXzQTufbCs/10baxflnz/Wkt4WpWsW1X9y+8Gy3O6l6bEP3t2YnxU635zz8vFVjQPpMZ4OJPHX9ISpS5GtwrycjrCpnm+bV9WWX9nlKczp/ejtZ5cVtVR35Lx6enVjT54hFa9PBDMczTMQtrniDW+567X1SztKsp38gMhO40Y4raWxpKVtdTxGl2b3v/v6ri3XH83J6asfKDh8bnnMgUD6QEZ6uMjfl06i3HQiJinIDZcU9wfTo6tKurB0LBakepF/IMPXKWDwtlXdt61szfGE3ixfceLC/M6BDA1P7MK2hIMT6WNaXiAUCPT2SGLp9oplNe+665V3rT9UnIZ7cWZ+ep+qRPrDWn1jYU9DmtlPwUlMNLF1xcjyRHPSo31moKJ94cnGJS1RzSKhTK2jKKNl3ZKmtYt7qO3J0O2gP+bzGH5P5OHrzn7o7kOeQMeJltzXTpUer14SNTyKxw5kRIsz+iOmUtcdbOjK74n7KRU53kiBd/D6+R2rC/qoRbLUcKEnWqQ72RpP12MBNeLHG4CIe1m4wBfO1qROIV131hYa8wo6Fxc2r87v0jQFKPEwax7ya/GokN2OXFVS844bz21b2xzgMtcXTfdaIDEvaE56aFFBT3FaZMm8zrycEIAucY8mCWfdjJzkB3c0MpbFlsSWQIiDDzZB1VycNeDT44dPFfzbb1Y9/3pJS58XFwGuAa7AvvO533h5+VdfWd3Yk8koZVSEHOWNygUvHlgmHC0/0/CqsmsgLR1D6Q0F/NHVC+IZujIQCtS0BlC8TrmmCk+AryxpDKb1lZ8v/s7ueV97ackP3lxa15lWOq95WX5Xdd3Cn+1e9auDpTWduSsWNOfnDQQzIyU53f0x/56qov/cv+jHR1bU92RwoHFHE1JSkPgcoSnW/uq8b7xW9vVX1lfW5fkpWZkXD8cDeyuLvr+7+PsHs9oHMFC2dEivFXjl9IKXjy/Ah86lRQPzckOUkH6uv3563vO/Xf783uKGvoySnMh9pTUeHXZXLPqnn1//9b0rf3NiUV1HulePoSKGp0yQnDl5Wd26Gq7r9i3J7yxK7xe2lKAwyjSq6Iq+vCBakB7vHlS+d2DBv+8pfeXU4gHD7zgqk1QluKdQlTmxuF5Rs+Tbv163z7VH3lvWND9jkHBL94T7Ytl7q5Z+c8/yHxxc0NidruPZG08rRBAiMOzAxOGa4L+9tuT511ecbsiPxXQGDgVtfnZoeWEXsVUFCKHAVHrrsoENC/tByl+8ueK/9i791t5l3z6w4lSnPmgygv1K9M2avH9/Y9V3d6043JDVH9M9oCjCV5I/sDCvB58F8I7NmNAo4AsDRjhjkumUMUWhVMGburTwYT/Ta61d2GnyQMzyZ3msDUUR3MIpEI9Hxg3/oTPzv/dqqWH6ivzWfH+MAaiUM4InKAK2CKYNZGQM1nVk+/Te3IwOj2oBUJAUpnaNz4dTzQEfP6QUnCCkINwxYqyxPfBKZUEv7rBUSiq5UDr7/OdaMk62p4cNPNzivg5Rm9R3pdW2BW3b63DSHVJr29KAWum+eEFGdMX8XiY83X0ZrX2qY1MpiKLKhUXxgrxuPC7tO7nkNyezXyjP2322oCus52V1+dTo8arF+06X7Dm1+FRDkd8bKswN5wbjCu4VkkQMtaEn8Oa5oq5BXGPSEUy6bicKgK4BX01bVnVbdl/YJzjDGbYcNRxTGjq1XafSeyMqALoAvbG0Q7WFB6qKwPJlp5mZAUMCMSRp6feeaU473arHHaUwM1JW1BIKZe09teTHB5a+dK5gf01+U3eaQmziaiQak4WZZl7mQNwSJ+oKg2n92WkDQnIDBJ7cCDBGWMAjVdU2hTNok2ONOccb8uKOSiS+SmIqAQLuFYt76psLfvXm0j0Vi0OR7NUL+/PSB0EYhPK442uPZJ3ryq7uDoQsN4kISHcMugFEAO0JeeraA7Xt6fgS17I0Llh3OMeni5Kcvgy8FwCzuWpTckNJ34LsaNdg4Kf71u47W1TRmFXRHGwLqzGLgsDsgva+tOq2YG17ZtugFsMsF3rcCPq9dm5Gf4Y3ThhqJVS6CYDaPRovyovPy7YzvBwNkSCkgzt0vGxRc2dfXnN3HlH4+vmDBT4LOBUKNbm3pSt4+kJe3NYdS7FNVyPKQeAu6VN4fla/pkf2Vc+POxxjmJcRIoBPHwoKR55JMX5C69RRCI9iUKgxwGlrNEOT4l13n/vwI2d9uo+pDBRJFOHjyu1LBz5y74WPPni2OCMKDlAiA9Rat6Jz88aWzPRYV7+3si79eK0es815Pr42x1pe1BCPan39ASA2zoLJFV2V9y3tLQiYveFAZVNxjHo1vwj4jUCGoag8HKcXulXDK6KO0t/twwWwLMcoyYKIlb1hXtu7bqh/5w3dPtXUCfczx6dYzPXYdQp/37mi55P3XPirB84umNc3IHhnVCzKbXz0jurtt3aAnQaQoXh0zedYUekgNz7DqTHpqNLRFMoLvAP3rm350P2NT1zfWVrQnZk24PPY3e25EcvPMmy/Yip6TFKHW/jaB/NKwcPufcsjhWl292DwWE2ZKR3qjXOdh0XMJlEOkZgT6Yh6TBArS9q++N5T1y/rUpgZUON+hWtUov4kCHCVxog33uvoDYPBtIDp8ePhCLgZyM3sun1N84fv7X70prZ52XHDUaTANUlwIAHChHpr6eCfPdDw8TvqSoq7iR63LPVk4/x+w5cTjCwrGMxQFO54w8Az/b1eTzRkqaea5mXrsGlB/20lvfleomucqBbhGbeVhD94S8MH76tdWRQK6I7Nlc5o5mDU49Ot1Uu6/R6icKZyLhQ8C4n8QOy+NU2IpYWDhFCNepippLP4isVNjU25Zxtzw8Qqyg+nqTY3aMxhzMdXLel/cGNLVmZvc1Sp6s1Afe5ffQAAEABJREFU+5NQFFmUJ+fnDACJvHC2pGUgP8tPVs3vldRnCU0SkWS7fDk096OYTCkNyYFZHlW90JH100PFe84vZ0p058Yj3/rIS2XzB6hkmi0J4WuWNW/bXLnzutP5aSGQghIIeJ2715y+b+2plt75b1QU7z5dcK4/y7T96Rm8sKB/Xnp7X8jbEcoEjRLhB7xNqeDRPUx4pa0JIfH1k+0IU2iKHqPMEaDZPF2aeMOwQBH4skinsq7b/6XfllW25hfmd/7RXXs+t/NE6bw+3GDiUnJAtwVghjiwemHbgzdW3HPD4Y254faO3G+9uaqiaXFRds8f33H4S4+fWFkwwA0gliwrbn1qx66nHnk9RpQDjVmVnT6umqqEVUta77+5/J41p32aGXeIVI0Bwxt3GAcnJgQXjBBgmgVEAi4nT2xNYZ9jp59uLnzzXGaoP3dNDr1/WQS4Jhwvo7qi0l3Hcl86ubwutGB5UfUz2/Y8+cAJ3JBskI6UADKGcgWReN9TuVTjQgCP+4A4mCVMqh4BWb7BtfMvbFlffltZS2Fm1OEyJiTHoYCXJMBXFLfcvf707WvOzsuIpTEtTfERWwuFM4AH7lzeFcwcYHjaZpCbJlUCJr4pi9G711z42Na9f7Hj5XfeULcyO0odKjgtXdp038bTD66+sCwnmoZPJJwYIbWuudA0s+5d3Z+PK19RTF2lXCGCZvoi60subCitwqMaOLhNUD0t7sVd1ttf30+rmnL62ouWZoezM0zQgGpW0BfdVFq99ZZD7e15+0/NP1qfGaGEC3Bsx5HxRfmh7EwjHNXKD+W3tWSkE21DHg96+yWx4hxXL3o6CcZPaIL7LwGdSY1RvK2fakn/0eFVh2sWMAnbNpy+eUlXcbrJbYpzWYt3/Nq8g9WFA3jvYJiPYArFsjzCVpgW74mztkFPz6B3IBrMCNhLirqz00LN/XrjgBfwHoJzJSWR0uCEcwXFabhDAAWQErgpFS4JU4jHTwhBWgJECkna+n0vnyn+70PLTrUFC3NDO246tTCvl0tOCGJohtHvqu7Arprs16qDXVFPS7/vjaqc/z5Qeq45tyA9+tgtFSsKegKqA5L6NacggIdp78+Pri5vyumO4LqiMdNb1ZK9/3z+sabMrrDP4RSITalDMMNQEUp3GBWMIRnrgvqYXFHYi7fdnAxr3bIunybmZ5plhWEKTEqFEob/a+z37jq98GcHV59vz1hR0HlfWf3KoqhfS9qMD1aAaxHQQdywcQCTqmseQX/QeyZgMOY53562tzr9WHNaX5wyatuY/oCdaAEIwmu6Anuq896oy+8Ja1TiZslU6nT2Z/aFsm5e3pydFmVE6AT3ckYwyChY4e1R3aHWhiX1KzGTPHgmkEB464DvRGPOm9X57YPeuACcB4WQmvasgah+W2l7ljcGIAQhRLjORy21viP9fEuwayAgJePCmZdjLc53cHoXFfbNyw4FFKc4szfgj4Hq+udwTA9qWYKBE3XEoE2YgnIIB0oJrMzrz/WQLF27vbQjL83KCZgrC3t1MB0OeHKTMPlFx2XRCfUTxU8Yuq5oTlzS7x9a+p+7N+0/s0pVwrcv6SwriFhcEZL84MDKT3z7vr/4jwfOdQaBcpz47pj3jdOr955eVZRXV1DUhzdNHmUdA3lZXqesqMPns2t61Au9KjBHMoviFmOKjkHHsIWumVlpEQX8CqGMGOF4wOa6R+d52VFVx3wgKnFAM8Im64742sL+53at+P6BtW29xcsKG7PS+hjjuM9TnCd0iQAumP86tPxPvnPXn/37fS/V5bca0NrPvv7qsh/uua6mubC4sGZRTm9uugUq6wtn7Du95t9euevvf3xXbXsW4ZRYnh4j8N+vr/v08/d//pebz7fnCK5Km2WnD/r1KAXhoYThlArK3M2O4DHBQ+nCgv6CrIFbStuefOxMQc5Ami+UmzkIREiQaBFIAn5xrC77G79c8++v31Tf7c/PHNy8fDDHJxRAc10W/JESM5oQqXt9TnrWIEaAc+y1sauuM/e7b67+8/+89f/7TemploCmcACKdASq4ET+5PDyv/yPez/147uONwVNLggVumo1dGfVdQXXLW4K+g1cXZiJ/WGPw4k3YPmz4z8+vuwXh5fiWREkc6URSRXrxaNL//aHt/3lD27bVZ3XYRDpsdL9uFr87SG6vqQl4O8n0qB4g5AS9bf0Zf5w74Zvv7j58Pn5klimsErz7fUFVJppD6xvvWddfXFeZzDQ5feFcH0KU+0Npx2uWvTS4dLcnO758zqys6I+heK2BUzVVX1Vbm8OU0uy1P/xkaPrlvXnBgfnz2sSNuGWQtDPKWAoIqM4pTsPFNdEVHJTAHAFLOdQXeC1qjzbyVJ10L021aRDQHDqmIr7Oc3w8LjHjiro5sluz76mNGH67y4Z3LQgZIN+oWee7pVLi9t1ta+5x9/SlwGM4DzisSlqsl2VGR1RUVjYe8v6xjQlZBtq3EiXIe6YPr+qrMjo9RlkXkZn2dJzCrPPtvmr2rw+xWaW2taSe7q62HYYEM0RnqiJT0LDPLIoxD1gZAKoCtO9zE8FqagPHqzKAxu44Fy6J4deM2PfuYKXy3N6YsJyOEh0WEpiSjXGVSNmSS5EOJrZNbCkdGF3UTDMHRVtdnSTa6ZpE0xY8Blq1mBORm9vzNPYmT3QntHeV+DR5IKcLkNyB/Bu5liDXiEdYGZ/hP1679LGrnRVEwHNsYVqYXgvToBA7gj1MF6cNbAw2NvUnzsQS6MAqmp4iKFyAZYKtmpZ6YadgZsaEHJxKADOh0nAIiD9Ak+5mu1RMk93ZLzZzLKy+j16jFFbElI/kNlvQX5G731rugsdB/rZJQlAQGgRS41i6DiGQqa6mjvSGzvShGJkZHT6/YNSggAHQ2PZ2oCV5QgNgEggFlFzM7uzM1vbLdnZ52vuzW6JZnn9g7h9LM4I6bZDpazvy9xdXxKT6vwMuTCdhyzu2BI4UZlcmN8LnnBLVLZ2eZp7Myx8HM8YUNMMXbe81F3ZMNmF+zwBQkexSdwnEvYJh8/PjG5d1/6X91d87O4T966pIapZ2eqr7fUQlVNq37O++jOPvvnUo/tvW9mRnxXXvKaX2vEBrbcjPRrxLSuILM6P2bbe1OozDUtXje7BwoF4wLQVifc3cIBwzkn/gOd0w8KBqH/TinMfuffMUzsOffLeI6sLrYaOvKZeb9nS2vfdfvYdN59fUtxTgy9Zu4OFWaFP3Hfi43efeWRj1fL5baFohhHz4BsWVeEeFVc7kZabPA+trXt62+G/2Xr8wdUtD69t+/Ad9X/x0Nn33HJ2/aL2OA90hvyRuKozjnfOQYt1R7WwrThSIUQoLBb0Dm69vvrpdxz6/M5Dq4t7u/oDB07Px66Hrr/wzM6Dn3vw2LtuqS9bEBYOk4xkZ/KFBXG/v+/187nPv77yO28sPXBqQSyuzAsOLEp3AiruDBbRQzeUDP7x5vq/eqji8btqS3Kc/lDa+Waf5ZiMmkPxl2puunnv+nN/+eCxB9ddMLl8/fjixs4gThCjHD+abruu9nPbD3/y4bPrFvZrVHgY3uJw+ggoXKH2A6vrnt1+6H/uPHjH0pYcvMVTR2exuCG6Br19kWxbOkSJW0D2VOdUNhf4NOWJW0987OFT96xvd9MYjWS4kgXQ2P3ra5/ccuTp7YfuLe2Yn26oQoIEw9Q7BtLPdmRbUuJhC02STAIDSYgjFFyBumJJxXIEyczq8/iiZxtKfrR/+fO7Sn90ZHHcBsyE5QXRKD4xUCNqy7a+QDiUvijbWLugH/dENCBTlYv9+PjY0dzn+eXBFf+2a/ULh5dWt6SnecKrC0M5aZYjh4I05tcIAiWUAmEjaNggEogk4NqcH7BuLOl776a6j9xRc/uyrvrOwMHarLPtgbCphMLedYt6H7/n/Afvrt6wqCfNZ4cdNRrX7Yg33p9W314gFKL7bUvAuWZPfZe3fSDjdNPSkOkFKoRDeuOenpgeslRJ2MHq5YerF2os+ujmhj+59/RjN1aX5POK+sI3q3KJFtm6sWHTyl5L+F48vq6pJ6coiGvswns2V9+7/kJOTt/+qsUdfWkKcJWCR1FAsEic9Qymr1/U//47q95/W9WmJZ03lPQ+sKb9iVvrHr2pYWlB7Hj9wobe3L6oP2aoIUMz0VsmcGJwiixOw3HCbXbj4t4P3Vn1kTvPL84LN/f5XjpZWN6Uu6ww8qd3V3301up7VvbMy3CiMU9fJBDQWVGmEza03ecKvne45IfHF7x5dl5zd5pC5MKABZYvFPNyZizNNh8s6/jQnec+8ECVX9NO1c07Wpdl4qbFcJ+kACQU90uirVrU/fD6pmCatbem8DfH5zV2p1lC74mkK6py3eLex287+86b65YXDarU8RCDEbAEG7TUgah33YKBD95Z89G7zm6c3+Vjdm8Eidw0ZTjiq8QvRH3Zg4a3P64ebUjbc25BbWfR2oVtO2+rub60ryuU1RP19MeVgbjSE9HWL+x+383VH7ytavOS3qDOw1GtN6abknVH/PvPL2zpKRyIZkQMLc7ZgBHoi/tj3BFCGDYdjGuOg2+kedTUjp5Z8ovji394eNFvy+c3dufiCSk7IDoj/oGYEo2TWExt6Sz0aKwgKxaPab2RDOJ4ij0WMHGmOec3x5b99NiyF08sOFGXFzICi7JjmT5uCVXC5BcFiSCjGAnhlDiMCJ+m9YcCx2tzzrQW1XUsP3Lmxn/5/sPnm3M7+j3n6nOPVK4qP7/hZO3Gg2c3dg6kN7Wn7S9fsqe6tNVM7xHeVyquP9hc3GgqcT22uzn44vlVr5y57uWzhV2mBh5uUnq0sWR/Q/G5wQDPkq/WFH5914Z/f/3OrlB6bdeC/RfWdMTovpq8H+0t++ErN3b15Z9vXv6j/Tf/w2urznTj80f6nuPFzf3eqp6MF8qX/dV/3nm8KV/VSNTyc8Eijlo3mLWvpuxA3frjzasrG5c0dmeebgnuPz+vtSOjvm3pqxU3Pfsfd9R0FbfFsvc3Fh6vXdA96FOYncZshYiucOBo/aJ9Z8uO1Kwsb1h6qHZJ+2BG3aD3V/XZf//Kxl8evqmhYU1924Iz54vO1mTXtmccKV/c3e3nDj1QfkNLb9CiwtFkVU/asdoFp2oXGrZdU7/o7Lmy/o6cC03ptW0Zjb0Z7WHfC4dKf7RvbVVfMGqlm8IXA0UAnO/M33W+9NVT1//46MYv/vzuT3z37j3t0Gs7PZG0N2pX7a4p21tTdrh22ckLOW39foNTAAOY1RtXKptz958tPXhh3eGmsjfrFg0M5nb2ZO2ryttbtaClP70n5P31sUV7Km89XrOhuiPNIPavKuf93S9uevH0+oaOtNq2nFdPbzpYsbi8OruiIXffqRsPnFl96OyKo1VLByPe1n7/8ca8/U0FXQCdpvrG8RUHTt1ZcaGspt3f1OM9Ubv0aN3CC9FoY1g531J0pno5j3u7O2zp0YMAABAASURBVIoqqxftPZfR72iqRwqh7zu9sapuQVcnBn/+mepFbR05MUs/UrfyZNP8Cx3p9S3e/WdWn29dYNpwtKrsWNP8lpjqTTNa48rRlkV7q2/ptagjcZ9KA9zJYZILgzI+hwMiKh0BsjOm7WtK+/reeV/aVfSNg0Uv1xeFbU/zgP+np+Z9ec+Kf3p90dd2FX/1tfln2v2nO9N/cqr4OwcXnu71d3L288qC7+1bcqKqAL+f4ru24xdyv7d/yeunC0Mx1adxAeTHh+b/98GSAxfyOGEW2HVt+iv75/f2++OG3h/2NHerpsmaBzP/++TKv9+15B9eXfazEwv7DcmY0RnXfnh6+T+/seofX77h+weuw91CgpDUEcSKg30hpLxck//ca5u/smv5V96Y9897lx2szT1WE/zFscL/99rK//3KvO8ezDrTkWMLo6GH/vBQ8Q+OFDX2+D2KGy2vAo39vv84XvQve0q//PrqL+9a/eWX1zX3+hmh0Vh6ZXPwPw4VffG3S/7XK6vxgelAc/D754qfO7D0J6fzXqrJ+ufX19R3ZXkp6ASqB3w/Pl38rSPLqnuzv39i0bePLtjX7jvT7X3hVPH/fvm6//3CDT8oX3S616upA3gHBxAqcQyhvXSm5Kuvrnp+14IfHp5X3pges0Cl+MqPNfV5/m3vgufeKPjm3nnfPbDoO28sON/q41LiGZ9L0tjjf6Fi3lf3rvjnXSVfeXXBl18t3d2ccaDd/6vTeb84U9QY8hhCHqjP/Nah7J+cymiL6oqbHPxCl/aNXav+z8vr/+/L6/71jZVHO9KqBvTDTZlfeWPFP+5a/o+7ln319eV7arMPNGS+dDb3x4eLG/vT+xz9UFvg+YPZ/1Xh39/BqiK+nxwv+dnRJb3xjI6Y5+XzhV/ds+JAS+AHFcX/fWJxZU9OxFGAOn0x+M/DS797ouSHZ4q+X1H878dLjnUEcSv+yYmib+8t+Wl5YUVE+1l58cvn8isHfN98cynmQxQ3FoLekaONmd/cvWT32ZLBqJKph/DIMH6yDqNiQgsM6DDKxSqeOBLVuEPawtqR5uDu2uxDjemtEY8plUFTr+5KO9ISPNqQeaw+7VBdRltI74xqtT2+8ubMvjiep+S5Lt+Zpoz23gAQVaWyo18/2ZhR1ZEVN1WNSrx9nG7LrGzJau334erD24SuQLoHIhEP7naaaoejjErAB6aq7uAbF3L21WVXdaQRIISJsK1WdwcP1hccrM0/15ZpC+G4PgiNxQEknoUa+zwVjZkn6tKP1mccqM+u7wm09ntqu7376nP2XMg82eaPWJh1Tm+YlTdmn2sN4EMtHlfQXYVC2FDOduC2FDzSkH20PvtoXc5AzKMS6qE0HNUr2wKv1QZfr8290O9tCuuVXRkn2jLPdaVVd6cdbcrsi2mMEIVAn6me7s441prTHfOd7cwo78hsCHtwazjXlYEHiQNV+VVdaX0mriHpAJfAFYmbB63vyjhRn13Z6D/VEmgf1IBQILpCScwklc0ZR+ozDjVkHm0IVjZlD0Q0hWAIVSzR+Kr2zOONwWMNGUfrMvfXFDSFPG1hvaoz/Vx3YNBktpT1/Z7yFl9Nl2baBLMMJB3Afb0hc19twZsXCk42pTdH1K640hLyHmt0HT9Un3OwPru61984oNf1eU40Z+H50BSsK4a7pu9Upx/f9w1aCqqobs80bD1iK7W96Qcb8+oHPfjZuLItc8DwOEAIkYalVrRmlHdkVHannewMVHakd0R0AaS601/RjKFL77WVU23pZ7vSm2O+ow05zf0+PKPaksQ4axlQTjbqHf0+4UiPEic4Q5MBE8kBjOpIPiKpCgzf3DFMRoqyJFF9tvRxrvmZ4wAIQrxMejXuVYRGCSjEEExI6WEmIaACvu+0JUhNwaXIY5JxIJIITmTE0RyuSkkIEaBQYHiGlz5io5jFhXzHbd0xQ4vbJOA3iWQqBS8TXsoZvu+lkuJjEFG51LikPuowQhRmqMpAXIgYVxxJvSzupdRLmI/ZXrUTjdFAAaAmBzRB91mEcUCpiuZRBAFqcS3uaBpDKyRmRxIKlX7V8SqWVzGx9CuGwxkhEPREfUwojABDkQL3HgBJJNUV3IhwkObVYpxwU4IAKQmAy0kkgKoLTUNeXUgmCKHokRb3MptKJWZnCJddCEGl4BrYfsXxevChX9pCEVKLgUoo96m2V6GM6o5QTUE1xeNV0VnACfIyR6UcbdKp9DL8WsVwu8fFqgHBClAuCSYDRPAm6E4oeIlNQKLjNte9mqEoQlG4rsYtIS1BAPAhROBtSlNAKgJf16JdquLEgDkCGHAv45RoCvV7mc8HwqtwVeEgcCSmKBCqSKCoWaHCxxzKHMDHM6mjGUBxvATUxRyNCEwHj8IVTTCVoBfobBTnQmhSUACBYYwJErcVKblfG8zSYx7mSByD9k0G1CMlSCEpDhjJLAVxDwZCYIwYSEOncZzgBI9pSyMqrSQMaYCMxYUVFnZUOpIYJlgR4SR7LWkIGY8KOyK4IWxgEYPgWDsqHKQDiXNiRIRtE7u9n71RmXGqO+37R0u+8doKQ2GDjqcn7o0K4GABNQQxYtJ0pIHaI9Lm1LRBxB1cHh4gigNq1MmISj0KagRLnh4V1AATBwIzbeLEhRDExiZqHLKNxIQSjoMRERDmahKmYBJkXNpJHnTKobG4NLpsEZY2ageI41owBDfBEiwal46NtrFoVOCNwrLBjApbJGKCDsakiXJMMCU1DDBtMNALZIhK2yR4Ao4A4TZwAyxJLQMcVIfRQNfQTkAGGTOkGRFOFJNQot64ZEYcVUg3+MgcFcICNCMSB4yqhbEF1yPTQE+ZgRIsaRtC4qwZgiUcVMKcWoSjClRkEzTJimFkqGlT11RUhDCJCczA4ba044JLVE3ijuRRR3eDKFw3COB02ia4rsWkLQmuOpNQW2eWQjEBbC4Ny80TW6A0nAoSh0SeRBKxjQjbloYjLbTKwbwnQKX0K7gCuSE5UENXHEK0sJ3eHQ/0m564o8AULsxj11sJ7uocxU+AEIA0TSxIt9dkmWuCxqqgsTzLwvraoLU6aCexJmivSzTLgg5S1gZtpJQFx/RmYa+zLhvlWNiLWBu0cODaoI0D1+TG5vlNbiiDA14zouOr17Lc8KqcUGkwVBaMrA0a64LW2oQWLNcmhqzNRkVmWVZ8XTCyLhhaGwyXBaOrs5B/sCwrXJaFddTl2rYu21qD9mQ564LYtHH4amwG7TXZ1rpsE+tlwViZqyiEZWlWZHmmURZ0HSwbUuTWV2bysix7TdBa5wIrzhqUhsOzsGKtTVRQMqIs6Kx1eSwsUTjC5UwIxMraoOsvSl6DPNnmuiAOx8i4hq0Z6nLWZtvrspOKXMuReXUQzXYp2IV1BBJRUZmrHZldL5C4JiEzUUEiAoc7q7NwbGy1Gx90MLwqK7YmaKCcMtdO7LJXZ7ka1wSHpmx1EL3DsQgc7vYmXEZ3jNXB8Nrg4JrgYFkwvDwrVupmhb0uaOGQsqBVlmWVZlmrstxKmSs8MTzoMiBPEglOVxEyoMa1WRhqnLvBdcHBtcHBVcEoClmdhTOFMuOrsmMrss0Cv+FhXMhR6Tl+E3f4cTvc4ZyrXEBuwLhxQf+20vYtq1ofKG15sLRp+6r2nas6ZhaPrG66b2XrdfN7StLCN87v3rG24ZHVF3aurt25pn5nWfPOsvE1PrKqdWdZ486y+p2r6lwkK6UX62UtUzXSVVHvyimr31rW+GBpy47S8TVOVeBMx+fq9LY9Uta0s6wh6eDOskY3btOwsAyjPRSlHWUND5Y2by9tSxm2rbTjwZXtSWwpnXJ6JGUmpu+RsvoHS5u2XpS5pbRx66qGbWVNm0o68gIxwcdN1NHE8RNaEsuWTsTyRiylIGdwy+azn3jHC5/6o19/6rFff+qdP3XLR1/81Izi0ztf/fTOVz712MtPPvrGk4/s/vQjr336sdc+9ei+T+3c7+LRV8dV9+Rjrzz52K5PPbp7Aow/ajxRqGtIyJOP7vr0Y69+6rGXxmObYa/fIhWPvfxpN5ivJ6OEEcO4TUv1K0kJifJ1V+ZjL09LzvAwDpe5+9OP7Xryoswn3/mrJx996S+27H/k1vPzsgfjcSansEmPn9BEqgyYrth4QtckpAOka0qazgK6GlB9bunWsTlz0FgAodOAR6Z58JzD8GtFwAPYdKETtzmhUiWgj4uEkAlHjeodLmFU1+9HM+Xg1biTEoKVq5EzfCyKSuESPU1Jy9BJur8vAPgYqkkVAE/AMMlFJ+hnlDANn8SJQ/CpEE/nQgOBby80yf2S61KoswXJpFDkkHwmJT4q0IvNWVM6pG5O/u9QBMDB9yg6gARbwQLwnckEyTqcPFFC42KQlODrGBPwERVlMYtQfCVnAeC2fe1jzovf/QjQuJupTrqQXIoY4Ksgtz3Jz4QJfXEcvvv0GI6Cx5fEZjmFTf/iyLnfcxG4mgg4VFiKtHRiUyqIDsQ7FWmXS2hMXpWx5sHAC6eL/+m1Df/vlQ3/8Mp1X3pl3Qi8uu5Lr653kaInm8kyRRxeSXZhicSxw5GYAvJcwrohvVcwJGEYSkgKxAoiWU+VSEGkmskKUhDJ+kQlMkyCiwaPKyHpRaorKSrZTNZT5bjEVK9buagoKdOloONXThyhaNzhKDaJi70jhiS7LpbJrmQ5ZNLFrss0k/xYIs8r67/00vqvvLL2t6fnNQ368DX11SY0jsevaI19ge+fKPkfv7z16Z/d+vTPNz3905tG4Gebn/5FAj9LdGGJPEkKltgcxY/NJAOW2ItANgRWsGsUkAe7kkgxJDX+fPPTKcrwUcOHJAdiiZwpOlZS/FjHXgRWLk9M9aYqOAQHXgaoNMU8toJeoIQkHStJOVjBUcl6qhyXmOrFCopKysEKNpPA+uWIm4ZmDZlTnMiP2jGww4lIweYoIBGZk8D6qF5sos3JXiyRAZtInBTIhszJIb/Y/OxPb/78j27+nz++8cdHF9b3eimeezEjJ8Pldmgci8do5GCS+ij4KPEzkqaNhCLTmHChgtuFJbtIQTo2R/Fjc4hBpmGvAu7YSTgT8pETxyJGaUTKcAwJTwxBsUkMV5SSg6OwnmTACjaTwPpYYrJreDmuouTAZIlyhvOPqrteSDdiSEfO1BA0NVlPldg7lpjqxQqKQiEIrGAzCawjBYGVJAVLrCMFgTKxmUSKiPSUohRxOGeSH0skInMSqSFIv4SLriGPyzAsJS7xjJwjl55IiaEhIk0V+FEvoAn8kO4h1EsYHhkwJy8PevnuZC8KYkQqRGBJCYwGAEoZQUxSsBzLnKQM78I6IkkfW2JXEsO7kDK8OaqOvaOQZEgSk/VUOXViakiqkhw7UZlim0olKSTJmaynynGJqV6sJBmSJTaTSDaTZZKCZbKZLLGZRLI5vET6qCZShmN4L9aHdyXrSByFJP3y5fAhyHmxSQAQ1C1g0ouO4RgWhmbjAAABPElEQVSfQEAmMX73HHUuAr8bEZhqQv9uWDtnxVwEJonAXEJPEqC57msrAnMJfW3N15y1k0RgLqEnCdBc97UVgbmEvrbma0at/X0U5iY0F9ywjbhlxyxnGLBpxSwEVobT5+pvVwSsmO3EbBmzeMydKR5z5BAuEZ1E1+92aYshs9F+rLu+XJXB3LDAtnF5EqC0KCttWVGwJD99YX7GwrzMS8jPdClIRAynz9XfrgjgRLiTkpgXtMGtZy3MT+IiEenXBIbMThh/1QYvLcgszPCBe1F6z9pFH3vohgQ2fOzh6y7hoQ0JInZdf4k4nGGu/hZHAKfpwes+9uDajz2UmKaH1n/sgTVDSBHfYpOmp+6hdUNmo/1o+fSEDB/1yKa7Ni5z8xmArl8yb9tNq+cwF4FrOAKbVm9YMk8l7re//x8AAP//oAacuQAAAAZJREFUAwC33DhTV6ltrAAAAABJRU5ErkJggg==" alt="Logotipo SEEL - Serviços Especiais de Engenharia" />
+          <h1>Supply Flow | Gestão de Frota SEEL</h1>
+          <p>Controle interno de veículos, contratos, condutores, centros de custo, locadoras, combustível e Cobli.</p>
+        </div>
+
+      <svg class="fleet-illustration" viewBox="0 0 520 360" role="img" aria-label="Ilustração de frota SEEL">
+        <defs>
+          <linearGradient id="seelTruckBody" x1="0" x2="1">
+            <stop offset="0" stop-color="#003c71"/>
+            <stop offset="1" stop-color="#0069b4"/>
+          </linearGradient>
+          <linearGradient id="seelYellow" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffd900"/>
+            <stop offset="1" stop-color="#ffe94a"/>
+          </linearGradient>
+        </defs>
+        <rect x="42" y="256" width="420" height="20" rx="10" fill="#d9e5f0"/>
+        <ellipse cx="250" cy="292" rx="188" ry="22" fill="rgba(0,60,113,.16)"/>
+        <path d="M72 164h246c24 0 45 15 54 37l21 52H72c-22 0-40-18-40-40v-9c0-22 18-40 40-40Z" fill="url(#seelTruckBody)"/>
+        <path d="M326 176h58c17 0 31 10 38 25l23 52h-74l-17-47c-5-14-16-24-28-30Z" fill="#00518f"/>
+        <rect x="86" y="183" width="92" height="42" rx="10" fill="#eaf6ff"/>
+        <rect x="194" y="183" width="92" height="42" rx="10" fill="#eaf6ff"/>
+        <path d="M346 194h42c8 0 15 5 18 13l8 20h-57l-11-33Z" fill="#eaf6ff"/>
+        <rect x="68" y="234" width="300" height="19" rx="9" fill="url(#seelYellow)"/>
+        <rect x="82" y="145" width="100" height="22" rx="11" fill="#ffd900"/>
+        <text x="103" y="161" font-family="Arial" font-size="14" font-weight="900" fill="#003c71">SEEL</text>
+        <circle cx="118" cy="254" r="34" fill="#061b34"/>
+        <circle cx="118" cy="254" r="16" fill="#ffffff"/>
+        <circle cx="118" cy="254" r="8" fill="#0069b4"/>
+        <circle cx="348" cy="254" r="34" fill="#061b34"/>
+        <circle cx="348" cy="254" r="16" fill="#ffffff"/>
+        <circle cx="348" cy="254" r="8" fill="#0069b4"/>
+        <path d="M404 91l38-38 38 38-38 38-38-38Z" fill="#ffd900" opacity=".95"/>
+        <path d="M414 91l28-28 28 28-28 28-28-28Z" fill="#003c71" opacity=".95"/>
+        <circle cx="85" cy="92" r="35" fill="#0069b4" opacity=".14"/>
+        <circle cx="118" cy="72" r="18" fill="#ffd900" opacity=".7"/>
+        <path d="M62 113c26-24 62-25 92 0" fill="none" stroke="#ffd900" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+
+      </div>
+
+      <div class="booking-bar">
+        <div class="booking-field">
+          <label>Centro de custo ou obra</label>
+          <input id="heroCentroCusto" placeholder="Informe o centro de custo" />
+        </div>
+        <div class="booking-field">
+          <label>Condutor</label>
+          <input id="heroCondutor" placeholder="Condutor vinculado" />
+        </div>
+        <div class="booking-field">
+          <label>Início do contrato</label>
+          <input id="heroInicioContrato" type="date" />
+        </div>
+        <button class="booking-button" onclick="openTabById('frotaTab')">CONSULTAR</button>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="breadcrumb"><strong>SEEL</strong> / Frota / Controle de Veículos</div>
+
+    <div class="tabs-shell">
+      <nav class="tabs-nav" aria-label="Navegação do sistema">
+        <button class="tab-button" type="button" onclick="openTab('frotaTab', this)"><span class="tab-icon">🚗</span>Frota</button>
+        <button class="tab-button" type="button" onclick="openTab('cadastroTab', this)"><span class="tab-icon">📝</span>Cadastro</button>
+        <button class="tab-button active" type="button" onclick="openTab('dashboardTab', this)"><span class="tab-icon">📊</span>Dashboard</button>
+        <button class="tab-button" type="button" onclick="openTab('medicoesTab', this)"><span class="tab-icon">🧾</span>Medições</button>
+        <button class="tab-button" type="button" onclick="openTab('importacaoTab', this)"><span class="tab-icon">📥</span>Importar Planilha</button>
+        <button class="tab-button" type="button" onclick="openTab('multasTab', this)"><span class="tab-icon">⚠️</span>Multas / Faturas</button>
+        <button class="tab-button" type="button" onclick="openTab('relatoriosTab', this)"><span class="tab-icon">📄</span>Relatórios</button>
+      </nav>
+    </div>
+
+    <section id="dashboardTab" class="tab-content active">
+      <div class="powerbi-dashboard">
+        <div class="powerbi-header">
+          <div>
+            <h2><span class="icon-badge">📊</span>Painel Gerencial da Frota SEEL</h2>
+            <p>Indicadores da frota em um layout mais visual, no estilo dashboard executivo, com foco em status, custos, contratos, categorias e centros de custo.</p>
+          </div>
+          <div class="powerbi-badge">Dashboard SEEL</div>
+        </div>
+
+        <div class="dashboard-filter-panel powerbi-filters">
+          <h2>Filtros do painel gerencial</h2>
+          <div class="dashboard-filters">
+            <div>
+              <label for="dashStatusFilter">Status</label>
+              <select id="dashStatusFilter">
+                <option value="">Todos</option>
+                <option>Disponível</option>
+                <option>Alugado</option>
+                <option>Em Manutenção</option>
+                <option>Devolvido</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashLocadoraFilter">Locadora</label>
+              <select id="dashLocadoraFilter">
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashCentroCustoFilter">Centro de Custo</label>
+              <select id="dashCentroCustoFilter">
+                <option value="">Todos</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashCategoriaFilter">Categoria</label>
+              <select id="dashCategoriaFilter">
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="dashContratoFilter">Contrato</label>
+              <select id="dashContratoFilter">
+                <option value="">Todos</option>
+                <option value="vencidos">Vencidos</option>
+                <option value="0-30">Vencendo em até 30 dias</option>
+                <option value="31-60">Vencendo entre 31 e 60 dias</option>
+                <option value="61-90">Vencendo entre 61 e 90 dias</option>
+              </select>
+            </div>
+
+            <button class="outline-btn" type="button" onclick="clearDashboardFilters()">LIMPAR INDICADORES</button>
+          </div>
+        </div>
+<div class="powerbi-kpi-grid">
+          <div class="powerbi-kpi">
+            <div class="metric-icon">🚘</div>
+            <small>Veículos no filtro</small>
+            <strong id="dashTotalFiltrado">0</strong>
+            <span id="dashTotalPercent">0% da frota</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">💰</div>
+            <small>Valor mensal da frota</small>
+            <strong id="dashValorMensal">R$ 0,00</strong>
+            <span id="dashTicketMedio">Média por veículo R$ 0,00</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">⏱️</div>
+            <small>Contratos vencidos</small>
+            <strong id="dashContratosVencidos">0</strong>
+            <span>Ação necessária</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">📆</div>
+            <small>Vencendo em até 30 dias</small>
+            <strong id="dashVencendo30">0</strong>
+            <span>Calculado pela data de término</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">🗓️</div>
+            <small>Vencendo entre 31 e 60 dias</small>
+            <strong id="dashVencendo60">0</strong>
+            <span>Calculado pela data de término</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">👤</div>
+            <small>Sem condutor</small>
+            <strong id="dashSemCondutor">0</strong>
+            <span>Cadastro pendente</span>
+          </div>
+
+          <div class="powerbi-kpi">
+            <div class="metric-icon">📈</div>
+            <small>Utilização</small>
+            <strong id="dashUtilizacao">0%</strong>
+            <span>Veículos em uso</span>
+          </div>
+        </div>
+
+        <div class="dashboard-bi-grid">
+          <div class="powerbi-visual large bi-span-7 dashboard-visual-year">
+            <div class="visual-title-row">
+              <span class="visual-badge">📉</span>
+              <div>
+                <h3>Análise por ano modelo</h3>
+                <p>Distribuição dos veículos conforme o ano modelo cadastrado.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage dashboard-chart-stage-large"><canvas id="yearModelChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual large bi-span-5 dashboard-visual-status">
+            <div class="visual-title-row">
+              <span class="visual-badge">🧭</span>
+              <div>
+                <h3>Status da frota</h3>
+                <p>Disponibilidade e situação operacional.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage dashboard-chart-stage-large"><canvas id="statusChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-5 dashboard-visual-category">
+            <div class="visual-title-row">
+              <span class="visual-badge">🏷️</span>
+              <div>
+                <h3>Categorias do veículo</h3>
+                <p>Distribuição por categoria cadastrada.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="categoryChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-7 dashboard-visual-locadora">
+            <div class="visual-title-row">
+              <span class="visual-badge">🏢</span>
+              <div>
+                <h3>Custo por locadora</h3>
+                <p>Valores praticados agrupados por locadora.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="locadoraChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-6 dashboard-visual-contract">
+            <div class="visual-title-row">
+              <span class="visual-badge">📋</span>
+              <div>
+                <h3>Contratos por vencimento</h3>
+                <p>Faixas de vencimento e contratos sem data.</p>
+              </div>
+            </div>
+            <div class="dashboard-chart-stage"><canvas id="contratoChart"></canvas></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-6 dashboard-visual-centers">
+            <div class="visual-title-row">
+              <span class="visual-badge">📍</span>
+              <div>
+                <h3>Centros de custo</h3>
+                <p>Ranking de veículos por centro de custo.</p>
+              </div>
+            </div>
+            <div id="centroCustoBars" class="powerbi-bars dashboard-scroll-chart-shell"><div class="dashboard-scroll-chart"><div class="chart-inner"><canvas id="centroCustoChart"></canvas></div></div></div>
+          </div>
+
+          <div class="powerbi-visual bi-span-12 dashboard-visual-alerts">
+            <div class="visual-title-row">
+              <span class="visual-badge">⚠️</span>
+              <div>
+                <h3>Alertas da frota</h3>
+                <p>Pendências contratuais e de cadastro para acompanhamento da operação.</p>
+              </div>
+            </div>
+            <div id="contractRiskList" class="contract-risk-list"></div>
+          </div>
+        </div>
+      </div>
+      <section class="stats">
+      <div class="stat">
+        <small>Total de veículos</small>
+        <strong id="totalVeiculos">0</strong>
+      </div>
+      <div class="stat">
+        <small>Disponíveis</small>
+        <strong id="totalDisponiveis">0</strong>
+      </div>
+      <div class="stat">
+        <small>Alugados</small>
+        <strong id="totalEmUso">0</strong>
+      </div>
+      <div class="stat">
+        <small>Contratos vencendo</small>
+        <strong id="totalVencendo">0</strong>
+      </div>
+      <div class="stat">
+        <small>Multas/infrações</small>
+        <strong id="totalMultas">0</strong>
+      </div>
+    </section>
+      <div class="panel-card">
+        <h2>Resumo dos veículos cadastrados</h2>
+        <div class="table-wrap dashboard-summary-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Placa</th>
+                <th>Modelo</th>
+                <th>Categoria</th>
+                <th>Condutor</th>
+                <th>Centro de Custo</th>
+                <th>Contrato</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardSummaryTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="frotaTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">🚗</span>Consulta da Frota</h2>
+          <p>Consulte os veículos cadastrados, aplique filtros e acompanhe a situação operacional de cada unidade.</p>
+        </div>
+      </div>
+      <section class="section-title-row">
+      <h2>Veículos da Frota</h2>
+
+      <div class="filters">
+        <div class="filter-field">
+          <label for="search">Pesquisar veículo</label>
+          <input id="search" placeholder="Placa, modelo, condutor, centro de custo, contrato ou locadora" />
+        </div>
+
+        <div class="filter-field">
+          <label for="statusFilter">Status do Carro</label>
+          <select id="statusFilter">
+            <option value="">Todos</option>
+            <option>Disponível</option>
+            <option>Alugado</option>
+            <option>Em Manutenção</option>
+            <option>Devolvido</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="liderFilter">Líder ADM</label>
+          <select id="liderFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="centroCustoFilter">Centro de Custo</label>
+          <select id="centroCustoFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="locadoraFilter">Locadora</label>
+          <select id="locadoraFilter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="categoriaFilter">Categoria Veículo</label>
+          <select id="categoriaFilter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="condutorFilter">Condutor</label>
+          <select id="condutorFilter">
+            <option value="">Todos</option>
+            <option value="__SEM_CONDUTOR__">Condutor não vinculado</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="anoFilter">Ano Modelo</label>
+          <select id="anoFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="contratoFilter">Contrato</label>
+          <select id="contratoFilter">
+            <option value="">Todos</option>
+            <option value="vencidos">Contratos vencidos</option>
+            <option value="0-30">Vencendo em até 30 dias</option>
+            <option value="31-60">Vencendo entre 31 e 60 dias</option>
+            <option value="61-90">Vencendo entre 61 e 90 dias</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="outline-btn" type="button" onclick="clearFilters()">LIMPAR FILTROS</button>
+        </div>
+      </div>
+    </section>
+      <section class="fleet-grid" id="vehicleGrid"></section>
+    </section>
+
+    <section id="cadastroTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📝</span>Cadastro de novos veículos</h2>
+          <p>Cadastre exclusivamente novos veículos na base oficial da frota SEEL.</p>
+        </div>
+      </div>
+      <div class="single-column-panel">
+        <div class="panel-card">
+          <h2 id="formTitle">Cadastrar novo veículo</h2>
+          <form id="vehicleForm">
+            <input type="hidden" id="vehicleId" />
+            <input type="hidden" id="fotoAtual" />
+
+            <div class="form-section-title">Identificação do veículo</div>
+
+            <div>
+              <label for="statusCarro">Status do Carro</label>
+              <select id="statusCarro" required>
+                <option>Disponível</option>
+                <option>Alugado</option>
+                <option>Em Manutenção</option>
+                <option>Devolvido</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="liderAdm">Líder ADM</label>
+              <input id="liderAdm" placeholder="Líder ADM responsável" />
+            </div>
+
+            <div>
+              <label for="centroCusto">Centro de Custo</label>
+              <input id="centroCusto" placeholder="Centro de custo da obra" />
+            </div>
+
+            <div>
+              <label for="placaVeiculo">Placa do Veículo</label>
+              <input id="placaVeiculo" required placeholder="Placa do veículo" />
+            </div>
+
+            <div>
+              <label for="locadora">Locadora</label>
+              <input id="locadora" placeholder="Nome da locadora" />
+            </div>
+
+            <div>
+              <label for="codigoVeiculo">Código Veículo</label>
+              <input id="codigoVeiculo" placeholder="Código do veículo" />
+            </div>
+
+            <div>
+              <label for="modeloVeiculo">Modelo do Veículo</label>
+              <input id="modeloVeiculo" required placeholder="Modelo cadastrado" />
+            </div>
+
+            <div>
+              <label for="categoriaVeiculo">Categoria Veículo</label>
+              <input id="categoriaVeiculo" placeholder="Categoria do veículo" />
+            </div>
+
+            <div>
+              <label for="anoModelo">Ano Modelo</label>
+              <input id="anoModelo" type="number" min="1900" max="2100" placeholder="Ano modelo" />
+            </div>
+
+            <div>
+              <label for="foto">Foto do veículo</label>
+              <label class="photo-upload-button" for="foto">📷 INSERIR / ALTERAR FOTO</label>
+              <input id="foto" class="photo-input-hidden" type="file" accept="image/*" />
+              <div class="photo-preview" id="photoPreview"></div>
+              <small style="display:block;margin-top:6px;color:#667085;font-weight:800;">A foto será gravada ao clicar em Salvar Cadastro.</small>
+            </div>
+
+            <div class="form-section-title">Condutor</div>
+
+            <div>
+              <label for="condutor">Condutor</label>
+              <input id="condutor" placeholder="Condutor vinculado" />
+            </div>
+
+            <div>
+              <label for="cpfCondutor">CPF Condutor</label>
+              <input id="cpfCondutor" placeholder="CPF do condutor" />
+            </div>
+
+            <div>
+              <label for="funcao">Função</label>
+              <input id="funcao" placeholder="Função do condutor" />
+            </div>
+
+            <div class="form-section-title">Contrato, valores e franquia</div>
+
+            <div>
+              <label for="valoresPraticados">Valores Praticados</label>
+              <input id="valoresPraticados" type="number" min="0" step="0.01" placeholder="Valor mensal" />
+            </div>
+
+            <div>
+              <label for="inicioContrato">Início do Contrato</label>
+              <input id="inicioContrato" type="date" />
+            </div>
+
+            <div>
+              <label for="terminoContrato">Término do Contrato</label>
+              <input id="terminoContrato" type="date" />
+            </div>
+
+            <div>
+              <label for="prazoContrato">Prazo de Contrato</label>
+              <input id="prazoContrato" placeholder="Prazo contratual" />
+            </div>
+
+            <div>
+              <label for="franquiaMensal">Franquia Mensal</label>
+              <input id="franquiaMensal" placeholder="Franquia mensal contratada" />
+            </div>
+
+            <div>
+              <label for="franquiaTotal">Franquia Total</label>
+              <input id="franquiaTotal" placeholder="Franquia total contratada" />
+            </div>
+
+            <div>
+              <label for="diasFinalContrato">Dias para o vencimento</label>
+              <input id="diasFinalContrato" type="number" placeholder="Calculado pela data de término" readonly />
+            </div>
+
+            <div>
+              <label for="mesesFimContrato">Meses para o vencimento</label>
+              <input id="mesesFimContrato" type="number" step="0.1" placeholder="Calculado pela data de término" readonly />
+            </div>
+
+            <div>
+              <label for="situacaoContrato">Situação do vencimento</label>
+              <input id="situacaoContrato" placeholder="Informe a data de término" readonly />
+            </div>
+
+            <div>
+              <label for="contrato">Contrato</label>
+              <input id="contrato" placeholder="Número do contrato" />
+            </div>
+
+            <div class="form-section-title">Combustível e rastreamento Cobli</div>
+
+            <div>
+              <label for="cartaoCombustivel">N° Cartão Combustível</label>
+              <input id="cartaoCombustivel" placeholder="Número do cartão combustível" />
+            </div>
+
+            <div>
+              <label for="cobli">Cobli</label>
+              <input id="cobli" placeholder="Identificação Cobli" />
+            </div>
+
+            <div class="full">
+              <label for="observacoes">Observações</label>
+              <textarea id="observacoes" placeholder="Observações internas da gestão de frota"></textarea>
+            </div>
+
+            <div class="form-action-note">
+              Esta aba é exclusiva para o cadastro de novos veículos. Para alterar um veículo existente, utilize o botão <strong>Editar</strong> no card da aba Frota.
+            </div>
+            <button type="submit" class="reserve-btn" id="saveVehicleButton">SALVAR CADASTRO</button>
+            <button type="button" class="secondary-btn" id="cancelEdit">LIMPAR CAMPOS</button>
+
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="importacaoTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📥</span>Importação da base da frota</h2>
+          <p>Importe a planilha oficial da frota para carregar ou atualizar os veículos cadastrados.</p>
+        </div>
+      </div>
+      <section class="import-panel" id="importPanel">
+      <h2>Importar planilha da frota</h2>
+      <p>
+        Use a planilha oficial da frota SEEL para carregar ou substituir os veículos cadastrados no sistema.
+      </p>
+
+      <div class="import-grid" id="importGrid">
+        <div>
+          <label for="spreadsheetFile">Selecionar planilha da frota</label>
+          <input id="spreadsheetFile" type="file" accept=".xlsx,.xls,.csv" />
+        </div>
+        <button class="reserve-btn" type="button" onclick="importInitialSpreadsheet()">IMPORTAR BASE</button>
+        <button class="outline-btn" type="button" onclick="downloadTemplate()">BAIXAR MODELO</button>
+      </div>
+
+      <div class="import-status" id="importStatus"></div>
+      <div class="locked-import" id="lockedImport" style="display:none;"></div>
+    </section>
+    </section>
+
+
+    <section id="medicoesTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">🔗</span>Medições por placa e veículo</h2>
+          <p>Central de integração para medições das plataformas ALD e ARVAL. As informações serão vinculadas automaticamente aos veículos já cadastrados pela placa.</p>
+        </div>
+      </div>
+
+      <div class="api-note">
+        As placas devem estar previamente cadastradas na aba Frota. Ao sincronizar ALD ou ARVAL, o aplicativo cruza automaticamente a placa recebida da API com a frota cadastrada. Dados sem placa correspondente ficam marcados como não vinculados para conferência.
+      </div>
+
+      <div class="api-grid">
+        <div class="api-card">
+          <h2>Integração ALD - Medições</h2>
+          <p>Use esta conexão para puxar medições por placa, veículo, período e centro de custo.</p>
+          <div class="api-form">
+            <div>
+              <label for="aldMeasurementsUrl">Endpoint ALD - Medições</label>
+              <input id="aldMeasurementsUrl" placeholder="URL da API de medições ALD" />
+            </div>
+            <div>
+              <label for="aldToken">Token / chave ALD</label>
+              <input id="aldToken" type="password" placeholder="Token de autenticação ALD" />
+            </div>
+            <div class="api-actions">
+              <button class="reserve-btn" type="button" onclick="saveApiSettings()">SALVAR CONFIGURAÇÃO</button>
+              <button class="outline-btn" type="button" onclick="syncMeasurements('ALD')">SINCRONIZAR ALD</button>
+            </div>
+            <div class="api-status" id="aldApiStatus">ALD aguardando sincronização com placas cadastradas.</div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <h2>Integração ARVAL - Medição completa</h2>
+          <p>Use esta conexão para puxar a medição completa por placa, incluindo locações, multas, taxas e demais itens faturados.</p>
+          <div class="api-form">
+            <div>
+              <label for="arvalMeasurementsUrl">Endpoint ARVAL - Medições</label>
+              <input id="arvalMeasurementsUrl" placeholder="URL da API de medições ARVAL" />
+            </div>
+            <div>
+              <label for="arvalToken">Token / chave ARVAL</label>
+              <input id="arvalToken" type="password" placeholder="Token de autenticação ARVAL" />
+            </div>
+            <div class="api-actions">
+              <button class="reserve-btn" type="button" onclick="saveApiSettings()">SALVAR CONFIGURAÇÃO</button>
+              <button class="outline-btn" type="button" onclick="syncMeasurements('ARVAL')">SINCRONIZAR ARVAL</button>
+            </div>
+            <div class="api-status" id="arvalApiStatus">ARVAL aguardando sincronização com placas cadastradas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="measure-filter-panel">
+        <h2>Filtros das medições</h2>
+        <div class="measure-filters">
+          <div>
+            <label for="measurementSourceFilter">Plataforma</label>
+            <select id="measurementSourceFilter">
+              <option value="">Todas</option>
+              <option>ALD</option>
+              <option>ARVAL</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="measurementPlateFilter">Placa</label>
+            <select id="measurementPlateFilter">
+              <option value="">Todas</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="measurementStartFilter">Data inicial</label>
+            <input id="measurementStartFilter" type="date" />
+          </div>
+
+          <div>
+            <label for="measurementEndFilter">Data final</label>
+            <input id="measurementEndFilter" type="date" />
+          </div>
+
+          <button class="outline-btn" type="button" onclick="clearMeasurementFilters()">LIMPAR FILTROS</button>
+        </div>
+      </div>
+
+      <div class="measure-kpi-grid">
+        <div class="measure-kpi">
+          <small>Total de medições</small>
+          <strong id="measurementTotal">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>KM total medido</small>
+          <strong id="measurementKmTotal">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Valor total</small>
+          <strong id="measurementValueTotal">R$ 0,00</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Não vinculadas</small>
+          <strong id="measurementUnlinked">0</strong>
+        </div>
+        <div class="measure-kpi">
+          <small>Última sincronização</small>
+          <strong id="measurementLastSync">-</strong>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>Medições integradas</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Plataforma</th>
+                <th>Placa</th>
+                <th>Veículo</th>
+                <th>Período</th>
+                <th>KM medido</th>
+                <th>Valor</th>
+                <th>Centro de Custo</th>
+                <th>Vínculo</th>
+                <th>Data sincronização</th>
+              </tr>
+            </thead>
+            <tbody id="measurementsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="multasTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2>Multas / Faturas</h2>
+          <p>Consulte e registre multas ou faturas vinculadas aos veículos da frota.</p>
+        </div>
+      </div>
+      <div class="quick-actions" style="margin-bottom: 16px;">
+        <button class="reserve-btn" type="button" onclick="syncArvalFines()">PUXAR MULTAS/FATURAS DA ARVAL</button>
+        <button class="outline-btn" type="button" onclick="openTabById('medicoesTab')">CONFIGURAR API ARVAL</button>
+      </div>
+
+      <div class="admin-panel">
+        <div>
+          <div class="panel-card">
+          <h2>Registrar multa/fatura</h2>
+          <form id="fineForm">
+            <div>
+              <label for="fineVehicle">Veículo / placa</label>
+              <select id="fineVehicle" required></select>
+            </div>
+
+            <div>
+              <label for="fineDate">Data</label>
+              <input id="fineDate" type="date" required />
+            </div>
+
+            <div>
+              <label for="fineType">Tipo</label>
+              <input id="fineType" required placeholder="Tipo da multa ou fatura" />
+            </div>
+
+            <div>
+              <label for="fineValue">Valor do documento</label>
+              <input id="fineValue" type="number" min="0" step="0.01" placeholder="Valor mensal" />
+            </div>
+
+            <div>
+              <label for="fineDriver">Condutor/responsável</label>
+              <input id="fineDriver" placeholder="Responsável pela frota" />
+            </div>
+
+            <div>
+              <label for="fineStatus">Status do documento</label>
+              <select id="fineStatus">
+                <option>Pendente</option>
+                <option>Em análise</option>
+                <option>Paga</option>
+                <option>Recorrida</option>
+              </select>
+            </div>
+
+            <div class="full">
+              <label for="fineDescription">Descrição</label>
+              <textarea id="fineDescription" placeholder="Descrição da multa ou fatura"></textarea>
+            </div>
+
+            <button type="submit" class="reserve-btn">SALVAR REGISTRO</button>
+          </form>
+        </div>
+        </div>
+        <div>
+          <div class="panel-card">
+          <h2>Multas / Faturas</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Veículo</th>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="fineTable"></tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="relatoriosTab" class="tab-content">
+      <div class="tab-heading">
+        <div>
+          <h2><span class="icon-badge">📄</span>Relatórios da frota</h2>
+          <p>Consulte a base consolidada da frota e exporte os dados para análise.</p>
+        </div>
+      </div>
+      <div class="panel-card">
+          <h2>Base consolidada da frota</h2>
+          <div class="export-row">
+            <button class="outline-btn" onclick="exportCSV()">EXPORTAR BASE CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Placa</th>
+                  <th>Modelo</th>
+                  <th>Condutor</th>
+                  <th>Centro de Custo</th>
+                  <th>Contrato</th>
+                </tr>
+              </thead>
+              <tbody id="summaryTable"></tbody>
+            </table>
+          </div>
+        </div>
+    </section>
+  </main>
+
+
+  <footer style="max-width:1480px;margin:0 auto 28px;padding:0 24px;color:#667085;text-align:center;font-weight:800;">
+    Sistema interno de gestão de frota SEEL • Veículos, contratos, medições, multas e integrações
+  </footer>
+
+  <div class="floating-help">••</div>
+
+  <div class="vehicle-detail-modal" id="vehicleDetailModal" aria-hidden="true" onclick="handleVehicleDetailBackdrop(event)">
+    <div class="vehicle-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="vehicleDetailTitle">
+      <div class="vehicle-detail-header">
+        <div>
+          <h2 id="vehicleDetailTitle">Detalhes do veículo</h2>
+          <p id="vehicleDetailSubtitle">Informações completas do cadastro selecionado.</p>
+        </div>
+        <button class="vehicle-detail-close" type="button" onclick="closeVehicleDetails()" aria-label="Fechar">×</button>
+      </div>
+      <div class="vehicle-detail-body" id="vehicleDetailBody"></div>
+      <div class="vehicle-detail-footer">
+        <button class="outline-btn" type="button" id="vehicleDetailEditButton">EDITAR VEÍCULO</button>
+        <button class="secondary-btn" type="button" onclick="closeVehicleDetails()">FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="vehicle-detail-modal" id="vehicleEditModal" aria-hidden="true" onclick="handleVehicleEditBackdrop(event)">
+    <div class="vehicle-detail-dialog vehicle-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="vehicleEditTitle">
+      <div class="vehicle-detail-header">
+        <div>
+          <h2 id="vehicleEditTitle">Editar veículo</h2>
+          <p id="vehicleEditSubtitle">Altere somente os dados do veículo selecionado.</p>
+        </div>
+        <button class="vehicle-detail-close" type="button" onclick="closeVehicleEditModal()" aria-label="Fechar">×</button>
+      </div>
+
+      <form id="vehicleEditForm" class="vehicle-edit-form">
+        <input type="hidden" id="editVehicleId" />
+        <input type="hidden" id="editFotoAtual" />
+
+        <div class="vehicle-detail-body">
+          <div class="vehicle-edit-grid">
+            <div class="form-section-title">Identificação do veículo</div>
+
+            <div>
+              <label for="editStatusCarro">Status do Carro</label>
+              <select id="editStatusCarro" required>
+                <option>Disponível</option>
+                <option>Alugado</option>
+                <option>Em Manutenção</option>
+                <option>Devolvido</option>
+              </select>
+            </div>
+            <div>
+              <label for="editLiderAdm">Líder ADM</label>
+              <input id="editLiderAdm" placeholder="Líder ADM responsável" />
+            </div>
+            <div>
+              <label for="editCentroCusto">Centro de Custo</label>
+              <input id="editCentroCusto" placeholder="Centro de custo da obra" />
+            </div>
+            <div>
+              <label for="editPlacaVeiculo">Placa do Veículo</label>
+              <input id="editPlacaVeiculo" required placeholder="Placa do veículo" />
+            </div>
+            <div>
+              <label for="editLocadora">Locadora</label>
+              <input id="editLocadora" placeholder="Nome da locadora" />
+            </div>
+            <div>
+              <label for="editCodigoVeiculo">Código Veículo</label>
+              <input id="editCodigoVeiculo" placeholder="Código do veículo" />
+            </div>
+            <div>
+              <label for="editModeloVeiculo">Modelo do Veículo</label>
+              <input id="editModeloVeiculo" required placeholder="Modelo cadastrado" />
+            </div>
+            <div>
+              <label for="editCategoriaVeiculo">Categoria Veículo</label>
+              <input id="editCategoriaVeiculo" placeholder="Categoria do veículo" />
+            </div>
+            <div>
+              <label for="editAnoModelo">Ano Modelo</label>
+              <input id="editAnoModelo" type="number" min="1900" max="2100" placeholder="Ano modelo" />
+            </div>
+            <div class="vehicle-edit-photo-box">
+              <label for="editFoto">Foto do veículo</label>
+              <label class="photo-upload-button" for="editFoto">📷 INSERIR / ALTERAR FOTO</label>
+              <input id="editFoto" class="photo-input-hidden" type="file" accept="image/*" />
+              <div class="photo-preview" id="editPhotoPreview"></div>
+            </div>
+
+            <div class="form-section-title">Condutor</div>
+            <div>
+              <label for="editCondutor">Condutor</label>
+              <input id="editCondutor" placeholder="Condutor vinculado" />
+            </div>
+            <div>
+              <label for="editCpfCondutor">CPF Condutor</label>
+              <input id="editCpfCondutor" placeholder="CPF do condutor" />
+            </div>
+            <div>
+              <label for="editFuncao">Função</label>
+              <input id="editFuncao" placeholder="Função do condutor" />
+            </div>
+
+            <div class="form-section-title">Contrato, valores e franquia</div>
+            <div>
+              <label for="editValoresPraticados">Valores Praticados</label>
+              <input id="editValoresPraticados" type="number" min="0" step="0.01" placeholder="Valor mensal" />
+            </div>
+            <div>
+              <label for="editInicioContrato">Início do Contrato</label>
+              <input id="editInicioContrato" type="date" />
+            </div>
+            <div>
+              <label for="editTerminoContrato">Término do Contrato</label>
+              <input id="editTerminoContrato" type="date" />
+            </div>
+            <div>
+              <label for="editPrazoContrato">Prazo de Contrato</label>
+              <input id="editPrazoContrato" placeholder="Prazo contratual" />
+            </div>
+            <div>
+              <label for="editFranquiaMensal">Franquia Mensal</label>
+              <input id="editFranquiaMensal" placeholder="Franquia mensal contratada" />
+            </div>
+            <div>
+              <label for="editFranquiaTotal">Franquia Total</label>
+              <input id="editFranquiaTotal" placeholder="Franquia total contratada" />
+            </div>
+            <div>
+              <label for="editDiasFinalContrato">Dias para o vencimento</label>
+              <input id="editDiasFinalContrato" type="number" readonly />
+            </div>
+            <div>
+              <label for="editMesesFimContrato">Meses para o vencimento</label>
+              <input id="editMesesFimContrato" type="number" step="0.1" readonly />
+            </div>
+            <div>
+              <label for="editSituacaoContrato">Situação do vencimento</label>
+              <input id="editSituacaoContrato" readonly />
+            </div>
+            <div>
+              <label for="editContrato">Contrato</label>
+              <input id="editContrato" placeholder="Número do contrato" />
+            </div>
+
+            <div class="form-section-title">Combustível e rastreamento Cobli</div>
+            <div>
+              <label for="editCartaoCombustivel">N° Cartão Combustível</label>
+              <input id="editCartaoCombustivel" placeholder="Número do cartão combustível" />
+            </div>
+            <div>
+              <label for="editCobli">Cobli</label>
+              <input id="editCobli" placeholder="Identificação Cobli" />
+            </div>
+            <div class="full">
+              <label for="editObservacoes">Observações</label>
+              <textarea id="editObservacoes" placeholder="Observações internas da gestão de frota"></textarea>
+            </div>
+
+
+
+            <div class="form-section-title">Movimentação do veículo</div>
+            <div class="vehicle-transfer-panel">
+              <label class="vehicle-transfer-toggle" for="editRegistrarTransferencia">
+                <input id="editRegistrarTransferencia" type="checkbox" onchange="toggleVehicleTransferFields()" />
+                <span>Registrar que houve transferência deste veículo</span>
+              </label>
+              <p class="vehicle-transfer-note">Marque esta opção somente quando o veículo mudar de obra/centro de custo. Os dados atuais serão gravados automaticamente no histórico antes da alteração.</p>
+
+              <div class="vehicle-transfer-fields hidden" id="editTransferFields">
+                <div class="vehicle-transfer-previous">
+                  <div>Obra / Centro de Custo anterior<strong id="editCentroAnterior">-</strong></div>
+                  <div>Condutor anterior<strong id="editCondutorAnterior">-</strong></div>
+                </div>
+                <div>
+                  <label for="editDataTransferencia">Data da Transferência</label>
+                  <input id="editDataTransferencia" type="date" />
+                </div>
+                <div>
+                  <label for="editNovaObra">Nova obra / Centro de Custo</label>
+                  <input id="editNovaObra" placeholder="Informe a nova obra" />
+                </div>
+                <div>
+                  <label for="editNovoCondutor">Novo condutor</label>
+                  <input id="editNovoCondutor" placeholder="Nome do novo condutor" />
+                </div>
+              </div>
+            </div>
+
+            <div class="vehicle-edit-help">
+              As alterações desta tela são aplicadas somente ao veículo selecionado. A aba Cadastro permanece exclusiva para novos veículos.
+            </div>
+          </div>
+        </div>
+
+        <div class="vehicle-detail-footer vehicle-edit-footer">
+          <button class="danger-btn" type="button" onclick="deleteVehicleFromEdit()">EXCLUIR VEÍCULO</button>
+          <button class="secondary-btn" type="button" onclick="closeVehicleEditModal()">CANCELAR</button>
+          <button class="reserve-btn" type="submit">SALVAR ALTERAÇÕES</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+<script id="fleet-large-storage-script">
+(function(){
+  "use strict";
+  const DB_NAME = "seel_frota_operacional_v2";
+  const DB_VERSION = 1;
+  const STORE_NAME = "state";
+  const MEASUREMENTS_KEY = "measurements";
+  const SHARED_MEASUREMENTS_KEY = "frota_medicoes_v4_integracoes";
+  const SHARED_BILLING_BATCHES_KEY = "frota_medicoes_faturamento_importacoes_v2";
+
+  function openFleetLargeDb(){
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        reject(new Error("O navegador não disponibilizou o banco local IndexedDB."));
+        return;
+      }
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "key" });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Não foi possível abrir o banco local da frota."));
+      request.onblocked = () => reject(new Error("O banco local da frota está bloqueado por outra janela aberta."));
+    });
+  }
+
+  async function fleetLargeGet(key){
+    const db = await openFleetLargeDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, "readonly");
+        const request = transaction.objectStore(STORE_NAME).get(key);
+        request.onsuccess = () => resolve(request.result?.value);
+        request.onerror = () => reject(request.error || new Error("Não foi possível ler os dados locais da frota."));
+      });
+    } finally {
+      db.close();
+    }
+  }
+
+  async function fleetLargeSet(key, value){
+    const db = await openFleetLargeDb();
+    try {
+      await new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, "readwrite");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error || new Error("Não foi possível salvar os dados locais da frota."));
+        transaction.onabort = () => reject(transaction.error || new Error("O salvamento dos dados locais da frota foi cancelado."));
+        transaction.objectStore(STORE_NAME).put({ key, value, updatedAt: new Date().toISOString() });
+      });
+      syncLargeStateWithHost(key, value);
+    } finally {
+      db.close();
+    }
+  }
+
+  async function fleetLargeDelete(key){
+    const db = await openFleetLargeDb();
+    try {
+      await new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, "readwrite");
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error || new Error("Não foi possível excluir os dados locais da frota."));
+        transaction.objectStore(STORE_NAME).delete(key);
+      });
+    } finally {
+      db.close();
+    }
+  }
+
+  function compactMeasurementForStorage(item){
+    if (!item || typeof item !== "object") return item;
+    const copy = { ...item };
+    delete copy.rawData;
+    return copy;
+  }
+
+  function sharedKeyForLargeState(key){
+    if (key === MEASUREMENTS_KEY) return SHARED_MEASUREMENTS_KEY;
+    if (key === "billingBatches") return SHARED_BILLING_BATCHES_KEY;
+    return "";
+  }
+
+  function readSharedStateFallback(storageKey){
+    const contextValue = window.SUPPLY_FLOW_CONTEXT?.sharedStorage?.[storageKey];
+    if (Array.isArray(contextValue)) return contextValue;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function syncLargeStateWithHost(key, value){
+    const storageKey = sharedKeyForLargeState(key);
+    if (!storageKey) return;
+    if (typeof window.SUPPLY_FLOW_SYNC_SHARED_STATE === "function") {
+      window.SUPPLY_FLOW_SYNC_SHARED_STATE(storageKey, value);
+    }
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch (error) {
+      console.warn(\`O conjunto \${storageKey} foi mantido no banco local ampliado, mas excedeu o limite do armazenamento simples.\`, error);
+    }
+  }
+
+  window.fleetLargeGet = fleetLargeGet;
+  window.fleetLargeSet = fleetLargeSet;
+  window.fleetLargeDelete = fleetLargeDelete;
+  window.persistFleetMeasurements = async function(records){
+    const compact = Array.isArray(records) ? records.map(compactMeasurementForStorage) : [];
+    await fleetLargeSet(MEASUREMENTS_KEY, compact);
+    return compact.length;
+  };
+  window.loadFleetMeasurements = async function(){
+    const value = await fleetLargeGet(MEASUREMENTS_KEY);
+    return Array.isArray(value) && value.length ? value : readSharedStateFallback(SHARED_MEASUREMENTS_KEY);
+  };
+  window.persistFleetBillingBatches = async function(records){
+    const value = Array.isArray(records) ? records : [];
+    await fleetLargeSet("billingBatches", value);
+    return value.length;
+  };
+  window.loadFleetBillingBatches = async function(){
+    const value = await fleetLargeGet("billingBatches");
+    return Array.isArray(value) && value.length ? value : readSharedStateFallback(SHARED_BILLING_BATCHES_KEY);
+  };
+  window.safeFleetLocalStorageSet = function(key, value){
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      console.warn(\`Não foi possível salvar \${key} no armazenamento simples do navegador.\`, error);
+      return false;
+    }
+  };
+
+  try { navigator.storage?.persist?.(); } catch (error) {}
+})();
+<\/script>
+
+  <script>
+    const STORAGE_VEHICLES = "frota_veiculos_v4_importacao_inicial";
+    const STORAGE_FINES = "frota_multas_v4_importacao_inicial";
+    const STORAGE_MEASUREMENTS = "frota_medicoes_v4_integracoes";
+    const STORAGE_MANAGER = "frota_responsavel_v4";
+    const STORAGE_API_SETTINGS = "frota_api_settings_v4";
+
+    function readStoredJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch (error) {
+        console.warn(\`Não foi possível carregar \${key}.\`, error);
+        return fallback;
+      }
+    }
+
+    let vehicles = readStoredJson(STORAGE_VEHICLES, []);
+    let fines = readStoredJson(STORAGE_FINES, []);
+    let measurements = readStoredJson(STORAGE_MEASUREMENTS, []);
+    let fleetManager = readStoredJson(STORAGE_MANAGER, {});
+    let apiSettings = readStoredJson(STORAGE_API_SETTINGS, {});
+
+    if (!Array.isArray(vehicles)) vehicles = [];
+    if (!Array.isArray(fines)) fines = [];
+    // As planilhas completas são consultadas na aba Medições. Evita manter uma
+    // segunda cópia das mesmas linhas em multas/faturas e reduz o uso de espaço.
+    fines = fines.filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
+    if (!Array.isArray(measurements)) measurements = [];
+    if (!fleetManager || typeof fleetManager !== "object" || Array.isArray(fleetManager)) fleetManager = {};
+    if (!apiSettings || typeof apiSettings !== "object" || Array.isArray(apiSettings)) apiSettings = {};
+
+    let legacyVehicleDataMigrated = false;
+    vehicles = vehicles.map(vehicle => {
+      const normalized = { ...vehicle };
+      const mappedStatus = canonicalVehicleStatus(normalized?.statusCarro);
+      if (mappedStatus && mappedStatus !== normalized.statusCarro) {
+        normalized.statusCarro = mappedStatus;
+        legacyVehicleDataMigrated = true;
+      }
+      if (!Array.isArray(normalized.historicoMovimentacoes)) {
+        normalized.historicoMovimentacoes = [];
+        legacyVehicleDataMigrated = true;
+      }
+      return normalized;
+    });
+    if (legacyVehicleDataMigrated) {
+      window.safeFleetLocalStorageSet(STORAGE_VEHICLES, JSON.stringify(vehicles));
+    }
+
+    const vehicleForm = document.getElementById("vehicleForm");
+    const fineForm = document.getElementById("fineForm");
+    const vehicleGrid = document.getElementById("vehicleGrid");
+    const fineTable = document.getElementById("fineTable");
+    const summaryTable = document.getElementById("summaryTable");
+    const search = document.getElementById("search");
+    const statusFilter = document.getElementById("statusFilter");
+    const liderFilter = document.getElementById("liderFilter");
+    const centroCustoFilter = document.getElementById("centroCustoFilter");
+    const locadoraFilter = document.getElementById("locadoraFilter");
+    const categoriaFilter = document.getElementById("categoriaFilter");
+    const condutorFilter = document.getElementById("condutorFilter");
+    const anoFilter = document.getElementById("anoFilter");
+    const contratoFilter = document.getElementById("contratoFilter");
+    const dashStatusFilter = document.getElementById("dashStatusFilter");
+    const dashLocadoraFilter = document.getElementById("dashLocadoraFilter");
+    const dashCentroCustoFilter = document.getElementById("dashCentroCustoFilter");
+    const dashCategoriaFilter = document.getElementById("dashCategoriaFilter");
+    const dashContratoFilter = document.getElementById("dashContratoFilter");
+
+    let statusChartInstance = null;
+    let locadoraChartInstance = null;
+    let contratoChartInstance = null;
+    let categoryChartInstance = null;
+    let yearModelChartInstance = null;
+
+    const measurementSourceFilter = document.getElementById("measurementSourceFilter");
+    const measurementPlateFilter = document.getElementById("measurementPlateFilter");
+    const measurementStartFilter = document.getElementById("measurementStartFilter");
+    const measurementEndFilter = document.getElementById("measurementEndFilter");
+
+
+    const spreadsheetHeaderMap = {
+      "status do carro": "statusCarro",
+      "líder adm": "liderAdm",
+      "lider adm": "liderAdm",
+      "centro de custo": "centroCusto",
+      "placa do veículo": "placaVeiculo",
+      "placa do veiculo": "placaVeiculo",
+      "locadora": "locadora",
+      "código veículo": "codigoVeiculo",
+      "codigo veiculo": "codigoVeiculo",
+      "condutor": "condutor",
+      "cpf condutor": "cpfCondutor",
+      "função": "funcao",
+      "funcao": "funcao",
+      "modelo do veículo": "modeloVeiculo",
+      "modelo do veiculo": "modeloVeiculo",
+      "categoria veículo": "categoriaVeiculo",
+      "categoria veiculo": "categoriaVeiculo",
+      "valores praticados": "valoresPraticados",
+      "inicio do contrato": "inicioContrato",
+      "início do contrato": "inicioContrato",
+      "término do contrato": "terminoContrato",
+      "termino do contrato": "terminoContrato",
+      "prazo de contrato": "prazoContrato",
+      "ano modelo": "anoModelo",
+      "franquia mensal": "franquiaMensal",
+      "franquia total": "franquiaTotal",
+      "dias final contrato": "diasFinalContrato",
+      "meses fim contrato": "mesesFimContrato",
+      "contrato": "contrato",
+      "n° cartão combustivel": "cartaoCombustivel",
+      "n° cartão combustível": "cartaoCombustivel",
+      "n cartão combustivel": "cartaoCombustivel",
+      "n cartao combustivel": "cartaoCombustivel",
+      "nº cartão combustivel": "cartaoCombustivel",
+      "nº cartão combustível": "cartaoCombustivel",
+      "cobli": "cobli"
+    };
+
+    function normalizeHeader(header) {
+      return String(header || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\\s+/g, " ");
+    }
+
+    function normalizeDateValue(value) {
+      if (!value) return "";
+
+      if (typeof value === "number" && window.XLSX && XLSX.SSF) {
+        const parsed = XLSX.SSF.parse_date_code(value);
+        if (parsed) {
+          return \`\${parsed.y}-\${String(parsed.m).padStart(2, "0")}-\${String(parsed.d).padStart(2, "0")}\`;
+        }
+      }
+
+      const text = String(value).trim();
+
+      if (/^\\d{4}-\\d{2}-\\d{2}$/.test(text)) return text;
+
+      const brDate = text.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);
+      if (brDate) {
+        return \`\${brDate[3]}-\${brDate[2].padStart(2, "0")}-\${brDate[1].padStart(2, "0")}\`;
+      }
+
+      return text;
+    }
+
+    function normalizeMoneyValue(value) {
+      if (value === undefined || value === null || value === "") return "";
+      if (typeof value === "number") return String(value);
+
+      return String(value)
+        .replace(/R\\$/g, "")
+        .replace(/\\./g, "")
+        .replace(",", ".")
+        .trim();
+    }
+
+    function buildVehicleFromSpreadsheetRow(row) {
+      const vehicle = {
+        id: crypto.randomUUID(),
+        foto: "",
+        statusCarro: "Disponível",
+        liderAdm: "",
+        centroCusto: "",
+        placaVeiculo: "",
+        locadora: "",
+        codigoVeiculo: "",
+        condutor: "",
+        cpfCondutor: "",
+        funcao: "",
+        modeloVeiculo: "",
+        categoriaVeiculo: "",
+        valoresPraticados: "",
+        inicioContrato: "",
+        terminoContrato: "",
+        prazoContrato: "",
+        anoModelo: "",
+        franquiaMensal: "",
+        franquiaTotal: "",
+        diasFinalContrato: "",
+        mesesFimContrato: "",
+        contrato: "",
+        cartaoCombustivel: "",
+        cobli: "",
+        observacoes: "",
+        historicoMovimentacoes: []
+      };
+
+      Object.entries(row).forEach(([header, value]) => {
+        const key = spreadsheetHeaderMap[normalizeHeader(header)];
+        if (!key) return;
+
+        if (key === "inicioContrato" || key === "terminoContrato") {
+          vehicle[key] = normalizeDateValue(value);
+        } else if (key === "valoresPraticados") {
+          vehicle[key] = normalizeMoneyValue(value);
+        } else {
+          vehicle[key] = String(value ?? "").trim();
+        }
+      });
+
+      vehicle.statusCarro = canonicalVehicleStatus(vehicle.statusCarro) || "Disponível";
+
+      vehicle.diasFinalContrato = calculateContractDays(vehicle.terminoContrato);
+      vehicle.mesesFimContrato = calculateContractMonths(vehicle.terminoContrato);
+      vehicle.situacaoContrato = getContractExpiryStatus(vehicle.terminoContrato);
+
+      return vehicle;
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let current = [];
+      let value = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if ((char === ";" || char === ",") && !inQuotes) {
+          current.push(value);
+          value = "";
+        } else if ((char === "\\n" || char === "\\r") && !inQuotes) {
+          if (char === "\\r" && next === "\\n") i++;
+          current.push(value);
+          rows.push(current);
+          current = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      if (value || current.length) {
+        current.push(value);
+        rows.push(current);
+      }
+
+      const headers = rows.shift() || [];
+      return rows
+        .filter(row => row.some(cell => String(cell || "").trim()))
+        .map(row => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = row[index] || "";
+          });
+          return obj;
+        });
+    }
+
+    async function readSpreadsheetFile(file) {
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (extension === "csv") {
+        const text = await file.text();
+        return parseCSV(text);
+      }
+
+      if (!window.XLSX) {
+        throw new Error("Para importar arquivos Excel (.xlsx/.xls), abra o aplicativo com internet ou salve a planilha como CSV e importe o CSV.");
+      }
+
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array", cellDates: false });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      return XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+    }
+
+    async function importInitialSpreadsheet() {
+      const file = document.getElementById("spreadsheetFile").files[0];
+      if (!file) {
+        alert("Selecione a planilha inicial antes de importar.");
+        return;
+      }
+
+      try {
+        const rows = await readSpreadsheetFile(file);
+        const importedVehicles = rows
+          .map(buildVehicleFromSpreadsheetRow)
+          .filter(v => v.placaVeiculo || v.modeloVeiculo || v.codigoVeiculo);
+
+        if (importedVehicles.length === 0) {
+          alert("Nenhum veículo foi encontrado. Verifique se a planilha possui cabeçalhos iguais aos campos solicitados.");
+          return;
+        }
+
+        if (!confirm(\`Serão importados \${importedVehicles.length} veículos. A importação substituirá a base atual da frota. Deseja continuar?\`)) {
+          return;
+        }
+
+        vehicles = importedVehicles;
+        saveData();
+        renderAll();
+
+        document.getElementById("importStatus").textContent = \`\${importedVehicles.length} veículos importados com sucesso. A base atual foi substituída.\`;
+        updateImportPanel();
+      } catch (error) {
+        alert(error.message || "Não foi possível importar a planilha.");
+      }
+    }
+
+    function updateImportPanel() {
+      const importGrid = document.getElementById("importGrid");
+      const lockedImport = document.getElementById("lockedImport");
+      const importStatus = document.getElementById("importStatus");
+
+      importGrid.style.display = "grid";
+      lockedImport.style.display = "none";
+
+      if (!importStatus.textContent) {
+        importStatus.textContent = vehicles.length
+          ? \`\${vehicles.length} veículos carregados no aplicativo. Você pode importar outra planilha se precisar substituir a base.\`
+          : "Nenhuma base da frota importada até o momento.";
+      }
+    }
+
+    function downloadTemplate() {
+      const headers = [
+        "Status do Carro",
+        "Líder ADM",
+        "Centro de Custo",
+        "Placa do Veículo",
+        "Locadora",
+        "Código Veículo",
+        "Condutor",
+        "CPF Condutor",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria Veículo",
+        "Valores Praticados",
+        "Inicio do Contrato",
+        "Término do Contrato",
+        "Prazo de Contrato",
+        "Ano Modelo",
+        "Franquia Mensal",
+        "Franquia Total",
+        "Dias Final Contrato",
+        "Meses Fim Contrato",
+        "Contrato",
+        "N° Cartão Combustivel",
+        "Cobli"
+      ];
+
+      const sample = [
+        "Disponível",
+        "Nome do Líder",
+        "Centro de Custo / Obra",
+        "ABC1D23",
+        "Localiza",
+        "VEI-001",
+        "Nome do Condutor",
+        "000.000.000-00",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria",
+        "2500,00",
+        "01/01/2026",
+        "31/12/2026",
+        "12 meses",
+        "2026",
+        "3000 km",
+        "36000 km",
+        "",
+        "",
+        "CTR-001",
+        "123456",
+        "COBLI-001"
+      ];
+
+      const csv = headers.join(";") + "\\n" + sample.map(value => \`"\${value}"\`).join(";");
+      const blob = new Blob(["\\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "modelo_importacao_frota.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+
+    function saveFleetManager() {
+      fleetManager = {
+        name: document.getElementById("managerName").value.trim(),
+        email: document.getElementById("managerEmail").value.trim(),
+        whatsapp: document.getElementById("managerWhatsApp").value.trim()
+      };
+
+      localStorage.setItem(STORAGE_MANAGER, JSON.stringify(fleetManager));
+      renderFleetManager();
+      alert("Contato do responsável pela frota salvo com sucesso.");
+    }
+
+    function normalizeWhatsAppNumber(value) {
+      return String(value || "").replace(/\\D/g, "");
+    }
+
+    function openManagerEmail() {
+      const email = fleetManager.email || document.getElementById("managerEmail")?.value.trim();
+
+      if (!email) {
+        alert("Cadastre o e-mail do responsável pela gestão da frota.");
+        openTabById("dashboardTab");
+        document.getElementById("managerEmail")?.focus();
+        return;
+      }
+
+      const subject = encodeURIComponent("Solicitação - Gestão de Frota SEEL");
+      const body = encodeURIComponent("Olá,\\n\\nPreciso tratar sobre um veículo da frota SEEL.\\n\\nObrigado.");
+      window.location.href = \`mailto:\${email}?subject=\${subject}&body=\${body}\`;
+    }
+
+    function openManagerWhatsApp() {
+      const rawNumber = fleetManager.whatsapp || document.getElementById("managerWhatsApp")?.value.trim();
+      const number = normalizeWhatsAppNumber(rawNumber);
+
+      if (!number) {
+        alert("Cadastre o WhatsApp do responsável pela gestão da frota.");
+        openTabById("dashboardTab");
+        document.getElementById("managerWhatsApp")?.focus();
+        return;
+      }
+
+      const message = encodeURIComponent("Olá, preciso tratar sobre um veículo da frota SEEL.");
+      window.open(\`https://wa.me/\${number}?text=\${message}\`, "_blank");
+    }
+
+    function renderFleetManager() {
+      const nameInput = document.getElementById("managerName");
+      const emailInput = document.getElementById("managerEmail");
+      const whatsappInput = document.getElementById("managerWhatsApp");
+      const managerNote = document.getElementById("managerNote");
+
+      if (!nameInput || !emailInput || !whatsappInput || !managerNote) return;
+
+      nameInput.value = fleetManager.name || "";
+      emailInput.value = fleetManager.email || "";
+      whatsappInput.value = fleetManager.whatsapp || "";
+
+      const name = fleetManager.name || "Responsável não cadastrado";
+      const email = fleetManager.email || "e-mail não cadastrado";
+      const whatsapp = fleetManager.whatsapp || "WhatsApp não cadastrado";
+
+      managerNote.textContent = \`\${name} | \${email} | \${whatsapp}\`;
+    }
+
+    function saveData() {
+      const vehiclesSaved = window.safeFleetLocalStorageSet(STORAGE_VEHICLES, JSON.stringify(vehicles));
+      const manualFines = fines.filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
+      window.safeFleetLocalStorageSet(STORAGE_FINES, JSON.stringify(manualFines));
+      window.persistFleetMeasurements(measurements).catch(error => console.error("Falha ao salvar medições no banco local.", error));
+      return vehiclesSaved;
+    }
+
+    function formatDate(date) {
+      if (!date) return "-";
+      const [year, month, day] = date.split("-");
+      return \`\${day}/\${month}/\${year}\`;
+    }
+
+    function formatCurrency(value) {
+      const number = Number(value || 0);
+      return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function calculateContractDays(endDate) {
+      if (!endDate) return "";
+      const parts = String(endDate).split("-").map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return "";
+
+      const [year, month, day] = parts;
+      const endUtc = Date.UTC(year, month - 1, day);
+      const today = new Date();
+      const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+      return Math.round((endUtc - todayUtc) / 86400000);
+    }
+
+    function getContractExpiryBucket(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "sem-data";
+      if (days < 0) return "vencidos";
+      if (days <= 30) return "0-30";
+      if (days <= 60) return "31-60";
+      if (days <= 90) return "61-90";
+      return "+90";
+    }
+
+    function calculateContractMonths(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "";
+      return Math.round((days / 30) * 10) / 10;
+    }
+
+    function getContractExpiryStatus(endDate) {
+      const days = calculateContractDays(endDate);
+      if (days === "") return "Sem término informado";
+      if (days < 0) {
+        const overdue = Math.abs(days);
+        return \`Vencido há \${overdue} \${overdue === 1 ? "dia" : "dias"}\`;
+      }
+      if (days === 0) return "Vence hoje";
+      if (days === 1) return "Vence amanhã";
+      return \`Vence em \${days} dias\`;
+    }
+
+    function syncContractDeadlineFields(endDate) {
+      const daysInput = document.getElementById("diasFinalContrato");
+      const monthsInput = document.getElementById("mesesFimContrato");
+      const statusInput = document.getElementById("situacaoContrato");
+      const days = calculateContractDays(endDate);
+      const months = calculateContractMonths(endDate);
+
+      if (daysInput) daysInput.value = days === "" ? "" : days;
+      if (monthsInput) monthsInput.value = months === "" ? "" : months;
+      if (statusInput) statusInput.value = getContractExpiryStatus(endDate);
+    }
+
+    function refreshContractCalculatedFields() {
+      vehicles.forEach(vehicle => {
+        vehicle.diasFinalContrato = calculateContractDays(vehicle.terminoContrato);
+        vehicle.mesesFimContrato = calculateContractMonths(vehicle.terminoContrato);
+        vehicle.situacaoContrato = getContractExpiryStatus(vehicle.terminoContrato);
+      });
+    }
+
+    function canonicalVehicleStatus(status) {
+      const raw = String(status || "").trim();
+      const normalized = raw
+        .normalize("NFD")
+        .replace(/[\\u0300-\\u036f]/g, "")
+        .toLowerCase();
+      if (!raw) return raw;
+      if (normalized.includes("dispon")) return "Disponível";
+      if (normalized.includes("alug") || normalized.includes("uso")) return "Alugado";
+      if (normalized.includes("manut")) return "Em Manutenção";
+      if (normalized.includes("devolv") || normalized.includes("inativo")) return "Devolvido";
+      return raw;
+    }
+
+    function statusClass(status) {
+      const normalized = canonicalVehicleStatus(status)
+        .toLowerCase()
+        .replace(/[^a-z]/g, "");
+      if (normalized.includes("disponivel")) return "disponivel";
+      if (normalized.includes("alugado") || normalized.includes("locado") || normalized.includes("emuso")) return "alugado";
+      if (normalized.includes("emmanutencao") || normalized.includes("manutencao")) return "manutencao";
+      if (normalized.includes("devolvido") || normalized.includes("inativo")) return "devolvido";
+      return "ativo";
+    }
+
+    function renderVehiclePhoto(photo) {
+      if (!photo) {
+        return '<div class="image-placeholder">Foto do veículo</div>';
+      }
+      return \`<img class="vehicle-image" src="\${photo}" alt="Foto do veículo" />\`;
+    }
+
+    function readPhotoAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve("");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const rawDataUrl = reader.result;
+          compressPhotoDataUrl(rawDataUrl)
+            .then(compressed => resolve(compressed || rawDataUrl))
+            .catch(() => resolve(rawDataUrl));
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function compressPhotoDataUrl(dataUrl, maxDimension = 1280, quality = 0.72) {
+      return new Promise(resolve => {
+        if (!dataUrl || typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+          resolve(dataUrl);
+          return;
+        }
+        try {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const { width, height } = img;
+              if (!width || !height) {
+                resolve(dataUrl);
+                return;
+              }
+              const scale = Math.min(1, maxDimension / Math.max(width, height));
+              const targetWidth = Math.max(1, Math.round(width * scale));
+              const targetHeight = Math.max(1, Math.round(height * scale));
+              const canvas = document.createElement("canvas");
+              canvas.width = targetWidth;
+              canvas.height = targetHeight;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) {
+                resolve(dataUrl);
+                return;
+              }
+              ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+              const compressed = canvas.toDataURL("image/jpeg", quality);
+              resolve(compressed && compressed.length < dataUrl.length ? compressed : dataUrl);
+            } catch (error) {
+              console.warn("Não foi possível comprimir a foto do veículo; usando o arquivo original.", error);
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        } catch (error) {
+          resolve(dataUrl);
+        }
+      });
+    }
+
+    function updatePhotoPreview(photo) {
+      const preview = document.getElementById("photoPreview");
+      preview.innerHTML = "";
+
+      if (!photo) return;
+
+      const img = document.createElement("img");
+      img.src = photo;
+      img.alt = "Pré-visualização da foto do veículo";
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "danger-btn";
+      removeButton.textContent = "Remover foto";
+      removeButton.onclick = () => {
+        preview.innerHTML = "";
+        document.getElementById("foto").value = "";
+        document.getElementById("fotoAtual").value = "";
+      };
+
+      preview.appendChild(img);
+      preview.appendChild(removeButton);
+    }
+
+
+    function populateDashboardFilters() {
+      if (!dashLocadoraFilter) return;
+
+      populateSelect(dashLocadoraFilter, uniqueSortedValues("locadora"), "Todas");
+      populateSelect(dashCentroCustoFilter, uniqueSortedValues("centroCusto"), "Todos");
+      populateSelect(dashCategoriaFilter, uniqueSortedValues("categoriaVeiculo"), "Todas");
+    }
+
+    function getDashboardContractMatch(vehicle) {
+      const value = dashContratoFilter?.value || "";
+      if (!value) return true;
+      return getContractExpiryBucket(vehicle.terminoContrato) === value;
+    }
+
+    function getDashboardFilteredVehicles() {
+      return vehicles.filter(v => {
+        return (!dashStatusFilter?.value || v.statusCarro === dashStatusFilter.value)
+          && (!dashLocadoraFilter?.value || v.locadora === dashLocadoraFilter.value)
+          && (!dashCentroCustoFilter?.value || v.centroCusto === dashCentroCustoFilter.value)
+          && (!dashCategoriaFilter?.value || v.categoriaVeiculo === dashCategoriaFilter.value)
+          && getDashboardContractMatch(v);
+      });
+    }
+
+    function groupCount(items, key, fallback = "Não cadastrado") {
+      return items.reduce((acc, item) => {
+        const label = String(item[key] || "").trim() || fallback;
+        acc[label] = (acc[label] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function createGradient(ctx, area, colorStart, colorEnd) {
+      const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+      gradient.addColorStop(0, colorStart);
+      gradient.addColorStop(1, colorEnd);
+      return gradient;
+    }
+
+    function getPowerBiPalette() {
+      return [
+        "#0069b4",
+        "#2f80ed",
+        "#00a6d6",
+        "#ffd900",
+        "#00518f",
+        "#8ec5ff",
+        "#4dabf7",
+        "#d9b800",
+        "#8ab8e8"
+      ];
+    }
+
+
+
+    const seelDataLabelsPlugin = {
+      id: "seelDataLabels",
+      afterDatasetsDraw(chart, args, pluginOptions = {}) {
+        if (pluginOptions.display === false) return;
+        const dataset = chart.data?.datasets?.[0];
+        const meta = chart.getDatasetMeta(0);
+        if (!dataset || !meta || meta.hidden) return;
+
+        const ctx = chart.ctx;
+        const chartArea = chart.chartArea;
+        const indexAxis = chart.options.indexAxis || "x";
+        const type = chart.config.type;
+        const total = (dataset.data || []).reduce((sum, value) => sum + (Number(value) || 0), 0);
+        const fontSize = Number(pluginOptions.fontSize || 11);
+        const fontWeight = pluginOptions.fontWeight || 800;
+        const format = pluginOptions.format || "number";
+        const hideZero = pluginOptions.hideZero !== false;
+
+        const compactCurrency = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          notation: "compact",
+          maximumFractionDigits: 1
+        });
+        const integerFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+
+        function labelFor(value) {
+          if (format === "currency") return compactCurrency.format(value);
+          if (format === "value-percent") {
+            const percent = total ? Math.round((value / total) * 100) : 0;
+            return \`\${integerFormat.format(value)} | \${percent}%\`;
+          }
+          if (format === "percent") return \`\${Math.round(value)}%\`;
+          return integerFormat.format(value);
+        }
+
+        function roundRect(x, y, width, height, radius) {
+          const r = Math.min(radius, width / 2, height / 2);
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + width, y, x + width, y + height, r);
+          ctx.arcTo(x + width, y + height, x, y + height, r);
+          ctx.arcTo(x, y + height, x, y, r);
+          ctx.arcTo(x, y, x + width, y, r);
+          ctx.closePath();
+        }
+
+        ctx.save();
+        ctx.font = \`\${fontWeight} \${fontSize}px Arial, Helvetica, sans-serif\`;
+        ctx.textBaseline = "middle";
+
+        meta.data.forEach((element, index) => {
+          const value = Number(dataset.data[index] || 0);
+          if (!Number.isFinite(value) || (hideZero && value === 0)) return;
+          const label = labelFor(value);
+
+          if (type === "doughnut" || type === "pie") {
+            const props = element.getProps(["x", "y", "startAngle", "endAngle", "innerRadius", "outerRadius"], true);
+            const angle = (props.startAngle + props.endAngle) / 2;
+            const radius = props.innerRadius + (props.outerRadius - props.innerRadius) * 0.58;
+            const x = props.x + Math.cos(angle) * radius;
+            const y = props.y + Math.sin(angle) * radius;
+            const width = ctx.measureText(label).width + 12;
+            const height = fontSize + 8;
+            const boxX = Math.min(Math.max(x - width / 2, chartArea.left + 2), chartArea.right - width - 2);
+            const boxY = Math.min(Math.max(y - height / 2, chartArea.top + 2), chartArea.bottom - height - 2);
+
+            ctx.fillStyle = "rgba(255,255,255,.92)";
+            ctx.strokeStyle = "rgba(0,60,113,.18)";
+            ctx.lineWidth = 1;
+            roundRect(boxX, boxY, width, height, 7);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#17365d";
+            ctx.textAlign = "center";
+            ctx.fillText(label, boxX + width / 2, boxY + height / 2 + .5);
+            return;
+          }
+
+          const props = element.getProps(["x", "y", "base", "width", "height"], true);
+          ctx.textAlign = "center";
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = "rgba(255,255,255,.95)";
+          ctx.fillStyle = "#17365d";
+
+          if (indexAxis === "y") {
+            const barLength = Math.abs(props.x - props.base);
+            const textWidth = ctx.measureText(label).width;
+            let x;
+            if (barLength > textWidth + 24) {
+              x = props.x - textWidth / 2 - 8;
+              ctx.strokeStyle = "rgba(0,60,113,.45)";
+              ctx.fillStyle = "#ffffff";
+            } else {
+              x = Math.min(props.x + textWidth / 2 + 8, chartArea.right - textWidth / 2 - 2);
+            }
+            const y = props.y;
+            ctx.strokeText(label, x, y);
+            ctx.fillText(label, x, y);
+          } else {
+            const x = props.x;
+            const y = Math.max(props.y - 9, chartArea.top + fontSize / 2 + 2);
+            ctx.strokeText(label, x, y);
+            ctx.fillText(label, x, y);
+          }
+        });
+
+        ctx.restore();
+      }
+    };
+
+    function makeChart(canvasId, type, labels, data, existingChart, options = {}) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || !window.Chart) return null;
+
+      if (existingChart) {
+        existingChart.destroy();
+      }
+
+      const ctx = canvas.getContext("2d");
+      const palette = getPowerBiPalette();
+
+      const dataset = {
+        data,
+        label: options.label || "",
+        borderWidth: type === "doughnut" ? 0 : 0,
+        borderRadius: type === "bar" ? 6 : 0,
+        hoverOffset: type === "doughnut" ? 8 : 0,
+        backgroundColor: type === "doughnut"
+          ? labels.map((_, index) => palette[index % palette.length])
+          : data.map((_, index) => palette[index % palette.length]),
+        barPercentage: type === "bar" ? 0.78 : undefined,
+        categoryPercentage: type === "bar" ? 0.82 : undefined,
+        maxBarThickness: type === "bar" ? 46 : undefined
+      };
+
+      return new Chart(canvas, {
+        type,
+        plugins: [seelDataLabelsPlugin],
+        data: {
+          labels,
+          datasets: [dataset]
+        },
+        options: {
+          indexAxis: options.indexAxis || "x",
+          responsive: true,
+          maintainAspectRatio: false,
+          resizeDelay: 80,
+          layout: { padding: { top: 24, right: options.indexAxis === "y" ? 58 : 16, bottom: 8, left: 8 } },
+          radius: type === "doughnut" ? "94%" : undefined,
+          cutout: type === "doughnut" ? "62%" : undefined,
+          plugins: {
+            legend: {
+              display: options.showLegend ?? (type === "doughnut"),
+              position: "bottom",
+              labels: {
+                color: "#38506d",
+                boxWidth: 10,
+                usePointStyle: true,
+                pointStyle: "circle",
+                padding: 14,
+                font: { weight: "bold", size: 11 }
+              }
+            },
+            seelDataLabels: {
+              display: options.showDataLabels !== false,
+              format: options.valueFormat || (type === "doughnut" ? "value-percent" : "number"),
+              fontSize: options.dataLabelFontSize || 11,
+              hideZero: true
+            },
+            tooltip: {
+              backgroundColor: "#ffffff",
+              titleColor: "#17365d",
+              bodyColor: "#17365d",
+              borderColor: "#d8dee7",
+              borderWidth: 1,
+              padding: 10,
+              displayColors: true
+            }
+          },
+          scales: type === "bar" ? {
+            x: {
+              grid: { color: "#edf2f7" },
+              ticks: {
+                color: "#5a6f85",
+                font: { weight: "bold", size: 11 }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: "#edf2f7" },
+              ticks: {
+                precision: 0,
+                color: "#5a6f85",
+                font: { weight: "bold", size: 11 }
+              }
+            }
+          } : {}
+        }
+      });
+    }
+
+    function renderCentroCustoBarsOverride(items) {
+      const target = document.getElementById("centroCustoBars");
+      if (!target) return;
+
+      const grouped = groupCount(items, "centroCusto");
+      const entries = Object.entries(grouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      target.innerHTML = "";
+
+      if (entries.length === 0) {
+        target.innerHTML = '<div class="risk-item">Sem dados disponíveis para o filtro selecionado.</div>';
+        return;
+      }
+
+      const max = Math.max(...entries.map(([, value]) => value), 1);
+
+      entries.forEach(([label, value]) => {
+        const percent = Math.round((value / max) * 100);
+        const item = document.createElement("div");
+        item.className = "powerbi-bar-item";
+        item.innerHTML = \`
+          <div class="powerbi-bar-label" title="\${label}">\${label}</div>
+          <div class="powerbi-bar-value">\${value}</div>
+          <div class="powerbi-bar-track">
+            <div class="powerbi-bar-fill" style="width:\${percent}%"></div>
+          </div>
+        \`;
+        target.appendChild(item);
+      });
+    }
+
+    function renderContractRiskListOverride(items) {
+      const target = document.getElementById("contractRiskList");
+      if (!target) return;
+
+      const vencidos = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "vencidos").length;
+      const vencendo30 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "0-30").length;
+      const vencendo60 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "31-60").length;
+      const semTermino = items.filter(v => getContractExpiryBucket(v.terminoContrato) === "sem-data").length;
+      const semCartao = items.filter(v => !String(v.cartaoCombustivel || "").trim()).length;
+      const semCobli = items.filter(v => !String(v.cobli || "").trim()).length;
+
+      target.innerHTML = \`
+        <div class="risk-item danger"><span>Contratos vencidos</span><strong>\${vencidos}</strong></div>
+        <div class="risk-item warning"><span>Vencendo em até 30 dias</span><strong>\${vencendo30}</strong></div>
+        <div class="risk-item warning"><span>Vencendo entre 31 e 60 dias</span><strong>\${vencendo60}</strong></div>
+        <div class="risk-item"><span>Sem término informado</span><strong>\${semTermino}</strong></div>
+        <div class="risk-item"><span>Sem cartão combustível</span><strong>\${semCartao}</strong></div>
+        <div class="risk-item"><span>Sem Cobli</span><strong>\${semCobli}</strong></div>
+      \`;
+    }
+
+    function renderDashboardIndicators() {
+      const filtered = getDashboardFilteredVehicles();
+
+      const valorMensal = filtered.reduce((sum, v) => sum + Number(v.valoresPraticados || 0), 0);
+      const vencidos = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "vencidos").length;
+      const vencendo30 = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "0-30").length;
+      const vencendo60 = filtered.filter(v => getContractExpiryBucket(v.terminoContrato) === "31-60").length;
+      const semCondutor = filtered.filter(v => !String(v.condutor || "").trim()).length;
+      const emUso = filtered.filter(v => canonicalVehicleStatus(v.statusCarro) === "Alugado").length;
+      const utilizacao = filtered.length ? Math.round((emUso / filtered.length) * 100) : 0;
+      const ticketMedio = filtered.length ? valorMensal / filtered.length : 0;
+      const totalPercent = vehicles.length ? Math.round((filtered.length / vehicles.length) * 100) : 0;
+
+      document.getElementById("dashTotalFiltrado").textContent = filtered.length;
+      document.getElementById("dashValorMensal").textContent = formatCurrency(valorMensal);
+      document.getElementById("dashContratosVencidos").textContent = vencidos;
+      document.getElementById("dashVencendo30").textContent = vencendo30;
+      document.getElementById("dashVencendo60").textContent = vencendo60;
+      document.getElementById("dashSemCondutor").textContent = semCondutor;
+      document.getElementById("dashUtilizacao").textContent = \`\${utilizacao}%\`;
+      document.getElementById("dashTicketMedio").textContent = \`Média por veículo \${formatCurrency(ticketMedio)}\`;
+      document.getElementById("dashTotalPercent").textContent = \`\${totalPercent}% da frota\`;
+
+      const statusGrouped = groupCount(filtered, "statusCarro");
+      statusChartInstance = makeChart(
+        "statusChart",
+        "doughnut",
+        Object.keys(statusGrouped),
+        Object.values(statusGrouped),
+        statusChartInstance,
+        { showLegend: true, valueFormat: "value-percent", dataLabelFontSize: 10 }
+      );
+
+      const categoryGrouped = groupCount(filtered, "categoriaVeiculo", "Não cadastrado");
+      const categoryEntries = Object.entries(categoryGrouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      categoryChartInstance = makeChart(
+        "categoryChart",
+        "bar",
+        categoryEntries.map(([label]) => label),
+        categoryEntries.map(([, value]) => value),
+        categoryChartInstance,
+        { label: "Quantidade", indexAxis: "y", showLegend: false }
+      );
+
+      const locadoraValueGrouped = filtered.reduce((acc, v) => {
+        const label = String(v.locadora || "").trim() || "Não cadastrado";
+        acc[label] = (acc[label] || 0) + Number(v.valoresPraticados || 0);
+        return acc;
+      }, {});
+
+      const locadoraEntries = Object.entries(locadoraValueGrouped)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      locadoraChartInstance = makeChart(
+        "locadoraChart",
+        "bar",
+        locadoraEntries.map(([label]) => label),
+        locadoraEntries.map(([, value]) => value),
+        locadoraChartInstance,
+        { label: "Valor mensal", indexAxis: "y", showLegend: false, valueFormat: "currency" }
+      );
+
+      const contratoBuckets = {
+        "Vencidos": 0,
+        "0-30 dias": 0,
+        "31-60 dias": 0,
+        "61-90 dias": 0,
+        "+90 dias": 0,
+        "Sem data": 0
+      };
+
+      filtered.forEach(v => {
+        const bucket = getContractExpiryBucket(v.terminoContrato);
+        if (bucket === "sem-data") contratoBuckets["Sem data"] += 1;
+        else if (bucket === "vencidos") contratoBuckets["Vencidos"] += 1;
+        else if (bucket === "0-30") contratoBuckets["0-30 dias"] += 1;
+        else if (bucket === "31-60") contratoBuckets["31-60 dias"] += 1;
+        else if (bucket === "61-90") contratoBuckets["61-90 dias"] += 1;
+        else contratoBuckets["+90 dias"] += 1;
+      });
+
+      contratoChartInstance = makeChart(
+        "contratoChart",
+        "bar",
+        Object.keys(contratoBuckets),
+        Object.values(contratoBuckets),
+        contratoChartInstance,
+        { label: "Contratos", showLegend: false }
+      );
+
+      const yearGrouped = filtered.reduce((acc, v) => {
+        const raw = String(v.anoModelo || "").trim() || "Não informado";
+        acc[raw] = (acc[raw] || 0) + 1;
+        return acc;
+      }, {});
+
+      const yearEntries = Object.entries(yearGrouped).sort((a, b) => {
+        const na = Number(a[0]);
+        const nb = Number(b[0]);
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+        if (!Number.isNaN(na)) return -1;
+        if (!Number.isNaN(nb)) return 1;
+        return a[0].localeCompare(b[0], "pt-BR");
+      });
+
+      yearModelChartInstance = makeChart(
+        "yearModelChart",
+        "bar",
+        yearEntries.map(([label]) => label),
+        yearEntries.map(([, value]) => value),
+        yearModelChartInstance,
+        { label: "Veículos", showLegend: false }
+      );
+
+      renderCentroCustoBars(filtered);
+      renderContractRiskList(filtered);
+    }
+
+    function clearDashboardFilters() {
+      dashStatusFilter.value = "";
+      dashLocadoraFilter.value = "";
+      dashCentroCustoFilter.value = "";
+      dashCategoriaFilter.value = "";
+      dashContratoFilter.value = "";
+      renderDashboardIndicators();
+    }
+
+
+    function saveApiSettings() {
+      apiSettings = {
+        aldMeasurementsUrl: document.getElementById("aldMeasurementsUrl")?.value.trim() || "",
+        aldToken: document.getElementById("aldToken")?.value.trim() || "",
+        arvalMeasurementsUrl: document.getElementById("arvalMeasurementsUrl")?.value.trim() || "",
+        arvalFinesUrl: document.getElementById("arvalFinesUrl")?.value.trim() || "",
+        arvalToken: document.getElementById("arvalToken")?.value.trim() || ""
+      };
+
+      localStorage.setItem(STORAGE_API_SETTINGS, JSON.stringify(apiSettings));
+      renderApiSettings();
+      alert("Configurações de API salvas com sucesso.");
+    }
+
+    function renderApiSettings() {
+      const fields = [
+        "aldMeasurementsUrl",
+        "aldToken",
+        "arvalMeasurementsUrl",
+        "arvalFinesUrl",
+        "arvalToken"
+      ];
+
+      fields.forEach(field => {
+        const el = document.getElementById(field);
+        if (el) el.value = apiSettings[field] || "";
+      });
+    }
+
+    function getVehicleByPlate(plate) {
+      const normalizedPlate = String(plate || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (!normalizedPlate) return null;
+
+      return vehicles.find(v => {
+        const vehiclePlate = String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        return vehiclePlate && vehiclePlate === normalizedPlate;
+      }) || null;
+    }
+
+    function normalizeMeasurement(source, item) {
+      const plate = item.placa || item.plate || item.placaVeiculo || item.vehiclePlate || "";
+      const vehicle = getVehicleByPlate(plate);
+      const linked = Boolean(vehicle);
+
+      return {
+        id: item.id || \`\${source}-\${plate}-\${item.periodo || item.period || item.data || Date.now()}-\${crypto.randomUUID()}\`,
+        source,
+        plate: String(plate || "").toUpperCase(),
+        vehicleId: vehicle?.id || "",
+        linked,
+        vehicleCode: vehicle?.codigoVeiculo || item.codigoVeiculo || item.vehicleCode || "",
+        vehicleModel: vehicle?.modeloVeiculo || item.modeloVeiculo || item.vehicleModel || "",
+        period: item.periodo || item.period || item.competencia || "",
+        date: normalizeDateValue(item.data || item.date || item.syncDate || ""),
+        km: Number(item.km || item.kmMedido || item.measuredKm || item.odometer || 0),
+        value: Number(item.valor || item.value || item.amount || 0),
+        costCenter: vehicle?.centroCusto || item.centroCusto || item.costCenter || "",
+        locadora: vehicle?.locadora || "",
+        contrato: vehicle?.contrato || "",
+        syncedAt: new Date().toLocaleString("pt-BR")
+      };
+    }
+
+    function normalizeFineFromArval(item) {
+      const plate = item.placa || item.plate || item.placaVeiculo || item.vehiclePlate || "";
+      const vehicle = getVehicleByPlate(plate);
+
+      return {
+        id: item.id || \`ARVAL-FINE-\${plate}-\${item.data || item.date || Date.now()}-\${crypto.randomUUID()}\`,
+        vehicleId: vehicle?.id || "",
+        linked: Boolean(vehicle),
+        date: normalizeDateValue(item.data || item.date || item.infractionDate || ""),
+        type: item.tipo || item.type || item.description || item.infracao || "Multa ARVAL",
+        value: Number(item.valor || item.value || item.amount || 0),
+        driver: vehicle?.condutor || item.condutor || item.driver || "",
+        status: item.status || "Pendente",
+        description: item.descricao || item.description || item.observacao || "Registro importado da plataforma ARVAL",
+        source: "ARVAL",
+        plate: String(plate || "").toUpperCase()
+      };
+    }
+
+    async function fetchApiJson(url, token, payload = {}) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? \`Bearer \${token}\` : ""
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(\`Erro na API: \${response.status} \${response.statusText}\`);
+      }
+
+      return await response.json();
+    }
+
+    function buildApiPayload(source) {
+      return {
+        source,
+        vehicles: vehicles.map(v => ({
+          id: v.id,
+          placa: v.placaVeiculo,
+          codigoVeiculo: v.codigoVeiculo,
+          modeloVeiculo: v.modeloVeiculo,
+          centroCusto: v.centroCusto,
+          contrato: v.contrato,
+          locadora: v.locadora
+        }))
+      };
+    }
+
+    async function syncMeasurements(source) {
+      const isAld = source === "ALD";
+      const url = isAld ? apiSettings.aldMeasurementsUrl : apiSettings.arvalMeasurementsUrl;
+      const token = isAld ? apiSettings.aldToken : apiSettings.arvalToken;
+      const statusEl = document.getElementById(isAld ? "aldApiStatus" : "arvalApiStatus");
+
+      if (!url) {
+        alert(\`Configure o endpoint de medições \${source} antes de sincronizar.\`);
+        openTabById("medicoesTab");
+        return;
+      }
+
+      try {
+        if (statusEl) statusEl.textContent = \`Sincronizando medições \${source}...\`;
+
+        const data = await fetchApiJson(url, token, buildApiPayload(source));
+        const rows = Array.isArray(data) ? data : (data.measurements || data.medicoes || data.data || []);
+        const normalized = rows.map(item => normalizeMeasurement(source, item));
+        const linkedCount = normalized.filter(item => item.linked).length;
+        const unlinkedCount = normalized.length - linkedCount;
+
+        const existingOtherSources = measurements.filter(m => m.source !== source);
+        measurements = [...existingOtherSources, ...normalized];
+
+        saveData();
+        renderMeasurements();
+
+        if (statusEl) statusEl.textContent = \`\${normalized.length} medições \${source} sincronizadas. \${linkedCount} vinculadas automaticamente por placa e \${unlinkedCount} sem placa cadastrada.\`;
+      } catch (error) {
+        if (statusEl) statusEl.textContent = \`Falha ao sincronizar \${source}: \${error.message}\`;
+        alert(\`Não foi possível sincronizar medições \${source}. \${error.message}\`);
+      }
+    }
+
+    async function syncArvalFines() {
+      const url = apiSettings.arvalFinesUrl;
+      const token = apiSettings.arvalToken;
+      const statusEl = document.getElementById("arvalApiStatus");
+
+      if (!url) {
+        alert("Configure o endpoint de multas da ARVAL antes de sincronizar.");
+        openTabById("medicoesTab");
+        return;
+      }
+
+      try {
+        if (statusEl) statusEl.textContent = "Sincronizando multas ARVAL...";
+
+        const data = await fetchApiJson(url, token, buildApiPayload("ARVAL_FINES"));
+        const rows = Array.isArray(data) ? data : (data.fines || data.multas || data.infracoes || data.invoices || data.faturas || data.data || []);
+        const normalized = rows.map(normalizeFineFromArval);
+        const linkedCount = normalized.filter(item => item.linked).length;
+        const unlinkedCount = normalized.length - linkedCount;
+
+        const existingNonArvalFines = fines.filter(f => f.source !== "ARVAL");
+        fines = [...existingNonArvalFines, ...normalized];
+
+        saveData();
+        renderAll();
+
+        if (statusEl) statusEl.textContent = \`\${normalized.length} multas ARVAL sincronizadas. \${linkedCount} vinculadas automaticamente por placa e \${unlinkedCount} sem placa cadastrada.\`;
+        openTabById("multasTab");
+      } catch (error) {
+        if (statusEl) statusEl.textContent = \`Falha ao puxar multas ARVAL: \${error.message}\`;
+        alert(\`Não foi possível puxar multas da ARVAL. \${error.message}\`);
+      }
+    }
+
+    function getFilteredMeasurements() {
+      const source = measurementSourceFilter?.value || "";
+      const plate = measurementPlateFilter?.value || "";
+      const start = measurementStartFilter?.value || "";
+      const end = measurementEndFilter?.value || "";
+
+      return measurements.filter(item => {
+        const matchesSource = !source || item.source === source;
+        const matchesPlate = !plate || item.plate === plate;
+        const itemDate = item.date || "";
+        const matchesStart = !start || !itemDate || itemDate >= start;
+        const matchesEnd = !end || !itemDate || itemDate <= end;
+        return matchesSource && matchesPlate && matchesStart && matchesEnd;
+      });
+    }
+
+    function renderMeasurementFilters() {
+      if (!measurementPlateFilter) return;
+
+      const current = measurementPlateFilter.value;
+      const plates = [...new Set(measurements.map(m => m.plate).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+      measurementPlateFilter.innerHTML = '<option value="">Todas</option>';
+      plates.forEach(plate => {
+        const option = document.createElement("option");
+        option.value = plate;
+        option.textContent = plate;
+        measurementPlateFilter.appendChild(option);
+      });
+
+      if (plates.includes(current)) measurementPlateFilter.value = current;
+    }
+
+    function renderMeasurements() {
+      renderMeasurementFilters();
+
+      const table = document.getElementById("measurementsTable");
+      const filtered = getFilteredMeasurements();
+
+      const totalKm = filtered.reduce((sum, item) => sum + Number(item.km || 0), 0);
+      const totalValue = filtered.reduce((sum, item) => sum + Number(item.value || 0), 0);
+      const unlinked = filtered.filter(item => !item.linked).length;
+      const lastSync = filtered[0]?.syncedAt || measurements[0]?.syncedAt || "-";
+
+      if (document.getElementById("measurementTotal")) document.getElementById("measurementTotal").textContent = filtered.length;
+      if (document.getElementById("measurementKmTotal")) document.getElementById("measurementKmTotal").textContent = totalKm.toLocaleString("pt-BR");
+      if (document.getElementById("measurementValueTotal")) document.getElementById("measurementValueTotal").textContent = formatCurrency(totalValue);
+      if (document.getElementById("measurementUnlinked")) document.getElementById("measurementUnlinked").textContent = unlinked;
+      if (document.getElementById("measurementLastSync")) document.getElementById("measurementLastSync").textContent = lastSync;
+
+      if (!table) return;
+
+      table.innerHTML = "";
+
+      if (filtered.length === 0) {
+        table.innerHTML = '<tr><td colspan="9">Nenhuma medição integrada encontrada.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td><span class="measurement-source">\${item.source || "-"}</span></td>
+          <td><strong>\${item.plate || "-"}</strong></td>
+          <td>\${item.vehicleModel || item.vehicleCode || "-"}</td>
+          <td>\${item.period || formatDate(item.date)}</td>
+          <td>\${Number(item.km || 0).toLocaleString("pt-BR")}</td>
+          <td>\${formatCurrency(item.value)}</td>
+          <td>\${item.costCenter || "-"}</td>
+          <td>\${item.linked ? '<span class="link-status linked-ok">Vinculado</span>' : '<span class="link-status linked-warning">Sem placa cadastrada</span>'}</td>
+          <td>\${item.syncedAt || "-"}</td>
+        \`;
+        table.appendChild(row);
+      });
+    }
+
+    function clearMeasurementFilters() {
+      if (measurementSourceFilter) measurementSourceFilter.value = "";
+      if (measurementPlateFilter) measurementPlateFilter.value = "";
+      if (measurementStartFilter) measurementStartFilter.value = "";
+      if (measurementEndFilter) measurementEndFilter.value = "";
+      renderMeasurements();
+    }
+
+
+    function renderStats() {
+      const vencendo = vehicles.filter(v => {
+        const dias = calculateContractDays(v.terminoContrato);
+        return dias !== "" && dias >= 0 && dias <= 60;
+      }).length;
+
+      document.getElementById("totalVeiculos").textContent = vehicles.length;
+      document.getElementById("totalDisponiveis").textContent = vehicles.filter(v => v.statusCarro === "Disponível").length;
+      document.getElementById("totalEmUso").textContent = vehicles.filter(v => canonicalVehicleStatus(v.statusCarro) === "Alugado").length;
+      document.getElementById("totalVencendo").textContent = vencendo;
+      document.getElementById("totalMultas").textContent = fines.length;
+    }
+
+    function uniqueSortedValues(key) {
+      return [...new Set(
+        vehicles
+          .map(v => String(v[key] || "").trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+
+    function populateSelect(select, values, defaultText) {
+      const currentValue = select.value;
+      select.innerHTML = \`<option value="">\${defaultText}</option>\`;
+
+      values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+
+      if (values.includes(currentValue)) {
+        select.value = currentValue;
+      }
+    }
+
+    function renderFilterOptions() {
+      populateSelect(liderFilter, uniqueSortedValues("liderAdm"), "Todos");
+      populateSelect(centroCustoFilter, uniqueSortedValues("centroCusto"), "Todos");
+      populateSelect(locadoraFilter, uniqueSortedValues("locadora"), "Todas");
+      populateSelect(categoriaFilter, uniqueSortedValues("categoriaVeiculo"), "Todas");
+      populateSelect(anoFilter, uniqueSortedValues("anoModelo"), "Todos");
+
+      const currentCondutor = condutorFilter.value;
+      condutorFilter.innerHTML = \`
+        <option value="">Todos</option>
+        <option value="__SEM_CONDUTOR__">Condutor não vinculado</option>
+      \`;
+
+      uniqueSortedValues("condutor").forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        condutorFilter.appendChild(option);
+      });
+
+      if ([...condutorFilter.options].some(option => option.value === currentCondutor)) {
+        condutorFilter.value = currentCondutor;
+      }
+    }
+
+    function getContractFilterMatch(vehicle) {
+      const value = contratoFilter.value;
+      if (!value) return true;
+      return getContractExpiryBucket(vehicle.terminoContrato) === value;
+    }
+
+    function getFilteredVehicles() {
+      const term = search.value.toLowerCase().trim();
+
+      return vehicles.filter(v => {
+        const text = Object.values(v).join(" ").toLowerCase();
+        const matchesText = text.includes(term);
+        const matchesStatus = !statusFilter.value || v.statusCarro === statusFilter.value;
+        const matchesLider = !liderFilter.value || v.liderAdm === liderFilter.value;
+        const matchesCentroCusto = !centroCustoFilter.value || v.centroCusto === centroCustoFilter.value;
+        const matchesLocadora = !locadoraFilter.value || v.locadora === locadoraFilter.value;
+        const matchesCategoria = !categoriaFilter.value || v.categoriaVeiculo === categoriaFilter.value;
+        const matchesAno = !anoFilter.value || String(v.anoModelo || "") === anoFilter.value;
+
+        let matchesCondutor = true;
+        if (condutorFilter.value === "__SEM_CONDUTOR__") {
+          matchesCondutor = !String(v.condutor || "").trim();
+        } else if (condutorFilter.value) {
+          matchesCondutor = v.condutor === condutorFilter.value;
+        }
+
+        const matchesContrato = getContractFilterMatch(v);
+
+        return matchesText
+          && matchesStatus
+          && matchesLider
+          && matchesCentroCusto
+          && matchesLocadora
+          && matchesCategoria
+          && matchesAno
+          && matchesCondutor
+          && matchesContrato;
+      });
+    }
+
+    function clearFilters() {
+      search.value = "";
+      statusFilter.value = "";
+      liderFilter.value = "";
+      centroCustoFilter.value = "";
+      locadoraFilter.value = "";
+      categoriaFilter.value = "";
+      condutorFilter.value = "";
+      anoFilter.value = "";
+      contratoFilter.value = "";
+      renderVehicles();
+    }
+
+    function renderVehicles() {
+      const filtered = getFilteredVehicles();
+      vehicleGrid.innerHTML = "";
+
+      if (filtered.length === 0) {
+        vehicleGrid.innerHTML = '<div class="empty">Nenhum veículo encontrado.</div>';
+        return;
+      }
+
+      filtered.forEach(v => {
+        const dias = calculateContractDays(v.terminoContrato);
+        const meses = calculateContractMonths(v.terminoContrato);
+
+        const card = document.createElement("article");
+        card.className = \`vehicle-card vehicle-card-clickable vehicle-card-status-\${statusClass(v.statusCarro)}\`;
+        card.dataset.vehicleId = String(v.id || "");
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", \`Abrir detalhes do veículo \${v.placaVeiculo || v.modeloVeiculo || "selecionado"}\`);
+
+        card.innerHTML = \`
+          <div class="vehicle-card-top">
+            <span class="vehicle-top-icon sf-icon sf-icon-building" aria-hidden="true"></span>
+            <span>\${v.locadora || "Locadora não cadastrada"} • \${v.codigoVeiculo || "código não cadastrado"}</span>
+          </div>
+
+          <div class="vehicle-content">
+            <div class="vehicle-title-line">
+              <h3>\${v.modeloVeiculo || "-"}</h3>
+              <span class="vehicle-mini-icon sf-icon sf-icon-vehicle" aria-hidden="true"></span>
+            </div>
+            <div class="subtitle">\${v.categoriaVeiculo || "-"}</div>
+
+            <div class="vehicle-image-wrap">
+              \${renderVehiclePhoto(v.foto)}
+            </div>
+
+            <div class="plate">\${v.placaVeiculo || "-"}</div>
+            <span class="status \${statusClass(v.statusCarro)}">\${v.statusCarro || "-"}</span>
+
+            <div class="vehicle-meta vehicle-meta-summary">
+              <div class="vehicle-summary-line">
+                <span class="meta-icon-box sf-icon sf-icon-person" aria-hidden="true"></span>
+                <div class="meta-copy">
+                  <strong>Condutor</strong>
+                  <span>\${v.condutor || "Condutor não vinculado"}</span>
+                </div>
+              </div>
+              <div class="vehicle-summary-line">
+                <span class="meta-icon-box sf-icon sf-icon-location" aria-hidden="true"></span>
+                <div class="meta-copy">
+                  <strong>Centro de custo</strong>
+                  <span>\${v.centroCusto || "-"}</span>
+                </div>
+              </div>
+              <div class="vehicle-summary-line">
+                <span class="meta-icon-box sf-icon sf-icon-transfer" aria-hidden="true"></span>
+                <div class="meta-copy">
+                  <strong>Transferências</strong>
+                  <span>\${vehicleMovementHistory(v).length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions vehicle-card-actions">
+            <button class="outline-btn" type="button" data-vehicle-details><span class="btn-icon sf-icon sf-icon-eye" aria-hidden="true"></span>Ver detalhes</button>
+            <button class="outline-btn" type="button" onclick="editVehicle('\${v.id}')"><span class="btn-icon sf-icon sf-icon-edit" aria-hidden="true"></span>Editar</button>
+          </div>
+        \`;
+
+        const detailsButton = card.querySelector("[data-vehicle-details]");
+        if (detailsButton) {
+          detailsButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            openVehicleDetails(v.id);
+          });
+        }
+
+        const openDetailsFromCard = event => {
+          if (event?.target?.closest?.("button, a, input, select, textarea, label")) return;
+          openVehicleDetails(v.id);
+        };
+
+        card.addEventListener("click", openDetailsFromCard);
+        card.addEventListener("keydown", event => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          if (event.target?.closest?.("button, a, input, select, textarea")) return;
+          event.preventDefault();
+          openVehicleDetails(v.id);
+        });
+
+        vehicleGrid.appendChild(card);
+      });
+    }
+
+    function renderVehicleOptions() {
+      const fineVehicle = document.getElementById("fineVehicle");
+      fineVehicle.innerHTML = '<option value="">Selecione um veículo</option>';
+      vehicles.forEach(vehicle => {
+        const option = document.createElement("option");
+        option.value = vehicle.id;
+        option.textContent = \`\${vehicle.modeloVeiculo} - \${vehicle.placaVeiculo}\`;
+        fineVehicle.appendChild(option);
+      });
+    }
+
+    function renderFines() {
+      fineTable.innerHTML = "";
+
+      if (fines.length === 0) {
+        fineTable.innerHTML = '<tr><td colspan="6">Nenhuma multa ou fatura cadastrada.</td></tr>';
+        return;
+      }
+
+      fines.forEach(f => {
+        const vehicle = vehicles.find(v => v.id === f.vehicleId);
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${vehicle ? \`\${vehicle.modeloVeiculo}<br><strong>\${vehicle.placaVeiculo}</strong>\` : \`\${f.plate || "Placa não vinculada"}<br><span class="link-status linked-warning">Sem placa cadastrada</span>\`}</td>
+          <td>\${formatDate(f.date)}</td>
+          <td>\${f.type}</td>
+          <td>\${formatCurrency(f.value)}</td>
+          <td>\${f.status}</td>
+          <td><button class="danger-btn" onclick="deleteFine('\${f.id}')">Excluir</button></td>
+        \`;
+        fineTable.appendChild(row);
+      });
+    }
+
+    function renderSummaryTable() {
+      summaryTable.innerHTML = "";
+
+      if (vehicles.length === 0) {
+        summaryTable.innerHTML = '<tr><td colspan="6">Nenhum veículo cadastrado na base da frota.</td></tr>';
+        return;
+      }
+
+      vehicles.forEach(v => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${v.statusCarro || "-"}</td>
+          <td><strong>\${v.placaVeiculo || "-"}</strong></td>
+          <td>\${v.modeloVeiculo || "-"}</td>
+          <td>\${v.condutor || "-"}</td>
+          <td>\${v.centroCusto || "-"}</td>
+          <td>\${v.contrato || "-"}</td>
+        \`;
+        summaryTable.appendChild(row);
+      });
+    }
+
+
+    function renderDashboardSummaryTable() {
+      const dashboardSummaryTable = document.getElementById("dashboardSummaryTable");
+      if (!dashboardSummaryTable) return;
+
+      dashboardSummaryTable.innerHTML = "";
+
+      const latestVehicles = vehicles.slice(0, 8);
+
+      if (latestVehicles.length === 0) {
+        dashboardSummaryTable.innerHTML = '<tr><td colspan="6">Nenhum veículo cadastrado na base da frota.</td></tr>';
+        return;
+      }
+
+      latestVehicles.forEach(v => {
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>\${v.statusCarro || "-"}</td>
+          <td><strong>\${v.placaVeiculo || "-"}</strong></td>
+          <td>\${v.modeloVeiculo || "-"}</td>
+          <td>\${v.condutor || "-"}</td>
+          <td>\${v.centroCusto || "-"}</td>
+          <td>\${v.contrato || "-"}</td>
+        \`;
+        dashboardSummaryTable.appendChild(row);
+      });
+    }
+
+    function renderAll() {
+      refreshContractCalculatedFields();
+      renderStats();
+      renderVehicleOptions();
+      renderFilterOptions();
+      populateDashboardFilters();
+      renderVehicles();
+      renderFines();
+      renderSummaryTable();
+      renderDashboardSummaryTable();
+      renderFleetManager();
+      renderApiSettings();
+      renderMeasurements();
+      renderDashboardIndicators();
+      updateImportPanel();
+    }
+
+
+    function openTab(tabId, button) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add("active");
+
+      if (button) {
+        button.classList.add("active");
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openTabById(tabId) {
+      const button = [...document.querySelectorAll(".tab-button")]
+        .find(btn => btn.getAttribute("onclick") && btn.getAttribute("onclick").includes(tabId));
+
+      openTab(tabId, button);
+    }
+
+    function fillQuickReservation() {
+      document.getElementById("centroCusto").value = document.getElementById("heroCentroCusto").value;
+      document.getElementById("condutor").value = document.getElementById("heroCondutor").value;
+      document.getElementById("inicioContrato").value = document.getElementById("heroInicioContrato").value;
+      document.getElementById("statusCarro").value = "Alugado";
+      openTabById("cadastroTab");
+      document.getElementById("formTitle").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function escapeVehicleDetail(value) {
+      return String(value ?? "-")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function vehicleDetailValue(value, fallback = "-") {
+      const normalized = String(value ?? "").trim();
+      return escapeVehicleDetail(normalized || fallback);
+    }
+
+    function vehicleDetailItem(label, value, full = false) {
+      return \`<div class="vehicle-detail-item\${full ? " full" : ""}"><small>\${escapeVehicleDetail(label)}</small><strong>\${value}</strong></div>\`;
+    }
+
+    function vehicleMovementHistory(vehicle) {
+      return Array.isArray(vehicle?.historicoMovimentacoes) ? vehicle.historicoMovimentacoes : [];
+    }
+
+    function movementRecordId() {
+      if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+      return \`mov-\${Date.now()}-\${Math.random().toString(36).slice(2, 9)}\`;
+    }
+
+    function renderVehicleMovementHistory(vehicle) {
+      const history = vehicleMovementHistory(vehicle)
+        .slice()
+        .sort((a, b) => String(b?.dataTransferencia || b?.registradoEm || "").localeCompare(String(a?.dataTransferencia || a?.registradoEm || "")));
+
+      if (!history.length) {
+        return '<div class="vehicle-history-list"><div class="vehicle-history-empty">Nenhuma transferência registrada para este veículo.</div></div>';
+      }
+
+      return \`<div class="vehicle-history-list">\${history.map((item, index) => \`
+        <article class="vehicle-history-item">
+          <div class="vehicle-history-header">
+            <strong>Transferência \${history.length - index}</strong>
+            <span>\${escapeVehicleDetail(formatDate(item.dataTransferencia) || item.dataTransferencia || "Data não informada")}</span>
+          </div>
+          <div class="vehicle-history-grid">
+            <div><small>Obra anterior</small><strong>\${vehicleDetailValue(item.obraAnterior || item.centroCustoAnterior)}</strong></div>
+            <div><small>Nova obra</small><strong>\${vehicleDetailValue(item.novaObra || item.centroCustoNovo)}</strong></div>
+            <div><small>Condutor anterior</small><strong>\${vehicleDetailValue(item.condutorAnterior, "Não vinculado")}</strong></div>
+            <div><small>Novo condutor</small><strong>\${vehicleDetailValue(item.novoCondutor, "Não vinculado")}</strong></div>
+          </div>
+        </article>
+      \`).join("")}</div>\`;
+    }
+
+    function toggleVehicleTransferFields(forceState) {
+      const checkbox = document.getElementById("editRegistrarTransferencia");
+      const fields = document.getElementById("editTransferFields");
+      if (!checkbox || !fields) return;
+      if (typeof forceState === "boolean") checkbox.checked = forceState;
+      const active = checkbox.checked;
+      fields.classList.toggle("hidden", !active);
+      ["editDataTransferencia", "editNovaObra", "editNovoCondutor"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.required = active;
+      });
+    }
+
+
+    function openVehicleDetails(id) {
+      const normalizedId = String(id ?? "");
+      const v = vehicles.find(vehicle => String(vehicle.id ?? "") === normalizedId);
+      if (!v) {
+        alert("Não foi possível localizar os dados deste veículo.");
+        return;
+      }
+
+      const modal = document.getElementById("vehicleDetailModal");
+      const body = document.getElementById("vehicleDetailBody");
+      const title = document.getElementById("vehicleDetailTitle");
+      const subtitle = document.getElementById("vehicleDetailSubtitle");
+      const editButton = document.getElementById("vehicleDetailEditButton");
+      if (!modal || !body || !title || !subtitle || !editButton) return;
+
+      const dias = calculateContractDays(v.terminoContrato);
+      const meses = calculateContractMonths(v.terminoContrato);
+      const situacaoVencimento = getContractExpiryStatus(v.terminoContrato);
+      const vehicleFines = fines.filter(f => f.vehicleId === v.id);
+      const vehiclePlate = String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const vehicleMeasurements = (Array.isArray(measurements) ? measurements : []).filter(m => {
+        const measurementPlate = String(m.placa || m.plate || m.placaVeiculo || m.vehiclePlate || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, "");
+        return m.vehicleId === v.id || (vehiclePlate && measurementPlate === vehiclePlate);
+      });
+      const fineTotal = vehicleFines.reduce((total, fine) => total + Number(fine.valor || fine.fineValue || 0), 0);
+
+      title.textContent = \`\${v.modeloVeiculo || "Veículo"} • \${v.placaVeiculo || "Sem placa"}\`;
+      subtitle.textContent = \`\${v.locadora || "Locadora não cadastrada"} • \${v.codigoVeiculo || "Código não cadastrado"}\`;
+
+      body.innerHTML = \`
+        <div class="vehicle-detail-overview">
+          <div class="vehicle-detail-photo">\${renderVehiclePhoto(v.foto)}</div>
+          <div class="vehicle-detail-highlight">
+            <div class="vehicle-detail-highlight-card"><small>Status</small><strong>\${vehicleDetailValue(v.statusCarro)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Condutor</small><strong>\${vehicleDetailValue(v.condutor, "Não vinculado")}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Centro de Custo</small><strong>\${vehicleDetailValue(v.centroCusto)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Contrato</small><strong>\${vehicleDetailValue(v.contrato)}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Medições vinculadas</small><strong>\${vehicleMeasurements.length}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Multas / Faturas</small><strong>\${vehicleFines.length} • \${escapeVehicleDetail(formatCurrency(fineTotal))}</strong></div>
+            <div class="vehicle-detail-highlight-card"><small>Transferências</small><strong>\${vehicleMovementHistory(v).length}</strong></div>
+          </div>
+        </div>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Identificação do veículo</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Placa", vehicleDetailValue(v.placaVeiculo))}
+            \${vehicleDetailItem("Modelo", vehicleDetailValue(v.modeloVeiculo))}
+            \${vehicleDetailItem("Categoria", vehicleDetailValue(v.categoriaVeiculo))}
+            \${vehicleDetailItem("Ano modelo", vehicleDetailValue(v.anoModelo))}
+            \${vehicleDetailItem("Código do veículo", vehicleDetailValue(v.codigoVeiculo))}
+            \${vehicleDetailItem("Locadora", vehicleDetailValue(v.locadora))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Condutor e responsáveis</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Condutor", vehicleDetailValue(v.condutor, "Não vinculado"))}
+            \${vehicleDetailItem("CPF do condutor", vehicleDetailValue(v.cpfCondutor))}
+            \${vehicleDetailItem("Função", vehicleDetailValue(v.funcao))}
+            \${vehicleDetailItem("Líder ADM", vehicleDetailValue(v.liderAdm))}
+            \${vehicleDetailItem("Centro de Custo", vehicleDetailValue(v.centroCusto))}
+            \${vehicleDetailItem("Status do carro", vehicleDetailValue(v.statusCarro))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Histórico de movimentação / transferências</div>
+          \${renderVehicleMovementHistory(v)}
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Contrato e valores</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Contrato", vehicleDetailValue(v.contrato))}
+            \${vehicleDetailItem("Valor praticado", escapeVehicleDetail(formatCurrency(v.valoresPraticados)))}
+            \${vehicleDetailItem("Prazo do contrato", vehicleDetailValue(v.prazoContrato))}
+            \${vehicleDetailItem("Início do contrato", escapeVehicleDetail(formatDate(v.inicioContrato)))}
+            \${vehicleDetailItem("Término do contrato", escapeVehicleDetail(formatDate(v.terminoContrato)))}
+            \${vehicleDetailItem("Situação do vencimento", escapeVehicleDetail(situacaoVencimento))}
+            \${vehicleDetailItem("Dias até o vencimento", dias === "" ? "-" : escapeVehicleDetail(dias))}
+            \${vehicleDetailItem("Meses até o vencimento", meses === "" ? "-" : escapeVehicleDetail(meses))}
+          </div>
+        </section>
+
+        <section class="vehicle-detail-section">
+          <div class="vehicle-detail-section-title">Franquias e controles</div>
+          <div class="vehicle-detail-grid">
+            \${vehicleDetailItem("Franquia mensal", vehicleDetailValue(v.franquiaMensal))}
+            \${vehicleDetailItem("Franquia total", vehicleDetailValue(v.franquiaTotal))}
+            \${vehicleDetailItem("Cartão combustível", vehicleDetailValue(v.cartaoCombustivel))}
+            \${vehicleDetailItem("Cobli", vehicleDetailValue(v.cobli))}
+            \${vehicleDetailItem("Medições vinculadas", escapeVehicleDetail(vehicleMeasurements.length))}
+            \${vehicleDetailItem("Multas / Faturas", \`\${escapeVehicleDetail(vehicleFines.length)} registro(s) • \${escapeVehicleDetail(formatCurrency(fineTotal))}\`)}
+            \${vehicleDetailItem("Observações", vehicleDetailValue(v.observacoes), true)}
+          </div>
+        </section>
+        <div id="vehicleMeasurementPlacementAnchor" class="vehicle-measurement-placement-anchor" aria-hidden="true"></div>
+      \`;
+
+      editButton.onclick = () => {
+        closeVehicleDetails();
+        editVehicle(id);
+      };
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeVehicleDetails() {
+      const modal = document.getElementById("vehicleDetailModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    function handleVehicleDetailBackdrop(event) {
+      if (event.target?.id === "vehicleDetailModal") closeVehicleDetails();
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeVehicleDetails();
+        closeVehicleEditModal();
+      }
+    });
+
+
+    function syncEditContractDeadlineFields(endDate) {
+      const days = calculateContractDays(endDate);
+      const months = calculateContractMonths(endDate);
+      const daysInput = document.getElementById("editDiasFinalContrato");
+      const monthsInput = document.getElementById("editMesesFimContrato");
+      const statusInput = document.getElementById("editSituacaoContrato");
+      if (daysInput) daysInput.value = days === "" ? "" : days;
+      if (monthsInput) monthsInput.value = months === "" ? "" : months;
+      if (statusInput) statusInput.value = getContractExpiryStatus(endDate);
+    }
+
+    function updateEditPhotoPreview(photo) {
+      const preview = document.getElementById("editPhotoPreview");
+      if (!preview) return;
+      preview.innerHTML = "";
+      if (!photo) return;
+
+      const img = document.createElement("img");
+      img.src = photo;
+      img.alt = "Pré-visualização da foto do veículo em edição";
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "danger-btn";
+      removeButton.textContent = "Remover foto";
+      removeButton.onclick = () => {
+        preview.innerHTML = "";
+        const fileInput = document.getElementById("editFoto");
+        const currentInput = document.getElementById("editFotoAtual");
+        if (fileInput) fileInput.value = "";
+        if (currentInput) currentInput.value = "";
+      };
+
+      preview.appendChild(img);
+      preview.appendChild(removeButton);
+    }
+
+    function openVehicleEditModal(id) {
+      const normalizedId = String(id ?? "");
+      const vehicle = vehicles.find(item => String(item.id ?? "") === normalizedId);
+      if (!vehicle) {
+        alert("Não foi possível localizar o veículo para edição.");
+        return;
+      }
+
+      const modal = document.getElementById("vehicleEditModal");
+      const title = document.getElementById("vehicleEditTitle");
+      const subtitle = document.getElementById("vehicleEditSubtitle");
+      if (!modal) return;
+
+      if (title) title.textContent = \`Editar \${vehicle.modeloVeiculo || "veículo"}\`;
+      if (subtitle) subtitle.textContent = \`\${vehicle.placaVeiculo || "Sem placa"} • \${vehicle.locadora || "Locadora não cadastrada"}\`;
+
+      const fieldMap = {
+        editVehicleId: "id",
+        editFotoAtual: "foto",
+        editStatusCarro: "statusCarro",
+        editLiderAdm: "liderAdm",
+        editCentroCusto: "centroCusto",
+        editPlacaVeiculo: "placaVeiculo",
+        editLocadora: "locadora",
+        editCodigoVeiculo: "codigoVeiculo",
+        editModeloVeiculo: "modeloVeiculo",
+        editCategoriaVeiculo: "categoriaVeiculo",
+        editAnoModelo: "anoModelo",
+        editCondutor: "condutor",
+        editCpfCondutor: "cpfCondutor",
+        editFuncao: "funcao",
+        editValoresPraticados: "valoresPraticados",
+        editInicioContrato: "inicioContrato",
+        editTerminoContrato: "terminoContrato",
+        editPrazoContrato: "prazoContrato",
+        editFranquiaMensal: "franquiaMensal",
+        editFranquiaTotal: "franquiaTotal",
+        editContrato: "contrato",
+        editCartaoCombustivel: "cartaoCombustivel",
+        editCobli: "cobli",
+        editObservacoes: "observacoes"
+      };
+
+      Object.entries(fieldMap).forEach(([elementId, vehicleKey]) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        let value = vehicle[vehicleKey] ?? "";
+        if (vehicleKey === "statusCarro") value = canonicalVehicleStatus(value);
+        element.value = value;
+      });
+
+      const photoInput = document.getElementById("editFoto");
+      if (photoInput) photoInput.value = "";
+      updateEditPhotoPreview(vehicle.foto || "");
+      syncEditContractDeadlineFields(vehicle.terminoContrato || "");
+
+      const previousCenter = document.getElementById("editCentroAnterior");
+      const previousDriver = document.getElementById("editCondutorAnterior");
+      if (previousCenter) previousCenter.textContent = String(vehicle.centroCusto || "Não informado");
+      if (previousDriver) previousDriver.textContent = String(vehicle.condutor || "Não vinculado");
+      const transferDate = document.getElementById("editDataTransferencia");
+      const newCenter = document.getElementById("editNovaObra");
+      const newDriver = document.getElementById("editNovoCondutor");
+      if (transferDate) transferDate.value = "";
+      if (newCenter) newCenter.value = "";
+      if (newDriver) newDriver.value = "";
+      toggleVehicleTransferFields(false);
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeVehicleEditModal() {
+      const modal = document.getElementById("vehicleEditModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      const form = document.getElementById("vehicleEditForm");
+      if (form) form.reset();
+      const preview = document.getElementById("editPhotoPreview");
+      if (preview) preview.innerHTML = "";
+      toggleVehicleTransferFields(false);
+    }
+
+    function handleVehicleEditBackdrop(event) {
+      if (event.target?.id === "vehicleEditModal") closeVehicleEditModal();
+    }
+
+    async function saveVehicleEdit(event) {
+      event.preventDefault();
+      const id = document.getElementById("editVehicleId")?.value;
+      const index = vehicles.findIndex(vehicle => String(vehicle.id) === String(id));
+      if (index < 0) {
+        alert("O veículo selecionado não foi encontrado.");
+        closeVehicleEditModal();
+        return;
+      }
+
+      const placa = document.getElementById("editPlacaVeiculo").value.trim().toUpperCase();
+      const modelo = document.getElementById("editModeloVeiculo").value.trim();
+      if (!placa || !modelo) {
+        alert("Informe pelo menos a placa e o modelo do veículo.");
+        return;
+      }
+
+      const normalizedPlate = placa.replace(/[^A-Z0-9]/g, "");
+      const duplicate = vehicles.find(vehicle =>
+        String(vehicle.id) !== String(id) &&
+        String(vehicle.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "") === normalizedPlate
+      );
+      if (duplicate) {
+        alert("Já existe outro veículo cadastrado com esta placa.");
+        return;
+      }
+
+      const photoInput = document.getElementById("editFoto");
+      const photoFile = photoInput?.files?.[0];
+      const currentPhoto = document.getElementById("editFotoAtual")?.value || "";
+      const photo = photoFile ? await readPhotoAsBase64(photoFile) : currentPhoto;
+      const terminoContrato = document.getElementById("editTerminoContrato").value;
+      const existing = vehicles[index];
+      const registerTransfer = Boolean(document.getElementById("editRegistrarTransferencia")?.checked);
+      const transferDate = document.getElementById("editDataTransferencia")?.value || "";
+      const newCenter = document.getElementById("editNovaObra")?.value.trim() || "";
+      const newDriver = document.getElementById("editNovoCondutor")?.value.trim() || "";
+      const movementHistory = vehicleMovementHistory(existing).slice();
+
+      if (registerTransfer) {
+        if (!transferDate || !newCenter || !newDriver) {
+          alert("Para registrar a transferência, informe a data, a nova obra e o novo condutor.");
+          return;
+        }
+        movementHistory.push({
+          id: movementRecordId(),
+          dataTransferencia: transferDate,
+          obraAnterior: String(existing.centroCusto || ""),
+          centroCustoAnterior: String(existing.centroCusto || ""),
+          condutorAnterior: String(existing.condutor || ""),
+          cpfCondutorAnterior: String(existing.cpfCondutor || ""),
+          funcaoAnterior: String(existing.funcao || ""),
+          novaObra: newCenter,
+          centroCustoNovo: newCenter,
+          novoCondutor: newDriver,
+          registradoEm: new Date().toISOString()
+        });
+      }
+
+      vehicles[index] = {
+        ...existing,
+        id: existing.id,
+        foto: photo,
+        statusCarro: canonicalVehicleStatus(document.getElementById("editStatusCarro").value),
+        liderAdm: document.getElementById("editLiderAdm").value.trim(),
+        centroCusto: registerTransfer ? newCenter : document.getElementById("editCentroCusto").value.trim(),
+        placaVeiculo: placa,
+        locadora: document.getElementById("editLocadora").value.trim(),
+        codigoVeiculo: document.getElementById("editCodigoVeiculo").value.trim(),
+        condutor: registerTransfer ? newDriver : document.getElementById("editCondutor").value.trim(),
+        cpfCondutor: registerTransfer ? "" : document.getElementById("editCpfCondutor").value.trim(),
+        funcao: registerTransfer ? "" : document.getElementById("editFuncao").value.trim(),
+        modeloVeiculo: modelo,
+        categoriaVeiculo: document.getElementById("editCategoriaVeiculo").value.trim(),
+        valoresPraticados: document.getElementById("editValoresPraticados").value,
+        inicioContrato: document.getElementById("editInicioContrato").value,
+        terminoContrato,
+        prazoContrato: document.getElementById("editPrazoContrato").value.trim(),
+        anoModelo: document.getElementById("editAnoModelo").value,
+        franquiaMensal: document.getElementById("editFranquiaMensal").value.trim(),
+        franquiaTotal: document.getElementById("editFranquiaTotal").value.trim(),
+        diasFinalContrato: calculateContractDays(terminoContrato),
+        mesesFimContrato: calculateContractMonths(terminoContrato),
+        situacaoContrato: getContractExpiryStatus(terminoContrato),
+        contrato: document.getElementById("editContrato").value.trim(),
+        cartaoCombustivel: document.getElementById("editCartaoCombustivel").value.trim(),
+        cobli: document.getElementById("editCobli").value.trim(),
+        observacoes: document.getElementById("editObservacoes").value.trim(),
+        historicoMovimentacoes: movementHistory,
+        atualizadoEm: new Date().toISOString()
+      };
+
+      const saved = saveData();
+      renderAll();
+      closeVehicleEditModal();
+      if (!saved) {
+        alert("Não foi possível salvar todas as alterações: o armazenamento local do navegador está cheio. Remova fotos antigas de outros veículos ou use uma foto menor e tente novamente. Se você recarregar a página agora, esta alteração pode ser perdida.");
+      } else {
+        alert(registerTransfer
+          ? "Transferência registrada com sucesso. Os dados anteriores foram preservados no histórico do veículo."
+          : "Veículo atualizado com sucesso. As alterações foram aplicadas ao card, dashboard e relatórios.");
+      }
+    }
+
+    function deleteVehicleFromEdit() {
+      const id = document.getElementById("editVehicleId")?.value;
+      if (!id) return;
+      if (deleteVehicle(id)) closeVehicleEditModal();
+    }
+
+    function quickReserve(id) {
+      const v = vehicles.find(vehicle => vehicle.id === id);
+      if (!v) return;
+
+      editVehicle(id);
+      if (v.statusCarro === "Disponível") {
+        const editStatus = document.getElementById("editStatusCarro");
+        if (editStatus) editStatus.value = "Alugado";
+      }
+    }
+
+    vehicleForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const placaInput = document.getElementById("placaVeiculo");
+      const modeloInput = document.getElementById("modeloVeiculo");
+
+      if (!placaInput || !modeloInput) {
+        alert("Campos de placa/modelo não encontrados. Recarregue o aplicativo.");
+        return;
+      }
+
+      const placa = placaInput.value.trim().toUpperCase();
+      const modelo = modeloInput.value.trim();
+
+      if (!placa || !modelo) {
+        alert("Informe pelo menos a placa e o modelo do veículo antes de salvar.");
+        return;
+      }
+
+      const normalizedPlate = placa.replace(/[^A-Z0-9]/g, "");
+      const existingByPlate = vehicles.find(vehicle =>
+        String(vehicle.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "") === normalizedPlate
+      );
+
+      if (existingByPlate) {
+        alert("Esta placa já está cadastrada. Para alterar o veículo existente, use o botão Editar no card da aba Frota.");
+        openTabById("frotaTab");
+        return;
+      }
+
+      const photoInput = document.getElementById("foto");
+      const photoFile = photoInput?.files?.[0];
+      const previewPhoto = document.getElementById("fotoAtual").value || "";
+      const photo = photoFile ? await readPhotoAsBase64(photoFile) : previewPhoto;
+      const terminoContrato = document.getElementById("terminoContrato").value;
+
+      const vehicle = {
+        id: crypto.randomUUID(),
+        foto: photo,
+        statusCarro: canonicalVehicleStatus(document.getElementById("statusCarro").value),
+        liderAdm: document.getElementById("liderAdm").value.trim(),
+        centroCusto: document.getElementById("centroCusto").value.trim(),
+        placaVeiculo: placa,
+        locadora: document.getElementById("locadora").value.trim(),
+        codigoVeiculo: document.getElementById("codigoVeiculo").value.trim(),
+        condutor: document.getElementById("condutor").value.trim(),
+        cpfCondutor: document.getElementById("cpfCondutor").value.trim(),
+        funcao: document.getElementById("funcao").value.trim(),
+        modeloVeiculo: modelo,
+        categoriaVeiculo: document.getElementById("categoriaVeiculo").value.trim(),
+        valoresPraticados: document.getElementById("valoresPraticados").value,
+        inicioContrato: document.getElementById("inicioContrato").value,
+        terminoContrato,
+        prazoContrato: document.getElementById("prazoContrato").value.trim(),
+        anoModelo: document.getElementById("anoModelo").value,
+        franquiaMensal: document.getElementById("franquiaMensal").value.trim(),
+        franquiaTotal: document.getElementById("franquiaTotal").value.trim(),
+        diasFinalContrato: calculateContractDays(terminoContrato),
+        mesesFimContrato: calculateContractMonths(terminoContrato),
+        situacaoContrato: getContractExpiryStatus(terminoContrato),
+        contrato: document.getElementById("contrato").value.trim(),
+        cartaoCombustivel: document.getElementById("cartaoCombustivel").value.trim(),
+        cobli: document.getElementById("cobli").value.trim(),
+        observacoes: document.getElementById("observacoes").value.trim(),
+        historicoMovimentacoes: []
+      };
+
+      vehicles.push(vehicle);
+      const saved = saveData();
+      renderAll();
+      if (!saved) {
+        alert("O veículo foi cadastrado nesta tela, mas não foi possível salvar no armazenamento local do navegador (está cheio). Remova fotos antigas de outros veículos ou use uma foto menor e cadastre novamente. Se você recarregar a página agora, este cadastro pode ser perdido.");
+      } else {
+        alert("Novo veículo cadastrado com sucesso. Dados e foto foram salvos.");
+      }
+      resetVehicleForm();
+      openTabById("frotaTab");
+    });
+
+    fineForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      fines.push({
+        id: crypto.randomUUID(),
+        vehicleId: document.getElementById("fineVehicle").value,
+        date: document.getElementById("fineDate").value,
+        type: document.getElementById("fineType").value.trim(),
+        value: document.getElementById("fineValue").value,
+        driver: document.getElementById("fineDriver").value.trim(),
+        status: document.getElementById("fineStatus").value,
+        description: document.getElementById("fineDescription").value.trim(),
+        recordType: "MULTA",
+        source: "MANUAL",
+        sourceMethod: "MANUAL"
+      });
+
+      saveData();
+      fineForm.reset();
+      renderAll();
+    });
+
+    function editVehicle(id) {
+      openVehicleEditModal(id);
+    }
+
+    function resetVehicleForm() {
+      vehicleForm.reset();
+      document.getElementById("vehicleId").value = "";
+      document.getElementById("fotoAtual").value = "";
+      const photoInput = document.getElementById("foto");
+      if (photoInput) photoInput.value = "";
+      const preview = document.getElementById("photoPreview");
+      if (preview) preview.innerHTML = "";
+      syncContractDeadlineFields("");
+      document.getElementById("formTitle").textContent = "Cadastrar novo veículo";
+    }
+
+    function makeAvailable(id) {
+      const v = vehicles.find(vehicle => vehicle.id === id);
+      if (!v) return;
+
+      v.statusCarro = "Disponível";
+      v.condutor = "";
+      v.cpfCondutor = "";
+      v.funcao = "";
+      saveData();
+      renderAll();
+    }
+
+    function deleteCurrentVehicle() {
+      const id = document.getElementById("vehicleId").value;
+      if (!id) {
+        alert("Selecione um veículo para editar antes de excluir.");
+        return;
+      }
+      deleteVehicle(id);
+      resetVehicleForm();
+    }
+
+    function deleteVehicle(id) {
+      const hasFine = fines.some(f => f.vehicleId === id);
+      const message = hasFine
+        ? "Este veículo possui multas/infrações vinculadas. Deseja excluir mesmo assim?"
+        : "Deseja excluir este veículo?";
+
+      if (!confirm(message)) return false;
+
+      vehicles = vehicles.filter(v => v.id !== id);
+      saveData();
+      renderAll();
+      return true;
+    }
+
+    function deleteFine(id) {
+      if (!confirm("Deseja excluir esta multa/infração?")) return;
+      fines = fines.filter(f => f.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    function exportCSV() {
+      refreshContractCalculatedFields();
+      const headers = [
+        "Status do Carro",
+        "Líder ADM",
+        "Centro de Custo",
+        "Placa do Veículo",
+        "Locadora",
+        "Código Veículo",
+        "Condutor",
+        "CPF Condutor",
+        "Função",
+        "Modelo do Veículo",
+        "Categoria Veículo",
+        "Valores Praticados",
+        "Inicio do Contrato",
+        "Término do Contrato",
+        "Prazo de Contrato",
+        "Ano Modelo",
+        "Franquia Mensal",
+        "Franquia Total",
+        "Dias Final Contrato",
+        "Meses Fim Contrato",
+        "Contrato",
+        "N° Cartão Combustivel",
+        "Cobli"
+      ];
+
+      const keys = [
+        "statusCarro",
+        "liderAdm",
+        "centroCusto",
+        "placaVeiculo",
+        "locadora",
+        "codigoVeiculo",
+        "condutor",
+        "cpfCondutor",
+        "funcao",
+        "modeloVeiculo",
+        "categoriaVeiculo",
+        "valoresPraticados",
+        "inicioContrato",
+        "terminoContrato",
+        "prazoContrato",
+        "anoModelo",
+        "franquiaMensal",
+        "franquiaTotal",
+        "diasFinalContrato",
+        "mesesFimContrato",
+        "contrato",
+        "cartaoCombustivel",
+        "cobli"
+      ];
+
+      const rows = vehicles.map(v => keys.map(k => \`"\${String(v[k] || "").replace(/"/g, '""')}"\`).join(";"));
+      const csv = [headers.join(";"), ...rows].join("\\n");
+      const blob = new Blob(["\\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "controle_frota.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function bindEvent(element, eventName, handler) {
+      if (element) {
+        element.addEventListener(eventName, handler);
+      }
+    }
+
+    bindEvent(document.getElementById("foto"), "change", event => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert("Selecione um arquivo de imagem válido.");
+        event.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const currentPhotoInput = document.getElementById("fotoAtual");
+        if (currentPhotoInput) currentPhotoInput.value = reader.result;
+        updatePhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    bindEvent(document.getElementById("terminoContrato"), "change", event => {
+      syncContractDeadlineFields(event.target.value);
+    });
+    bindEvent(document.getElementById("terminoContrato"), "input", event => {
+      syncContractDeadlineFields(event.target.value);
+    });
+
+    bindEvent(document.getElementById("editFoto"), "change", event => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        alert("Selecione um arquivo de imagem válido.");
+        event.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const currentPhotoInput = document.getElementById("editFotoAtual");
+        if (currentPhotoInput) currentPhotoInput.value = reader.result;
+        updateEditPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+    bindEvent(document.getElementById("editTerminoContrato"), "change", event => {
+      syncEditContractDeadlineFields(event.target.value);
+    });
+    bindEvent(document.getElementById("editTerminoContrato"), "input", event => {
+      syncEditContractDeadlineFields(event.target.value);
+    });
+    bindEvent(document.getElementById("vehicleEditForm"), "submit", saveVehicleEdit);
+
+    bindEvent(document.getElementById("cancelEdit"), "click", resetVehicleForm);
+    bindEvent(document.getElementById("deleteSelectedVehicleButton"), "click", deleteCurrentVehicle);
+    bindEvent(search, "input", renderVehicles);
+
+    [
+      statusFilter,
+      liderFilter,
+      centroCustoFilter,
+      locadoraFilter,
+      categoriaFilter,
+      condutorFilter,
+      anoFilter,
+      contratoFilter
+    ].forEach(filter => bindEvent(filter, "change", renderVehicles));
+
+    [
+      dashStatusFilter,
+      dashLocadoraFilter,
+      dashCentroCustoFilter,
+      dashCategoriaFilter,
+      dashContratoFilter
+    ].forEach(filter => bindEvent(filter, "change", renderDashboardIndicators));
+
+    [
+      measurementSourceFilter,
+      measurementPlateFilter,
+      measurementStartFilter,
+      measurementEndFilter
+    ].forEach(filter => bindEvent(filter, "change", renderMeasurements));
+
+    renderAll();
+  <\/script>
+
+<script>
+(function(){
+  function applyUnifiedShell(){
+    const nav = document.querySelector('.tabs-nav');
+    const headerContent = document.querySelector('.topbar-content');
+    const shell = document.querySelector('.tabs-shell');
+    if(nav && headerContent && nav.parentElement !== headerContent){
+      headerContent.appendChild(nav);
+    }
+    if(shell) shell.style.display = 'none';
+
+    const tabLabels = {
+      dashboardTab:'Dashboard',
+      frotaTab:'Frota',
+      cadastroTab:'Cadastro',
+      importacaoTab:'Importar Planilha',
+      medicoesTab:'Medições / APIs',
+      multasTab:'Multas / Faturas',
+      relatoriosTab:'Relatórios'
+    };
+    document.querySelectorAll('.tab-button').forEach(btn=>{
+      const match = (btn.getAttribute('onclick')||'').match(/'(\\w+Tab)'/);
+      if(match && tabLabels[match[1]]){
+        const icon = btn.querySelector('.tab-icon');
+        btn.innerHTML = (icon ? icon.outerHTML : '') + tabLabels[match[1]];
+      }
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyUnifiedShell);
+  else applyUnifiedShell();
+})();
+<\/script>
+
+
+<script>
+(function(){
+  function bindFleetHeader(){
+    const globalSearch=document.getElementById('sfFleetSearch');
+    const fleetSearch=document.getElementById('search');
+    if(globalSearch && fleetSearch && !globalSearch.dataset.bound){
+      globalSearch.dataset.bound='1';
+      globalSearch.addEventListener('input',function(){
+        fleetSearch.value=this.value;
+        fleetSearch.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+      globalSearch.addEventListener('keydown',function(event){
+        if(event.key==='Enter'){
+          event.preventDefault();
+          openTabById('frotaTab');
+          setTimeout(()=>fleetSearch.focus(),80);
+        }
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindFleetHeader);
+  else bindFleetHeader();
+})();
+<\/script>
+
+
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_OPERATIONAL_IMPORTS = "frota_importacoes_operacionais_v1";
+  let operationalImportBatches = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_OPERATIONAL_IMPORTS) || "[]");
+    operationalImportBatches = Array.isArray(stored) ? stored : [];
+  } catch (error) {
+    operationalImportBatches = [];
+  }
+
+  fines = (Array.isArray(fines) ? fines : []).map(item => ({
+    ...item,
+    recordType: item.recordType || (/fatura|invoice|nota fiscal|boleto/i.test(\`\${item.type || ""} \${item.description || ""} \${item.sourceFile || ""}\`) ? "FATURA" : "MULTA")
+  }));
+
+  let operationalMeasurementChartInstance = null;
+  let operationalFineChartInstance = null;
+
+  function saveOperationalData(){
+    window.persistFleetMeasurements(measurements).catch(error => console.error("Falha ao salvar medições no banco local.", error));
+    const manualFines = fines.filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
+    window.safeFleetLocalStorageSet(STORAGE_FINES, JSON.stringify(manualFines));
+    window.safeFleetLocalStorageSet(STORAGE_OPERATIONAL_IMPORTS, JSON.stringify(operationalImportBatches));
+  }
+
+  function normalizeOperationalKey(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\\s+/g, " ")
+      .trim();
+  }
+
+  function buildNormalizedRow(row){
+    const normalized = {};
+    Object.entries(row || {}).forEach(([key, value]) => {
+      normalized[normalizeOperationalKey(key)] = value;
+    });
+    return normalized;
+  }
+
+  function findRowValue(row, aliases, containsAliases = []){
+    const normalized = buildNormalizedRow(row);
+    for (const alias of aliases) {
+      const key = normalizeOperationalKey(alias);
+      if (Object.prototype.hasOwnProperty.call(normalized, key) && String(normalized[key] ?? "").trim() !== "") {
+        return normalized[key];
+      }
+    }
+    const keys = Object.keys(normalized);
+    for (const containsAlias of containsAliases) {
+      const needle = normalizeOperationalKey(containsAlias);
+      const found = keys.find(key => key.includes(needle) && String(normalized[key] ?? "").trim() !== "");
+      if (found) return normalized[found];
+    }
+    return "";
+  }
+
+  function parseOperationalNumber(value){
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    let text = String(value ?? "").trim();
+    if (!text) return 0;
+    text = text.replace(/R\\$/gi, "").replace(/[^0-9,.-]/g, "");
+    if (text.includes(",")) {
+      text = text.replace(/\\./g, "").replace(",", ".");
+    } else if ((text.match(/\\./g) || []).length > 1) {
+      text = text.replace(/\\./g, "");
+    }
+    const number = Number(text);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function normalizeImportedPlate(value){
+    return String(value || "").trim().toUpperCase().replace(/\\s+/g, "");
+  }
+
+  function compactRawRow(row){
+    const result = {};
+    Object.entries(row || {}).forEach(([key, value]) => {
+      const cleanKey = String(key || "").trim();
+      const cleanValue = String(value ?? "").trim();
+      if (cleanKey && cleanValue) result[cleanKey] = cleanValue.slice(0, 300);
+    });
+    return result;
+  }
+
+  function importedMeasurementFromRow(source, row, batch){
+    const plate = normalizeImportedPlate(findRowValue(row,
+      ["placa", "placa do veiculo", "placa veiculo", "vehicle plate", "license plate", "matricula"],
+      ["placa"]));
+    const vehicle = getVehicleByPlate(plate);
+    const dateValue = findRowValue(row,
+      ["data", "data medicao", "data da medicao", "data referencia", "data faturamento", "date"],
+      ["data med", "data ref"]);
+    const period = findRowValue(row,
+      ["periodo", "competencia", "mes referencia", "mes de referencia", "referencia", "period"],
+      ["competencia", "periodo"]);
+    const kmValue = findRowValue(row,
+      ["km", "km medido", "quilometragem", "quilometragem medida", "odometro", "distancia", "measured km", "odometer"],
+      ["quilometr", "odomet", "km rod", "km med"]);
+    const moneyValue = findRowValue(row,
+      ["valor", "valor total", "valor medicao", "valor da medicao", "total", "amount", "value"],
+      ["valor med", "valor total", "cobranca"]);
+    const costCenter = findRowValue(row,
+      ["centro de custo", "centro custo", "obra", "cc", "cost center"],
+      ["centro custo"]);
+    const model = findRowValue(row,
+      ["modelo", "modelo do veiculo", "veiculo", "vehicle model"],
+      ["modelo"]);
+    const code = findRowValue(row,
+      ["codigo veiculo", "codigo do veiculo", "codigo", "vehicle code"],
+      ["codigo veic"]);
+
+    return {
+      id: \`IMP-MED-\${source}-\${batch.id}-\${crypto.randomUUID()}\`,
+      source,
+      sourceMethod: "PLANILHA",
+      sourceFile: batch.fileName,
+      batchId: batch.id,
+      importedAt: batch.importedAt,
+      plate,
+      vehicleId: vehicle?.id || "",
+      linked: Boolean(vehicle),
+      vehicleCode: vehicle?.codigoVeiculo || String(code || "").trim(),
+      vehicleModel: vehicle?.modeloVeiculo || String(model || "").trim(),
+      period: String(period || "").trim(),
+      date: normalizeDateValue(dateValue),
+      km: parseOperationalNumber(kmValue),
+      value: parseOperationalNumber(moneyValue),
+      costCenter: vehicle?.centroCusto || String(costCenter || "").trim(),
+      locadora: vehicle?.locadora || "",
+      contrato: vehicle?.contrato || "",
+      syncedAt: batch.importedAtLabel,
+      rawData: compactRawRow(row)
+    };
+  }
+
+  function importedFineFromRow(source, row, batch){
+    const normalizedRow = buildNormalizedRow(row);
+    const normalizedHeaders = Object.keys(normalizedRow).join(" ");
+    const fileHint = normalizeOperationalKey(batch?.fileName || "");
+
+    const plate = normalizeImportedPlate(findRowValue(row,
+      ["placa", "placa do veiculo", "placa veiculo", "vehicle plate", "license plate", "matricula"],
+      ["placa"]));
+    const vehicle = getVehicleByPlate(plate);
+
+    const invoiceNumber = findRowValue(row,
+      ["numero fatura", "numero da fatura", "n fatura", "nf", "nota fiscal", "numero nota fiscal", "documento", "invoice number"],
+      ["numero fatura", "nota fiscal", "invoice"]);
+    const dueDateValue = findRowValue(row,
+      ["data vencimento", "vencimento", "data de vencimento", "due date"],
+      ["vencimento"]);
+    const competence = findRowValue(row,
+      ["competencia", "mes referencia", "mes de referencia", "periodo", "referencia"],
+      ["competencia", "periodo"]);
+    const documentKind = findRowValue(row,
+      ["tipo documento", "tipo de documento", "categoria documento", "document type"],
+      ["tipo documento"]);
+
+    const invoiceSignal = [invoiceNumber, dueDateValue, documentKind]
+      .some(value => /fatura|invoice|nota fiscal|boleto|cobranca/i.test(String(value || "")))
+      || /(^| )(fatura|invoice|nota fiscal|boleto)( |$)/.test(\`\${normalizedHeaders} \${fileHint}\`)
+      || Boolean(invoiceNumber && (competence || dueDateValue));
+    const recordType = invoiceSignal ? "FATURA" : "MULTA";
+
+    const dateValue = findRowValue(row,
+      recordType === "FATURA"
+        ? ["data emissao", "data de emissao", "emissao", "data fatura", "data", "date"]
+        : ["data", "data infracao", "data da infracao", "data ocorrencia", "data multa", "infraction date", "date"],
+      recordType === "FATURA"
+        ? ["data emiss", "data fatur", "emissao"]
+        : ["data infr", "data ocorr", "data multa"]);
+    const type = findRowValue(row,
+      recordType === "FATURA"
+        ? ["tipo", "tipo fatura", "descricao fatura", "servico", "descricao servico", "description"]
+        : ["tipo", "tipo infracao", "infracao", "enquadramento", "descricao infracao", "description"],
+      recordType === "FATURA"
+        ? ["tipo fatura", "servico", "descricao fatura"]
+        : ["infracao", "enquadramento"]);
+    const moneyValue = findRowValue(row,
+      recordType === "FATURA"
+        ? ["valor", "valor fatura", "valor da fatura", "valor cobranca", "valor total", "total fatura", "amount", "value"]
+        : ["valor", "valor multa", "valor da multa", "valor total", "amount", "value"],
+      recordType === "FATURA"
+        ? ["valor fatura", "valor cobranca", "total fatura", "valor total"]
+        : ["valor multa", "valor total"]);
+    const driver = findRowValue(row,
+      ["condutor", "motorista", "responsavel", "driver"],
+      ["condutor", "motorista"]);
+    const status = findRowValue(row,
+      recordType === "FATURA"
+        ? ["status", "situacao", "situacao fatura", "status fatura", "status pagamento"]
+        : ["status", "situacao", "situacao multa", "status multa"],
+      ["situacao", "status pagamento"]);
+    const description = findRowValue(row,
+      recordType === "FATURA"
+        ? ["descricao", "observacao", "detalhes", "descricao fatura", "description"]
+        : ["descricao", "observacao", "detalhes", "local infracao", "description"],
+      recordType === "FATURA"
+        ? ["descricao", "observacao", "detalhes"]
+        : ["descricao", "observacao", "local infr"]);
+    const autoNumber = findRowValue(row,
+      ["numero auto", "numero da autuacao", "auto infracao", "numero multa", "codigo infracao"],
+      ["auto infr", "numero auto", "codigo infr"]);
+
+    const descriptionParts = [String(description || "").trim()];
+    if (recordType === "FATURA") {
+      if (invoiceNumber) descriptionParts.push(\`Documento: \${invoiceNumber}\`);
+      if (competence) descriptionParts.push(\`Competência: \${competence}\`);
+      if (dueDateValue) descriptionParts.push(\`Vencimento: \${dueDateValue}\`);
+    } else if (autoNumber) {
+      descriptionParts.push(\`Auto: \${autoNumber}\`);
+    }
+
+    return {
+      id: \`IMP-FINE-\${source}-\${batch.id}-\${crypto.randomUUID()}\`,
+      source,
+      sourceMethod: "PLANILHA",
+      sourceFile: batch.fileName,
+      batchId: batch.id,
+      importedAt: batch.importedAt,
+      importedAtLabel: batch.importedAtLabel,
+      vehicleId: vehicle?.id || "",
+      linked: Boolean(vehicle),
+      plate,
+      recordType,
+      documentNumber: String(recordType === "FATURA" ? invoiceNumber : autoNumber || "").trim(),
+      competence: String(competence || "").trim(),
+      dueDate: normalizeDateValue(dueDateValue),
+      date: normalizeDateValue(dateValue || dueDateValue),
+      type: String(type || (recordType === "FATURA" ? \`Fatura \${source}\` : \`Multa \${source}\`)).trim(),
+      value: parseOperationalNumber(moneyValue),
+      driver: vehicle?.condutor || String(driver || "").trim(),
+      status: String(status || "Pendente").trim(),
+      description: descriptionParts.filter(Boolean).join(" | ") || \`Registro de \${recordType === "FATURA" ? "fatura" : "multa"} importado da planilha \${source}\`,
+      rawData: compactRawRow(row)
+    };
+  }
+
+  function hasMeaningfulMeasurement(record){
+    return Boolean(record.plate || record.date || record.period || record.km || record.value || record.vehicleCode || record.vehicleModel);
+  }
+
+  function hasMeaningfulFine(record){
+    return Boolean(record.plate || record.date || record.dueDate || record.documentNumber || record.type || record.value || record.description);
+  }
+
+  async function importOneOperationalFile(source, dataType, file){
+    const signature = [source, dataType, file.name, file.size, file.lastModified].join("|");
+    const previous = operationalImportBatches.find(item => item.signature === signature);
+    if (previous && !confirm(\`A planilha \${file.name} já foi importada em \${previous.importedAtLabel}. Deseja importar novamente e manter uma nova carga no histórico?\`)) {
+      return { skipped: true, fileName: file.name };
+    }
+
+    const rows = await readSpreadsheetFile(file);
+    const importedAt = new Date();
+    const batch = {
+      id: crypto.randomUUID(),
+      signature,
+      source,
+      dataType,
+      fileName: file.name,
+      fileSize: file.size,
+      fileLastModified: file.lastModified,
+      importedAt: importedAt.toISOString(),
+      importedAtLabel: importedAt.toLocaleString("pt-BR"),
+      totalRows: rows.length,
+      importedRows: 0,
+      linkedRows: 0,
+      unlinkedRows: 0
+    };
+
+    const normalized = rows
+      .map(row => dataType === "measurement"
+        ? importedMeasurementFromRow(source, row, batch)
+        : importedFineFromRow(source, row, batch))
+      .filter(record => dataType === "measurement" ? hasMeaningfulMeasurement(record) : hasMeaningfulFine(record));
+
+    batch.importedRows = normalized.length;
+    batch.linkedRows = normalized.filter(record => record.linked).length;
+    batch.unlinkedRows = normalized.length - batch.linkedRows;
+
+    if (!normalized.length) {
+      throw new Error(\`Nenhum registro reconhecido em \${file.name}. Verifique se a planilha possui placa e dados de \${dataType === "measurement" ? "medição" : "multa/fatura"}.\`);
+    }
+
+    if (dataType === "measurement") measurements = [...measurements, ...normalized];
+    else fines = [...fines, ...normalized];
+
+    operationalImportBatches.unshift(batch);
+    return batch;
+  }
+
+  window.importOperationalSpreadsheets = async function(source, dataType, inputId, statusId){
+    const input = document.getElementById(inputId);
+    const status = document.getElementById(statusId);
+    const files = Array.from(input?.files || []);
+    if (!files.length) {
+      alert("Selecione ao menos uma planilha Excel ou CSV para importar.");
+      return;
+    }
+
+    if (status) {
+      status.className = "operational-import-status";
+      status.textContent = \`Analisando \${files.length} arquivo(s)...\`;
+    }
+
+    try {
+      const results = [];
+      for (const file of files) {
+        results.push(await importOneOperationalFile(source, dataType, file));
+      }
+      saveOperationalData();
+      relinkOperationalRecords();
+      renderMeasurements();
+      renderFines();
+      renderOperationalImportHistory();
+      renderDashboardIndicators();
+      renderStats();
+
+      const imported = results.filter(item => item && !item.skipped);
+      const records = imported.reduce((sum, item) => sum + Number(item.importedRows || 0), 0);
+      const linked = imported.reduce((sum, item) => sum + Number(item.linkedRows || 0), 0);
+      const unlinked = imported.reduce((sum, item) => sum + Number(item.unlinkedRows || 0), 0);
+      if (status) {
+        status.className = "operational-import-status success";
+        status.textContent = \`\${imported.length} planilha(s) armazenada(s): \${records} registro(s), \${linked} vinculados por placa e \${unlinked} não vinculados.\`;
+      }
+      if (input) input.value = "";
+    } catch (error) {
+      console.error(error);
+      if (status) {
+        status.className = "operational-import-status error";
+        status.textContent = error.message || "Não foi possível importar a planilha.";
+      }
+      alert(error.message || "Não foi possível importar a planilha.");
+    }
+  };
+
+  function escapeOperational(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function renderBatchRows(targetId, dataType){
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const items = operationalImportBatches.filter(item => item.dataType === dataType);
+    if (!items.length) {
+      target.innerHTML = '<tr><td colspan="7">Nenhuma planilha importada até o momento.</td></tr>';
+      return;
+    }
+    target.innerHTML = items.map(item => \`
+      <tr>
+        <td><span class="measurement-source">\${escapeOperational(item.source)}</span></td>
+        <td class="source-file-cell" title="\${escapeOperational(item.fileName)}">\${escapeOperational(item.fileName)}</td>
+        <td>\${Number(item.importedRows || 0)}</td>
+        <td>\${Number(item.linkedRows || 0)}</td>
+        <td>\${Number(item.unlinkedRows || 0)}</td>
+        <td>\${escapeOperational(item.importedAtLabel || "-")}</td>
+        <td><button class="danger-btn" type="button" onclick="removeOperationalImportBatch('\${item.id}')">Excluir carga</button></td>
+      </tr>
+    \`).join("");
+  }
+
+  function renderOperationalImportHistory(){
+    renderBatchRows("measurementImportHistory", "measurement");
+    renderBatchRows("fineImportHistory", "fine");
+  }
+
+  window.removeOperationalImportBatch = function(batchId){
+    const batch = operationalImportBatches.find(item => item.id === batchId);
+    if (!batch) return;
+    if (!confirm(\`Excluir a carga \${batch.fileName} e todos os registros importados por ela?\`)) return;
+    measurements = measurements.filter(item => item.batchId !== batchId);
+    fines = fines.filter(item => item.batchId !== batchId);
+    operationalImportBatches = operationalImportBatches.filter(item => item.id !== batchId);
+    saveOperationalData();
+    renderMeasurements();
+    renderFines();
+    renderOperationalImportHistory();
+    renderDashboardIndicators();
+    renderStats();
+  };
+
+  function relinkOperationalRecords(){
+    let changed = false;
+    measurements = measurements.map(item => {
+      const vehicle = getVehicleByPlate(item.plate);
+      const linked = Boolean(vehicle);
+      if ((item.vehicleId || "") !== (vehicle?.id || "") || Boolean(item.linked) !== linked) changed = true;
+      return {
+        ...item,
+        vehicleId: vehicle?.id || "",
+        linked,
+        vehicleCode: vehicle?.codigoVeiculo || item.vehicleCode || "",
+        vehicleModel: vehicle?.modeloVeiculo || item.vehicleModel || "",
+        costCenter: vehicle?.centroCusto || item.costCenter || "",
+        locadora: vehicle?.locadora || item.locadora || "",
+        contrato: vehicle?.contrato || item.contrato || ""
+      };
+    });
+    fines = fines.map(item => {
+      const vehicle = getVehicleByPlate(item.plate || vehicles.find(v => v.id === item.vehicleId)?.placaVeiculo);
+      const linked = Boolean(vehicle);
+      if ((item.vehicleId || "") !== (vehicle?.id || "") || Boolean(item.linked) !== linked) changed = true;
+      return {
+        ...item,
+        vehicleId: vehicle?.id || item.vehicleId || "",
+        linked: item.vehicleId ? true : linked,
+        plate: item.plate || vehicle?.placaVeiculo || "",
+        driver: item.driver || vehicle?.condutor || ""
+      };
+    });
+    if (changed) saveOperationalData();
+  }
+
+  function getMeasurementMethodFilterValue(){
+    return document.getElementById("measurementMethodFilter")?.value || "";
+  }
+
+  const baseGetFilteredMeasurements = getFilteredMeasurements;
+  getFilteredMeasurements = function(){
+    const base = baseGetFilteredMeasurements();
+    const method = getMeasurementMethodFilterValue();
+    return base.filter(item => !method || (item.sourceMethod || "API") === method);
+  };
+
+  renderMeasurements = function(){
+    renderMeasurementFilters();
+    const table = document.getElementById("measurementsTable");
+    const filtered = getFilteredMeasurements();
+    const totalKm = filtered.reduce((sum, item) => sum + Number(item.km || 0), 0);
+    const totalValue = filtered.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    const unlinked = filtered.filter(item => !item.linked).length;
+    const ordered = [...filtered].sort((a,b) => String(b.importedAt || b.date || "").localeCompare(String(a.importedAt || a.date || "")));
+    const lastSync = ordered[0]?.importedAtLabel || ordered[0]?.syncedAt || "-";
+
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    setText("measurementTotal", filtered.length);
+    setText("measurementKmTotal", totalKm.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+    setText("measurementValueTotal", formatCurrency(totalValue));
+    setText("measurementUnlinked", unlinked);
+    setText("measurementLastSync", lastSync);
+
+    if (!table) return;
+    const headRow = table.closest("table")?.querySelector("thead tr");
+    if (headRow) headRow.innerHTML = \`
+      <th>Plataforma</th><th>Origem</th><th>Arquivo</th><th>Placa</th><th>Veículo</th>
+      <th>Período / Data</th><th>KM medido</th><th>Valor</th><th>Centro de Custo</th><th>Vínculo</th><th>Importação / sincronização</th>\`;
+
+    if (!ordered.length) {
+      table.innerHTML = '<tr><td colspan="11">Nenhuma medição integrada encontrada.</td></tr>';
+      return;
+    }
+    table.innerHTML = ordered.map(item => \`
+      <tr>
+        <td><span class="measurement-source">\${escapeOperational(item.source || "-")}</span></td>
+        <td><span class="source-method-badge \${(item.sourceMethod || "API") === "PLANILHA" ? "planilha" : ""}">\${escapeOperational(item.sourceMethod || "API")}</span></td>
+        <td class="source-file-cell" title="\${escapeOperational(item.sourceFile || "")}">\${escapeOperational(item.sourceFile || "-")}</td>
+        <td><strong>\${escapeOperational(item.plate || "-")}</strong></td>
+        <td>\${escapeOperational(item.vehicleModel || item.vehicleCode || "-")}</td>
+        <td>\${escapeOperational(item.period || formatDate(item.date))}</td>
+        <td>\${Number(item.km || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}</td>
+        <td>\${formatCurrency(item.value)}</td>
+        <td>\${escapeOperational(item.costCenter || "-")}</td>
+        <td>\${item.linked ? '<span class="link-status linked-ok">Vinculado</span>' : '<span class="link-status linked-warning">Sem placa cadastrada</span>'}</td>
+        <td>\${escapeOperational(item.importedAtLabel || item.syncedAt || "-")}</td>
+      </tr>
+    \`).join("");
+  };
+
+  function getFilteredOperationalFines(){
+    const recordType = document.getElementById("fineRecordTypeFilter")?.value || "";
+    const source = document.getElementById("fineSourceFilter")?.value || "";
+    const method = document.getElementById("fineMethodFilter")?.value || "";
+    const plate = document.getElementById("finePlateFilter")?.value || "";
+    const start = document.getElementById("fineStartFilter")?.value || "";
+    const end = document.getElementById("fineEndFilter")?.value || "";
+    return fines.filter(item => {
+      const vehicle = vehicles.find(v => v.id === item.vehicleId);
+      const itemPlate = item.plate || vehicle?.placaVeiculo || "";
+      const itemMethod = item.sourceMethod || (item.source ? "API" : "MANUAL");
+      return (!recordType || (item.recordType || "MULTA") === recordType)
+        && (!source || (item.source || "MANUAL") === source)
+        && (!method || itemMethod === method)
+        && (!plate || itemPlate === plate)
+        && (!start || !item.date || item.date >= start)
+        && (!end || !item.date || item.date <= end);
+    });
+  }
+
+  function renderFineFilterOptions(){
+    const select = document.getElementById("finePlateFilter");
+    if (!select) return;
+    const current = select.value;
+    const plates = [...new Set(fines.map(item => item.plate || vehicles.find(v => v.id === item.vehicleId)?.placaVeiculo).filter(Boolean))].sort((a,b) => a.localeCompare(b, "pt-BR"));
+    select.innerHTML = '<option value="">Todas</option>' + plates.map(plate => \`<option>\${escapeOperational(plate)}</option>\`).join("");
+    if (plates.includes(current)) select.value = current;
+  }
+
+  renderFines = function(){
+    renderFineFilterOptions();
+    if (!fineTable) return;
+    const filtered = getFilteredOperationalFines();
+    const headRow = fineTable.closest("table")?.querySelector("thead tr");
+    if (headRow) headRow.innerHTML = '<th>Plataforma</th><th>Origem</th><th>Arquivo</th><th>Registro</th><th>Veículo</th><th>Data</th><th>Documento</th><th>Tipo</th><th>Valor</th><th>Status</th><th>Ações</th>';
+    if (!filtered.length) {
+      fineTable.innerHTML = '<tr><td colspan="11">Nenhuma multa ou fatura encontrada.</td></tr>';
+      return;
+    }
+    const ordered = [...filtered].sort((a,b) => String(b.importedAt || b.date || "").localeCompare(String(a.importedAt || a.date || "")));
+    fineTable.innerHTML = ordered.map(item => {
+      const vehicle = vehicles.find(v => v.id === item.vehicleId);
+      const platform = item.source || "MANUAL";
+      const method = item.sourceMethod || (item.source ? "API" : "MANUAL");
+      return \`
+        <tr>
+          <td><span class="measurement-source">\${escapeOperational(platform)}</span></td>
+          <td><span class="source-method-badge \${method === "PLANILHA" ? "planilha" : ""}">\${escapeOperational(method)}</span></td>
+          <td class="source-file-cell" title="\${escapeOperational(item.sourceFile || "")}">\${escapeOperational(item.sourceFile || "-")}</td>
+          <td><span class="source-method-badge \${item.recordType === "FATURA" ? "planilha" : ""}">\${escapeOperational(item.recordType === "FATURA" ? "FATURA" : "MULTA")}</span></td>
+          <td>\${vehicle ? \`\${escapeOperational(vehicle.modeloVeiculo)}<br><strong>\${escapeOperational(vehicle.placaVeiculo)}</strong>\` : \`\${escapeOperational(item.plate || "Placa não vinculada")}<br><span class="link-status linked-warning">Sem placa cadastrada</span>\`}</td>
+          <td>\${formatDate(item.date || item.dueDate)}</td>
+          <td title="\${escapeOperational(item.competence || "")}">\${escapeOperational(item.documentNumber || "-")}</td>
+          <td title="\${escapeOperational(item.description || "")}">\${escapeOperational(item.type || "-")}</td>
+          <td>\${formatCurrency(item.value)}</td>
+          <td>\${escapeOperational(item.status || "-")}</td>
+          <td><button class="danger-btn" onclick="deleteFine('\${item.id}')">Excluir</button></td>
+        </tr>\`;
+    }).join("");
+  };
+
+  window.clearFineOperationalFilters = function(){
+    ["fineRecordTypeFilter","fineSourceFilter","fineMethodFilter","finePlateFilter","fineStartFilter","fineEndFilter"].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = "";
+    });
+    renderFines();
+  };
+
+  function dashboardOperationalRecords(records){
+    const filteredVehicles = getDashboardFilteredVehicles();
+    const filtersActive = [dashStatusFilter,dashLocadoraFilter,dashCentroCustoFilter,dashCategoriaFilter,dashContratoFilter].some(el => Boolean(el?.value));
+    if (!filtersActive) return records;
+    const ids = new Set(filteredVehicles.map(v => v.id));
+    const plates = new Set(filteredVehicles.map(v => String(v.placaVeiculo || "").toUpperCase().replace(/[^A-Z0-9]/g, "")));
+    return records.filter(item => {
+      if (item.vehicleId && ids.has(item.vehicleId)) return true;
+      const normalizedPlate = String(item.plate || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      return normalizedPlate && plates.has(normalizedPlate);
+    });
+  }
+
+  function renderOperationalDashboard(){
+    const dashboardMeasurements = dashboardOperationalRecords(measurements);
+    const dashboardFines = dashboardOperationalRecords(fines);
+    const measurementKm = dashboardMeasurements.reduce((sum,item) => sum + Number(item.km || 0), 0);
+    const measurementValue = dashboardMeasurements.reduce((sum,item) => sum + Number(item.value || 0), 0);
+    const fineValue = dashboardFines.reduce((sum,item) => sum + Number(item.value || 0), 0);
+    const fineCount = dashboardFines.filter(item => (item.recordType || "MULTA") === "MULTA").length;
+    const invoiceCount = dashboardFines.filter(item => item.recordType === "FATURA").length;
+    const unlinked = dashboardMeasurements.filter(item => !item.linked).length + dashboardFines.filter(item => !item.linked && !item.vehicleId).length;
+
+    const values = {
+      dashOperationalMeasurements: dashboardMeasurements.length,
+      dashOperationalKm: measurementKm.toLocaleString("pt-BR", { maximumFractionDigits: 2 }),
+      dashOperationalMeasurementValue: formatCurrency(measurementValue),
+      dashOperationalFines: dashboardFines.length,
+      dashOperationalFineValue: formatCurrency(fineValue),
+      dashOperationalFineCount: fineCount,
+      dashOperationalInvoiceCount: invoiceCount,
+      dashOperationalImports: operationalImportBatches.length,
+      dashOperationalUnlinked: unlinked
+    };
+    Object.entries(values).forEach(([id,value]) => { const el = document.getElementById(id); if (el) el.textContent = value; });
+
+    const measurementGroups = dashboardMeasurements.reduce((acc,item) => {
+      const key = item.source || "Não informado";
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const measurementLabels = Object.keys(measurementGroups);
+    operationalMeasurementChartInstance = makeChart(
+      "operationalMeasurementChart",
+      "doughnut",
+      measurementLabels.length ? measurementLabels : ["Sem dados"],
+      measurementLabels.length ? Object.values(measurementGroups) : [0],
+      operationalMeasurementChartInstance,
+      { showLegend: true, valueFormat: "value-percent", dataLabelFontSize: 10 }
+    );
+
+    const fineGroups = dashboardFines.reduce((acc,item) => {
+      const key = item.source || "MANUAL";
+      acc[key] = (acc[key] || 0) + Number(item.value || 0);
+      return acc;
+    }, {});
+    const fineEntries = Object.entries(fineGroups).sort((a,b) => b[1]-a[1]);
+    operationalFineChartInstance = makeChart(
+      "operationalFineChart",
+      "bar",
+      fineEntries.length ? fineEntries.map(([label]) => label) : ["Sem dados"],
+      fineEntries.length ? fineEntries.map(([,value]) => value) : [0],
+      operationalFineChartInstance,
+      { label: "Valor de multas / faturas", showLegend: false, valueFormat: "currency" }
+    );
+  }
+
+  function injectOperationalUi(){
+    const measurementsTab = document.getElementById("medicoesTab");
+    const apiGrid = measurementsTab?.querySelector(".api-grid");
+    if (apiGrid && !document.getElementById("measurementSpreadsheetImports")) {
+      apiGrid.insertAdjacentHTML("afterend", \`
+        <section class="operational-import-section" id="measurementSpreadsheetImports">
+          <h2>Importador 1 — Planilhas de medições</h2>
+          <p>Importador exclusivo para medições. Escolha ALD ou ARVAL abaixo. As cargas são acrescentadas ao histórico e vinculadas automaticamente pela placa.</p>
+          <div class="operational-import-grid">
+            <div class="operational-import-card">
+              <h3>Planilhas ALD — Medições</h3>
+              <p>Selecione uma ou várias planilhas recebidas da ALD.</p>
+              <input id="aldMeasurementFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importOperationalSpreadsheets('ALD','measurement','aldMeasurementFiles','aldMeasurementImportStatus')">IMPORTAR MEDIÇÕES ALD</button></div>
+              <div class="operational-import-status" id="aldMeasurementImportStatus">Nenhuma planilha ALD importada nesta sessão.</div>
+            </div>
+            <div class="operational-import-card">
+              <h3>Planilhas ARVAL — Medições</h3>
+              <p>Selecione uma ou várias planilhas recebidas da ARVAL.</p>
+              <input id="arvalMeasurementFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importOperationalSpreadsheets('ARVAL','measurement','arvalMeasurementFiles','arvalMeasurementImportStatus')">IMPORTAR MEDIÇÕES ARVAL</button></div>
+              <div class="operational-import-status" id="arvalMeasurementImportStatus">Nenhuma planilha ARVAL importada nesta sessão.</div>
+            </div>
+          </div>
+          <div class="import-history-panel">
+            <h3>Histórico de planilhas de medições</h3>
+            <div class="table-wrap"><table><thead><tr><th>Plataforma</th><th>Arquivo</th><th>Registros</th><th>Vinculados</th><th>Não vinculados</th><th>Data da carga</th><th>Ação</th></tr></thead><tbody id="measurementImportHistory"></tbody></table></div>
+          </div>
+        </section>\`);
+    }
+
+    const measurementFilters = measurementsTab?.querySelector(".measure-filters");
+    if (measurementFilters && !document.getElementById("measurementMethodFilter")) {
+      const clearButton = measurementFilters.querySelector("button");
+      const html = '<div><label for="measurementMethodFilter">Origem dos dados</label><select id="measurementMethodFilter"><option value="">Todas</option><option value="API">API</option><option value="PLANILHA">Planilha</option></select></div>';
+      clearButton?.insertAdjacentHTML("beforebegin", html);
+      document.getElementById("measurementMethodFilter")?.addEventListener("change", renderMeasurements);
+    }
+
+    const aldApiForm = document.getElementById("aldMeasurementsUrl")?.closest(".api-form");
+    if (aldApiForm && !document.getElementById("aldFinesUrl")) {
+      const actions = aldApiForm.querySelector(".api-actions");
+      actions?.insertAdjacentHTML("beforebegin", '<div><label for="aldFinesUrl">Endpoint ALD - Multas / Faturas</label><input id="aldFinesUrl" placeholder="URL da API de multas/faturas ALD" /></div>');
+      actions?.insertAdjacentHTML("beforeend", '<button class="outline-btn" type="button" onclick="syncPlatformFines(\\'ALD\\')">PUXAR MULTAS/FATURAS ALD</button>');
+    }
+
+    const finesTab = document.getElementById("multasTab");
+    const quickActions = finesTab?.querySelector(".quick-actions");
+    if (quickActions && !document.getElementById("fineSpreadsheetImports")) {
+      quickActions.insertAdjacentHTML("beforeend", '<button class="outline-btn" type="button" onclick="syncPlatformFines(\\'ALD\\')">PUXAR MULTAS/FATURAS DA ALD</button>');
+      quickActions.insertAdjacentHTML("afterend", \`
+        <section class="operational-import-section" id="fineSpreadsheetImports">
+          <h2>Importador 2 — Planilhas de multas / faturas</h2>
+          <p>Importador exclusivo para multas/faturas. Escolha ALD ou ARVAL abaixo. Cada arquivo fica armazenado como uma carga independente e é vinculado pela placa.</p>
+          <div class="operational-import-grid">
+            <div class="operational-import-card">
+              <h3>Planilhas ALD — Multas / Faturas</h3>
+              <p>Importe a planilha específica de multas/faturas fornecida pela ALD. Este importador é separado do importador de medições.</p>
+              <input id="aldFineFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importOperationalSpreadsheets('ALD','fine','aldFineFiles','aldFineImportStatus')">IMPORTAR MULTAS/FATURAS ALD</button></div>
+              <div class="operational-import-status" id="aldFineImportStatus">Nenhuma planilha ALD importada nesta sessão.</div>
+            </div>
+            <div class="operational-import-card">
+              <h3>Planilhas ARVAL — Multas / Faturas</h3>
+              <p>Importe a planilha específica de multas/faturas fornecida pela ARVAL. Este importador é separado do importador de medições.</p>
+              <input id="arvalFineFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importOperationalSpreadsheets('ARVAL','fine','arvalFineFiles','arvalFineImportStatus')">IMPORTAR MULTAS/FATURAS ARVAL</button></div>
+              <div class="operational-import-status" id="arvalFineImportStatus">Nenhuma planilha ARVAL importada nesta sessão.</div>
+            </div>
+          </div>
+          <div class="import-history-panel">
+            <h3>Histórico de planilhas de multas / faturas</h3>
+            <div class="table-wrap"><table><thead><tr><th>Plataforma</th><th>Arquivo</th><th>Registros</th><th>Vinculados</th><th>Não vinculados</th><th>Data da carga</th><th>Ação</th></tr></thead><tbody id="fineImportHistory"></tbody></table></div>
+          </div>
+        </section>
+        <div class="fine-operational-filter-panel">
+          <div class="fine-operational-filters">
+            <div><label for="fineRecordTypeFilter">Tipo de registro</label><select id="fineRecordTypeFilter"><option value="">Todos</option><option value="MULTA">Multas</option><option value="FATURA">Faturas</option></select></div><div><label for="fineSourceFilter">Plataforma</label><select id="fineSourceFilter"><option value="">Todas</option><option>ALD</option><option>ARVAL</option><option>MANUAL</option></select></div>
+            <div><label for="fineMethodFilter">Origem</label><select id="fineMethodFilter"><option value="">Todas</option><option value="API">API</option><option value="PLANILHA">Planilha</option><option value="MANUAL">Manual</option></select></div>
+            <div><label for="finePlateFilter">Placa</label><select id="finePlateFilter"><option value="">Todas</option></select></div>
+            <div><label for="fineStartFilter">Data inicial</label><input id="fineStartFilter" type="date" /></div>
+            <div><label for="fineEndFilter">Data final</label><input id="fineEndFilter" type="date" /></div>
+            <button class="outline-btn" type="button" onclick="clearFineOperationalFilters()">LIMPAR FILTROS</button>
+          </div>
+        </div>\`);
+      ["fineRecordTypeFilter","fineSourceFilter","fineMethodFilter","finePlateFilter","fineStartFilter","fineEndFilter"].forEach(id => document.getElementById(id)?.addEventListener("change", renderFines));
+    }
+
+    const kpiGrid = document.querySelector("#dashboardTab .powerbi-kpi-grid");
+    if (kpiGrid && !document.getElementById("dashOperationalMeasurements")) {
+      kpiGrid.insertAdjacentHTML("beforeend", \`
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">🧾</div><small>Medições ALD / ARVAL</small><strong id="dashOperationalMeasurements">0</strong><span>Total consolidado</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">🛣️</div><small>KM medido</small><strong id="dashOperationalKm">0</strong><span>Planilhas e APIs</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">💳</div><small>Valor das medições</small><strong id="dashOperationalMeasurementValue">R$ 0,00</strong><span>Acumulado no filtro</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">⚠️</div><small>Multas / Faturas</small><strong id="dashOperationalFines">0</strong><span><b id="dashOperationalFineCount">0</b> multas • <b id="dashOperationalInvoiceCount">0</b> faturas</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">💸</div><small>Valor multas / faturas</small><strong id="dashOperationalFineValue">R$ 0,00</strong><span>Multas e faturas no filtro</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">📥</div><small>Planilhas armazenadas</small><strong id="dashOperationalImports">0</strong><span><b id="dashOperationalUnlinked">0</b> registros não vinculados</span></div>\`);
+    }
+
+    const dashboardGrid = document.querySelector("#dashboardTab .dashboard-bi-grid");
+    const alerts = dashboardGrid?.querySelector(".dashboard-visual-alerts");
+    if (dashboardGrid && alerts && !document.getElementById("operationalMeasurementChart")) {
+      alerts.insertAdjacentHTML("beforebegin", \`
+        <div class="powerbi-visual bi-span-6 dashboard-visual-operational-measurements">
+          <div class="visual-title-row"><span class="visual-badge">🔗</span><div><h3>Medições por plataforma</h3><p>Quantidade consolidada de registros ALD e ARVAL.</p></div></div>
+          <div class="dashboard-chart-stage"><canvas id="operationalMeasurementChart"></canvas></div>
+        </div>
+        <div class="powerbi-visual bi-span-6 dashboard-visual-operational-fines">
+          <div class="visual-title-row"><span class="visual-badge">⚠️</span><div><h3>Valor de multas / faturas por plataforma</h3><p>Valores acumulados das planilhas e APIs de multas/faturas da ALD e ARVAL, além dos registros manuais.</p></div></div>
+          <div class="dashboard-chart-stage"><canvas id="operationalFineChart"></canvas></div>
+        </div>\`);
+    }
+  }
+
+  const baseSaveApiSettings = saveApiSettings;
+  saveApiSettings = function(){
+    apiSettings = {
+      aldMeasurementsUrl: document.getElementById("aldMeasurementsUrl")?.value.trim() || "",
+      aldFinesUrl: document.getElementById("aldFinesUrl")?.value.trim() || "",
+      aldToken: document.getElementById("aldToken")?.value.trim() || "",
+      arvalMeasurementsUrl: document.getElementById("arvalMeasurementsUrl")?.value.trim() || "",
+      arvalFinesUrl: document.getElementById("arvalFinesUrl")?.value.trim() || "",
+      arvalToken: document.getElementById("arvalToken")?.value.trim() || ""
+    };
+    localStorage.setItem(STORAGE_API_SETTINGS, JSON.stringify(apiSettings));
+    renderApiSettings();
+    alert("Configurações de API salvas com sucesso.");
+  };
+
+  renderApiSettings = function(){
+    ["aldMeasurementsUrl","aldFinesUrl","aldToken","arvalMeasurementsUrl","arvalFinesUrl","arvalToken"].forEach(field => {
+      const el = document.getElementById(field);
+      if (el) el.value = apiSettings[field] || "";
+    });
+  };
+
+  syncMeasurements = async function(source){
+    const isAld = source === "ALD";
+    const url = isAld ? apiSettings.aldMeasurementsUrl : apiSettings.arvalMeasurementsUrl;
+    const token = isAld ? apiSettings.aldToken : apiSettings.arvalToken;
+    const statusEl = document.getElementById(isAld ? "aldApiStatus" : "arvalApiStatus");
+    if (!url) {
+      alert(\`Configure o endpoint de medições \${source} antes de sincronizar.\`);
+      openTabById("medicoesTab");
+      return;
+    }
+    try {
+      if (statusEl) statusEl.textContent = \`Sincronizando medições \${source}...\`;
+      const data = await fetchApiJson(url, token, buildApiPayload(source));
+      const rows = Array.isArray(data) ? data : (data.measurements || data.medicoes || data.data || []);
+      const normalized = rows.map(item => ({...normalizeMeasurement(source, item), sourceMethod:"API", sourceFile:""}));
+      const linkedCount = normalized.filter(item => item.linked).length;
+      const existing = measurements.filter(item => !(item.source === source && (item.sourceMethod || "API") === "API"));
+      measurements = [...existing, ...normalized];
+      saveOperationalData();
+      renderMeasurements();
+      renderDashboardIndicators();
+      if (statusEl) statusEl.textContent = \`\${normalized.length} medições \${source} sincronizadas pela API. \${linkedCount} vinculadas por placa e \${normalized.length-linkedCount} não vinculadas.\`;
+    } catch (error) {
+      if (statusEl) statusEl.textContent = \`Falha ao sincronizar \${source}: \${error.message}\`;
+      alert(\`Não foi possível sincronizar medições \${source}. \${error.message}\`);
+    }
+  };
+
+  window.syncPlatformFines = async function(source){
+    const isAld = source === "ALD";
+    const url = isAld ? apiSettings.aldFinesUrl : apiSettings.arvalFinesUrl;
+    const token = isAld ? apiSettings.aldToken : apiSettings.arvalToken;
+    const statusEl = document.getElementById(isAld ? "aldApiStatus" : "arvalApiStatus");
+    if (!url) {
+      alert(\`Configure o endpoint de multas/faturas \${source} antes de sincronizar.\`);
+      openTabById("medicoesTab");
+      return;
+    }
+    try {
+      if (statusEl) statusEl.textContent = \`Sincronizando multas/faturas \${source}...\`;
+      const data = await fetchApiJson(url, token, buildApiPayload(\`\${source}_FINES\`));
+      const rows = Array.isArray(data) ? data : (data.fines || data.multas || data.infracoes || data.invoices || data.faturas || data.data || []);
+      const normalized = rows.map(item => {
+        const base = normalizeFineFromArval(item);
+        const apiHint = normalizeOperationalKey(JSON.stringify(item || {}));
+        const apiRecordType = /fatura|invoice|nota fiscal|boleto/.test(apiHint) ? "FATURA" : "MULTA";
+        return {...base, id:item.id || \`API-FINE-\${source}-\${crypto.randomUUID()}\`, source, sourceMethod:"API", sourceFile:"", recordType:apiRecordType, documentNumber:String(item.numeroFatura || item.fatura || item.invoiceNumber || item.numeroAuto || item.auto || "").trim(), dueDate:normalizeDateValue(item.vencimento || item.dataVencimento || item.dueDate), competence:String(item.competencia || item.periodo || "").trim(), description:base.description || \`Registro importado da API \${source}\`};
+      });
+      const linkedCount = normalized.filter(item => item.linked).length;
+      const existing = fines.filter(item => !(item.source === source && (item.sourceMethod || "API") === "API"));
+      fines = [...existing, ...normalized];
+      saveOperationalData();
+      renderFines();
+      renderDashboardIndicators();
+      renderStats();
+      if (statusEl) statusEl.textContent = \`\${normalized.length} multas/faturas \${source} sincronizadas pela API. \${linkedCount} vinculadas por placa e \${normalized.length-linkedCount} não vinculadas.\`;
+      openTabById("multasTab");
+    } catch (error) {
+      if (statusEl) statusEl.textContent = \`Falha ao puxar multas/faturas \${source}: \${error.message}\`;
+      alert(\`Não foi possível puxar multas/faturas da \${source}. \${error.message}\`);
+    }
+  };
+  syncArvalFines = function(){ return window.syncPlatformFines("ARVAL"); };
+
+  const baseRenderDashboardIndicators = renderDashboardIndicators;
+  renderDashboardIndicators = function(){
+    baseRenderDashboardIndicators();
+    renderOperationalDashboard();
+  };
+
+  const baseClearMeasurementFilters = clearMeasurementFilters;
+  clearMeasurementFilters = function(){
+    baseClearMeasurementFilters();
+    const method = document.getElementById("measurementMethodFilter");
+    if (method) method.value = "";
+    renderMeasurements();
+  };
+
+  const baseRenderAll = renderAll;
+  renderAll = function(){
+    relinkOperationalRecords();
+    baseRenderAll();
+    renderOperationalImportHistory();
+    renderOperationalDashboard();
+  };
+
+  injectOperationalUi();
+  relinkOperationalRecords();
+  renderApiSettings();
+  renderMeasurements();
+  renderFines();
+  renderOperationalImportHistory();
+  renderOperationalDashboard();
+})();
+<\/script>
+
+<style id="billing-measurement-exact-style">
+  .billing-format-note {
+    margin: 12px 0 0;
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: #eef6fb;
+    border: 1px solid #cfe0ea;
+    color: #365467;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .billing-format-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 9px;
+  }
+  .billing-format-columns span {
+    display: inline-flex;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #cfe0ea;
+    color: #24475d;
+    font-size: 10px;
+    font-weight: 800;
+  }
+  .billing-import-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .billing-import-summary div {
+    padding: 9px;
+    border-radius: 11px;
+    background: #f8fbfd;
+    border: 1px solid #dce8ef;
+  }
+  .billing-import-summary small {
+    display: block;
+    color: #718594;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .billing-import-summary strong {
+    color: #17384f;
+    font-size: 13px;
+  }
+  .billing-category-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 900;
+    background: #eaf3f8;
+    color: #0d4d73;
+    border: 1px solid #c7dce8;
+    white-space: nowrap;
+  }
+  .billing-category-badge.multa {
+    background: #fff0ef;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+  .billing-category-badge.locacao {
+    background: #eaf8ef;
+    color: #166534;
+    border-color: #bbdfc8;
+  }
+  .billing-category-badge.taxa {
+    background: #fff8cf;
+    color: #6a5300;
+    border-color: #ffe27b;
+  }
+  .billing-auto-note {
+    margin: 0 0 16px;
+    padding: 13px 15px;
+    border-radius: 14px;
+    background: #eef6fb;
+    border-left: 5px solid #0069b4;
+    color: #365467;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .billing-detail-cell {
+    min-width: 230px;
+    max-width: 360px;
+    white-space: normal;
+    line-height: 1.35;
+  }
+  .billing-history-table td,
+  .billing-history-table th {
+    white-space: nowrap;
+  }
+  @media (max-width: 760px) {
+    .billing-import-summary { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<style id="billing-multiple-import-style">
+  .billing-multiple-hint {
+    margin-top: 8px;
+    padding: 9px 11px;
+    border: 1px solid #cfe0eb;
+    border-radius: 10px;
+    background: #f4f9fc;
+    color: #496779;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+  .billing-history-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .billing-history-heading h3 { margin: 0 0 4px; }
+  .billing-history-heading p { margin: 0; color: #667b88; font-size: 12px; }
+  .billing-history-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .billing-history-actions span {
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #eef5f9;
+    color: #003d63;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .billing-history-actions button:disabled {
+    opacity: .45;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+  .billing-batch-check { text-align: center; min-width: 44px; }
+  .billing-batch-check input,
+  #billingBatchSelectAll {
+    width: 17px !important;
+    height: 17px !important;
+    min-height: 17px !important;
+    padding: 0 !important;
+    accent-color: #005383;
+    cursor: pointer;
+  }
+  .billing-repeat-badge,
+  .billing-storage-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 7px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #fff4b8;
+    color: #6a5300;
+    border: 1px solid rgba(255,217,0,.55);
+    font-size: 9px;
+    font-weight: 1000;
+    white-space: nowrap;
+  }
+  .billing-storage-badge {
+    margin-left: 0;
+    background: #e7f6ed;
+    color: #067647;
+    border-color: #abefc6;
+  }
+  .operational-import-status.warning {
+    background: #fff8cf;
+    border-color: #ffe27b;
+    color: #6a5300;
+  }
+  @media (max-width: 760px) {
+    .billing-history-actions { width: 100%; justify-content: stretch; }
+    .billing-history-actions button { flex: 1 1 180px; }
+  }
+</style>
+<script id="billing-measurement-exact-script">
+(function(){
+  "use strict";
+
+  const STORAGE_BILLING_BATCHES = "frota_medicoes_faturamento_importacoes_v2";
+  let billingImportBatches = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_BILLING_BATCHES) || "[]");
+    billingImportBatches = Array.isArray(stored) ? stored : [];
+  } catch (error) {
+    billingImportBatches = [];
+  }
+
+  window.fleetBillingBatchStorageReady = (async function(){
+    try {
+      const stored = await window.loadFleetBillingBatches();
+      const combined = [];
+      const ids = new Set();
+      [...stored, ...billingImportBatches].forEach(item => {
+        if (!item || typeof item !== "object") return;
+        const id = String(item.id || \`\${item.source || ""}|\${item.fileName || ""}|\${item.importedAt || ""}\`);
+        if (ids.has(id)) return;
+        ids.add(id);
+        combined.push(item);
+      });
+      billingImportBatches = combined.sort((a,b) => String(b.importedAt || "").localeCompare(String(a.importedAt || "")));
+      await window.persistFleetBillingBatches(billingImportBatches);
+      // Mantem a chave de hidratacao usada pelo Supply Flow para sincronizar com o Supabase.
+      if (typeof renderBillingImportHistory === "function") renderBillingImportHistory();
+      return billingImportBatches;
+    } catch (error) {
+      console.error("Falha ao migrar o histórico das importações para o banco local.", error);
+      return billingImportBatches;
+    }
+  })();
+
+  let billingCategoryChart = null;
+  let billingPlatformChart = null;
+
+  function billingNormalize(value){
+    return String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\\s+/g, " ")
+      .trim();
+  }
+
+  function billingEscape(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function billingNumber(value){
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    let text = String(value ?? "").trim();
+    if (!text) return 0;
+    text = text.replace(/R\\$/gi, "").replace(/[^0-9,.-]/g, "");
+    if (text.includes(",")) text = text.replace(/\\./g, "").replace(",", ".");
+    else if ((text.match(/\\./g) || []).length > 1) text = text.replace(/\\./g, "");
+    const parsed = Number(text);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function billingPlate(value){
+    return String(value ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+
+  function billingRowMap(row){
+    const mapped = {};
+    Object.entries(row || {}).forEach(([key, value]) => {
+      mapped[billingNormalize(key)] = value;
+    });
+    return mapped;
+  }
+
+  function billingValue(rowMap, keys){
+    for (const key of keys) {
+      const normalized = billingNormalize(key);
+      if (Object.prototype.hasOwnProperty.call(rowMap, normalized)) {
+        const value = rowMap[normalized];
+        if (value !== undefined && value !== null && String(value).trim() !== "") return value;
+      }
+    }
+    return "";
+  }
+
+  function billingRaw(row){
+    const raw = {};
+    Object.entries(row || {}).forEach(([key, value]) => {
+      if (!String(key || "").trim() || value === undefined || value === null || String(value).trim() === "") return;
+      raw[String(key).trim()] = String(value).slice(0, 500);
+    });
+    return raw;
+  }
+
+  function billingCategoryClass(category){
+    const value = billingNormalize(category);
+    if (value.includes("multa")) return "multa";
+    if (value.includes("locacao") || value.includes("aluguel")) return "locacao";
+    if (value.includes("taxa") || value.includes("complement")) return "taxa";
+    return "";
+  }
+
+  function classifyBillingCategory(source, primary, secondary){
+    const platform = String(source || "").trim().toUpperCase();
+    const primaryText = billingNormalize(primary);
+
+    // ARVAL: o tipo oficial da fatura vem exclusivamente da coluna STATUS FATURA.
+    if (platform === "ARVAL") {
+      const arvalTypes = {
+        "locacao": "LOCAÇÃO",
+        "multa": "MULTAS",
+        "multas": "MULTAS",
+        "taxa": "TAXAS",
+        "taxas": "TAXAS"
+      };
+      if (arvalTypes[primaryText]) return arvalTypes[primaryText];
+      return String(primary || "NÃO CLASSIFICADO").trim().toUpperCase();
+    }
+
+    // ALD: o tipo oficial da fatura vem exclusivamente da coluna Tipo de Reembolso.
+    if (platform === "ALD") {
+      const aldTypes = {
+        "manutencao sinistro frete": "MANUTENÇÃO / SINISTRO / FRETE",
+        "multa": "MULTAS",
+        "multas": "MULTAS",
+        "veiculo reserva": "VEÍCULO RESERVA",
+        "terminacao antecipada": "TERMINAÇÃO ANTECIPADA",
+        "documentacao": "DOCUMENTAÇÃO",
+        "locacao": "LOCAÇÃO"
+      };
+      if (aldTypes[primaryText]) return aldTypes[primaryText];
+      return String(primary || "NÃO CLASSIFICADO").trim().toUpperCase();
+    }
+
+    const text = billingNormalize(\`\${primary || ""} \${secondary || ""}\`);
+    if (text.includes("multa")) return "MULTAS";
+    if (text.includes("locacao") || text.includes("aluguel")) return "LOCAÇÃO";
+    if (text.includes("manutencao") || text.includes("sinistro") || text.includes("frete")) return "MANUTENÇÃO / SINISTRO / FRETE";
+    if (text.includes("documentacao") || text.includes("correio")) return "DOCUMENTAÇÃO";
+    if (text.includes("terminacao antecipada") || text.includes("termino antecipado")) return "TERMINAÇÃO ANTECIPADA";
+    if (text.includes("veiculo reserva") || text.includes("carro reserva")) return "VEÍCULO RESERVA";
+    if (text.includes("taxa") || text.includes("complementar") || text.includes("diversa")) return "TAXAS";
+    return String(primary || secondary || \`OUTROS \${source}\`).trim().toUpperCase();
+  }
+
+  function billingCompetence(dateValue, details){
+    const date = billingDate(dateValue);
+    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return date.slice(0, 7);
+    const match = String(details || "").match(/(\\d{2})\\/(\\d{2})\\/(\\d{4})/);
+    return match ? \`\${match[3]}-\${match[2]}\` : "";
+  }
+
+  function billingDate(value){
+    if (!value) return "";
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return \`\${value.getFullYear()}-\${String(value.getMonth() + 1).padStart(2, "0")}-\${String(value.getDate()).padStart(2, "0")}\`;
+    }
+    return normalizeDateValue(value);
+  }
+
+  function billingRequiredHeaderGroups(source){
+    return source === "ARVAL"
+      ? [
+          ["tipo fatura"], ["n fatura", "numero fatura"], ["data fatura"], ["valor"],
+          ["placa"], ["detalhe"], ["nota fiscal"], ["obra"], ["boleto"], ["status fatura"]
+        ]
+      : [
+          ["fatura"], ["tipo de reembolso"], ["contrato"], ["placa"], ["condutor"],
+          ["veiculo"], ["valor"], ["descricao do repasse"], ["categoria"], ["data do evento"],
+          ["n boleto", "numero boleto"], ["centro de custo"]
+        ];
+  }
+
+  function billingHeaderMatch(source, headerRow){
+    const keys = new Set((headerRow || []).map(billingNormalize).filter(Boolean));
+    const groups = billingRequiredHeaderGroups(source);
+    const matched = groups.filter(group => group.some(key => keys.has(billingNormalize(key))));
+    return { score: matched.length, total: groups.length, keys };
+  }
+
+  function billingMonthFromText(value){
+    const text = billingNormalize(value);
+    if (!text) return "";
+    const monthNames = {
+      janeiro: 1, fevereiro: 2, marco: 3, abril: 4, maio: 5, junho: 6,
+      julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12,
+      jan: 1, fev: 2, mar: 3, abr: 4, mai: 5, jun: 6,
+      jul: 7, ago: 8, set: 9, out: 10, nov: 11, dez: 12
+    };
+    const named = text.match(/\\b(janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\\b[^0-9]{0,4}(\\d{2,4})/);
+    if (named) {
+      let year = Number(named[2]);
+      if (year < 100) year += 2000;
+      return \`\${year}-\${String(monthNames[named[1]]).padStart(2, "0")}\`;
+    }
+    const numeric = text.match(/\\b(0?[1-9]|1[0-2])[^0-9]{1,3}(\\d{2,4})\\b/);
+    if (numeric) {
+      let year = Number(numeric[2]);
+      if (year < 100) year += 2000;
+      return \`\${year}-\${String(Number(numeric[1])).padStart(2, "0")}\`;
+    }
+    return "";
+  }
+
+  function billingInferCompetence(source, fileName, sheetName, rows){
+    const fromFile = billingMonthFromText(fileName);
+    if (fromFile) return fromFile;
+    const fromSheet = billingMonthFromText(sheetName);
+    if (fromSheet) return fromSheet;
+    const first = rows?.[0] || {};
+    const rowMap = billingRowMap(first);
+    const dateValue = source === "ARVAL"
+      ? billingValue(rowMap, ["Data Fatura"])
+      : billingValue(rowMap, ["Data do evento"]);
+    return billingCompetence(dateValue, "");
+  }
+
+  async function readBillingSpreadsheetFile(source, file){
+    const extension = String(file.name || "").split(".").pop().toLowerCase();
+    if (extension === "csv") {
+      const rows = parseCSV(await file.text());
+      validateBillingFormat(source, rows, file.name);
+      return {
+        rows,
+        sheetName: "CSV",
+        headerRow: 1,
+        headers: Object.keys(rows[0] || {}),
+        competence: billingInferCompetence(source, file.name, "CSV", rows)
+      };
+    }
+
+    if (!window.XLSX) {
+      throw new Error("A biblioteca de leitura do Excel não foi carregada. Abra o aplicativo com internet e tente novamente.");
+    }
+
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: "array", cellDates: true, raw: true });
+    let best = null;
+
+    workbook.SheetNames.forEach(sheetName => {
+      const sheet = workbook.Sheets[sheetName];
+      const matrix = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+        defval: "",
+        raw: true,
+        blankrows: false
+      });
+      const limit = Math.min(matrix.length, 30);
+      for (let rowIndex = 0; rowIndex < limit; rowIndex += 1) {
+        const match = billingHeaderMatch(source, matrix[rowIndex]);
+        if (!best || match.score > best.score) {
+          best = { sheet, sheetName, matrix, headerIndex: rowIndex, score: match.score, total: match.total };
+        }
+      }
+    });
+
+    if (!best || best.score < best.total) {
+      const found = best ? \`\${best.score} de \${best.total} colunas obrigatórias\` : "nenhum cabeçalho";
+      throw new Error(\`Não foi possível localizar o cabeçalho da medição \${source} em \${file.name}. Foi encontrado \${found}. Verifique se o arquivo mantém o formato oficial enviado.\`);
+    }
+
+    const rows = XLSX.utils.sheet_to_json(best.sheet, {
+      range: best.headerIndex,
+      defval: "",
+      raw: true,
+      blankrows: false
+    }).filter(row => Object.values(row || {}).some(value => value !== null && value !== undefined && String(value).trim() !== ""));
+
+    validateBillingFormat(source, rows, file.name);
+    return {
+      rows,
+      sheetName: best.sheetName,
+      headerRow: best.headerIndex + 1,
+      headers: Object.keys(rows[0] || {}),
+      competence: billingInferCompetence(source, file.name, best.sheetName, rows)
+    };
+  }
+
+  function validateBillingFormat(source, rows, fileName){
+    if (!rows.length) throw new Error(\`A planilha \${fileName} está vazia.\`);
+    const keys = new Set(Object.keys(billingRowMap(rows[0])));
+    const expected = source === "ARVAL"
+      ? ["tipo fatura", "n fatura", "data fatura", "valor", "placa", "detalhe", "nota fiscal", "obra", "boleto", "status fatura"]
+      : ["fatura", "tipo de reembolso", "contrato", "placa", "condutor", "veiculo", "valor", "descricao do repasse", "categoria", "data do evento", "n boleto", "centro de custo"];
+    const missing = expected.filter(key => !keys.has(billingNormalize(key)));
+    if (missing.length) {
+      throw new Error(\`O arquivo \${fileName} não está no formato \${source} reconhecido. Colunas ausentes: \${missing.join(", ")}.\`);
+    }
+  }
+
+  function parseArvalBillingRow(row, batch){
+    const data = billingRowMap(row);
+    const plate = billingPlate(billingValue(data, ["Placa"]));
+    const vehicle = getVehicleByPlate(plate);
+    const invoiceDate = billingDate(billingValue(data, ["Data Fatura"]));
+    const invoiceNumber = String(billingValue(data, ["Nº Fatura", "N° Fatura", "N Fatura"]) || "").trim();
+    const billingType = String(billingValue(data, ["Tipo Fatura"]) || "").trim();
+    const statusFatura = String(billingValue(data, ["STATUS FATURA"]) || "").trim();
+    const category = classifyBillingCategory("ARVAL", statusFatura, "");
+    const details = String(billingValue(data, ["Detalhe"]) || "").trim();
+    const costCenter = String(billingValue(data, ["Obra"]) || "").trim();
+    const noteFiscal = String(billingValue(data, ["Nota Fiscal"]) || "").trim();
+    const boleto = String(billingValue(data, ["BOLETO"]) || "").trim();
+    const value = billingNumber(billingValue(data, ["Valor"]));
+    const recordType = category === "MULTAS" ? "MULTA" : "FATURA";
+    const measurementId = \`MED-ARVAL-\${batch.id}-\${crypto.randomUUID()}\`;
+
+    const common = {
+      source: "ARVAL",
+      sourceMethod: "PLANILHA",
+      sourceFile: batch.fileName,
+      sourceSheet: batch.sheetName || "Consolidado",
+      sourceHeaderRow: batch.headerRow || 1,
+      importSchema: "ARVAL_CONSOLIDADO_V2",
+      batchId: batch.id,
+      importedAt: batch.importedAt,
+      importedAtLabel: batch.importedAtLabel,
+      plate,
+      vehicleId: vehicle?.id || "",
+      linked: Boolean(vehicle),
+      vehicleCode: vehicle?.codigoVeiculo || "",
+      vehicleModel: vehicle?.modeloVeiculo || "",
+      currentCostCenter: vehicle?.centroCusto || "",
+      costCenter,
+      locadora: vehicle?.locadora || "ARVAL",
+      contrato: vehicle?.contrato || "",
+      driver: vehicle?.condutor || "",
+      date: invoiceDate,
+      invoiceDate,
+      period: batch.competence || billingCompetence(invoiceDate, details),
+      competence: batch.competence || billingCompetence(invoiceDate, details),
+      eventCompetence: billingCompetence(invoiceDate, details),
+      value,
+      km: 0,
+      invoiceNumber,
+      documentNumber: recordType === "MULTA" ? invoiceNumber : noteFiscal || invoiceNumber,
+      noteFiscal,
+      boleto,
+      billingType,
+      billingCategory: category,
+      billingSubcategory: billingType,
+      billingStatus: statusFatura,
+      billingCategorySourceField: "STATUS FATURA",
+      billingCategorySourceValue: statusFatura,
+      details,
+      supplier: "ARVAL",
+      company: String(billingValue(data, ["Centro Faturamento"]) || "").trim(),
+      sourceCode: String(billingValue(data, ["Cod"]) || "").trim(),
+      syncedAt: batch.importedAtLabel,
+      rawData: undefined
+    };
+
+    return {
+      measurement: { id: measurementId, ...common },
+      billing: {
+        id: \`BILL-ARVAL-\${batch.id}-\${crypto.randomUUID()}\`,
+        measurementRecordId: measurementId,
+        ...common,
+        recordType,
+        type: billingType || category,
+        status: statusFatura || "Importado",
+        description: details || \`\${category} importada da medição ARVAL\`,
+        dueDate: "",
+        rawData: undefined
+      }
+    };
+  }
+
+  function parseAldBillingRow(row, batch){
+    const data = billingRowMap(row);
+    const plate = billingPlate(billingValue(data, ["Placa"]));
+    const vehicle = getVehicleByPlate(plate);
+    const eventDate = billingDate(billingValue(data, ["Data do evento"]));
+    const invoiceNumber = String(billingValue(data, ["Fatura"]) || "").trim();
+    const reimbursementType = String(billingValue(data, ["Tipo de Reembolso"]) || "").trim();
+    const subcategory = String(billingValue(data, ["Categoria"]) || "").trim();
+    const category = classifyBillingCategory("ALD", reimbursementType, "");
+    const details = String(billingValue(data, ["Descrição do Repasse", "Descricao do Repasse"]) || "").trim();
+    const costCenter = String(billingValue(data, ["CENTRO DE CUSTO", "Centro de Custo"]) || billingValue(data, ["CC"]) || "").trim();
+    const boleto = String(billingValue(data, ["N° BOLETO", "Nº BOLETO", "N BOLETO"]) || "").trim();
+    const documentNumber = String(billingValue(data, ["N° DOCUMENTO", "Nº DOCUMENTO", "N DOCUMENTO"]) || "").trim();
+    const noteSupplier = String(billingValue(data, ["Nota Fornecedor"]) || "").trim();
+    const reference = String(billingValue(data, ["Referência", "Referencia"]) || "").trim();
+    const supplier = String(billingValue(data, ["Fornecedor"]) || "").trim();
+    const driver = String(billingValue(data, ["Condutor"]) || "").trim();
+    const vehicleName = String(billingValue(data, ["Veiculo", "Veículo"]) || "").trim();
+    const model = String(billingValue(data, ["Modelo"]) || "").trim();
+    const contract = String(billingValue(data, ["Contrato"]) || "").trim();
+    const value = billingNumber(billingValue(data, ["Valor"]));
+    const recordType = category === "MULTAS" ? "MULTA" : "FATURA";
+    const measurementId = \`MED-ALD-\${batch.id}-\${crypto.randomUUID()}\`;
+    const sourceDocument = documentNumber || reference || noteSupplier || invoiceNumber;
+
+    const common = {
+      source: "ALD",
+      sourceMethod: "PLANILHA",
+      sourceFile: batch.fileName,
+      sourceSheet: batch.sheetName || "Fatura ALD",
+      sourceHeaderRow: batch.headerRow || 1,
+      importSchema: "ALD_FATURA_V2",
+      batchId: batch.id,
+      importedAt: batch.importedAt,
+      importedAtLabel: batch.importedAtLabel,
+      plate,
+      vehicleId: vehicle?.id || "",
+      linked: Boolean(vehicle),
+      vehicleCode: vehicle?.codigoVeiculo || contract,
+      vehicleModel: vehicle?.modeloVeiculo || [vehicleName, model].filter(Boolean).join(" "),
+      currentCostCenter: vehicle?.centroCusto || "",
+      costCenter,
+      locadora: vehicle?.locadora || "ALD",
+      contrato: contract || vehicle?.contrato || "",
+      driver: driver || vehicle?.condutor || "",
+      date: eventDate,
+      invoiceDate: eventDate,
+      period: batch.competence || billingCompetence(eventDate, details),
+      competence: batch.competence || billingCompetence(eventDate, details),
+      eventCompetence: billingCompetence(eventDate, details),
+      value,
+      km: 0,
+      invoiceNumber,
+      documentNumber: sourceDocument,
+      noteFiscal: noteSupplier,
+      boleto,
+      billingType: reimbursementType,
+      billingCategory: category,
+      billingSubcategory: subcategory || reimbursementType,
+      billingStatus: reimbursementType,
+      billingCategorySourceField: "Tipo de Reembolso",
+      billingCategorySourceValue: reimbursementType,
+      details,
+      supplier,
+      reference,
+      company: String(billingValue(data, ["Razão Social", "Razao Social"]) || "").trim(),
+      syncedAt: batch.importedAtLabel,
+      rawData: undefined
+    };
+
+    return {
+      measurement: { id: measurementId, ...common },
+      billing: {
+        id: \`BILL-ALD-\${batch.id}-\${crypto.randomUUID()}\`,
+        measurementRecordId: measurementId,
+        ...common,
+        recordType,
+        type: subcategory || reimbursementType || category,
+        status: reimbursementType || "Importado",
+        description: [details, supplier ? \`Fornecedor: \${supplier}\` : "", reference ? \`Referência: \${reference}\` : ""].filter(Boolean).join(" | ") || \`\${category} importada da medição ALD\`,
+        dueDate: "",
+        rawData: undefined
+      }
+    };
+  }
+
+  async function saveBillingData(){
+    await window.persistFleetMeasurements(measurements);
+    const manualFines = fines.filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
+    fines = manualFines;
+    window.safeFleetLocalStorageSet(STORAGE_FINES, JSON.stringify(manualFines));
+    await window.persistFleetBillingBatches(billingImportBatches);
+    // Mantem as chaves de hidratacao usadas pelo Supply Flow para sincronizar com o Supabase.
+  }
+
+  async function importBillingFile(source, file){
+    const signature = [source, file.name, file.size, file.lastModified].join("|");
+    const previousImports = billingImportBatches.filter(item => item.signature === signature);
+    const previous = previousImports[0] || null;
+
+    const workbookData = await readBillingSpreadsheetFile(source, file);
+    const rows = workbookData.rows;
+    const importedAt = new Date();
+    const batch = {
+      id: crypto.randomUUID(),
+      signature,
+      source,
+      dataType: "billing-measurement",
+      importSequence: previousImports.length + 1,
+      duplicateImport: previousImports.length > 0,
+      duplicateOfBatchId: previous?.id || "",
+      duplicateOfImportedAt: previous?.importedAt || "",
+      fileName: file.name,
+      fileSize: file.size,
+      fileLastModified: file.lastModified,
+      importedAt: importedAt.toISOString(),
+      importedAtLabel: importedAt.toLocaleString("pt-BR"),
+      totalRows: rows.length,
+      importedRows: 0,
+      linkedRows: 0,
+      unlinkedRows: 0,
+      fineRows: 0,
+      rentalRows: 0,
+      otherRows: 0,
+      invoiceCount: 0,
+      totalValue: 0,
+      sheetName: workbookData.sheetName,
+      headerRow: workbookData.headerRow,
+      competence: workbookData.competence,
+      detectedHeaders: workbookData.headers,
+      formatName: \`\${source === "ARVAL" ? "Consolidado ARVAL" : "Fatura ALD"} • \${workbookData.sheetName} • cabeçalho linha \${workbookData.headerRow}\`
+    };
+
+    const parsed = rows.map(row => source === "ARVAL" ? parseArvalBillingRow(row, batch) : parseAldBillingRow(row, batch));
+    const valid = parsed.filter(item => item.measurement.plate || item.measurement.invoiceNumber || item.measurement.value || item.measurement.details);
+    if (!valid.length) throw new Error(\`Nenhum item de medição foi reconhecido em \${file.name}.\`);
+
+    const newMeasurements = valid.map(item => item.measurement);
+    batch.importedRows = valid.length;
+    batch.linkedRows = newMeasurements.filter(item => item.linked).length;
+    batch.unlinkedRows = batch.importedRows - batch.linkedRows;
+    batch.fineRows = newMeasurements.filter(item => item.billingCategory === "MULTAS").length;
+    batch.rentalRows = newMeasurements.filter(item => item.billingCategory === "LOCAÇÃO").length;
+    batch.otherRows = batch.importedRows - batch.fineRows - batch.rentalRows;
+    batch.invoiceCount = new Set(newMeasurements.map(item => \`\${source}|\${item.invoiceNumber}\`).filter(key => !key.endsWith("|"))).size;
+    batch.totalValue = newMeasurements.reduce((sum, item) => sum + Number(item.value || 0), 0);
+
+    measurements = [...measurements, ...newMeasurements];
+    billingImportBatches.unshift(batch);
+    return batch;
+  }
+
+  window.importBillingMeasurementFiles = async function(source, inputId, statusId){
+    await Promise.all([
+      window.fleetLargeStorageReady || Promise.resolve(),
+      window.fleetBillingBatchStorageReady || Promise.resolve()
+    ]);
+    const input = document.getElementById(inputId);
+    const status = document.getElementById(statusId);
+    const selectedFiles = Array.from(input?.files || []);
+    if (!selectedFiles.length) {
+      alert(\`Selecione uma ou mais planilhas de medição da \${source}.\`);
+      return;
+    }
+
+    if (status) {
+      status.className = "operational-import-status";
+      status.textContent = \`Preparando \${selectedFiles.length} planilha(s) da \${source}...\`;
+    }
+
+    const imported = [];
+    const failed = [];
+
+    for (let index = 0; index < selectedFiles.length; index += 1) {
+      const file = selectedFiles[index];
+      if (status) {
+        status.className = "operational-import-status";
+        status.innerHTML = \`Importando <strong>\${index + 1}/\${selectedFiles.length}</strong>: \${billingEscape(file.name)}...\`;
+      }
+
+      try {
+        const batch = await importBillingFile(source, file);
+
+        // Primeiro salva a carga e os registros. A atualização visual é executada
+        // separadamente para que um gráfico nunca faça uma planilha válida ser
+        // classificada como "não processada".
+        await saveBillingData();
+        imported.push(batch);
+
+        try {
+          renderBillingImportHistory();
+          renderMeasurements();
+          renderFines();
+          renderDashboardIndicators();
+          renderStats();
+        } catch (visualError) {
+          console.error(\`A planilha \${file.name} foi salva, mas a atualização visual será refeita.\`, visualError);
+          if (typeof window.releaseFleetMeasurementCharts === "function") {
+            window.releaseFleetMeasurementCharts();
+          }
+          if (typeof window.scheduleFleetMeasurementVisualRefresh === "function") {
+            window.scheduleFleetMeasurementVisualRefresh(80);
+          }
+        }
+      } catch (error) {
+        console.error(\`Falha ao importar \${file.name}\`, error);
+        failed.push({ fileName: file.name, message: error?.message || "Formato não reconhecido" });
+      }
+    }
+
+    const rows = imported.reduce((sum, item) => sum + Number(item.importedRows || 0), 0);
+    const finesCount = imported.reduce((sum, item) => sum + Number(item.fineRows || 0), 0);
+    const invoices = imported.reduce((sum, item) => sum + Number(item.invoiceCount || 0), 0);
+    const linked = imported.reduce((sum, item) => sum + Number(item.linkedRows || 0), 0);
+    const value = imported.reduce((sum, item) => sum + Number(item.totalValue || 0), 0);
+    const repeated = imported.filter(item => item.duplicateImport).length;
+
+    if (status) {
+      if (imported.length) {
+        status.className = failed.length ? "operational-import-status warning" : "operational-import-status success";
+        status.innerHTML = \`<strong>\${imported.length}</strong> planilha(s) salva(s) no histórico: <strong>\${rows}</strong> itens, <strong>\${invoices}</strong> faturas, <strong>\${finesCount}</strong> multas, <strong>\${linked}</strong> registros vinculados e valor de <strong>\${billingEscape(formatCurrency(value))}</strong>\${repeated ? \` • \${repeated} reimportação(ões) registrada(s) como nova carga\` : ""}\${failed.length ? \` • <strong>\${failed.length}</strong> arquivo(s) com erro\` : ""}.\`;
+      } else {
+        status.className = "operational-import-status error";
+        status.textContent = "Nenhuma planilha foi importada. Verifique os arquivos selecionados.";
+      }
+    }
+
+    if (failed.length) {
+      alert(\`Importação concluída com \${failed.length} arquivo(s) não processado(s):\\n\\n\${failed.map(item => \`• \${item.fileName}: \${item.message}\`).join("\\n")}\`);
+    }
+
+    // Limpa para permitir selecionar novamente os mesmos arquivos em uma nova carga.
+    if (input) input.value = "";
+  };
+
+  async function deleteBillingBatches(batchIds){
+    const ids = new Set((batchIds || []).map(String));
+    if (!ids.size) return;
+    measurements = measurements.filter(item => !ids.has(String(item.batchId || "")));
+    fines = fines.filter(item => !ids.has(String(item.batchId || "")));
+    billingImportBatches = billingImportBatches.filter(item => !ids.has(String(item.id)));
+    await saveBillingData();
+    renderBillingImportHistory();
+    renderMeasurements();
+    renderFines();
+    renderDashboardIndicators();
+    renderStats();
+  }
+
+  window.removeBillingMeasurementBatch = async function(batchId){
+    const batch = billingImportBatches.find(item => String(item.id) === String(batchId));
+    if (!batch) return;
+    if (!confirm(\`Excluir a carga \${batch.fileName} e todos os \${Number(batch.importedRows || 0)} itens importados por ela? Esta ação não apaga as demais importações.\`)) return;
+    await deleteBillingBatches([batchId]);
+  };
+
+  window.toggleAllBillingBatchSelections = function(checked){
+    document.querySelectorAll("#billingImportHistory input[data-billing-batch-select]").forEach(input => {
+      input.checked = Boolean(checked);
+    });
+    updateBillingBatchSelectionCount();
+  };
+
+  window.updateBillingBatchSelectionCount = function(){
+    const selected = document.querySelectorAll("#billingImportHistory input[data-billing-batch-select]:checked").length;
+    const counter = document.getElementById("billingBatchSelectionCount");
+    const button = document.getElementById("deleteSelectedBillingBatchesButton");
+    if (counter) counter.textContent = \`\${selected} carga(s) selecionada(s)\`;
+    if (button) button.disabled = selected === 0;
+    const all = [...document.querySelectorAll("#billingImportHistory input[data-billing-batch-select]")];
+    const master = document.getElementById("billingBatchSelectAll");
+    if (master) {
+      master.checked = Boolean(all.length && selected === all.length);
+      master.indeterminate = selected > 0 && selected < all.length;
+    }
+  };
+
+  window.removeSelectedBillingMeasurementBatches = async function(){
+    const selected = [...document.querySelectorAll("#billingImportHistory input[data-billing-batch-select]:checked")]
+      .map(input => input.value)
+      .filter(Boolean);
+    if (!selected.length) return;
+    const rows = billingImportBatches
+      .filter(item => selected.includes(String(item.id)))
+      .reduce((sum, item) => sum + Number(item.importedRows || 0), 0);
+    if (!confirm(\`Excluir \${selected.length} carga(s) selecionada(s) e \${rows} item(ns) vinculados a elas?\`)) return;
+    await deleteBillingBatches(selected);
+  };
+
+  window.removeAllBillingMeasurementBatches = async function(){
+    if (!billingImportBatches.length) return;
+    const rows = billingImportBatches.reduce((sum, item) => sum + Number(item.importedRows || 0), 0);
+    if (!confirm(\`Excluir TODAS as \${billingImportBatches.length} cargas de medição e os \${rows} itens importados? Os registros manuais e dados da frota não serão apagados.\`)) return;
+    await deleteBillingBatches(billingImportBatches.map(item => item.id));
+  };
+
+  function renderBillingImportHistory(){
+    const target = document.getElementById("billingImportHistory");
+    if (!target) return;
+    const master = document.getElementById("billingBatchSelectAll");
+    if (master) {
+      master.checked = false;
+      master.indeterminate = false;
+    }
+    if (!billingImportBatches.length) {
+      target.innerHTML = '<tr><td colspan="12">Nenhuma medição ALD ou ARVAL importada até o momento. Você pode importar várias planilhas e repetir novas cargas sempre que necessário.</td></tr>';
+      updateBillingBatchSelectionCount();
+      return;
+    }
+    target.innerHTML = billingImportBatches.map(item => \`
+      <tr>
+        <td class="billing-batch-check"><input type="checkbox" data-billing-batch-select value="\${billingEscape(item.id)}" onchange="updateBillingBatchSelectionCount()" aria-label="Selecionar carga \${billingEscape(item.fileName)}"></td>
+        <td><span class="measurement-source">\${billingEscape(item.source)}</span></td>
+        <td class="source-file-cell" title="\${billingEscape(item.fileName)}">\${billingEscape(item.fileName)}\${item.duplicateImport ? \`<small class="billing-repeat-badge">Reimportação #\${Number(item.importSequence || 2)}</small>\` : ""}</td>
+        <td>\${billingEscape(item.formatName || "-")}</td>
+        <td>\${Number(item.importedRows || 0)}</td>
+        <td>\${Number(item.invoiceCount || 0)}</td>
+        <td>\${Number(item.fineRows || 0)}</td>
+        <td>\${billingEscape(formatCurrency(item.totalValue || 0))}</td>
+        <td>\${Number(item.linkedRows || 0)} / \${Number(item.unlinkedRows || 0)}</td>
+        <td>\${billingEscape(item.importedAtLabel || "-")}</td>
+        <td><span class="billing-storage-badge">Banco local</span></td>
+        <td><button class="danger-btn" type="button" onclick="removeBillingMeasurementBatch('\${item.id}')">Excluir carga</button></td>
+      </tr>
+    \`).join("");
+    updateBillingBatchSelectionCount();
+  }
+
+  function measurementCategory(item){
+    const source = String(item?.source || "").trim().toUpperCase();
+    if (source === "ARVAL") {
+      return classifyBillingCategory("ARVAL", item.billingStatus || item.status || item.billingCategory || "", "");
+    }
+    if (source === "ALD") {
+      return classifyBillingCategory("ALD", item.billingType || item.billingStatus || item.type || item.billingCategory || "", "");
+    }
+    return item.billingCategory || classifyBillingCategory(source, item.billingStatus || item.type || "", item.billingSubcategory || item.billingType || "");
+  }
+
+  function billingFilteredMeasurements(){
+    const source = document.getElementById("measurementSourceFilter")?.value || "";
+    const plate = document.getElementById("measurementPlateFilter")?.value || "";
+    const category = document.getElementById("measurementCategoryFilter")?.value || "";
+    const boleto = document.getElementById("measurementBoletoFilter")?.value || "";
+    const method = document.getElementById("measurementMethodFilter")?.value || "";
+    const start = document.getElementById("measurementStartFilter")?.value || "";
+    const end = document.getElementById("measurementEndFilter")?.value || "";
+    return measurements.filter(item => {
+      const itemPlate = billingPlate(item.plate || item.placa || "");
+      const itemDate = item.invoiceDate || item.date || "";
+      return (!source || item.source === source)
+        && (!plate || itemPlate === plate)
+        && (!category || measurementCategory(item) === category)
+        && (!boleto || String(item.boleto || "") === boleto)
+        && (!method || String(item.sourceMethod || "API") === method)
+        && (!start || !itemDate || itemDate >= start)
+        && (!end || !itemDate || itemDate <= end);
+    });
+  }
+
+  function renderMeasurementOptions(){
+    const plateSelect = document.getElementById("measurementPlateFilter");
+    const categorySelect = document.getElementById("measurementCategoryFilter");
+    const boletoSelect = document.getElementById("measurementBoletoFilter");
+    const preserve = select => select?.value || "";
+    const plateCurrent = preserve(plateSelect);
+    const categoryCurrent = preserve(categorySelect);
+    const boletoCurrent = preserve(boletoSelect);
+    const plates = [...new Set(measurements.map(item => billingPlate(item.plate || item.placa || "")).filter(Boolean))].sort((a,b) => a.localeCompare(b, "pt-BR"));
+    const categories = [...new Set(measurements.map(measurementCategory).filter(Boolean))].sort((a,b) => a.localeCompare(b, "pt-BR"));
+    const boletos = [...new Set(measurements.map(item => String(item.boleto || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, "pt-BR"));
+    if (plateSelect) {
+      plateSelect.innerHTML = '<option value="">Todas</option>' + plates.map(value => \`<option>\${billingEscape(value)}</option>\`).join("");
+      if (plates.includes(plateCurrent)) plateSelect.value = plateCurrent;
+    }
+    if (categorySelect) {
+      categorySelect.innerHTML = '<option value="">Todas</option>' + categories.map(value => \`<option>\${billingEscape(value)}</option>\`).join("");
+      if (categories.includes(categoryCurrent)) categorySelect.value = categoryCurrent;
+    }
+    if (boletoSelect) {
+      boletoSelect.innerHTML = '<option value="">Todos</option>' + boletos.map(value => \`<option>\${billingEscape(value)}</option>\`).join("");
+      if (boletos.includes(boletoCurrent)) boletoSelect.value = boletoCurrent;
+    }
+  }
+
+  renderMeasurements = function(){
+    renderMeasurementOptions();
+    const filtered = billingFilteredMeasurements();
+    const ordered = [...filtered].sort((a,b) => String(b.importedAt || b.invoiceDate || b.date || "").localeCompare(String(a.importedAt || a.invoiceDate || a.date || "")));
+    const totalValue = filtered.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    const uniqueInvoices = new Set(filtered.map(item => \`\${item.source || ""}|\${item.invoiceNumber || ""}\`).filter(key => !key.endsWith("|"))).size;
+    const unlinked = filtered.filter(item => item.plate && !item.linked && !item.vehicleId).length;
+    const lastImport = ordered[0]?.importedAtLabel || ordered[0]?.syncedAt || "-";
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    setText("measurementTotal", filtered.length);
+    setText("measurementKmTotal", uniqueInvoices);
+    setText("measurementValueTotal", formatCurrency(totalValue));
+    setText("measurementUnlinked", unlinked);
+    setText("measurementLastSync", lastImport);
+
+    const table = document.getElementById("measurementsTable");
+    if (!table) return;
+    const head = table.closest("table")?.querySelector("thead tr");
+    if (head) head.innerHTML = '<th>Plataforma</th><th>Arquivo</th><th>Placa / Veículo</th><th>Fatura</th><th>Competência / Data</th><th>Categoria</th><th>Tipo / Subcategoria</th><th>Detalhe</th><th>Boleto</th><th>Obra / CC</th><th>Valor</th><th>Vínculo</th>';
+    if (!ordered.length) {
+      table.innerHTML = '<tr><td colspan="12">Nenhum item de medição ou fatura encontrado.</td></tr>';
+      return;
+    }
+    table.innerHTML = ordered.map(item => {
+      const category = measurementCategory(item);
+      const vehicle = vehicles.find(v => v.id === item.vehicleId);
+      return \`
+        <tr>
+          <td><span class="measurement-source">\${billingEscape(item.source || "-")}</span></td>
+          <td class="source-file-cell" title="\${billingEscape(item.sourceFile || "")}">\${billingEscape(item.sourceFile || item.sourceMethod || "-")}</td>
+          <td><strong>\${billingEscape(item.plate || vehicle?.placaVeiculo || "-")}</strong><br>\${billingEscape(item.vehicleModel || vehicle?.modeloVeiculo || "-")}</td>
+          <td><strong>\${billingEscape(item.invoiceNumber || "-")}</strong><br><small>\${billingEscape(item.noteFiscal ? \`NF \${item.noteFiscal}\` : item.documentNumber || "")}</small></td>
+          <td><strong>\${billingEscape(item.competence ? item.competence.split("-").reverse().join("/") : "-")}</strong><br><small>\${billingEscape(formatDate(item.invoiceDate || item.date))}</small></td>
+          <td><span class="billing-category-badge \${billingCategoryClass(category)}">\${billingEscape(category)}</span></td>
+          <td>\${billingEscape(item.billingSubcategory || item.billingType || item.type || "-")}</td>
+          <td class="billing-detail-cell" title="\${billingEscape(item.details || item.description || "")}">\${billingEscape(item.details || item.description || "-")}</td>
+          <td>\${billingEscape(item.boleto || "-")}</td>
+          <td>\${billingEscape(item.costCenter || "-")}</td>
+          <td><strong>\${billingEscape(formatCurrency(item.value))}</strong></td>
+          <td>\${item.linked || item.vehicleId ? '<span class="link-status linked-ok">Vinculado</span>' : '<span class="link-status linked-warning">Sem placa cadastrada</span>'}</td>
+        </tr>\`;
+    }).join("");
+  };
+
+  function fineBillingCategory(item){
+    const source = String(item?.source || "").trim().toUpperCase();
+    if (source === "ARVAL") return classifyBillingCategory("ARVAL", item.billingStatus || item.status || item.billingCategory || "", "");
+    if (source === "ALD") return classifyBillingCategory("ALD", item.billingType || item.billingStatus || item.type || item.billingCategory || "", "");
+    if (item.billingCategory) return item.billingCategory;
+    if ((item.recordType || "MULTA") === "MULTA") return "MULTAS";
+    return classifyBillingCategory(source || "MANUAL", item.status || item.type || "", item.type || "");
+  }
+
+  function filteredBillingItems(){
+    const recordType = document.getElementById("fineRecordTypeFilter")?.value || "";
+    const category = document.getElementById("fineCategoryFilter")?.value || "";
+    const source = document.getElementById("fineSourceFilter")?.value || "";
+    const method = document.getElementById("fineMethodFilter")?.value || "";
+    const plate = document.getElementById("finePlateFilter")?.value || "";
+    const start = document.getElementById("fineStartFilter")?.value || "";
+    const end = document.getElementById("fineEndFilter")?.value || "";
+    return fines.filter(item => {
+      const vehicle = vehicles.find(v => v.id === item.vehicleId);
+      const itemPlate = billingPlate(item.plate || vehicle?.placaVeiculo || "");
+      const itemType = item.recordType || "MULTA";
+      const itemMethod = item.sourceMethod || (item.source ? "API" : "MANUAL");
+      return (!recordType || itemType === recordType)
+        && (!category || fineBillingCategory(item) === category)
+        && (!source || (item.source || "MANUAL") === source)
+        && (!method || itemMethod === method)
+        && (!plate || itemPlate === plate)
+        && (!start || !item.date || item.date >= start)
+        && (!end || !item.date || item.date <= end);
+    });
+  }
+
+  function renderFineBillingOptions(){
+    const plateSelect = document.getElementById("finePlateFilter");
+    const categorySelect = document.getElementById("fineCategoryFilter");
+    const currentPlate = plateSelect?.value || "";
+    const currentCategory = categorySelect?.value || "";
+    const plates = [...new Set(fines.map(item => billingPlate(item.plate || vehicles.find(v => v.id === item.vehicleId)?.placaVeiculo || "")).filter(Boolean))].sort((a,b) => a.localeCompare(b,"pt-BR"));
+    const categories = [...new Set(fines.map(fineBillingCategory).filter(Boolean))].sort((a,b) => a.localeCompare(b,"pt-BR"));
+    if (plateSelect) {
+      plateSelect.innerHTML = '<option value="">Todas</option>' + plates.map(value => \`<option>\${billingEscape(value)}</option>\`).join("");
+      if (plates.includes(currentPlate)) plateSelect.value = currentPlate;
+    }
+    if (categorySelect) {
+      categorySelect.innerHTML = '<option value="">Todas</option>' + categories.map(value => \`<option>\${billingEscape(value)}</option>\`).join("");
+      if (categories.includes(currentCategory)) categorySelect.value = currentCategory;
+    }
+  }
+
+  renderFines = function(){
+    renderFineBillingOptions();
+    if (!fineTable) return;
+    const filtered = filteredBillingItems();
+    const ordered = [...filtered].sort((a,b) => String(b.importedAt || b.date || "").localeCompare(String(a.importedAt || a.date || "")));
+    const head = fineTable.closest("table")?.querySelector("thead tr");
+    if (head) head.innerHTML = '<th>Plataforma</th><th>Arquivo</th><th>Registro</th><th>Placa / Veículo</th><th>Fatura / Documento</th><th>Data</th><th>Categoria</th><th>Tipo / Detalhe</th><th>Boleto</th><th>Obra / CC</th><th>Valor</th><th>Vínculo / Ação</th>';
+    if (!ordered.length) {
+      fineTable.innerHTML = '<tr><td colspan="12">Nenhuma multa ou outra fatura encontrada.</td></tr>';
+      return;
+    }
+    fineTable.innerHTML = ordered.map(item => {
+      const vehicle = vehicles.find(v => v.id === item.vehicleId);
+      const category = fineBillingCategory(item);
+      const imported = Boolean(item.batchId);
+      return \`
+        <tr>
+          <td><span class="measurement-source">\${billingEscape(item.source || "MANUAL")}</span></td>
+          <td class="source-file-cell" title="\${billingEscape(item.sourceFile || "")}">\${billingEscape(item.sourceFile || item.sourceMethod || "Manual")}</td>
+          <td><span class="source-method-badge \${item.recordType === "FATURA" ? "planilha" : ""}">\${billingEscape(item.recordType === "FATURA" ? "FATURA" : "MULTA")}</span></td>
+          <td><strong>\${billingEscape(item.plate || vehicle?.placaVeiculo || "-")}</strong><br>\${billingEscape(item.vehicleModel || vehicle?.modeloVeiculo || "-")}</td>
+          <td><strong>\${billingEscape(item.invoiceNumber || item.documentNumber || "-")}</strong><br><small>\${billingEscape(item.documentNumber && item.invoiceNumber && item.documentNumber !== item.invoiceNumber ? item.documentNumber : "")}</small></td>
+          <td>\${billingEscape(formatDate(item.date || item.invoiceDate || item.dueDate))}</td>
+          <td><span class="billing-category-badge \${billingCategoryClass(category)}">\${billingEscape(category)}</span></td>
+          <td class="billing-detail-cell" title="\${billingEscape(item.description || item.details || "")}"><strong>\${billingEscape(item.type || item.billingSubcategory || item.billingType || "-")}</strong><br>\${billingEscape(item.description || item.details || "-")}</td>
+          <td>\${billingEscape(item.boleto || "-")}</td>
+          <td>\${billingEscape(item.costCenter || "-")}</td>
+          <td><strong>\${billingEscape(formatCurrency(item.value))}</strong></td>
+          <td>\${item.linked || item.vehicleId ? '<span class="link-status linked-ok">Vinculado</span>' : '<span class="link-status linked-warning">Sem placa cadastrada</span>'}<br>\${imported ? '<small>Excluir pela carga</small>' : \`<button class="danger-btn" onclick="deleteFine('\${item.id}')">Excluir</button>\`}</td>
+        </tr>\`;
+    }).join("");
+  };
+
+  window.clearFineOperationalFilters = function(){
+    ["fineRecordTypeFilter","fineCategoryFilter","fineSourceFilter","fineMethodFilter","finePlateFilter","fineStartFilter","fineEndFilter"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.value = "";
+    });
+    renderFines();
+  };
+
+  function billingDashboardRecords(records){
+    return records.filter(item => {
+      const vehicle = vehicles.find(v => v.id === item.vehicleId) || getVehicleByPlate(item.plate || "");
+      const statusOk = !dashStatusFilter?.value || vehicle?.statusCarro === dashStatusFilter.value;
+      const locadoraOk = !dashLocadoraFilter?.value || vehicle?.locadora === dashLocadoraFilter.value || item.locadora === dashLocadoraFilter.value;
+      const ccOk = !dashCentroCustoFilter?.value || String(item.costCenter || vehicle?.centroCusto || "") === dashCentroCustoFilter.value;
+      const categoryOk = !dashCategoriaFilter?.value || vehicle?.categoriaVeiculo === dashCategoriaFilter.value;
+      const contractOk = !dashContratoFilter?.value || String(item.contrato || vehicle?.contrato || "") === dashContratoFilter.value;
+      return statusOk && locadoraOk && ccOk && categoryOk && contractOk;
+    });
+  }
+
+  function renderBillingDashboard(){
+    const records = billingDashboardRecords(measurements.filter(item => item.billingCategory || item.importSchema));
+    const totalValue = records.reduce((sum,item) => sum + Number(item.value || 0), 0);
+    const fineRecords = records.filter(item => measurementCategory(item) === "MULTAS");
+    const rentalRecords = records.filter(item => measurementCategory(item) === "LOCAÇÃO");
+    const otherRecords = records.filter(item => !["MULTAS","LOCAÇÃO"].includes(measurementCategory(item)));
+    const uniqueInvoices = new Set(records.map(item => \`\${item.source || ""}|\${item.invoiceNumber || ""}\`).filter(key => !key.endsWith("|"))).size;
+    const unlinked = records.filter(item => item.plate && !item.linked && !item.vehicleId).length;
+    const values = {
+      dashBillingItems: records.length,
+      dashBillingValue: formatCurrency(totalValue),
+      dashBillingInvoices: uniqueInvoices,
+      dashBillingRentals: rentalRecords.length,
+      dashBillingFines: fineRecords.length,
+      dashBillingOther: otherRecords.length,
+      dashBillingImports: billingImportBatches.length,
+      dashBillingUnlinked: unlinked
+    };
+    Object.entries(values).forEach(([id,value]) => { const el = document.getElementById(id); if (el) el.textContent = value; });
+
+    const categoryTotals = records.reduce((acc,item) => {
+      const key = measurementCategory(item) || "OUTROS";
+      acc[key] = (acc[key] || 0) + Number(item.value || 0);
+      return acc;
+    }, {});
+    const categoryEntries = Object.entries(categoryTotals).sort((a,b) => b[1]-a[1]);
+    billingCategoryChart = makeChart(
+      "billingCategoryChart",
+      "bar",
+      categoryEntries.length ? categoryEntries.map(([key]) => key) : ["Sem dados"],
+      categoryEntries.length ? categoryEntries.map(([,value]) => value) : [0],
+      billingCategoryChart,
+      { label: "Valor medido", showLegend: false, valueFormat: "currency", indexAxis: "y", dataLabelFontSize: 10 }
+    );
+
+    const platformTotals = records.reduce((acc,item) => {
+      const key = item.source || "OUTROS";
+      acc[key] = (acc[key] || 0) + Number(item.value || 0);
+      return acc;
+    }, {});
+    const platformEntries = Object.entries(platformTotals).sort((a,b) => b[1]-a[1]);
+    billingPlatformChart = makeChart(
+      "billingPlatformChart",
+      "doughnut",
+      platformEntries.length ? platformEntries.map(([key]) => key) : ["Sem dados"],
+      platformEntries.length ? platformEntries.map(([,value]) => value) : [0],
+      billingPlatformChart,
+      { showLegend: true, valueFormat: "currency", dataLabelFontSize: 10 }
+    );
+  }
+
+  function setupBillingUi(){
+    document.getElementById("measurementSpreadsheetImports")?.remove();
+    document.getElementById("fineSpreadsheetImports")?.remove();
+
+    const measurementTab = document.getElementById("medicoesTab");
+    const headingTitle = measurementTab?.querySelector(".tab-heading h2");
+    const headingText = measurementTab?.querySelector(".tab-heading p");
+    if (headingTitle) headingTitle.innerHTML = '<span class="icon-badge">🧾</span>Medições ALD e ARVAL por placa';
+    if (headingText) headingText.textContent = "Importe as medições mensais da ALD e da ARVAL. Cada arquivo contém locações, multas, taxas, manutenção e demais faturas, vinculadas automaticamente pela placa.";
+    const apiNote = measurementTab?.querySelector(".api-note");
+    if (apiNote) apiNote.textContent = "As planilhas de medição são acumulativas: cada nova competência fica armazenada no histórico sem apagar as anteriores. O aplicativo reconhece o formato específico da ALD e da ARVAL e separa automaticamente locações, multas, taxas e demais itens.";
+
+    const apiGrid = measurementTab?.querySelector(".api-grid");
+    if (apiGrid && !document.getElementById("billingMeasurementImports")) {
+      apiGrid.insertAdjacentHTML("afterend", \`
+        <section class="operational-import-section" id="billingMeasurementImports">
+          <h2>Importação das medições mensais</h2>
+          <p>Existe um importador para a medição completa da ALD e outro para a medição completa da ARVAL. Não é necessário importar multas ou faturas separadamente: elas são extraídas automaticamente do mesmo arquivo.</p>
+          <div class="operational-import-grid">
+            <div class="operational-import-card">
+              <h3>ALD — Medição completa</h3>
+              <p>Formato reconhecido: planilhas como <strong>MEDIÇÃO - ALD - JUNHO.26</strong>. Todas as linhas da fatura são importadas e classificadas.</p>
+              <input id="aldBillingMeasurementFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="billing-multiple-hint">Selecione várias planilhas no mesmo envio. Depois da importação, você pode selecionar os mesmos arquivos novamente ou importar novas competências.</div>
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importBillingMeasurementFiles('ALD','aldBillingMeasurementFiles','aldBillingMeasurementStatus')">IMPORTAR MEDIÇÃO ALD</button></div>
+              <div class="operational-import-status" id="aldBillingMeasurementStatus">Nenhuma medição ALD importada nesta sessão.</div>
+              <div class="billing-format-note"><strong>Tipo da fatura ALD:</strong> identificado exclusivamente pela coluna <strong>Tipo de Reembolso</strong>.<div class="billing-format-columns"><span>Manutenção/Sinistro/Frete</span><span>Multas</span><span>Veículo Reserva</span><span>Terminação antecipada</span><span>Documentação</span><span>LOCAÇÃO</span></div></div>
+              <div class="billing-format-note"><strong>Demais colunas reconhecidas:</strong><div class="billing-format-columns"><span>Fatura</span><span>Contrato</span><span>Placa</span><span>Condutor</span><span>Veículo</span><span>Valor</span><span>Descrição do Repasse</span><span>Categoria</span><span>Data do evento</span><span>N° DOCUMENTO</span><span>N° BOLETO</span><span>CENTRO DE CUSTO</span></div></div>
+            </div>
+            <div class="operational-import-card">
+              <h3>ARVAL — Medição completa</h3>
+              <p>Formato reconhecido: planilhas como <strong>MEDIÇÃO - ARVAL - JUNHO.26</strong>. Locações, multas e taxas são extraídas da aba consolidada.</p>
+              <input id="arvalBillingMeasurementFiles" type="file" accept=".xlsx,.xls,.csv" multiple />
+              <div class="billing-multiple-hint">Selecione várias planilhas no mesmo envio. Depois da importação, você pode selecionar os mesmos arquivos novamente ou importar novas competências.</div>
+              <div class="operational-import-actions"><button class="reserve-btn" type="button" onclick="importBillingMeasurementFiles('ARVAL','arvalBillingMeasurementFiles','arvalBillingMeasurementStatus')">IMPORTAR MEDIÇÃO ARVAL</button></div>
+              <div class="operational-import-status" id="arvalBillingMeasurementStatus">Nenhuma medição ARVAL importada nesta sessão.</div>
+              <div class="billing-format-note"><strong>Tipo da fatura ARVAL:</strong> identificado exclusivamente pela coluna <strong>STATUS FATURA</strong>.<div class="billing-format-columns"><span>LOCAÇÃO</span><span>MULTAS</span><span>TAXAS</span></div></div>
+              <div class="billing-format-note"><strong>Demais colunas reconhecidas:</strong><div class="billing-format-columns"><span>Tipo Fatura</span><span>Nº Fatura</span><span>Data Fatura</span><span>Valor</span><span>Placa</span><span>Detalhe</span><span>Nota Fiscal</span><span>Obra</span><span>BOLETO</span></div></div>
+            </div>
+          </div>
+          <div class="import-history-panel">
+            <div class="billing-history-heading">
+              <div><h3>Histórico acumulado das medições importadas</h3><p>Cada arquivo e cada reimportação ficam armazenados como uma carga independente.</p></div>
+              <div class="billing-history-actions">
+                <span id="billingBatchSelectionCount">0 carga(s) selecionada(s)</span>
+                <button class="danger-btn" id="deleteSelectedBillingBatchesButton" type="button" onclick="removeSelectedBillingMeasurementBatches()" disabled>EXCLUIR SELECIONADAS</button>
+                <button class="outline-btn" type="button" onclick="removeAllBillingMeasurementBatches()">APAGAR TODO O HISTÓRICO</button>
+              </div>
+            </div>
+            <div class="table-wrap billing-history-table"><table><thead><tr><th><input id="billingBatchSelectAll" type="checkbox" onchange="toggleAllBillingBatchSelections(this.checked)" aria-label="Selecionar todas as cargas"></th><th>Plataforma</th><th>Arquivo</th><th>Formato</th><th>Itens</th><th>Faturas</th><th>Multas</th><th>Valor total</th><th>Vinculados / não</th><th>Data da carga</th><th>Armazenamento</th><th>Ação</th></tr></thead><tbody id="billingImportHistory"></tbody></table></div>
+          </div>
+        </section>\`);
+    }
+
+    const filters = measurementTab?.querySelector(".measure-filters");
+    if (filters) {
+      filters.innerHTML = \`
+        <div><label for="measurementSourceFilter">Plataforma</label><select id="measurementSourceFilter"><option value="">Todas</option><option>ALD</option><option>ARVAL</option></select></div>
+        <div><label for="measurementPlateFilter">Placa</label><select id="measurementPlateFilter"><option value="">Todas</option></select></div>
+        <div><label for="measurementCategoryFilter">Categoria da fatura</label><select id="measurementCategoryFilter"><option value="">Todas</option></select></div>
+        <div><label for="measurementBoletoFilter">Boleto</label><select id="measurementBoletoFilter"><option value="">Todos</option></select></div>
+        <div><label for="measurementMethodFilter">Origem</label><select id="measurementMethodFilter"><option value="">Todas</option><option value="PLANILHA">Planilha</option><option value="API">API</option></select></div>
+        <div><label for="measurementStartFilter">Data inicial</label><input id="measurementStartFilter" type="date" /></div>
+        <div><label for="measurementEndFilter">Data final</label><input id="measurementEndFilter" type="date" /></div>
+        <button class="outline-btn" type="button" onclick="clearMeasurementFilters()">LIMPAR FILTROS</button>\`;
+      ["measurementSourceFilter","measurementPlateFilter","measurementCategoryFilter","measurementBoletoFilter","measurementMethodFilter","measurementStartFilter","measurementEndFilter"].forEach(id => document.getElementById(id)?.addEventListener("change", renderMeasurements));
+    }
+
+    const kpiLabels = measurementTab?.querySelectorAll(".measure-kpi small");
+    if (kpiLabels?.length >= 5) {
+      kpiLabels[0].textContent = "Itens da medição";
+      kpiLabels[1].textContent = "Faturas identificadas";
+      kpiLabels[2].textContent = "Valor total medido";
+      kpiLabels[3].textContent = "Sem vínculo por placa";
+      kpiLabels[4].textContent = "Última importação";
+    }
+    const panelTitle = measurementTab?.querySelector(".panel-card h2");
+    if (panelTitle) panelTitle.textContent = "Itens das medições e faturas importadas";
+
+    const finesTab = document.getElementById("multasTab");
+    const quickActions = finesTab?.querySelector(".quick-actions");
+    if (quickActions && !document.getElementById("billingAutomaticExtractionNote")) {
+      quickActions.insertAdjacentHTML("afterend", '<div class="billing-auto-note" id="billingAutomaticExtractionNote"><strong>Importação automática:</strong> as multas e todas as demais faturas da ALD e da ARVAL são extraídas das planilhas de medição importadas na aba <strong>Medições / Faturas</strong>. Esta aba permite consultar os itens classificados e também manter registros manuais.</div>');
+    }
+    finesTab?.querySelector(".fine-operational-filter-panel")?.remove();
+    const adminPanel = finesTab?.querySelector(".admin-panel");
+    if (adminPanel && !document.getElementById("billingFineFilters")) {
+      adminPanel.insertAdjacentHTML("beforebegin", \`
+        <div class="fine-operational-filter-panel" id="billingFineFilters">
+          <div class="fine-operational-filters">
+            <div><label for="fineRecordTypeFilter">Registro</label><select id="fineRecordTypeFilter"><option value="">Todos</option><option value="MULTA">Multas</option><option value="FATURA">Outras faturas</option></select></div>
+            <div><label for="fineCategoryFilter">Categoria</label><select id="fineCategoryFilter"><option value="">Todas</option></select></div>
+            <div><label for="fineSourceFilter">Plataforma</label><select id="fineSourceFilter"><option value="">Todas</option><option>ALD</option><option>ARVAL</option><option>MANUAL</option></select></div>
+            <div><label for="fineMethodFilter">Origem</label><select id="fineMethodFilter"><option value="">Todas</option><option value="PLANILHA">Planilha</option><option value="API">API</option><option value="MANUAL">Manual</option></select></div>
+            <div><label for="finePlateFilter">Placa</label><select id="finePlateFilter"><option value="">Todas</option></select></div>
+            <div><label for="fineStartFilter">Data inicial</label><input id="fineStartFilter" type="date" /></div>
+            <div><label for="fineEndFilter">Data final</label><input id="fineEndFilter" type="date" /></div>
+            <button class="outline-btn" type="button" onclick="clearFineOperationalFilters()">LIMPAR FILTROS</button>
+          </div>
+        </div>\`);
+      ["fineRecordTypeFilter","fineCategoryFilter","fineSourceFilter","fineMethodFilter","finePlateFilter","fineStartFilter","fineEndFilter"].forEach(id => document.getElementById(id)?.addEventListener("change", renderFines));
+    }
+
+    const tabButton = [...document.querySelectorAll(".tab-button")].find(button => (button.getAttribute("onclick") || "").includes("medicoesTab"));
+    if (tabButton) tabButton.innerHTML = '<span class="tab-icon">🧾</span>Medições';
+
+    document.querySelectorAll(".operational-dashboard-kpi").forEach(element => element.remove());
+    const kpiGrid = document.querySelector("#dashboardTab .powerbi-kpi-grid");
+    if (kpiGrid && !document.getElementById("dashBillingItems")) {
+      kpiGrid.insertAdjacentHTML("beforeend", \`
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">🧾</div><small>Itens de medição</small><strong id="dashBillingItems">0</strong><span><b id="dashBillingInvoices">0</b> faturas identificadas</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">💳</div><small>Valor total medido</small><strong id="dashBillingValue">R$ 0,00</strong><span>ALD e ARVAL no filtro</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">🚗</div><small>Itens de locação</small><strong id="dashBillingRentals">0</strong><span>Aluguéis e locações</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">⚠️</div><small>Multas</small><strong id="dashBillingFines">0</strong><span>Itens classificados como multas</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">🛠️</div><small>Taxas e outros itens</small><strong id="dashBillingOther">0</strong><span>Manutenção, taxas e serviços</span></div>
+        <div class="powerbi-kpi operational-dashboard-kpi"><div class="metric-icon">📥</div><small>Medições armazenadas</small><strong id="dashBillingImports">0</strong><span><b id="dashBillingUnlinked">0</b> itens sem vínculo</span></div>\`);
+    }
+
+    document.querySelectorAll(".dashboard-visual-operational-measurements, .dashboard-visual-operational-fines").forEach(element => element.remove());
+    const dashboardGrid = document.querySelector("#dashboardTab .dashboard-bi-grid");
+    const alerts = dashboardGrid?.querySelector(".dashboard-visual-alerts");
+    if (dashboardGrid && alerts && !document.getElementById("billingCategoryChart")) {
+      alerts.insertAdjacentHTML("beforebegin", \`
+        <div class="powerbi-visual bi-span-6 dashboard-visual-billing-category">
+          <div class="visual-title-row"><span class="visual-badge">📊</span><div><h3>Valor medido por tipo de fatura</h3><p>ARVAL pela coluna STATUS FATURA e ALD pela coluna Tipo de Reembolso.</p></div></div>
+          <div class="dashboard-chart-stage"><canvas id="billingCategoryChart"></canvas></div>
+        </div>
+        <div class="powerbi-visual bi-span-6 dashboard-visual-billing-platform">
+          <div class="visual-title-row"><span class="visual-badge">🧾</span><div><h3>Valor medido por plataforma</h3><p>Participação financeira das medições importadas da ALD e da ARVAL.</p></div></div>
+          <div class="dashboard-chart-stage"><canvas id="billingPlatformChart"></canvas></div>
+        </div>\`);
+    }
+  }
+
+  const previousClearMeasurementFilters = clearMeasurementFilters;
+  clearMeasurementFilters = function(){
+    try { previousClearMeasurementFilters(); } catch (error) {}
+    ["measurementSourceFilter","measurementPlateFilter","measurementCategoryFilter","measurementBoletoFilter","measurementMethodFilter","measurementStartFilter","measurementEndFilter"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.value = "";
+    });
+    renderMeasurements();
+  };
+
+  const previousRenderDashboardIndicators = renderDashboardIndicators;
+  renderDashboardIndicators = function(){
+    previousRenderDashboardIndicators();
+    renderBillingDashboard();
+  };
+
+  const previousRenderStats = renderStats;
+  renderStats = function(){
+    previousRenderStats();
+    const totalMultas = document.getElementById("totalMultas");
+    if (totalMultas) totalMultas.textContent = fines.filter(item => (item.recordType || "MULTA") === "MULTA").length;
+  };
+
+  const previousRenderAll = renderAll;
+  renderAll = function(){
+    previousRenderAll();
+    renderBillingImportHistory();
+    renderMeasurements();
+    renderFines();
+    renderBillingDashboard();
+  };
+
+  setupBillingUi();
+  renderBillingImportHistory();
+  renderMeasurements();
+  renderFines();
+  renderBillingDashboard();
+  renderStats();
+})();
+<\/script>
+
+
+<style id="measurement-only-billing-style">
+  #multasTab { display: none !important; }
+  .tab-button[onclick*="multasTab"] { display: none !important; }
+</style>
+<script id="measurement-only-billing-cleanup">
+(function(){
+  function cleanMeasurementOnlyUi(){
+    document.querySelectorAll('.tab-button').forEach(button => {
+      if ((button.getAttribute('onclick') || '').includes('multasTab')) button.remove();
+    });
+    const finesTab = document.getElementById('multasTab');
+    if (finesTab) {
+      finesTab.hidden = true;
+      finesTab.setAttribute('aria-hidden', 'true');
+    }
+
+    ['arvalFinesUrl','aldFinesUrl'].forEach(id => {
+      const field = document.getElementById(id);
+      if (field) field.closest('div')?.remove();
+    });
+    document.querySelectorAll('button').forEach(button => {
+      const action = button.getAttribute('onclick') || '';
+      if (/syncArvalFines|syncPlatformFines/.test(action)) button.remove();
+    });
+
+    const arvalApiCard = document.getElementById('arvalMeasurementsUrl')?.closest('.api-card');
+    if (arvalApiCard) {
+      const title = arvalApiCard.querySelector('h2');
+      const description = arvalApiCard.querySelector('p');
+      if (title) title.textContent = 'Integração ARVAL — Medição completa';
+      if (description) description.textContent = 'A medição completa já contém locações, multas, taxas e demais itens faturados por placa.';
+    }
+    const aldApiCard = document.getElementById('aldMeasurementsUrl')?.closest('.api-card');
+    if (aldApiCard) {
+      const title = aldApiCard.querySelector('h2');
+      const description = aldApiCard.querySelector('p');
+      if (title) title.textContent = 'Integração ALD — Medição completa';
+      if (description) description.textContent = 'A medição completa já contém locações, multas, manutenção, documentação e demais itens faturados por placa.';
+    }
+  }
+  cleanMeasurementOnlyUi();
+  document.addEventListener('DOMContentLoaded', cleanMeasurementOnlyUi, { once: true });
+  setTimeout(cleanMeasurementOnlyUi, 0);
+})();
+<\/script>
+
+
+<style id="fleet-measurement-by-plate-style">
+  .vehicle-measurement-summary {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 8px;
+  }
+  .vehicle-measurement-platform {
+    min-width: 0;
+    padding: 8px 9px;
+    border: 1px solid #d8e4ec;
+    border-radius: 11px;
+    background: #f8fbfd;
+    text-align: left;
+  }
+  .vehicle-measurement-platform.ald { border-left: 4px solid #005383; }
+  .vehicle-measurement-platform.arval { border-left: 4px solid #ffdd00; }
+  .vehicle-measurement-platform-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+  .vehicle-measurement-platform-head span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    min-height: 21px;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 9px;
+    line-height: 1;
+    font-weight: 1000;
+    letter-spacing: .3px;
+  }
+  .vehicle-measurement-platform.ald .vehicle-measurement-platform-head span {
+    background: #e5f2fa;
+    color: #003d63;
+  }
+  .vehicle-measurement-platform.arval .vehicle-measurement-platform-head span {
+    background: #fff5ad;
+    color: #594c00;
+  }
+  .vehicle-measurement-platform strong {
+    display: block;
+    color: #17365d;
+    font-size: 12px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .vehicle-measurement-platform small {
+    display: block;
+    color: #667b88;
+    font-size: 9px;
+    line-height: 1.3;
+    margin-top: 3px;
+  }
+  .vehicle-measurement-empty {
+    color: #98a2b3 !important;
+    font-weight: 700 !important;
+  }
+  .vehicle-detail-measurement-section {
+    margin-top: 18px;
+    padding: 17px;
+    border: 1px solid #d5e2e9;
+    border-radius: 16px;
+    background: #f8fbfd;
+  }
+  .vehicle-detail-measurement-section h3 {
+    margin: 0 0 5px;
+    color: #003d63;
+    font-size: 18px;
+  }
+  .vehicle-detail-measurement-section > p {
+    margin: 0 0 13px;
+    color: #667b88;
+    font-size: 12px;
+  }
+  .vehicle-detail-measurement-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .vehicle-detail-measurement-kpi {
+    padding: 12px;
+    border: 1px solid #d5e2e9;
+    border-top: 4px solid #005383;
+    border-radius: 13px;
+    background: #fff;
+  }
+  .vehicle-detail-measurement-kpi.arval { border-top-color: #ffdd00; }
+  .vehicle-detail-measurement-kpi small {
+    display: block;
+    color: #667b88;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .vehicle-detail-measurement-kpi strong {
+    display: block;
+    color: #003d63;
+    font-size: 19px;
+    margin: 5px 0 3px;
+  }
+  .vehicle-detail-measurement-kpi span {
+    color: #667b88;
+    font-size: 11px;
+  }
+  .fleet-platform-kpi.ald-platform-kpi { border-top-color: #005383 !important; }
+  .fleet-platform-kpi.arval-platform-kpi { border-top-color: #ffdd00 !important; }
+  .fleet-measurement-dashboard-visual {
+    min-height: 320px !important;
+  }
+  .fleet-platform-bars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 8px 0 16px;
+  }
+  .fleet-platform-bar-card {
+    padding: 13px;
+    border: 1px solid #d5e2e9;
+    border-radius: 14px;
+    background: #f8fbfd;
+  }
+  .fleet-platform-bar-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .fleet-platform-bar-head strong { color: #003d63; }
+  .fleet-platform-bar-head span { color: #5f7388; font-size: 12px; font-weight: 800; }
+  .fleet-platform-bar-track {
+    height: 12px;
+    border-radius: 999px;
+    background: #e4ebf1;
+    overflow: hidden;
+  }
+  .fleet-platform-bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    min-width: 0;
+  }
+  .fleet-platform-bar-fill.ald { background: linear-gradient(90deg, #003d63, #0074ad); }
+  .fleet-platform-bar-fill.arval { background: linear-gradient(90deg, #d9b900, #ffdd00); }
+  .fleet-measurement-table-wrap {
+    max-height: 410px;
+    overflow: auto;
+    border: 1px solid #d5e2e9;
+    border-radius: 14px;
+  }
+  .fleet-measurement-table-wrap table { min-width: 1050px; box-shadow: none !important; border: 0 !important; }
+  .fleet-measurement-table-wrap th { position: sticky; top: 0; z-index: 2; }
+  .platform-value-cell strong { display: block; color: #17365d; }
+  .platform-value-cell small { display: block; color: #667b88; margin-top: 2px; }
+  .platform-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 1000;
+  }
+  .platform-chip.ald { background: #e5f2fa; color: #003d63; }
+  .platform-chip.arval { background: #fff5ad; color: #594c00; }
+  @media (max-width: 760px) {
+    .vehicle-measurement-summary,
+    .vehicle-detail-measurement-kpis,
+    .fleet-platform-bars { grid-template-columns: 1fr; }
+  }
+</style>
+<script id="fleet-measurement-by-plate-script">
+(function(){
+  const PM_SOURCES = ["ALD", "ARVAL"];
+  let pmReconciling = false;
+
+  function pmEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  }
+
+  function pmPlate(value){
+    return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+
+  function pmSource(item){
+    const value = String(item?.source || item?.platform || item?.locadora || "").trim().toUpperCase();
+    if (value.includes("ARVAL")) return "ARVAL";
+    if (value.includes("ALD")) return "ALD";
+    return value;
+  }
+
+  function pmCurrency(value){
+    try { return formatCurrency(Number(value || 0)); }
+    catch (error) { return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+  }
+
+  function pmCompetence(value){
+    const text = String(value || "").trim();
+    const match = text.match(/^(\\d{4})-(\\d{2})$/);
+    if (match) return \`\${match[2]}/\${match[1]}\`;
+    return text || "-";
+  }
+
+  function pmVehicleByMeasurement(item){
+    const id = String(item?.vehicleId || "");
+    let vehicle = id ? vehicles.find(v => String(v.id || "") === id) : null;
+    if (vehicle) return vehicle;
+    const plate = pmPlate(item?.plate || item?.placa || item?.placaVeiculo || item?.vehiclePlate || "");
+    if (!plate) return null;
+    return vehicles.find(v => pmPlate(v.placaVeiculo) === plate) || null;
+  }
+
+  function pmRecordsForVehicle(vehicle){
+    if (!vehicle) return [];
+    const id = String(vehicle.id || "");
+    const plate = pmPlate(vehicle.placaVeiculo);
+    return (Array.isArray(measurements) ? measurements : []).filter(item => {
+      const source = pmSource(item);
+      if (!PM_SOURCES.includes(source)) return false;
+      const itemPlate = pmPlate(item.plate || item.placa || item.placaVeiculo || item.vehiclePlate || "");
+      return (id && String(item.vehicleId || "") === id) || (plate && itemPlate === plate);
+    });
+  }
+
+  function pmLatestRecord(records){
+    return [...records].sort((a,b) => String(b.importedAt || b.invoiceDate || b.date || b.competence || "").localeCompare(String(a.importedAt || a.invoiceDate || a.date || a.competence || "")))[0] || null;
+  }
+
+  function pmSummary(records, source){
+    const sourceRecords = records.filter(item => pmSource(item) === source);
+    const invoices = new Set(sourceRecords.map(item => String(item.invoiceNumber || item.documentNumber || "").trim()).filter(Boolean));
+    const total = sourceRecords.reduce((sum,item) => sum + Number(item.value || item.valor || 0), 0);
+    const latest = pmLatestRecord(sourceRecords);
+    return {
+      source,
+      count: sourceRecords.length,
+      invoices: invoices.size,
+      value: total,
+      latest: latest?.competence || latest?.period || latest?.eventCompetence || "",
+      records: sourceRecords
+    };
+  }
+
+  function pmReconcileMeasurementLinks(){
+    if (pmReconciling || !Array.isArray(measurements) || !Array.isArray(vehicles)) return false;
+    pmReconciling = true;
+    let changed = false;
+    measurements.forEach(item => {
+      if (!PM_SOURCES.includes(pmSource(item))) return;
+      const vehicle = pmVehicleByMeasurement(item);
+      const nextId = vehicle?.id || "";
+      const nextLinked = Boolean(vehicle);
+      if (String(item.vehicleId || "") !== String(nextId) || Boolean(item.linked) !== nextLinked) changed = true;
+      item.vehicleId = nextId;
+      item.linked = nextLinked;
+      if (vehicle) {
+        const updates = {
+          vehicleCode: vehicle.codigoVeiculo || item.vehicleCode || "",
+          vehicleModel: vehicle.modeloVeiculo || item.vehicleModel || "",
+          currentCostCenter: vehicle.centroCusto || "",
+          currentDriver: vehicle.condutor || "",
+          fleetLocadora: vehicle.locadora || "",
+          fleetContract: vehicle.contrato || ""
+        };
+        Object.entries(updates).forEach(([key,value]) => {
+          if (String(item[key] || "") !== String(value || "")) {
+            item[key] = value;
+            changed = true;
+          }
+        });
+      }
+    });
+    if (changed) {
+      window.persistFleetMeasurements(measurements).catch(error => console.error("Falha ao atualizar vínculos das medições.", error));
+    }
+    pmReconciling = false;
+    return changed;
+  }
+
+  function pmPlatformCard(summary){
+    const sourceClass = summary.source.toLowerCase();
+    const detail = summary.count
+      ? \`\${summary.count} item(ns) · \${summary.invoices} fatura(s)\${summary.latest ? \` · \${pmCompetence(summary.latest)}\` : ""}\`
+      : "Sem medição vinculada";
+    return \`
+      <div class="vehicle-measurement-platform \${sourceClass}">
+        <div class="vehicle-measurement-platform-head"><span>\${summary.source}</span><small>\${summary.count ? \`\${summary.count} item(ns)\` : "0"}</small></div>
+        <strong class="\${summary.count ? "" : "vehicle-measurement-empty"}">\${pmEscape(pmCurrency(summary.value))}</strong>
+        <small>\${pmEscape(detail)}</small>
+      </div>\`;
+  }
+
+  function pmDecorateVehicleCards(){
+    document.querySelectorAll("#vehicleGrid .vehicle-card").forEach(card => {
+      card.querySelector(".vehicle-measurement-summary")?.remove();
+      const plate = pmPlate(card.querySelector(".plate")?.textContent || "");
+      const vehicle = vehicles.find(v => pmPlate(v.placaVeiculo) === plate);
+      if (!vehicle) return;
+      const records = pmRecordsForVehicle(vehicle);
+      const target = card.querySelector(".vehicle-meta-summary") || card.querySelector(".vehicle-content");
+      if (!target) return;
+      const summary = document.createElement("div");
+      summary.className = "vehicle-measurement-summary";
+      summary.innerHTML = pmPlatformCard(pmSummary(records, "ALD")) + pmPlatformCard(pmSummary(records, "ARVAL"));
+      target.insertAdjacentElement("afterend", summary);
+    });
+  }
+
+  function pmVehicleDetailSection(vehicle){
+    const records = pmRecordsForVehicle(vehicle);
+    const ald = pmSummary(records, "ALD");
+    const arval = pmSummary(records, "ARVAL");
+    const latest = [...records]
+      .sort((a,b) => String(b.importedAt || b.invoiceDate || b.date || "").localeCompare(String(a.importedAt || a.invoiceDate || a.date || "")))
+      .slice(0, 8);
+    const rows = latest.length ? latest.map(item => \`
+      <tr>
+        <td><span class="platform-chip \${pmSource(item).toLowerCase()}">\${pmEscape(pmSource(item))}</span></td>
+        <td>\${pmEscape(item.invoiceNumber || item.documentNumber || "-")}</td>
+        <td>\${pmEscape(pmCompetence(item.competence || item.period))}</td>
+        <td>\${pmEscape(measurementCategory(item) || "-")}</td>
+        <td>\${pmEscape(item.costCenter || item.currentCostCenter || vehicle.centroCusto || "-")}</td>
+        <td><strong>\${pmEscape(pmCurrency(item.value))}</strong></td>
+      </tr>\`).join("") : '<tr><td colspan="6">Nenhuma medição ALD ou ARVAL vinculada a esta placa.</td></tr>';
+    return \`
+      <section class="vehicle-detail-measurement-section" id="vehicleDetailMeasurementSection">
+        <h3>Medições vinculadas pela placa</h3>
+        <p>Consolidação das planilhas importadas da ALD e da ARVAL para a placa \${pmEscape(vehicle.placaVeiculo || "-")}.</p>
+        <div class="vehicle-detail-measurement-kpis">
+          <div class="vehicle-detail-measurement-kpi"><small>ALD</small><strong>\${pmEscape(pmCurrency(ald.value))}</strong><span>\${ald.count} item(ns) · \${ald.invoices} fatura(s) · última \${pmEscape(pmCompetence(ald.latest))}</span></div>
+          <div class="vehicle-detail-measurement-kpi arval"><small>ARVAL</small><strong>\${pmEscape(pmCurrency(arval.value))}</strong><span>\${arval.count} item(ns) · \${arval.invoices} fatura(s) · última \${pmEscape(pmCompetence(arval.latest))}</span></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Plataforma</th><th>Fatura / Documento</th><th>Competência</th><th>Categoria</th><th>Obra / CC da medição</th><th>Valor</th></tr></thead><tbody>\${rows}</tbody></table></div>
+      </section>\`;
+  }
+
+  function pmDashboardVehicles(){
+    try { return typeof getDashboardFilteredVehicles === "function" ? getDashboardFilteredVehicles() : vehicles; }
+    catch (error) { return vehicles; }
+  }
+
+  function pmDashboardRecords(filteredVehicles){
+    const ids = new Set(filteredVehicles.map(v => String(v.id || "")).filter(Boolean));
+    const plates = new Set(filteredVehicles.map(v => pmPlate(v.placaVeiculo)).filter(Boolean));
+    return (Array.isArray(measurements) ? measurements : []).filter(item => {
+      if (!PM_SOURCES.includes(pmSource(item))) return false;
+      const vehicle = pmVehicleByMeasurement(item);
+      const itemPlate = pmPlate(item.plate || item.placa || "");
+      return (vehicle && ids.has(String(vehicle.id || ""))) || (itemPlate && plates.has(itemPlate));
+    });
+  }
+
+  function pmEnsureDashboardUi(){
+    const kpiGrid = document.querySelector("#dashboardTab .powerbi-kpi-grid");
+    if (kpiGrid && !document.getElementById("dashAldMeasurementValue")) {
+      kpiGrid.insertAdjacentHTML("beforeend", \`
+        <div class="powerbi-kpi fleet-platform-kpi ald-platform-kpi"><div class="metric-icon">A</div><small>Medições ALD por placa</small><strong id="dashAldMeasurementValue">R$ 0,00</strong><span><b id="dashAldMeasurementVehicles">0</b> veículo(s) · <b id="dashAldMeasurementItems">0</b> item(ns)</span></div>
+        <div class="powerbi-kpi fleet-platform-kpi arval-platform-kpi"><div class="metric-icon">R</div><small>Medições ARVAL por placa</small><strong id="dashArvalMeasurementValue">R$ 0,00</strong><span><b id="dashArvalMeasurementVehicles">0</b> veículo(s) · <b id="dashArvalMeasurementItems">0</b> item(ns)</span></div>\`);
+    }
+
+    const dashboardGrid = document.querySelector("#dashboardTab .dashboard-bi-grid");
+    if (dashboardGrid && !document.getElementById("fleetMeasurementByPlateDashboard")) {
+      const alerts = dashboardGrid.querySelector(".dashboard-visual-alerts");
+      const html = \`
+        <div class="powerbi-visual bi-span-12 fleet-measurement-dashboard-visual" id="fleetMeasurementByPlateDashboard">
+          <div class="visual-title-row"><span class="visual-badge">🚘</span><div><h3>Medições por veículo e plataforma</h3><p>Valores das planilhas vinculados pela placa, com ALD e ARVAL demonstradas separadamente.</p></div></div>
+          <div class="fleet-platform-bars" id="fleetPlatformMeasurementBars"></div>
+          <div class="fleet-measurement-table-wrap"><table><thead><tr><th>Placa</th><th>Veículo</th><th>Obra atual</th><th>ALD</th><th>ARVAL</th><th>Total medido</th><th>Última competência</th></tr></thead><tbody id="fleetMeasurementByPlateTable"></tbody></table></div>
+        </div>\`;
+      if (alerts) alerts.insertAdjacentHTML("beforebegin", html);
+      else dashboardGrid.insertAdjacentHTML("beforeend", html);
+    }
+  }
+
+  function pmSetText(id, value){ const element = document.getElementById(id); if (element) element.textContent = value; }
+
+  function pmRenderDashboard(){
+    pmEnsureDashboardUi();
+    const filteredVehicles = pmDashboardVehicles();
+    const records = pmDashboardRecords(filteredVehicles);
+    const ald = pmSummary(records, "ALD");
+    const arval = pmSummary(records, "ARVAL");
+    const aldVehicles = new Set(ald.records.map(item => String(pmVehicleByMeasurement(item)?.id || "")).filter(Boolean));
+    const arvalVehicles = new Set(arval.records.map(item => String(pmVehicleByMeasurement(item)?.id || "")).filter(Boolean));
+
+    pmSetText("dashAldMeasurementValue", pmCurrency(ald.value));
+    pmSetText("dashAldMeasurementVehicles", aldVehicles.size);
+    pmSetText("dashAldMeasurementItems", ald.count);
+    pmSetText("dashArvalMeasurementValue", pmCurrency(arval.value));
+    pmSetText("dashArvalMeasurementVehicles", arvalVehicles.size);
+    pmSetText("dashArvalMeasurementItems", arval.count);
+
+    const maxValue = Math.max(Math.abs(ald.value), Math.abs(arval.value), 1);
+    const bars = document.getElementById("fleetPlatformMeasurementBars");
+    if (bars) {
+      bars.innerHTML = [ald, arval].map(summary => {
+        const width = Math.max(0, Math.min(100, Math.round((Math.abs(summary.value) / maxValue) * 100)));
+        return \`<div class="fleet-platform-bar-card"><div class="fleet-platform-bar-head"><strong>\${summary.source}</strong><span>\${pmEscape(pmCurrency(summary.value))} · \${summary.count} item(ns)</span></div><div class="fleet-platform-bar-track"><div class="fleet-platform-bar-fill \${summary.source.toLowerCase()}" style="width:\${width}%"></div></div></div>\`;
+      }).join("");
+    }
+
+    const table = document.getElementById("fleetMeasurementByPlateTable");
+    if (!table) return;
+    const rows = filteredVehicles.map(vehicle => {
+      const vehicleRecords = pmRecordsForVehicle(vehicle);
+      const vehicleAld = pmSummary(vehicleRecords, "ALD");
+      const vehicleArval = pmSummary(vehicleRecords, "ARVAL");
+      const total = vehicleAld.value + vehicleArval.value;
+      const latest = pmLatestRecord(vehicleRecords);
+      return { vehicle, vehicleAld, vehicleArval, total, latest };
+    }).filter(row => row.vehicleAld.count || row.vehicleArval.count)
+      .sort((a,b) => Math.abs(b.total) - Math.abs(a.total));
+
+    if (!rows.length) {
+      table.innerHTML = '<tr><td colspan="7">Nenhuma medição ALD ou ARVAL vinculada às placas dos veículos no filtro atual.</td></tr>';
+      return;
+    }
+    table.innerHTML = rows.map(row => \`
+      <tr>
+        <td><strong>\${pmEscape(row.vehicle.placaVeiculo || "-")}</strong></td>
+        <td>\${pmEscape(row.vehicle.modeloVeiculo || "-")}<br><small>\${pmEscape(row.vehicle.locadora || "Locadora não cadastrada")}</small></td>
+        <td>\${pmEscape(row.vehicle.centroCusto || "-")}</td>
+        <td class="platform-value-cell"><span class="platform-chip ald">ALD</span><strong>\${pmEscape(pmCurrency(row.vehicleAld.value))}</strong><small>\${row.vehicleAld.count} item(ns) · \${row.vehicleAld.invoices} fatura(s)</small></td>
+        <td class="platform-value-cell"><span class="platform-chip arval">ARVAL</span><strong>\${pmEscape(pmCurrency(row.vehicleArval.value))}</strong><small>\${row.vehicleArval.count} item(ns) · \${row.vehicleArval.invoices} fatura(s)</small></td>
+        <td><strong>\${pmEscape(pmCurrency(row.total))}</strong></td>
+        <td>\${pmEscape(pmCompetence(row.latest?.competence || row.latest?.period))}</td>
+      </tr>\`).join("");
+  }
+
+  const pmBaseRenderVehicles = renderVehicles;
+  renderVehicles = function(){
+    pmBaseRenderVehicles();
+    pmDecorateVehicleCards();
+  };
+
+  const pmBaseOpenVehicleDetails = openVehicleDetails;
+  openVehicleDetails = function(id){
+    pmBaseOpenVehicleDetails(id);
+    const vehicle = vehicles.find(v => String(v.id || "") === String(id || ""));
+    const body = document.getElementById("vehicleDetailBody");
+    if (vehicle && body) {
+      body.querySelector("#vehicleDetailMeasurementSection")?.remove();
+      body.insertAdjacentHTML("beforeend", pmVehicleDetailSection(vehicle));
+    }
+  };
+
+  const pmBaseRenderDashboardIndicators = renderDashboardIndicators;
+  renderDashboardIndicators = function(){
+    pmBaseRenderDashboardIndicators();
+    pmRenderDashboard();
+  };
+
+  const pmBaseRenderAll = renderAll;
+  renderAll = function(){
+    pmReconcileMeasurementLinks();
+    pmBaseRenderAll();
+    pmDecorateVehicleCards();
+    pmRenderDashboard();
+  };
+
+  ["search","statusFilter","liderFilter","centroCustoFilter","locadoraFilter","categoriaFilter","condutorFilter","anoFilter","contratoFilter"].forEach(id => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.addEventListener(id === "search" ? "input" : "change", () => setTimeout(pmDecorateVehicleCards, 0));
+  });
+  ["dashStatusFilter","dashLocadoraFilter","dashCentroCustoFilter","dashCategoriaFilter","dashContratoFilter"].forEach(id => {
+    document.getElementById(id)?.addEventListener("change", () => setTimeout(pmRenderDashboard, 0));
+  });
+
+  pmReconcileMeasurementLinks();
+  pmEnsureDashboardUi();
+  renderVehicles();
+  pmRenderDashboard();
+})();
+<\/script>
+
+
+<script id="fleet-large-storage-hydration">
+window.fleetLargeStorageReady = (async function(){
+  try {
+    const legacy = Array.isArray(measurements) ? measurements : [];
+    const stored = await window.loadFleetMeasurements();
+    const combined = [];
+    const ids = new Set();
+    [...stored, ...legacy].forEach(item => {
+      if (!item || typeof item !== "object") return;
+      const id = String(item.id || \`\${item.batchId || ""}|\${item.source || ""}|\${item.plate || ""}|\${item.invoiceNumber || ""}|\${item.value || ""}|\${combined.length}\`);
+      if (ids.has(id)) return;
+      ids.add(id);
+      const copy = { ...item };
+      delete copy.rawData;
+      combined.push(copy);
+    });
+    measurements = combined;
+    await window.persistFleetMeasurements(measurements);
+    // Mantem a chave de hidratacao usada pelo Supply Flow para sincronizar com o Supabase.
+
+    fines = (Array.isArray(fines) ? fines : []).filter(item => !(item && item.batchId && item.measurementRecordId && item.sourceMethod === "PLANILHA"));
+    window.safeFleetLocalStorageSet(STORAGE_FINES, JSON.stringify(fines));
+
+    window.__fleetMeasurementsStorageMode = "indexeddb";
+    if (typeof renderAll === "function") renderAll();
+    return { ok: true, records: measurements.length };
+  } catch (error) {
+    console.error("Não foi possível inicializar o banco local das medições.", error);
+    window.__fleetMeasurementsStorageMode = "memory";
+    const message = document.querySelector("#medicoesTab .api-note");
+    if (message) {
+      message.insertAdjacentHTML("afterend", '<div class="operational-import-status error"><strong>Atenção:</strong> o banco local do navegador não pôde ser aberto. Feche outras janelas deste aplicativo, recarregue a página e tente novamente.</div>');
+    }
+    return { ok: false, error };
+  }
+})();
+<\/script>
+
+
+<style id="strict-measurement-company-style">
+  .vehicle-measurement-platform.company-only {
+    width: 100%;
+  }
+  .vehicle-measurement-platform.not-integrated {
+    border-left: 4px solid #98a2b3;
+    background: #f8fafc;
+  }
+  .vehicle-measurement-platform.not-integrated .vehicle-measurement-platform-head span {
+    background: #667085;
+    color: #fff;
+  }
+  .vehicle-measurement-platform.not-integrated strong {
+    color: #667085;
+    font-size: 13px;
+  }
+  .locadora-measurement-rule-note {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #eef6ff;
+    border: 1px solid #c9dff6;
+    color: #17365d;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .link-status.linked-mismatch {
+    background: #fff4b8;
+    color: #6a5300;
+    border: 1px solid rgba(255,217,0,.55);
+  }
+</style>
+<script id="strict-measurement-company-script">
+(function(){
+  "use strict";
+
+  const STRICT_SOURCES = ["ALD", "ARVAL"];
+  let strictPersistTimer = null;
+  let strictReconciling = false;
+
+  function strictNormalize(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function strictPlate(value){
+    return strictNormalize(value).replace(/[^A-Z0-9]/g, "");
+  }
+
+  function strictSource(value){
+    const normalized = strictNormalize(value?.source || value?.platform || value?.locadora || value);
+    if (normalized.includes("ARVAL")) return "ARVAL";
+    if (normalized.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function strictVehicleSource(vehicle){
+    const locadora = strictNormalize(vehicle?.locadora);
+    if (locadora.includes("ARVAL")) return "ARVAL";
+    if (locadora.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function strictEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  }
+
+  function strictCurrency(value){
+    try { return formatCurrency(Number(value || 0)); }
+    catch (error) { return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+  }
+
+  function strictCompetence(value){
+    const text = String(value || "").trim();
+    const match = text.match(/^(\\d{4})-(\\d{2})$/);
+    return match ? \`\${match[2]}/\${match[1]}\` : (text || "-");
+  }
+
+  function strictFindVehicle(plateValue, sourceValue){
+    const plate = strictPlate(plateValue);
+    const source = strictSource(sourceValue);
+    if (!plate || !source || !Array.isArray(vehicles)) return null;
+    return vehicles.find(vehicle => strictPlate(vehicle.placaVeiculo) === plate && strictVehicleSource(vehicle) === source) || null;
+  }
+
+  function strictAnyVehicleByPlate(plateValue){
+    const plate = strictPlate(plateValue);
+    if (!plate || !Array.isArray(vehicles)) return null;
+    return vehicles.find(vehicle => strictPlate(vehicle.placaVeiculo) === plate) || null;
+  }
+
+  function strictApplyVehicleLink(record){
+    if (!record || typeof record !== "object") return false;
+    const source = strictSource(record);
+    if (!STRICT_SOURCES.includes(source)) return false;
+    const plate = strictPlate(record.plate || record.placa || record.placaVeiculo || record.vehiclePlate || "");
+    const vehicle = strictFindVehicle(plate, source);
+    const samePlateVehicle = strictAnyVehicleByPlate(plate);
+    const nextId = vehicle?.id || "";
+    const nextLinked = Boolean(vehicle);
+    const mismatch = !vehicle && Boolean(samePlateVehicle);
+    let changed = false;
+
+    const updates = {
+      source,
+      plate,
+      vehicleId: nextId,
+      linked: nextLinked,
+      linkMismatch: mismatch ? "LOCADORA_DIVERGENTE" : (!vehicle && plate ? "PLACA_NAO_CADASTRADA" : ""),
+      fleetLocadora: vehicle?.locadora || "",
+      currentCostCenter: vehicle?.centroCusto || "",
+      currentDriver: vehicle?.condutor || "",
+      fleetContract: vehicle?.contrato || ""
+    };
+
+    if (vehicle) {
+      updates.vehicleCode = vehicle.codigoVeiculo || record.vehicleCode || "";
+      updates.vehicleModel = vehicle.modeloVeiculo || record.vehicleModel || "";
+    }
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (String(record[key] ?? "") !== String(value ?? "")) {
+        record[key] = value;
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function strictReconcileMeasurements(){
+    if (strictReconciling || !Array.isArray(measurements)) return false;
+    strictReconciling = true;
+    let changed = false;
+    measurements.forEach(record => {
+      if (strictApplyVehicleLink(record)) changed = true;
+    });
+    strictReconciling = false;
+    return changed;
+  }
+
+  function strictSchedulePersist(){
+    clearTimeout(strictPersistTimer);
+    strictPersistTimer = setTimeout(async () => {
+      try {
+        strictReconcileMeasurements();
+        if (typeof window.persistFleetMeasurements === "function") {
+          await window.persistFleetMeasurements(measurements);
+        }
+      } catch (error) {
+        console.error("Falha ao salvar vínculos por placa e locadora.", error);
+      }
+    }, 80);
+  }
+
+  function strictRecordsForVehicle(vehicle){
+    const expectedSource = strictVehicleSource(vehicle);
+    if (!expectedSource || !Array.isArray(measurements)) return [];
+    const id = String(vehicle?.id || "");
+    const plate = strictPlate(vehicle?.placaVeiculo);
+    return measurements.filter(record => {
+      if (strictSource(record) !== expectedSource) return false;
+      const recordPlate = strictPlate(record.plate || record.placa || record.placaVeiculo || record.vehiclePlate || "");
+      return (id && String(record.vehicleId || "") === id) || (plate && recordPlate === plate && Boolean(strictFindVehicle(recordPlate, expectedSource)));
+    });
+  }
+
+  function strictLatest(records){
+    return [...records].sort((a, b) => String(b.importedAt || b.invoiceDate || b.date || b.competence || "").localeCompare(String(a.importedAt || a.invoiceDate || a.date || a.competence || "")))[0] || null;
+  }
+
+  function strictSummary(records, source){
+    const selected = records.filter(record => strictSource(record) === source);
+    const invoices = new Set(selected.map(record => String(record.invoiceNumber || record.documentNumber || "").trim()).filter(Boolean));
+    const value = selected.reduce((sum, record) => sum + Number(record.value || record.valor || 0), 0);
+    const latest = strictLatest(selected);
+    return {
+      source,
+      records: selected,
+      count: selected.length,
+      invoices: invoices.size,
+      value,
+      latest: latest?.competence || latest?.period || latest?.eventCompetence || ""
+    };
+  }
+
+  function strictPlatformCard(summary){
+    const sourceClass = summary.source.toLowerCase();
+    const detail = summary.count
+      ? \`\${summary.count} item(ns) · \${summary.invoices} fatura(s)\${summary.latest ? \` · \${strictCompetence(summary.latest)}\` : ""}\`
+      : "Sem medição vinculada";
+    return \`<div class="vehicle-measurement-platform company-only \${sourceClass}">
+      <div class="vehicle-measurement-platform-head"><span>\${summary.source}</span><small>\${summary.count ? \`\${summary.count} item(ns)\` : "0"}</small></div>
+      <strong class="\${summary.count ? "" : "vehicle-measurement-empty"}">\${strictEscape(strictCurrency(summary.value))}</strong>
+      <small>\${strictEscape(detail)}</small>
+    </div>\`;
+  }
+
+  function strictUnsupportedCard(vehicle){
+    const locadora = String(vehicle?.locadora || "Locadora não informada").trim();
+    return \`<div class="vehicle-measurement-platform company-only not-integrated">
+      <div class="vehicle-measurement-platform-head"><span>SEM INTEGRAÇÃO</span><small>\${strictEscape(locadora)}</small></div>
+      <strong>Medições não aplicáveis</strong>
+      <small>Este módulo recebe medições somente da ALD e da ARVAL.</small>
+    </div>\`;
+  }
+
+  function strictDecorateVehicleCards(){
+    document.querySelectorAll("#vehicleGrid .vehicle-card").forEach(card => {
+      card.querySelector(".vehicle-measurement-summary")?.remove();
+      const plate = strictPlate(card.querySelector(".plate")?.textContent || "");
+      const vehicle = vehicles.find(item => strictPlate(item.placaVeiculo) === plate);
+      if (!vehicle) return;
+      const source = strictVehicleSource(vehicle);
+      const target = card.querySelector(".vehicle-meta-summary") || card.querySelector(".vehicle-content");
+      if (!target) return;
+      const summary = document.createElement("div");
+      summary.className = "vehicle-measurement-summary";
+      summary.innerHTML = source
+        ? strictPlatformCard(strictSummary(strictRecordsForVehicle(vehicle), source))
+        : strictUnsupportedCard(vehicle);
+      target.insertAdjacentElement("afterend", summary);
+    });
+  }
+
+  function strictVehicleDetailSection(vehicle){
+    const source = strictVehicleSource(vehicle);
+    if (!source) {
+      return \`<section class="vehicle-detail-measurement-section" id="vehicleDetailMeasurementSection">
+        <h3>Medições da locadora</h3>
+        <p>O veículo pertence à locadora <strong>\${strictEscape(vehicle.locadora || "não informada")}</strong>. O aplicativo recebe medições somente da ALD e da ARVAL, portanto nenhum valor dessas plataformas é atribuído a este veículo.</p>
+      </section>\`;
+    }
+
+    const records = strictRecordsForVehicle(vehicle);
+    const summary = strictSummary(records, source);
+    const latestRows = [...records]
+      .sort((a, b) => String(b.importedAt || b.invoiceDate || b.date || "").localeCompare(String(a.importedAt || a.invoiceDate || a.date || "")))
+      .slice(0, 10);
+    const rows = latestRows.length ? latestRows.map(record => \`<tr>
+      <td><span class="platform-chip \${source.toLowerCase()}">\${source}</span></td>
+      <td>\${strictEscape(record.invoiceNumber || record.documentNumber || "-")}</td>
+      <td>\${strictEscape(strictCompetence(record.competence || record.period))}</td>
+      <td>\${strictEscape(measurementCategory(record) || "-")}</td>
+      <td>\${strictEscape(record.costCenter || record.currentCostCenter || vehicle.centroCusto || "-")}</td>
+      <td><strong>\${strictEscape(strictCurrency(record.value))}</strong></td>
+    </tr>\`).join("") : \`<tr><td colspan="6">Nenhuma medição \${source} vinculada a esta placa.</td></tr>\`;
+
+    return \`<section class="vehicle-detail-measurement-section" id="vehicleDetailMeasurementSection">
+      <h3>Medições \${source} vinculadas pela placa</h3>
+      <p>Este veículo pertence à <strong>\${source}</strong>. Somente registros da \${source} com a placa \${strictEscape(vehicle.placaVeiculo || "-")} são apresentados.</p>
+      <div class="vehicle-detail-measurement-kpis">
+        <div class="vehicle-detail-measurement-kpi \${source === "ARVAL" ? "arval" : ""}"><small>\${source}</small><strong>\${strictEscape(strictCurrency(summary.value))}</strong><span>\${summary.count} item(ns) · \${summary.invoices} fatura(s) · última \${strictEscape(strictCompetence(summary.latest))}</span></div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Plataforma</th><th>Fatura / Documento</th><th>Competência</th><th>Categoria</th><th>Obra / CC da medição</th><th>Valor</th></tr></thead><tbody>\${rows}</tbody></table></div>
+    </section>\`;
+  }
+
+  function strictDashboardVehicles(){
+    try {
+      return typeof getDashboardFilteredVehicles === "function" ? getDashboardFilteredVehicles() : vehicles;
+    } catch (error) {
+      return vehicles;
+    }
+  }
+
+  function strictDashboardRecords(filteredVehicles){
+    return filteredVehicles.flatMap(vehicle => strictRecordsForVehicle(vehicle));
+  }
+
+  function strictSetText(id, value){
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  }
+
+  function strictCategory(record){
+    try { return measurementCategory(record) || "OUTROS"; }
+    catch (error) { return record.billingCategory || "OUTROS"; }
+  }
+
+  function strictRenderCharts(records){
+    if (typeof makeChart !== "function") return;
+    const categoryTotals = records.reduce((acc, record) => {
+      const key = strictCategory(record);
+      acc[key] = (acc[key] || 0) + Number(record.value || 0);
+      return acc;
+    }, {});
+    const categoryEntries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+    const categoryCanvas = document.getElementById("billingCategoryChart");
+    const categoryChart = categoryCanvas && window.Chart?.getChart ? Chart.getChart(categoryCanvas) : null;
+    makeChart(
+      "billingCategoryChart",
+      "bar",
+      categoryEntries.length ? categoryEntries.map(([key]) => key) : ["Sem dados"],
+      categoryEntries.length ? categoryEntries.map(([, value]) => value) : [0],
+      categoryChart,
+      { label: "Valor medido", showLegend: false, valueFormat: "currency", indexAxis: "y", dataLabelFontSize: 10 }
+    );
+
+    const platformTotals = records.reduce((acc, record) => {
+      const key = strictSource(record) || "OUTROS";
+      acc[key] = (acc[key] || 0) + Number(record.value || 0);
+      return acc;
+    }, {});
+    const platformEntries = STRICT_SOURCES.map(source => [source, Number(platformTotals[source] || 0)]).filter(([, value]) => value !== 0);
+    const platformCanvas = document.getElementById("billingPlatformChart");
+    const platformChart = platformCanvas && window.Chart?.getChart ? Chart.getChart(platformCanvas) : null;
+    makeChart(
+      "billingPlatformChart",
+      "doughnut",
+      platformEntries.length ? platformEntries.map(([key]) => key) : ["Sem dados"],
+      platformEntries.length ? platformEntries.map(([, value]) => value) : [0],
+      platformChart,
+      { showLegend: true, valueFormat: "currency", dataLabelFontSize: 10 }
+    );
+  }
+
+  function strictRenderDashboard(){
+    const filteredVehicles = strictDashboardVehicles();
+    const records = strictDashboardRecords(filteredVehicles);
+    const ald = strictSummary(records, "ALD");
+    const arval = strictSummary(records, "ARVAL");
+    const aldVehicleIds = new Set(ald.records.map(record => String(record.vehicleId || "")).filter(Boolean));
+    const arvalVehicleIds = new Set(arval.records.map(record => String(record.vehicleId || "")).filter(Boolean));
+
+    strictSetText("dashAldMeasurementValue", strictCurrency(ald.value));
+    strictSetText("dashAldMeasurementVehicles", aldVehicleIds.size);
+    strictSetText("dashAldMeasurementItems", ald.count);
+    strictSetText("dashArvalMeasurementValue", strictCurrency(arval.value));
+    strictSetText("dashArvalMeasurementVehicles", arvalVehicleIds.size);
+    strictSetText("dashArvalMeasurementItems", arval.count);
+
+    const totalValue = records.reduce((sum, record) => sum + Number(record.value || 0), 0);
+    const invoices = new Set(records.map(record => \`\${strictSource(record)}|\${record.invoiceNumber || ""}\`).filter(key => !key.endsWith("|")));
+    const rentals = records.filter(record => strictCategory(record) === "LOCAÇÃO");
+    const finesOnly = records.filter(record => strictCategory(record) === "MULTAS");
+    const other = records.filter(record => !["LOCAÇÃO", "MULTAS"].includes(strictCategory(record)));
+    const unlinked = (Array.isArray(measurements) ? measurements : []).filter(record => STRICT_SOURCES.includes(strictSource(record)) && !strictFindVehicle(record.plate || record.placa || "", strictSource(record))).length;
+
+    strictSetText("dashBillingItems", records.length);
+    strictSetText("dashBillingValue", strictCurrency(totalValue));
+    strictSetText("dashBillingInvoices", invoices.size);
+    strictSetText("dashBillingRentals", rentals.length);
+    strictSetText("dashBillingFines", finesOnly.length);
+    strictSetText("dashBillingOther", other.length);
+    strictSetText("dashBillingUnlinked", unlinked);
+
+    const maxValue = Math.max(Math.abs(ald.value), Math.abs(arval.value), 1);
+    const bars = document.getElementById("fleetPlatformMeasurementBars");
+    if (bars) {
+      bars.innerHTML = [ald, arval].map(summary => {
+        const width = Math.max(0, Math.min(100, Math.round((Math.abs(summary.value) / maxValue) * 100)));
+        return \`<div class="fleet-platform-bar-card"><div class="fleet-platform-bar-head"><strong>\${summary.source}</strong><span>\${strictEscape(strictCurrency(summary.value))} · \${summary.count} item(ns)</span></div><div class="fleet-platform-bar-track"><div class="fleet-platform-bar-fill \${summary.source.toLowerCase()}" style="width:\${width}%"></div></div></div>\`;
+      }).join("");
+    }
+
+    const table = document.getElementById("fleetMeasurementByPlateTable");
+    if (table) {
+      const rows = filteredVehicles
+        .filter(vehicle => STRICT_SOURCES.includes(strictVehicleSource(vehicle)))
+        .map(vehicle => {
+          const source = strictVehicleSource(vehicle);
+          const summary = strictSummary(strictRecordsForVehicle(vehicle), source);
+          const latest = strictLatest(summary.records);
+          return { vehicle, source, summary, latest };
+        })
+        .filter(row => row.summary.count)
+        .sort((a, b) => Math.abs(b.summary.value) - Math.abs(a.summary.value));
+
+      table.innerHTML = rows.length ? rows.map(row => {
+        const aldValue = row.source === "ALD" ? row.summary : { value: 0, count: 0, invoices: 0 };
+        const arvalValue = row.source === "ARVAL" ? row.summary : { value: 0, count: 0, invoices: 0 };
+        return \`<tr>
+          <td><strong>\${strictEscape(row.vehicle.placaVeiculo || "-")}</strong></td>
+          <td>\${strictEscape(row.vehicle.modeloVeiculo || "-")}<br><small>\${strictEscape(row.vehicle.locadora || "Locadora não cadastrada")}</small></td>
+          <td>\${strictEscape(row.vehicle.centroCusto || "-")}</td>
+          <td class="platform-value-cell"><span class="platform-chip ald">ALD</span><strong>\${strictEscape(strictCurrency(aldValue.value))}</strong><small>\${aldValue.count} item(ns) · \${aldValue.invoices} fatura(s)</small></td>
+          <td class="platform-value-cell"><span class="platform-chip arval">ARVAL</span><strong>\${strictEscape(strictCurrency(arvalValue.value))}</strong><small>\${arvalValue.count} item(ns) · \${arvalValue.invoices} fatura(s)</small></td>
+          <td><strong>\${strictEscape(strictCurrency(row.summary.value))}</strong></td>
+          <td>\${strictEscape(strictCompetence(row.latest?.competence || row.latest?.period))}</td>
+        </tr>\`;
+      }).join("") : '<tr><td colspan="7">Nenhuma medição vinculada a veículos ALD ou ARVAL no filtro atual.</td></tr>';
+    }
+
+    strictRenderCharts(records);
+  }
+
+  function strictMarkMeasurementMismatches(){
+    document.querySelectorAll("#measurementsTable tr").forEach(row => {
+      const cells = row.querySelectorAll("td");
+      if (cells.length < 12) return;
+      const source = strictSource(cells[0]?.textContent || "");
+      const plate = strictPlate(cells[2]?.querySelector("strong")?.textContent || "");
+      if (!source || !plate) return;
+      const matching = strictFindVehicle(plate, source);
+      const anyVehicle = strictAnyVehicleByPlate(plate);
+      if (!matching && anyVehicle) {
+        cells[11].innerHTML = '<span class="link-status linked-mismatch">Placa de outra locadora</span>';
+      }
+    });
+  }
+
+  const originalImportBillingMeasurementFiles = window.importBillingMeasurementFiles;
+  if (typeof originalImportBillingMeasurementFiles === "function") {
+    window.importBillingMeasurementFiles = async function(source, inputId, statusId){
+      await originalImportBillingMeasurementFiles(source, inputId, statusId);
+      strictReconcileMeasurements();
+      if (typeof window.persistFleetMeasurements === "function") {
+        await window.persistFleetMeasurements(measurements);
+      }
+      if (typeof renderAll === "function") renderAll();
+      const status = document.getElementById(statusId);
+      if (status && !status.querySelector(".locadora-measurement-rule-note")) {
+        status.insertAdjacentHTML("beforeend", '<div class="locadora-measurement-rule-note">Vínculo aplicado por <strong>placa + locadora</strong>: ARVAL somente em veículos ARVAL e ALD somente em veículos ALD.</div>');
+      }
+    };
+  }
+
+  const originalRenderVehicles = renderVehicles;
+  renderVehicles = function(){
+    strictReconcileMeasurements();
+    originalRenderVehicles();
+    strictDecorateVehicleCards();
+    strictSchedulePersist();
+  };
+
+  const originalOpenVehicleDetails = openVehicleDetails;
+  openVehicleDetails = function(id){
+    strictReconcileMeasurements();
+    originalOpenVehicleDetails(id);
+    const vehicle = vehicles.find(item => String(item.id || "") === String(id || ""));
+    const body = document.getElementById("vehicleDetailBody");
+    if (vehicle && body) {
+      body.querySelector("#vehicleDetailMeasurementSection")?.remove();
+      body.insertAdjacentHTML("beforeend", strictVehicleDetailSection(vehicle));
+    }
+  };
+
+  const originalRenderMeasurements = renderMeasurements;
+  renderMeasurements = function(){
+    strictReconcileMeasurements();
+    originalRenderMeasurements();
+    strictMarkMeasurementMismatches();
+  };
+
+  const originalRenderDashboardIndicators = renderDashboardIndicators;
+  renderDashboardIndicators = function(){
+    strictReconcileMeasurements();
+    originalRenderDashboardIndicators();
+    strictRenderDashboard();
+    strictSchedulePersist();
+  };
+
+  const originalRenderAll = renderAll;
+  renderAll = function(){
+    strictReconcileMeasurements();
+    originalRenderAll();
+    strictDecorateVehicleCards();
+    strictMarkMeasurementMismatches();
+    strictRenderDashboard();
+    strictSchedulePersist();
+  };
+
+  ["search", "statusFilter", "liderFilter", "centroCustoFilter", "locadoraFilter", "categoriaFilter", "condutorFilter", "anoFilter", "contratoFilter"].forEach(id => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.addEventListener(id === "search" ? "input" : "change", () => setTimeout(strictDecorateVehicleCards, 0));
+  });
+  ["dashStatusFilter", "dashLocadoraFilter", "dashCentroCustoFilter", "dashCategoriaFilter", "dashContratoFilter"].forEach(id => {
+    document.getElementById(id)?.addEventListener("change", () => setTimeout(strictRenderDashboard, 0));
+  });
+
+  strictReconcileMeasurements();
+  strictDecorateVehicleCards();
+  strictRenderDashboard();
+  strictSchedulePersist();
+})();
+<\/script>
+
+
+
+<style id="vehicle-card-invoice-detail-style">
+  .vehicle-measurement-invoice-card {
+    width: 100%;
+    margin-top: 9px;
+    padding: 10px;
+    border: 1px solid #d5e2e9;
+    border-left: 4px solid #005383;
+    border-radius: 13px;
+    background: linear-gradient(180deg, #ffffff, #f7fbfd);
+    text-align: left;
+  }
+  .vehicle-measurement-invoice-card.arval {
+    border-left-color: #ffdd00;
+  }
+  .vehicle-measurement-invoice-card.not-integrated {
+    border-left-color: #98a2b3;
+    background: #f8fafc;
+  }
+  .vehicle-invoice-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e5edf2;
+  }
+  .vehicle-invoice-card-title {
+    min-width: 0;
+  }
+  .vehicle-invoice-card-title strong {
+    display: block;
+    color: #003d63;
+    font-size: 11px;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: .25px;
+  }
+  .vehicle-invoice-card-title small {
+    display: block;
+    margin-top: 3px;
+    color: #667b88;
+    font-size: 9px;
+    line-height: 1.3;
+  }
+  .vehicle-invoice-source-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 48px;
+    min-height: 23px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #e5f2fa;
+    color: #003d63;
+    font-size: 9px;
+    font-weight: 1000;
+    letter-spacing: .3px;
+  }
+  .vehicle-measurement-invoice-card.arval .vehicle-invoice-source-chip {
+    background: #fff5ad;
+    color: #594c00;
+  }
+  .vehicle-measurement-invoice-card.not-integrated .vehicle-invoice-source-chip {
+    background: #667085;
+    color: #fff;
+  }
+  .vehicle-invoice-totals {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr);
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+  .vehicle-invoice-total-box {
+    min-width: 0;
+    padding: 7px 8px;
+    border: 1px solid #e1e9ef;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .vehicle-invoice-total-box small {
+    display: block;
+    color: #667b88;
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .vehicle-invoice-total-box strong {
+    display: block;
+    margin-top: 3px;
+    color: #17365d;
+    font-size: 12px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+  .vehicle-invoice-category-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+  .vehicle-invoice-category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 22px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #eef4f8;
+    border: 1px solid #d9e5ec;
+    color: #405a6d;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .vehicle-invoice-category-chip b {
+    color: #003d63;
+  }
+  .vehicle-invoice-list {
+    display: grid;
+    gap: 6px;
+  }
+  .vehicle-invoice-item {
+    padding: 7px 8px;
+    border: 1px solid #e1e9ef;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .vehicle-invoice-item-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px;
+    align-items: start;
+  }
+  .vehicle-invoice-item-head strong {
+    color: #17365d;
+    font-size: 10px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .vehicle-invoice-item-value {
+    color: #003d63 !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+  }
+  .vehicle-invoice-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-top: 4px;
+    color: #667b88;
+    font-size: 8px;
+    line-height: 1.3;
+  }
+  .vehicle-invoice-item-type {
+    display: inline-flex;
+    align-items: center;
+    min-height: 19px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #edf5fa;
+    color: #004b78;
+    font-weight: 900;
+  }
+  .vehicle-invoice-more {
+    margin-top: 7px;
+    color: #667b88;
+    font-size: 8px;
+    font-weight: 800;
+    text-align: center;
+  }
+  .vehicle-invoice-empty {
+    padding: 8px;
+    border: 1px dashed #cdd9e1;
+    border-radius: 10px;
+    color: #7b8d99;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+    background: #fbfdfe;
+  }
+  .vehicle-card:has(.vehicle-measurement-invoice-card) {
+    min-height: auto !important;
+  }
+  @media (max-width: 760px) {
+    .vehicle-invoice-totals { grid-template-columns: 1fr; }
+  }
+</style>
+<script id="vehicle-card-invoice-detail-script">
+(function(){
+  "use strict";
+
+  function cardInvoiceNormalize(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function cardInvoicePlate(value){
+    return cardInvoiceNormalize(value).replace(/[^A-Z0-9]/g, "");
+  }
+
+  function cardInvoiceVehicleSource(vehicle){
+    const value = cardInvoiceNormalize(vehicle?.locadora);
+    if (value.includes("ARVAL")) return "ARVAL";
+    if (value.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function cardInvoiceRecordSource(record){
+    const value = cardInvoiceNormalize(record?.source || record?.platform || record?.locadora);
+    if (value.includes("ARVAL")) return "ARVAL";
+    if (value.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function cardInvoiceEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  }
+
+  function cardInvoiceCurrency(value){
+    try {
+      return formatCurrency(Number(value || 0));
+    } catch (error) {
+      return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+  }
+
+  function cardInvoiceDate(value){
+    if (!value) return "-";
+    try {
+      const formatted = formatDate(value);
+      return formatted && formatted !== "Invalid Date" ? formatted : String(value);
+    } catch (error) {
+      return String(value);
+    }
+  }
+
+  function cardInvoiceCompetence(value){
+    const text = String(value || "").trim();
+    const match = text.match(/^(\\d{4})-(\\d{2})$/);
+    return match ? \`\${match[2]}/\${match[1]}\` : (text || "-");
+  }
+
+  function cardInvoiceCategory(record){
+    try {
+      return String(measurementCategory(record) || "OUTROS").trim().toUpperCase();
+    } catch (error) {
+      return String(record?.billingCategory || record?.billingStatus || record?.billingType || "OUTROS").trim().toUpperCase();
+    }
+  }
+
+  function cardInvoiceRecords(vehicle){
+    const source = cardInvoiceVehicleSource(vehicle);
+    const plate = cardInvoicePlate(vehicle?.placaVeiculo);
+    if (!source || !plate || !Array.isArray(measurements)) return [];
+    return measurements.filter(record => {
+      const recordSource = cardInvoiceRecordSource(record);
+      const recordPlate = cardInvoicePlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate);
+      return recordSource === source && recordPlate === plate;
+    });
+  }
+
+  function cardInvoiceTimestamp(record){
+    return String(record?.invoiceDate || record?.date || record?.eventDate || record?.importedAt || record?.competence || "");
+  }
+
+  function cardInvoiceGroups(records){
+    const groups = new Map();
+    records.forEach((record, index) => {
+      const invoiceNumber = String(record?.invoiceNumber || record?.documentNumber || record?.notaFiscal || "").trim();
+      const boleto = String(record?.boleto || "").trim();
+      const competence = String(record?.competence || record?.period || record?.eventCompetence || "").trim();
+      const fallback = \`\${competence}|\${cardInvoiceTimestamp(record)}|\${index}\`;
+      const key = invoiceNumber || boleto || fallback;
+      if (!groups.has(key)) {
+        groups.set(key, {
+          key,
+          invoiceNumber: invoiceNumber || boleto || "Sem número",
+          boleto,
+          competence,
+          date: record?.invoiceDate || record?.date || record?.eventDate || "",
+          value: 0,
+          items: 0,
+          categories: new Set(),
+          latestTimestamp: cardInvoiceTimestamp(record)
+        });
+      }
+      const group = groups.get(key);
+      group.value += Number(record?.value || record?.valor || 0);
+      group.items += 1;
+      group.categories.add(cardInvoiceCategory(record));
+      const timestamp = cardInvoiceTimestamp(record);
+      if (timestamp > group.latestTimestamp) {
+        group.latestTimestamp = timestamp;
+        group.date = record?.invoiceDate || record?.date || record?.eventDate || group.date;
+        group.competence = record?.competence || record?.period || record?.eventCompetence || group.competence;
+      }
+      if (!group.boleto && boleto) group.boleto = boleto;
+    });
+    return [...groups.values()].sort((a, b) => String(b.latestTimestamp).localeCompare(String(a.latestTimestamp)));
+  }
+
+  function cardInvoiceCategorySummary(records){
+    const map = new Map();
+    records.forEach(record => {
+      const category = cardInvoiceCategory(record);
+      const current = map.get(category) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Number(record?.value || record?.valor || 0);
+      map.set(category, current);
+    });
+    return [...map.entries()].sort((a, b) => Math.abs(b[1].value) - Math.abs(a[1].value));
+  }
+
+  function cardInvoiceHtml(vehicle){
+    const source = cardInvoiceVehicleSource(vehicle);
+    if (!source) {
+      return \`<section class="vehicle-measurement-invoice-card not-integrated" data-card-invoice-signature="no-source">
+        <div class="vehicle-invoice-card-header">
+          <div class="vehicle-invoice-card-title"><strong>Medições e faturas</strong><small>Disponíveis somente para veículos ALD e ARVAL.</small></div>
+          <span class="vehicle-invoice-source-chip">SEM INTEGRAÇÃO</span>
+        </div>
+      </section>\`;
+    }
+
+    const records = cardInvoiceRecords(vehicle);
+    const groups = cardInvoiceGroups(records);
+    const totalValue = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const latestCompetence = groups.find(group => group.competence)?.competence || "";
+    const categories = cardInvoiceCategorySummary(records);
+    const signature = \`\${source}|\${records.length}|\${groups.length}|\${totalValue}|\${groups[0]?.key || ""}|\${groups[0]?.latestTimestamp || ""}\`;
+
+    const categoryHtml = categories.length
+      ? \`<div class="vehicle-invoice-category-strip">\${categories.slice(0, 5).map(([category, data]) => \`<span class="vehicle-invoice-category-chip">\${cardInvoiceEscape(category)} <b>\${data.count}</b></span>\`).join("")}</div>\`
+      : "";
+
+    const invoiceRows = groups.length
+      ? groups.slice(0, 3).map(group => {
+          const types = [...group.categories].join(" / ") || "OUTROS";
+          const reference = group.competence ? cardInvoiceCompetence(group.competence) : cardInvoiceDate(group.date);
+          return \`<div class="vehicle-invoice-item">
+            <div class="vehicle-invoice-item-head">
+              <strong>Fatura \${cardInvoiceEscape(group.invoiceNumber)}</strong>
+              <strong class="vehicle-invoice-item-value">\${cardInvoiceEscape(cardInvoiceCurrency(group.value))}</strong>
+            </div>
+            <div class="vehicle-invoice-item-meta">
+              <span class="vehicle-invoice-item-type">\${cardInvoiceEscape(types)}</span>
+              <span>\${cardInvoiceEscape(reference)}</span>
+              <span>\${group.items} item(ns)</span>
+              \${group.boleto ? \`<span>Boleto: \${cardInvoiceEscape(group.boleto)}</span>\` : ""}
+            </div>
+          </div>\`;
+        }).join("")
+      : \`<div class="vehicle-invoice-empty">Nenhuma medição ou fatura \${source} vinculada a esta placa.</div>\`;
+
+    return \`<section class="vehicle-measurement-invoice-card \${source.toLowerCase()}" data-card-invoice-signature="\${cardInvoiceEscape(signature)}">
+      <div class="vehicle-invoice-card-header">
+        <div class="vehicle-invoice-card-title">
+          <strong>Medições e faturas do veículo</strong>
+          <small>Vínculo por placa + locadora\${latestCompetence ? \` · competência \${cardInvoiceEscape(cardInvoiceCompetence(latestCompetence))}\` : ""}</small>
+        </div>
+        <span class="vehicle-invoice-source-chip">\${source}</span>
+      </div>
+      <div class="vehicle-invoice-totals">
+        <div class="vehicle-invoice-total-box"><small>Valor medido</small><strong>\${cardInvoiceEscape(cardInvoiceCurrency(totalValue))}</strong></div>
+        <div class="vehicle-invoice-total-box"><small>Faturas</small><strong>\${groups.length}</strong></div>
+      </div>
+      \${categoryHtml}
+      <div class="vehicle-invoice-list">\${invoiceRows}</div>
+      \${groups.length > 3 ? \`<div class="vehicle-invoice-more">+ \${groups.length - 3} fatura(s) disponíveis em Ver detalhes</div>\` : ""}
+    </section>\`;
+  }
+
+  function decorateVehicleCardsWithInvoices(){
+    const grid = document.getElementById("vehicleGrid");
+    if (!grid || !Array.isArray(vehicles)) return;
+    grid.querySelectorAll(".vehicle-card").forEach(card => {
+      card.querySelector(".vehicle-measurement-summary")?.remove();
+      const plate = cardInvoicePlate(card.querySelector(".plate")?.textContent || "");
+      const vehicle = vehicles.find(item => cardInvoicePlate(item?.placaVeiculo) === plate);
+      if (!vehicle) return;
+      const target = card.querySelector(".vehicle-meta-summary") || card.querySelector(".vehicle-content");
+      if (!target) return;
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = cardInvoiceHtml(vehicle).trim();
+      const next = wrapper.firstElementChild;
+      const current = card.querySelector(".vehicle-measurement-invoice-card");
+      if (current && current.getAttribute("data-card-invoice-signature") === next.getAttribute("data-card-invoice-signature")) return;
+      current?.remove();
+      target.insertAdjacentElement("afterend", next);
+    });
+  }
+
+  let decorateTimer = null;
+  function scheduleVehicleInvoiceDecoration(delay = 30){
+    clearTimeout(decorateTimer);
+    decorateTimer = setTimeout(decorateVehicleCardsWithInvoices, delay);
+  }
+
+  const previousRenderVehiclesWithInvoices = renderVehicles;
+  renderVehicles = function(){
+    previousRenderVehiclesWithInvoices();
+    scheduleVehicleInvoiceDecoration(40);
+    setTimeout(decorateVehicleCardsWithInvoices, 120);
+  };
+
+  const vehicleGrid = document.getElementById("vehicleGrid");
+  if (vehicleGrid && window.MutationObserver) {
+    const observer = new MutationObserver(() => scheduleVehicleInvoiceDecoration(45));
+    observer.observe(vehicleGrid, { childList: true, subtree: true });
+  }
+
+  ["search", "statusFilter", "liderFilter", "centroCustoFilter", "locadoraFilter", "categoriaFilter", "condutorFilter", "anoFilter", "contratoFilter"].forEach(id => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.addEventListener(id === "search" ? "input" : "change", () => scheduleVehicleInvoiceDecoration(80));
+  });
+
+  scheduleVehicleInvoiceDecoration(20);
+  setTimeout(decorateVehicleCardsWithInvoices, 180);
+})();
+<\/script>
+
+
+
+<style id="vehicle-billing-only-in-details-style">
+  /* As medições/faturas não ficam mais expostas na frente dos cards. */
+  #vehicleGrid .vehicle-measurement-summary,
+  #vehicleGrid .vehicle-measurement-platform,
+  #vehicleGrid .vehicle-measurement-invoice-card {
+    display: none !important;
+  }
+
+  .vehicle-detail-billing-section {
+    overflow: hidden;
+  }
+
+  .vehicle-detail-billing-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .vehicle-detail-billing-header h3 {
+    margin: 0 0 5px;
+    color: #003d63;
+    font-size: 19px;
+  }
+
+  .vehicle-detail-billing-header p {
+    margin: 0;
+    color: #667b88;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .vehicle-detail-billing-source {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 68px;
+    min-height: 30px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #005383;
+    color: #fff;
+    border-bottom: 4px solid #ffdd00;
+    font-size: 11px;
+    font-weight: 1000;
+    letter-spacing: .4px;
+  }
+
+  .vehicle-detail-billing-source.arval {
+    background: #ffdd00;
+    color: #003d63;
+    border-bottom-color: #005383;
+  }
+
+  .vehicle-detail-billing-source.not-integrated {
+    background: #667085;
+    color: #fff;
+    border-bottom-color: #98a2b3;
+  }
+
+  .vehicle-detail-billing-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .vehicle-detail-billing-kpi {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #d5e2e9;
+    border-top: 4px solid #ffdd00;
+    border-radius: 13px;
+    background: #fff;
+  }
+
+  .vehicle-detail-billing-kpi small {
+    display: block;
+    margin-bottom: 5px;
+    color: #667b88;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .vehicle-detail-billing-kpi strong {
+    display: block;
+    color: #003d63;
+    font-size: 18px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .vehicle-detail-billing-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0 0 15px;
+  }
+
+  .vehicle-detail-billing-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #eaf3f8;
+    color: #003d63;
+    border: 1px solid #cadce7;
+    font-size: 10px;
+    font-weight: 900;
+  }
+
+  .vehicle-detail-billing-category b {
+    color: #005383;
+  }
+
+  .vehicle-detail-billing-subtitle {
+    margin: 17px 0 8px;
+    color: #003d63;
+    font-size: 14px;
+    font-weight: 1000;
+  }
+
+  .vehicle-detail-billing-table-wrap {
+    width: 100%;
+    overflow: auto;
+    border: 1px solid #d5e2e9;
+    border-radius: 13px;
+    background: #fff;
+  }
+
+  .vehicle-detail-billing-table-wrap.invoice-table {
+    max-height: 360px;
+  }
+
+  .vehicle-detail-billing-table-wrap.item-table {
+    max-height: 430px;
+  }
+
+  .vehicle-detail-billing-table {
+    min-width: 980px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .vehicle-detail-billing-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #eef4f8;
+    color: #003d63;
+  }
+
+  .vehicle-detail-billing-table td {
+    vertical-align: top;
+  }
+
+  .vehicle-detail-billing-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    margin: 2px 3px 2px 0;
+    border-radius: 999px;
+    background: #fff5ad;
+    color: #594c00;
+    font-size: 9px;
+    font-weight: 1000;
+    white-space: nowrap;
+  }
+
+  .vehicle-detail-billing-description {
+    min-width: 250px;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .vehicle-detail-billing-empty {
+    padding: 20px;
+    border: 1px dashed #cbd8e1;
+    border-radius: 13px;
+    background: #f8fbfd;
+    color: #667b88;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  @media (max-width: 900px) {
+    .vehicle-detail-billing-kpis {
+      grid-template-columns: repeat(2, minmax(130px, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .vehicle-detail-billing-header {
+      flex-direction: column;
+    }
+    .vehicle-detail-billing-kpis {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script id="vehicle-billing-only-in-details-script">
+(function(){
+  "use strict";
+
+  function detailBillingNormalize(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function detailBillingEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  }
+
+  function detailBillingPlate(value){
+    return detailBillingNormalize(value).replace(/[^A-Z0-9]/g, "");
+  }
+
+  function detailBillingSourceFromVehicle(vehicle){
+    const locadora = detailBillingNormalize(vehicle?.locadora);
+    if (locadora.includes("ARVAL")) return "ARVAL";
+    if (locadora.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function detailBillingSourceFromRecord(record){
+    const source = detailBillingNormalize(record?.source || record?.platform || record?.locadora || record?.fleetLocadora);
+    if (source.includes("ARVAL")) return "ARVAL";
+    if (source.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function detailBillingCurrency(value){
+    try {
+      return typeof formatCurrency === "function"
+        ? formatCurrency(Number(value || 0))
+        : Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    } catch (error) {
+      return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+  }
+
+  function detailBillingDate(value){
+    if (!value) return "-";
+    try {
+      const formatted = typeof formatDate === "function" ? formatDate(value) : "";
+      return formatted && formatted !== "Invalid Date" ? formatted : String(value);
+    } catch (error) {
+      return String(value);
+    }
+  }
+
+  function detailBillingCompetence(value){
+    const text = String(value || "").trim();
+    const match = text.match(/^(\\d{4})-(\\d{2})$/);
+    return match ? \`\${match[2]}/\${match[1]}\` : (text || "-");
+  }
+
+  function detailBillingCategory(record){
+    try {
+      if (typeof measurementCategory === "function") {
+        return String(measurementCategory(record) || "OUTROS").trim().toUpperCase();
+      }
+    } catch (error) {}
+
+    const source = detailBillingSourceFromRecord(record);
+    const sourceValue = source === "ARVAL"
+      ? (record?.billingCategorySourceValue || record?.billingStatus || record?.statusFatura || record?.billingCategory)
+      : (record?.billingCategorySourceValue || record?.billingType || record?.reimbursementType || record?.billingCategory);
+    return String(sourceValue || "OUTROS").trim().toUpperCase();
+  }
+
+  function detailBillingRecords(vehicle){
+    const source = detailBillingSourceFromVehicle(vehicle);
+    const plate = detailBillingPlate(vehicle?.placaVeiculo);
+    if (!source || !plate || !Array.isArray(measurements)) return [];
+
+    return measurements.filter(record => {
+      const recordSource = detailBillingSourceFromRecord(record);
+      const recordPlate = detailBillingPlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate);
+      return recordSource === source && recordPlate === plate;
+    });
+  }
+
+  function detailBillingTimestamp(record){
+    return String(record?.invoiceDate || record?.date || record?.eventDate || record?.importedAt || record?.competence || "");
+  }
+
+  function detailBillingGroups(records){
+    const groups = new Map();
+
+    records.forEach((record, index) => {
+      const invoiceNumber = String(record?.invoiceNumber || record?.fatura || "").trim();
+      const documentNumber = String(record?.documentNumber || record?.noteFiscal || record?.notaFiscal || "").trim();
+      const boleto = String(record?.boleto || record?.numeroBoleto || "").trim();
+      const competence = String(record?.competence || record?.period || record?.eventCompetence || "").trim();
+      const key = invoiceNumber || \`\${documentNumber}|\${boleto}|\${competence}|\${index}\`;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          key,
+          invoiceNumber: invoiceNumber || documentNumber || boleto || "Sem número",
+          documentNumbers: new Set(),
+          boletos: new Set(),
+          costCenters: new Set(),
+          categories: new Set(),
+          competence,
+          date: record?.invoiceDate || record?.date || record?.eventDate || "",
+          latestTimestamp: detailBillingTimestamp(record),
+          value: 0,
+          items: 0
+        });
+      }
+
+      const group = groups.get(key);
+      if (documentNumber) group.documentNumbers.add(documentNumber);
+      if (boleto) group.boletos.add(boleto);
+      const costCenter = String(record?.costCenter || record?.currentCostCenter || record?.obra || "").trim();
+      if (costCenter) group.costCenters.add(costCenter);
+      group.categories.add(detailBillingCategory(record));
+      group.value += Number(record?.value || record?.valor || 0);
+      group.items += 1;
+
+      const timestamp = detailBillingTimestamp(record);
+      if (timestamp > group.latestTimestamp) {
+        group.latestTimestamp = timestamp;
+        group.date = record?.invoiceDate || record?.date || record?.eventDate || group.date;
+        group.competence = record?.competence || record?.period || record?.eventCompetence || group.competence;
+      }
+    });
+
+    return [...groups.values()].sort((a, b) => String(b.latestTimestamp).localeCompare(String(a.latestTimestamp)));
+  }
+
+  function detailBillingCategories(records){
+    const categories = new Map();
+    records.forEach(record => {
+      const category = detailBillingCategory(record);
+      const current = categories.get(category) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Number(record?.value || record?.valor || 0);
+      categories.set(category, current);
+    });
+    return [...categories.entries()].sort((a, b) => Math.abs(b[1].value) - Math.abs(a[1].value));
+  }
+
+  function detailBillingSection(vehicle){
+    const source = detailBillingSourceFromVehicle(vehicle);
+    const plate = detailBillingPlate(vehicle?.placaVeiculo) || "-";
+
+    if (!source) {
+      return \`<section class="vehicle-detail-section vehicle-detail-billing-section" id="vehicleDetailMeasurementInvoiceSection">
+        <div class="vehicle-detail-billing-header">
+          <div><h3>Medições e faturas</h3><p>Este módulo recebe medições apenas de veículos pertencentes à ALD ou à ARVAL.</p></div>
+          <span class="vehicle-detail-billing-source not-integrated">SEM INTEGRAÇÃO</span>
+        </div>
+        <div class="vehicle-detail-billing-empty">O veículo pertence à locadora \${detailBillingEscape(vehicle?.locadora || "não informada")}. Nenhum valor ALD ou ARVAL é atribuído a este card.</div>
+      </section>\`;
+    }
+
+    const records = detailBillingRecords(vehicle);
+    const groups = detailBillingGroups(records);
+    const categories = detailBillingCategories(records);
+    const totalValue = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const latestRecord = records.slice().sort((a, b) => detailBillingTimestamp(b).localeCompare(detailBillingTimestamp(a)))[0] || null;
+    const latestCompetence = latestRecord?.competence || latestRecord?.period || latestRecord?.eventCompetence || "";
+
+    const categoriesHtml = categories.length
+      ? \`<div class="vehicle-detail-billing-categories">\${categories.map(([category, data]) => \`<span class="vehicle-detail-billing-category">\${detailBillingEscape(category)} <b>\${data.count}</b> · \${detailBillingEscape(detailBillingCurrency(data.value))}</span>\`).join("")}</div>\`
+      : "";
+
+    const invoiceRows = groups.length
+      ? groups.map(group => {
+          const types = [...group.categories].map(type => \`<span class="vehicle-detail-billing-type">\${detailBillingEscape(type)}</span>\`).join("");
+          const documents = [...group.documentNumbers].join(" / ") || "-";
+          const boletos = [...group.boletos].join(" / ") || "-";
+          const costCenters = [...group.costCenters].join(" / ") || vehicle?.centroCusto || "-";
+          return \`<tr>
+            <td><strong>\${detailBillingEscape(group.invoiceNumber)}</strong><br><small>Documento/NF: \${detailBillingEscape(documents)}</small></td>
+            <td>\${types || "-"}</td>
+            <td><strong>\${detailBillingEscape(detailBillingCompetence(group.competence))}</strong><br><small>\${detailBillingEscape(detailBillingDate(group.date))}</small></td>
+            <td>\${group.items}</td>
+            <td>\${detailBillingEscape(boletos)}</td>
+            <td>\${detailBillingEscape(costCenters)}</td>
+            <td><strong>\${detailBillingEscape(detailBillingCurrency(group.value))}</strong></td>
+          </tr>\`;
+        }).join("")
+      : '<tr><td colspan="7">Nenhuma fatura vinculada a esta placa.</td></tr>';
+
+    const itemRows = records.length
+      ? records.slice().sort((a, b) => detailBillingTimestamp(b).localeCompare(detailBillingTimestamp(a))).map(record => {
+          const category = detailBillingCategory(record);
+          const subtype = record?.billingSubcategory || record?.billingType || record?.type || record?.billingStatus || "-";
+          const invoice = record?.invoiceNumber || record?.fatura || "-";
+          const documentNumber = record?.documentNumber || record?.noteFiscal || record?.notaFiscal || "-";
+          const details = record?.details || record?.description || record?.descricao || "-";
+          const costCenter = record?.costCenter || record?.currentCostCenter || record?.obra || vehicle?.centroCusto || "-";
+          return \`<tr>
+            <td><strong>\${detailBillingEscape(invoice)}</strong><br><small>\${detailBillingEscape(documentNumber)}</small></td>
+            <td><span class="vehicle-detail-billing-type">\${detailBillingEscape(category)}</span><br><small>\${detailBillingEscape(subtype)}</small></td>
+            <td><strong>\${detailBillingEscape(detailBillingCompetence(record?.competence || record?.period || record?.eventCompetence))}</strong><br><small>\${detailBillingEscape(detailBillingDate(record?.invoiceDate || record?.date || record?.eventDate))}</small></td>
+            <td class="vehicle-detail-billing-description">\${detailBillingEscape(details)}</td>
+            <td>\${detailBillingEscape(record?.boleto || "-")}</td>
+            <td>\${detailBillingEscape(costCenter)}</td>
+            <td><strong>\${detailBillingEscape(detailBillingCurrency(record?.value || record?.valor))}</strong></td>
+          </tr>\`;
+        }).join("")
+      : '<tr><td colspan="7">Nenhum item de medição vinculado a esta placa.</td></tr>';
+
+    return \`<section class="vehicle-detail-section vehicle-detail-billing-section" id="vehicleDetailMeasurementInvoiceSection">
+      <div class="vehicle-detail-billing-header">
+        <div>
+          <h3>Medições e faturas do veículo</h3>
+          <p>Dados da \${source} vinculados exclusivamente pela placa \${detailBillingEscape(plate)} e pela locadora cadastrada no veículo.</p>
+        </div>
+        <span class="vehicle-detail-billing-source \${source.toLowerCase()}">\${source}</span>
+      </div>
+
+      <div class="vehicle-detail-billing-kpis">
+        <div class="vehicle-detail-billing-kpi"><small>Valor total medido</small><strong>\${detailBillingEscape(detailBillingCurrency(totalValue))}</strong></div>
+        <div class="vehicle-detail-billing-kpi"><small>Faturas identificadas</small><strong>\${groups.length}</strong></div>
+        <div class="vehicle-detail-billing-kpi"><small>Itens importados</small><strong>\${records.length}</strong></div>
+        <div class="vehicle-detail-billing-kpi"><small>Última competência</small><strong>\${detailBillingEscape(detailBillingCompetence(latestCompetence))}</strong></div>
+      </div>
+
+      \${categoriesHtml}
+
+      <div class="vehicle-detail-billing-subtitle">Faturas consolidadas</div>
+      <div class="vehicle-detail-billing-table-wrap invoice-table">
+        <table class="vehicle-detail-billing-table">
+          <thead><tr><th>Fatura / Documento</th><th>Tipo de fatura</th><th>Competência / Data</th><th>Itens</th><th>Boleto</th><th>Obra / CC</th><th>Valor</th></tr></thead>
+          <tbody>\${invoiceRows}</tbody>
+        </table>
+      </div>
+
+      <div class="vehicle-detail-billing-subtitle">Itens detalhados da medição</div>
+      <div class="vehicle-detail-billing-table-wrap item-table">
+        <table class="vehicle-detail-billing-table">
+          <thead><tr><th>Fatura / Documento</th><th>Classificação</th><th>Competência / Data</th><th>Descrição</th><th>Boleto</th><th>Obra / CC</th><th>Valor</th></tr></thead>
+          <tbody>\${itemRows}</tbody>
+        </table>
+      </div>
+    </section>\`;
+  }
+
+  function updateVehicleDetailCounters(body, records, groups){
+    const totalValue = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+
+    body.querySelectorAll(".vehicle-detail-highlight-card").forEach(card => {
+      const label = detailBillingNormalize(card.querySelector("small")?.textContent);
+      const value = card.querySelector("strong");
+      if (!value) return;
+      if (label === "MEDICOES VINCULADAS") value.textContent = \`\${records.length} item(ns)\`;
+      if (label === "MULTAS / FATURAS") value.textContent = \`\${groups.length} fatura(s) • \${detailBillingCurrency(totalValue)}\`;
+    });
+
+    body.querySelectorAll(".vehicle-detail-item").forEach(item => {
+      const label = detailBillingNormalize(item.querySelector("small")?.textContent);
+      const value = item.querySelector("strong");
+      if (!value) return;
+      if (label === "MEDICOES VINCULADAS") value.textContent = \`\${records.length} item(ns)\`;
+      if (label === "MULTAS / FATURAS") value.textContent = \`\${groups.length} fatura(s) • \${detailBillingCurrency(totalValue)}\`;
+    });
+  }
+
+  const previousOpenVehicleDetailsForBilling = openVehicleDetails;
+  openVehicleDetails = function(id){
+    previousOpenVehicleDetailsForBilling(id);
+
+    const vehicle = Array.isArray(vehicles)
+      ? vehicles.find(item => String(item?.id || "") === String(id || ""))
+      : null;
+    const body = document.getElementById("vehicleDetailBody");
+    if (!vehicle || !body) return;
+
+    body.querySelectorAll("#vehicleDetailMeasurementSection, #vehicleDetailMeasurementInvoiceSection").forEach(section => section.remove());
+    body.insertAdjacentHTML("beforeend", detailBillingSection(vehicle));
+
+    const records = detailBillingRecords(vehicle);
+    const groups = detailBillingGroups(records);
+    updateVehicleDetailCounters(body, records, groups);
+  };
+})();
+<\/script>
+
+
+<style id="vehicle-source-spreadsheet-details-style">
+  .vehicle-source-data-section {
+    border-top: 5px solid #ffdd00 !important;
+  }
+  .vehicle-source-data-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .vehicle-source-data-head h3 {
+    margin: 0;
+    color: #003d63;
+    font-size: 19px;
+    font-weight: 1000;
+  }
+  .vehicle-source-data-head p {
+    margin: 5px 0 0;
+    color: #667b88;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .vehicle-source-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #005383;
+    color: #fff;
+    border-bottom: 4px solid #ffdd00;
+    font-size: 11px;
+    font-weight: 1000;
+    white-space: nowrap;
+  }
+  .vehicle-source-kpis {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(130px, 1fr));
+    gap: 9px;
+    margin-bottom: 14px;
+  }
+  .vehicle-source-kpi {
+    background: #f7fafc;
+    border: 1px solid #d5e2e9;
+    border-radius: 12px;
+    padding: 10px;
+    min-width: 0;
+  }
+  .vehicle-source-kpi small {
+    display: block;
+    color: #667b88;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .vehicle-source-kpi strong {
+    display: block;
+    color: #003d63;
+    font-size: 16px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .vehicle-source-files {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #eef5f9;
+    border: 1px solid #d5e2e9;
+    color: #39566a;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .vehicle-source-files strong { color: #003d63; }
+  .vehicle-source-category-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .vehicle-source-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #fff8cf;
+    border: 1px solid #f0d960;
+    color: #5e5100;
+    font-size: 10px;
+    font-weight: 900;
+  }
+  .vehicle-source-subtitle {
+    margin: 16px 0 8px;
+    color: #003d63;
+    font-size: 14px;
+    font-weight: 1000;
+  }
+  .vehicle-source-table-wrap {
+    overflow: auto;
+    width: 100%;
+    max-height: 420px;
+    border: 1px solid #d5e2e9;
+    border-radius: 13px;
+    background: #fff;
+  }
+  .vehicle-source-table {
+    width: 100%;
+    min-width: 1480px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .vehicle-source-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #eaf2f7;
+    color: #003d63;
+    font-size: 9px;
+    font-weight: 1000;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .vehicle-source-table td {
+    color: #263d4b;
+    font-size: 11px;
+    line-height: 1.35;
+    vertical-align: top;
+    max-width: 280px;
+    overflow-wrap: anywhere;
+  }
+  .vehicle-source-table td strong { color: #003d63; }
+  .vehicle-source-empty {
+    padding: 18px;
+    border: 1px dashed #9bb7c7;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #667b88;
+    text-align: center;
+    font-weight: 800;
+  }
+  @media (max-width: 960px) {
+    .vehicle-source-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .vehicle-source-kpis { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script id="vehicle-source-spreadsheet-details-script">
+(function(){
+  "use strict";
+
+  function vsNormalize(value){
+    return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toUpperCase();
+  }
+  function vsEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null || value === "" ? "-" : String(value);
+    return div.innerHTML;
+  }
+  function vsPlate(value){ return vsNormalize(value).replace(/[^A-Z0-9]/g, ""); }
+  function vsSourceVehicle(vehicle){
+    const locadora = vsNormalize(vehicle?.locadora);
+    if (locadora.includes("ARVAL")) return "ARVAL";
+    if (locadora.includes("ALD")) return "ALD";
+    return "";
+  }
+  function vsSourceRecord(record){
+    const source = vsNormalize(record?.source || record?.platform || record?.locadora || record?.fleetLocadora);
+    if (source.includes("ARVAL")) return "ARVAL";
+    if (source.includes("ALD")) return "ALD";
+    return "";
+  }
+  function vsCurrency(value){
+    const number = Number(value || 0);
+    try { return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+    catch (error) { return \`R$ \${number.toFixed(2)}\`; }
+  }
+  function vsDate(value){
+    if (!value) return "-";
+    try {
+      if (typeof formatDate === "function") {
+        const result = formatDate(value);
+        if (result && result !== "Invalid Date") return result;
+      }
+    } catch (error) {}
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("pt-BR");
+  }
+  function vsCompetence(value){
+    const text = String(value || "").trim();
+    const iso = text.match(/^(\\d{4})-(\\d{2})$/);
+    if (iso) return \`\${iso[2]}/\${iso[1]}\`;
+    return text || "-";
+  }
+  function vsCategory(record){
+    if (typeof measurementCategory === "function") {
+      try { return String(measurementCategory(record) || "OUTROS").trim().toUpperCase(); }
+      catch (error) {}
+    }
+    return String(record?.billingCategorySourceValue || record?.billingStatus || record?.billingType || record?.billingCategory || "OUTROS").trim().toUpperCase();
+  }
+  function vsRecords(vehicle){
+    const source = vsSourceVehicle(vehicle);
+    const plate = vsPlate(vehicle?.placaVeiculo);
+    if (!source || !plate || !Array.isArray(measurements)) return [];
+    return measurements.filter(record => vsSourceRecord(record) === source && vsPlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate) === plate);
+  }
+  function vsRecordTimestamp(record){
+    const value = record?.invoiceDate || record?.date || record?.eventDate || record?.importedAt || record?.competence || "";
+    const time = new Date(value).getTime();
+    return Number.isNaN(time) ? 0 : time;
+  }
+  function vsUniqueInvoices(records){
+    return new Set(records.map(record => String(record?.invoiceNumber || record?.fatura || record?.documentNumber || "").trim()).filter(Boolean)).size;
+  }
+  function vsCategoryData(records){
+    const map = new Map();
+    records.forEach(record => {
+      const category = vsCategory(record);
+      const current = map.get(category) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Number(record?.value || record?.valor || 0);
+      map.set(category, current);
+    });
+    return [...map.entries()].sort((a,b) => Math.abs(b[1].value) - Math.abs(a[1].value));
+  }
+  function vsFiles(records){
+    const map = new Map();
+    records.forEach(record => {
+      const key = String(record?.batchId || record?.sourceFile || "sem-carga");
+      if (!map.has(key)) map.set(key, { file: record?.sourceFile || "Arquivo não identificado", sheet: record?.sourceSheet || "-", importedAt: record?.importedAtLabel || record?.syncedAt || "-", count: 0 });
+      map.get(key).count += 1;
+    });
+    return [...map.values()];
+  }
+
+  function vsArvalRow(record){
+    return \`<tr>
+      <td>\${vsEscape(record?.sourceCode || record?.cod)}</td>
+      <td>\${vsEscape(record?.sourceBillingType || record?.billingType || record?.billingSubcategory)}</td>
+      <td><strong>\${vsEscape(record?.invoiceNumber || record?.fatura)}</strong></td>
+      <td>\${vsEscape(vsDate(record?.invoiceDate || record?.date))}</td>
+      <td><strong>\${vsEscape(vsCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${vsEscape(record?.sourceBillingCenter || record?.company)}</td>
+      <td><strong>\${vsEscape(record?.plate)}</strong></td>
+      <td>\${vsEscape(record?.details || record?.description)}</td>
+      <td>\${vsEscape(record?.noteFiscal || record?.documentNumber)}</td>
+      <td>\${vsEscape(record?.costCenter || record?.obra)}</td>
+      <td>\${vsEscape(record?.boleto)}</td>
+      <td><span class="vehicle-source-category">\${vsEscape(record?.billingCategorySourceValue || record?.billingStatus)}</span></td>
+      <td>\${vsEscape(vsCompetence(record?.competence || record?.period))}</td>
+      <td>\${vsEscape(record?.sourceFile)}<br><small>\${vsEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function vsAldRow(record){
+    return \`<tr>
+      <td><strong>\${vsEscape(record?.invoiceNumber || record?.fatura)}</strong></td>
+      <td><span class="vehicle-source-category">\${vsEscape(record?.billingCategorySourceValue || record?.billingType)}</span></td>
+      <td>\${vsEscape(record?.contrato || record?.sourceContract)}</td>
+      <td>\${vsEscape(record?.company || record?.sourceCompany)}</td>
+      <td>\${vsEscape(record?.sourceBranch || record?.filial)}</td>
+      <td>\${vsEscape(record?.sourceCC || record?.cc)}</td>
+      <td><strong>\${vsEscape(record?.plate)}</strong></td>
+      <td>\${vsEscape(record?.driver)}</td>
+      <td>\${vsEscape(record?.sourceVehicleName || record?.vehicleName || record?.vehicleModel)}</td>
+      <td>\${vsEscape(record?.sourceModel || record?.vehicleModel)}</td>
+      <td>\${vsEscape(record?.supplier)}</td>
+      <td><strong>\${vsEscape(vsCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${vsEscape(record?.details || record?.description)}</td>
+      <td>\${vsEscape(record?.billingSubcategory || record?.sourceCategory)}</td>
+      <td>\${vsEscape(vsDate(record?.eventDate || record?.invoiceDate || record?.date))}</td>
+      <td>\${vsEscape(record?.noteFiscal || record?.sourceSupplierNote)}</td>
+      <td>\${vsEscape(record?.reference)}</td>
+      <td>\${vsEscape(record?.documentNumber)}</td>
+      <td>\${vsEscape(record?.boleto)}</td>
+      <td>\${vsEscape(record?.costCenter || record?.currentCostCenter)}</td>
+      <td>\${vsEscape(vsCompetence(record?.competence || record?.period))}</td>
+      <td>\${vsEscape(record?.sourceFile)}<br><small>\${vsEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function vsSection(vehicle){
+    const source = vsSourceVehicle(vehicle);
+    const plate = vsPlate(vehicle?.placaVeiculo);
+    if (!source) {
+      return \`<section class="vehicle-detail-section vehicle-source-data-section" id="vehicleSourceSpreadsheetDetails">
+        <div class="vehicle-source-data-head"><div><h3>Dados das planilhas de medição</h3><p>Somente veículos das locadoras ALD e ARVAL recebem dados de medição.</p></div><span class="vehicle-source-badge">SEM INTEGRAÇÃO</span></div>
+        <div class="vehicle-source-empty">A locadora deste veículo é \${vsEscape(vehicle?.locadora || "não informada")}. Nenhum dado ALD ou ARVAL será atribuído.</div>
+      </section>\`;
+    }
+
+    const records = vsRecords(vehicle).slice().sort((a,b) => vsRecordTimestamp(b) - vsRecordTimestamp(a));
+    const total = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const invoices = vsUniqueInvoices(records);
+    const categories = vsCategoryData(records);
+    const files = vsFiles(records);
+    const latest = records[0] || null;
+    const latestCompetence = vsCompetence(latest?.competence || latest?.period);
+    const lastImport = files[0]?.importedAt || latest?.importedAtLabel || latest?.syncedAt || vsDate(latest?.importedAt);
+    const categoryNames = categories.length ? categories.map(([name]) => name).join(' • ') : 'Sem classificação';
+    const fileNames = files.length ? files.map(file => \`\${file.file} (\${file.sheet})\`).join(' | ') : 'Nenhuma planilha vinculada';
+
+    const categoryHtml = categories.length
+      ? \`<div class="vehicle-source-category-strip">\${categories.map(([name,data]) => \`<span class="vehicle-source-category">\${vsEscape(name)} · \${data.count} item(ns) · \${vsEscape(vsCurrency(data.value))}</span>\`).join("")}</div>\`
+      : "";
+    const fileHtml = files.length
+      ? \`<div class="vehicle-source-files"><strong>Planilhas que alimentam este veículo:</strong><br>\${files.map(file => \`\${vsEscape(file.file)} · aba \${vsEscape(file.sheet)} · \${file.count} linha(s) · importada em \${vsEscape(file.importedAt)}\`).join("<br>")}</div>\`
+      : "";
+
+    const summarySection = \`<section class="vehicle-detail-section vehicle-source-summary-section">
+      <div class="vehicle-detail-section-title">Medições e faturas vinculadas</div>
+      <div class="vehicle-detail-grid">
+        <div class="vehicle-detail-item"><small>Locadora integrada</small><strong>\${vsEscape(source)}</strong></div>
+        <div class="vehicle-detail-item"><small>Placa vinculada</small><strong>\${vsEscape(vehicle?.placaVeiculo || plate)}</strong></div>
+        <div class="vehicle-detail-item"><small>Valor total medido</small><strong>\${vsEscape(vsCurrency(total))}</strong></div>
+        <div class="vehicle-detail-item"><small>Medições vinculadas</small><strong>\${records.length}</strong></div>
+        <div class="vehicle-detail-item"><small>Faturas identificadas</small><strong>\${invoices}</strong></div>
+        <div class="vehicle-detail-item"><small>Última competência</small><strong>\${vsEscape(latestCompetence)}</strong></div>
+        <div class="vehicle-detail-item"><small>Última importação</small><strong>\${vsEscape(lastImport || '-')}</strong></div>
+        <div class="vehicle-detail-item"><small>Planilhas vinculadas</small><strong>\${files.length}</strong></div>
+        <div class="vehicle-detail-item"><small>Tipos de fatura</small><strong>\${vsEscape(categoryNames)}</strong></div>
+        <div class="vehicle-detail-item full"><small>Arquivos de origem</small><strong>\${vsEscape(fileNames)}</strong></div>
+      </div>
+    </section>\`;
+
+    let table = "";
+    if (source === "ARVAL") {
+      table = \`<div class="vehicle-source-table-wrap"><table class="vehicle-source-table">
+        <thead><tr><th>Cod</th><th>Tipo Fatura</th><th>Nº Fatura</th><th>Data Fatura</th><th>Valor</th><th>Centro Faturamento</th><th>Placa</th><th>Detalhe</th><th>Nota Fiscal</th><th>Obra</th><th>Boleto</th><th>Status Fatura</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(vsArvalRow).join("") : '<tr><td colspan="14">Nenhuma linha ARVAL encontrada para esta placa.</td></tr>'}</tbody>
+      </table></div>\`;
+    } else {
+      table = \`<div class="vehicle-source-table-wrap"><table class="vehicle-source-table" style="min-width:2200px">
+        <thead><tr><th>Fatura</th><th>Tipo de Reembolso</th><th>Contrato</th><th>Razão Social</th><th>Filial</th><th>CC</th><th>Placa</th><th>Condutor</th><th>Veículo</th><th>Modelo</th><th>Fornecedor</th><th>Valor</th><th>Descrição do Repasse</th><th>Categoria</th><th>Data do Evento</th><th>Nota Fornecedor</th><th>Referência</th><th>Nº Documento</th><th>Nº Boleto</th><th>Centro de Custo</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(vsAldRow).join("") : '<tr><td colspan="22">Nenhuma linha ALD encontrada para esta placa.</td></tr>'}</tbody>
+      </table></div>\`;
+    }
+
+    return \`\${summarySection}<section class="vehicle-detail-section vehicle-source-data-section" id="vehicleSourceSpreadsheetDetails">
+      <div class="vehicle-source-data-head">
+        <div><h3>Informações importadas das medições</h3><p>Linhas da planilha \${source} vinculadas exclusivamente à placa \${vsEscape(plate)} e à locadora \${source}.</p></div>
+        <span class="vehicle-source-badge">\${source}</span>
+      </div>
+      <div class="vehicle-source-kpis">
+        <div class="vehicle-source-kpi"><small>Valor total</small><strong>\${vsEscape(vsCurrency(total))}</strong></div>
+        <div class="vehicle-source-kpi"><small>Faturas</small><strong>\${invoices}</strong></div>
+        <div class="vehicle-source-kpi"><small>Linhas importadas</small><strong>\${records.length}</strong></div>
+        <div class="vehicle-source-kpi"><small>Última competência</small><strong>\${vsEscape(latestCompetence)}</strong></div>
+        <div class="vehicle-source-kpi"><small>Planilhas vinculadas</small><strong>\${files.length}</strong></div>
+      </div>
+      \${fileHtml}
+      \${categoryHtml}
+      <div class="vehicle-source-subtitle">Dados completos das linhas vinculadas ao veículo</div>
+      \${table}
+    </section>\`;
+  }
+
+  function vsEnrichParserResult(result, row, source){
+    if (!result) return result;
+    const data = typeof billingRowMap === "function" ? billingRowMap(row) : row;
+    const get = names => typeof billingValue === "function" ? billingValue(data, names) : "";
+    let extra = {};
+    if (source === "ARVAL") {
+      extra = {
+        sourceBillingType: String(get(["Tipo Fatura"]) || "").trim(),
+        sourceBillingCenter: String(get(["Centro Faturamento"]) || "").trim(),
+        sourceStatusFatura: String(get(["STATUS FATURA"]) || "").trim(),
+        sourceObra: String(get(["Obra"]) || "").trim(),
+        sourceDetail: String(get(["Detalhe"]) || "").trim(),
+        sourceInvoiceNumber: String(get(["Nº Fatura", "N° Fatura", "N Fatura"]) || "").trim(),
+        sourceNoteFiscal: String(get(["Nota Fiscal"]) || "").trim(),
+        sourceBoleto: String(get(["BOLETO"]) || "").trim()
+      };
+    } else {
+      extra = {
+        sourceReimbursementType: String(get(["Tipo de Reembolso"]) || "").trim(),
+        sourceContract: String(get(["Contrato"]) || "").trim(),
+        sourceCompany: String(get(["Razão Social", "Razao Social"]) || "").trim(),
+        sourceBranch: String(get(["Filial"]) || "").trim(),
+        sourceCC: String(get(["CC"]) || "").trim(),
+        sourceVehicleName: String(get(["Veiculo", "Veículo"]) || "").trim(),
+        sourceModel: String(get(["Modelo"]) || "").trim(),
+        sourceSupplier: String(get(["Fornecedor"]) || "").trim(),
+        sourceDescription: String(get(["Descrição do Repasse", "Descricao do Repasse"]) || "").trim(),
+        sourceCategory: String(get(["Categoria"]) || "").trim(),
+        sourceSupplierNote: String(get(["Nota Fornecedor"]) || "").trim(),
+        sourceReference: String(get(["Referência", "Referencia"]) || "").trim(),
+        sourceDocumentNumber: String(get(["N° DOCUMENTO", "Nº DOCUMENTO", "N DOCUMENTO"]) || "").trim(),
+        sourceBoletoNumber: String(get(["N° BOLETO", "Nº BOLETO", "N BOLETO"]) || "").trim(),
+        sourceCostCenter: String(get(["CENTRO DE CUSTO", "Centro de Custo"]) || "").trim()
+      };
+    }
+    if (result.measurement) Object.assign(result.measurement, extra);
+    if (result.billing) Object.assign(result.billing, extra);
+    return result;
+  }
+
+  if (typeof parseArvalBillingRow === "function" && !parseArvalBillingRow.__vehicleSourceEnriched) {
+    const baseArvalParser = parseArvalBillingRow;
+    const wrapped = function(row, batch){ return vsEnrichParserResult(baseArvalParser(row, batch), row, "ARVAL"); };
+    wrapped.__vehicleSourceEnriched = true;
+    parseArvalBillingRow = wrapped;
+  }
+  if (typeof parseAldBillingRow === "function" && !parseAldBillingRow.__vehicleSourceEnriched) {
+    const baseAldParser = parseAldBillingRow;
+    const wrapped = function(row, batch){ return vsEnrichParserResult(baseAldParser(row, batch), row, "ALD"); };
+    wrapped.__vehicleSourceEnriched = true;
+    parseAldBillingRow = wrapped;
+  }
+
+  function vsRender(vehicle, body){
+    if (!vehicle || !body) return;
+    body.querySelectorAll("#vehicleDetailMeasurementSection, #vehicleDetailMeasurementInvoiceSection, #vehicleSourceSpreadsheetDetails").forEach(section => section.remove());
+    body.insertAdjacentHTML("beforeend", vsSection(vehicle));
+
+    const records = vsRecords(vehicle);
+    const total = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const invoices = vsUniqueInvoices(records);
+    body.querySelectorAll(".vehicle-detail-highlight-card, .vehicle-detail-item").forEach(item => {
+      const label = vsNormalize(item.querySelector("small")?.textContent);
+      const value = item.querySelector("strong");
+      if (!value) return;
+      if (label === "MEDICOES VINCULADAS") value.textContent = \`\${records.length} item(ns)\`;
+      if (label === "MULTAS / FATURAS") value.textContent = \`\${invoices} fatura(s) • \${vsCurrency(total)}\`;
+    });
+  }
+
+  const baseOpenVehicleDetailsSourceData = openVehicleDetails;
+  openVehicleDetails = function(id){
+    baseOpenVehicleDetailsSourceData(id);
+    const vehicle = Array.isArray(vehicles) ? vehicles.find(item => String(item?.id || "") === String(id || "")) : null;
+    const body = document.getElementById("vehicleDetailBody");
+    vsRender(vehicle, body);
+
+    Promise.resolve(window.fleetLargeStorageReady).then(async () => {
+      try {
+        if (typeof window.loadFleetMeasurements === "function") {
+          const stored = await window.loadFleetMeasurements();
+          if (Array.isArray(stored)) {
+            const merged = new Map();
+            [...(Array.isArray(measurements) ? measurements : []), ...stored].forEach((record, index) => {
+              if (!record || typeof record !== "object") return;
+              const key = String(record.id || \`\${record.batchId || ""}|\${record.source || ""}|\${record.plate || ""}|\${record.invoiceNumber || ""}|\${record.value || ""}|\${index}\`);
+              merged.set(key, record);
+            });
+            measurements = [...merged.values()];
+          }
+        }
+        const modal = document.getElementById("vehicleDetailModal");
+        if (modal?.classList.contains("open") && modal.dataset.vehicleDetailId === String(id || "")) vsRender(vehicle, document.getElementById("vehicleDetailBody"));
+      } catch (error) {
+        console.error("Falha ao atualizar os dados importados na tela de detalhes.", error);
+      }
+    });
+  };
+})();
+<\/script>
+
+
+<style id="fleet-chart-lifecycle-fix-style">
+  .measurement-import-safe-note {
+    display: block;
+    margin-top: 7px;
+    color: #027a48;
+    font-size: 11px;
+    font-weight: 800;
+  }
+</style>
+
+<script id="fleet-chart-lifecycle-fix-script">
+(function(){
+  "use strict";
+
+  function chartInstancesForCanvas(canvas, canvasId) {
+    const charts = new Set();
+    if (!canvas || !window.Chart) return charts;
+
+    try {
+      if (typeof window.Chart.getChart === "function") {
+        const byCanvas = window.Chart.getChart(canvas);
+        const byId = window.Chart.getChart(canvasId);
+        if (byCanvas) charts.add(byCanvas);
+        if (byId) charts.add(byId);
+      }
+    } catch (error) {
+      console.warn("Não foi possível consultar a instância do gráfico.", error);
+    }
+
+    try {
+      const instances = window.Chart.instances;
+      if (instances) {
+        const values = typeof instances.values === "function"
+          ? Array.from(instances.values())
+          : Object.values(instances);
+
+        values.forEach(chart => {
+          const chartCanvas = chart?.canvas || chart?.ctx?.canvas;
+          if (chartCanvas === canvas || chartCanvas?.id === canvasId) charts.add(chart);
+        });
+      }
+    } catch (error) {
+      console.warn("Não foi possível consultar a lista de gráficos.", error);
+    }
+
+    return charts;
+  }
+
+  function destroyChartSafely(chart) {
+    if (!chart || typeof chart.destroy !== "function") return;
+    try {
+      chart.destroy();
+    } catch (error) {
+      console.warn("A instância anterior do gráfico já estava encerrada.", error);
+    }
+  }
+
+  function releaseCanvas(canvasId, extraChart) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !window.Chart) return;
+
+    const charts = chartInstancesForCanvas(canvas, canvasId);
+    if (extraChart) charts.add(extraChart);
+    charts.forEach(destroyChartSafely);
+
+    try {
+      const context = canvas.getContext("2d");
+      context?.clearRect(0, 0, canvas.width || 0, canvas.height || 0);
+    } catch (error) {
+      console.warn("Não foi possível limpar o canvas do gráfico.", error);
+    }
+  }
+
+  window.releaseFleetChartCanvas = releaseCanvas;
+
+  const baseMakeChart = typeof window.makeChart === "function"
+    ? window.makeChart
+    : (typeof makeChart === "function" ? makeChart : null);
+
+  if (baseMakeChart && !baseMakeChart.__fleetChartLifecycleFixed) {
+    const safeMakeChart = function(canvasId, type, labels, data, existingChart, options = {}) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || !window.Chart) return null;
+
+      releaseCanvas(canvasId, existingChart);
+
+      try {
+        return baseMakeChart(canvasId, type, labels, data, null, options);
+      } catch (error) {
+        const message = String(error?.message || error || "");
+        if (!/canvas is already in use|must be destroyed before/i.test(message)) throw error;
+
+        console.warn(\`Recriando o gráfico \${canvasId} após liberar o canvas.\`, error);
+        releaseCanvas(canvasId, existingChart);
+
+        // Uma segunda tentativa resolve instâncias órfãs deixadas pelo Chart.js.
+        return baseMakeChart(canvasId, type, labels, data, null, options);
+      }
+    };
+
+    safeMakeChart.__fleetChartLifecycleFixed = true;
+    window.makeChart = safeMakeChart;
+    try { makeChart = safeMakeChart; } catch (error) {}
+  }
+
+  function releaseMeasurementCharts() {
+    [
+      "billingCategoryChart",
+      "billingPlatformChart",
+      "statusChart",
+      "categoryChart",
+      "locadoraChart",
+      "contractChart",
+      "yearChart"
+    ].forEach(id => releaseCanvas(id));
+  }
+
+  window.releaseFleetMeasurementCharts = releaseMeasurementCharts;
+
+  // Evita que atualizações sucessivas do Dashboard concorram pelo mesmo canvas.
+  let refreshTimer = null;
+  window.scheduleFleetMeasurementVisualRefresh = function(delay = 30) {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      try {
+        releaseMeasurementCharts();
+        if (typeof renderDashboardIndicators === "function") renderDashboardIndicators();
+        if (typeof renderStats === "function") renderStats();
+      } catch (error) {
+        console.error("Os dados foram salvos, mas não foi possível atualizar um gráfico.", error);
+      }
+    }, delay);
+  };
+
+  const currentImport = window.importBillingMeasurementFiles;
+  if (typeof currentImport === "function" && !currentImport.__fleetChartImportFixed) {
+    const safeImport = async function(source, inputId, statusId) {
+      // Libera gráficos antes da importação para impedir instâncias órfãs.
+      releaseMeasurementCharts();
+
+      const result = await currentImport(source, inputId, statusId);
+
+      // A importação e o armazenamento não dependem do redesenho imediato dos gráficos.
+      window.scheduleFleetMeasurementVisualRefresh(60);
+
+      const status = document.getElementById(statusId);
+      if (status && !status.querySelector(".measurement-import-safe-note")) {
+        status.insertAdjacentHTML(
+          "beforeend",
+          '<span class="measurement-import-safe-note">Dados armazenados e vinculados por placa + locadora. Dashboard e Frota atualizados com segurança.</span>'
+        );
+      }
+
+      return result;
+    };
+
+    safeImport.__fleetChartImportFixed = true;
+    window.importBillingMeasurementFiles = safeImport;
+  }
+
+  // Limpa instâncias antigas deixadas por versões anteriores ao abrir o arquivo.
+  setTimeout(releaseMeasurementCharts, 0);
+  setTimeout(() => window.scheduleFleetMeasurementVisualRefresh(10), 120);
+})();
+<\/script>
+
+
+<style id="vehicle-card-click-measurement-style">
+  #vehicleGrid .vehicle-card-clickable {
+    cursor: pointer !important;
+  }
+
+  #vehicleGrid .vehicle-card-clickable:focus-visible {
+    outline: 3px solid rgba(0, 83, 131, .28) !important;
+    outline-offset: 3px;
+  }
+
+  #vehicleGrid .vehicle-card-clickable .vehicle-card-top::after {
+    content: "  •  Clique para ver dados e medições";
+    color: #005383;
+    font-weight: 800;
+  }
+
+  .vehicle-source-summary-section {
+    border-top: 5px solid #ffdd00 !important;
+  }
+
+  .vehicle-source-summary-section .vehicle-detail-section-title::before {
+    content: "▣ ";
+  }
+</style>
+
+<script id="vehicle-detail-measurement-source-guard">
+(function(){
+  "use strict";
+
+  function normalizePlatform(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function vehiclePlatform(vehicle){
+    const locadora = normalizePlatform(vehicle?.locadora);
+    if (locadora.includes("ARVAL")) return "ARVAL";
+    if (locadora.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function recordPlatform(record){
+    const source = normalizePlatform(
+      record?.source ||
+      record?.platform ||
+      record?.locadora ||
+      record?.fleetLocadora ||
+      record?.batchSource ||
+      record?.sourcePlatform
+    );
+    if (source.includes("ARVAL")) return "ARVAL";
+    if (source.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function normalizePlate(value){
+    return normalizePlatform(value).replace(/[^A-Z0-9]/g, "");
+  }
+
+  window.getVehicleMeasurementRecordsByPlateAndLocadora = function(vehicle){
+    const platform = vehiclePlatform(vehicle);
+    const plate = normalizePlate(vehicle?.placaVeiculo);
+    if (!platform || !plate || !Array.isArray(window.measurements || measurements)) return [];
+    const records = Array.isArray(window.measurements) ? window.measurements : measurements;
+    return records.filter(record => {
+      const recordPlate = normalizePlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate);
+      return recordPlate === plate && recordPlatform(record) === platform;
+    });
+  };
+
+  const baseOpen = window.openVehicleDetails || openVehicleDetails;
+  if (typeof baseOpen === "function" && !baseOpen.__vehicleMeasurementCardClickGuard) {
+    const wrappedOpen = function(id){
+      const result = baseOpen(id);
+      const vehicle = Array.isArray(vehicles)
+        ? vehicles.find(item => String(item?.id || "") === String(id || ""))
+        : null;
+      const body = document.getElementById("vehicleDetailBody");
+      if (vehicle && body) {
+        const platform = vehiclePlatform(vehicle);
+        const plate = normalizePlate(vehicle?.placaVeiculo);
+        const heading = body.querySelector("#vehicleSourceSpreadsheetDetails .vehicle-source-data-head p");
+        if (heading && platform && plate) {
+          heading.textContent = \`Dados importados da \${platform}, vinculados à placa \${vehicle.placaVeiculo || plate}. Registros de outra locadora não são exibidos neste veículo.\`;
+        }
+      }
+      return result;
+    };
+    wrappedOpen.__vehicleMeasurementCardClickGuard = true;
+    window.openVehicleDetails = wrappedOpen;
+    try { openVehicleDetails = wrappedOpen; } catch (error) {}
+  }
+})();
+<\/script>
+
+
+<style id="vehicle-final-measurement-details-style">
+  #vehicleMeasurementDetailsFinal {
+    border-top: 0 !important;
+    overflow: hidden;
+  }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-type-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 12px 14px 2px;
+  }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #fff7c7;
+    border: 1px solid #ead459;
+    color: #594c00;
+    font-size: 10px;
+    font-weight: 900;
+  }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-origin {
+    margin: 12px 14px;
+    padding: 10px 12px;
+    border: 1px solid #d5e2e9;
+    border-radius: 12px;
+    background: #f3f8fb;
+    color: #456173;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-origin strong { color: #003d63; }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-table-title {
+    margin: 15px 14px 8px;
+    color: #003d63;
+    font-size: 14px;
+    font-weight: 1000;
+  }
+  #vehicleMeasurementDetailsFinal .vehicle-measurement-table-wrap {
+    width: calc(100% - 28px);
+    max-height: 470px;
+    margin: 0 14px 15px;
+    overflow: auto;
+    border: 1px solid #d5e2e9;
+    border-radius: 13px;
+    background: #fff;
+  }
+  #vehicleMeasurementDetailsFinal table {
+    width: 100%;
+    min-width: 1550px;
+    border: 0;
+    border-radius: 0;
+  }
+  #vehicleMeasurementDetailsFinal table.ald-table { min-width: 2250px; }
+  #vehicleMeasurementDetailsFinal th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #eaf2f7;
+    color: #003d63;
+    font-size: 9px;
+    font-weight: 1000;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  #vehicleMeasurementDetailsFinal td {
+    color: #263d4b;
+    font-size: 11px;
+    line-height: 1.35;
+    vertical-align: top;
+    max-width: 290px;
+    overflow-wrap: anywhere;
+  }
+  #vehicleMeasurementDetailsFinal td strong { color: #003d63; }
+  .vehicle-measurement-loading-final {
+    margin: 14px;
+    padding: 18px;
+    border: 1px dashed #8fb1c4;
+    border-radius: 12px;
+    background: #f6fafc;
+    color: #456173;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .vehicle-measurement-empty-final {
+    margin: 14px;
+    padding: 18px;
+    border: 1px dashed #a5b8c5;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #667b88;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+  }
+</style>
+
+<script id="vehicle-final-measurement-details-script">
+(function(){
+  "use strict";
+
+  function fmNormalize(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function fmEscape(value, fallback = "-"){
+    const div = document.createElement("div");
+    const finalValue = value == null || value === "" ? fallback : value;
+    div.textContent = String(finalValue);
+    return div.innerHTML;
+  }
+
+  function fmPlate(value){ return fmNormalize(value).replace(/[^A-Z0-9]/g, ""); }
+
+  function fmVehiclePlatform(vehicle){
+    const value = fmNormalize(vehicle?.locadora);
+    if (value.includes("ARVAL")) return "ARVAL";
+    if (value.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function fmRecordPlatform(record){
+    const value = fmNormalize([
+      record?.source,
+      record?.platform,
+      record?.locadora,
+      record?.fleetLocadora,
+      record?.batchSource,
+      record?.sourcePlatform,
+      record?.sourceFile
+    ].filter(Boolean).join(" "));
+    if (value.includes("ARVAL")) return "ARVAL";
+    if (value.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function fmCurrency(value){
+    const number = Number(value || 0);
+    try { return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+    catch (error) { return \`R$ \${number.toFixed(2)}\`; }
+  }
+
+  function fmDate(value){
+    if (!value) return "-";
+    try {
+      if (typeof formatDate === "function") {
+        const formatted = formatDate(value);
+        if (formatted && formatted !== "Invalid Date") return formatted;
+      }
+    } catch (error) {}
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("pt-BR");
+  }
+
+  function fmCompetence(value){
+    const text = String(value || "").trim();
+    const iso = text.match(/^(\\d{4})-(\\d{2})$/);
+    if (iso) return \`\${iso[2]}/\${iso[1]}\`;
+    return text || "-";
+  }
+
+  function fmRecordType(record, platform){
+    if (platform === "ARVAL") {
+      return String(
+        record?.sourceStatusFatura ||
+        record?.billingCategorySourceValue ||
+        record?.billingStatus ||
+        record?.statusFatura ||
+        record?.sourceBillingType ||
+        record?.billingType ||
+        "SEM CLASSIFICAÇÃO"
+      ).trim().toUpperCase();
+    }
+    return String(
+      record?.sourceReimbursementType ||
+      record?.billingCategorySourceValue ||
+      record?.reimbursementType ||
+      record?.billingType ||
+      "SEM CLASSIFICAÇÃO"
+    ).trim().toUpperCase();
+  }
+
+  function fmInvoiceNumber(record){
+    return String(
+      record?.sourceInvoiceNumber ||
+      record?.invoiceNumber ||
+      record?.fatura ||
+      record?.documentNumber ||
+      record?.sourceDocumentNumber ||
+      ""
+    ).trim();
+  }
+
+  function fmRecordTimestamp(record){
+    const value = record?.invoiceDate || record?.eventDate || record?.date || record?.importedAt || "";
+    const time = new Date(value).getTime();
+    return Number.isNaN(time) ? 0 : time;
+  }
+
+  function fmStableKey(record, index){
+    return String(record?.id || [
+      record?.batchId,
+      fmRecordPlatform(record),
+      fmPlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate),
+      fmInvoiceNumber(record),
+      record?.documentNumber,
+      record?.value || record?.valor,
+      record?.sourceRow || index
+    ].join("|"));
+  }
+
+  async function fmHydrateMeasurements(){
+    let stored = [];
+    try {
+      await Promise.resolve(window.fleetLargeStorageReady);
+      if (typeof window.loadFleetMeasurements === "function") {
+        stored = await window.loadFleetMeasurements();
+      }
+    } catch (error) {
+      console.error("Não foi possível carregar as medições salvas.", error);
+    }
+
+    const merged = new Map();
+    [...(Array.isArray(measurements) ? measurements : []), ...(Array.isArray(stored) ? stored : [])]
+      .forEach((record, index) => {
+        if (!record || typeof record !== "object") return;
+        merged.set(fmStableKey(record, index), record);
+      });
+
+    measurements = [...merged.values()];
+    window.measurements = measurements;
+    return measurements;
+  }
+
+  function fmVehicleRecords(vehicle){
+    const platform = fmVehiclePlatform(vehicle);
+    const plate = fmPlate(vehicle?.placaVeiculo);
+    if (!platform || !plate) return [];
+
+    return (Array.isArray(measurements) ? measurements : [])
+      .filter(record => {
+        const recordPlate = fmPlate(record?.plate || record?.placa || record?.placaVeiculo || record?.vehiclePlate);
+        return recordPlate === plate && fmRecordPlatform(record) === platform;
+      })
+      .sort((a, b) => fmRecordTimestamp(b) - fmRecordTimestamp(a));
+  }
+
+  function fmTypeSummary(records, platform){
+    const map = new Map();
+    records.forEach(record => {
+      const type = fmRecordType(record, platform);
+      const current = map.get(type) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Number(record?.value || record?.valor || 0);
+      map.set(type, current);
+    });
+    return [...map.entries()].sort((a, b) => Math.abs(b[1].value) - Math.abs(a[1].value));
+  }
+
+  function fmFiles(records){
+    const map = new Map();
+    records.forEach(record => {
+      const file = String(record?.sourceFile || "Arquivo não identificado");
+      const sheet = String(record?.sourceSheet || "-");
+      const key = \`\${record?.batchId || ""}|\${file}|\${sheet}\`;
+      if (!map.has(key)) map.set(key, { file, sheet, count: 0, importedAt: record?.importedAtLabel || record?.syncedAt || fmDate(record?.importedAt) });
+      map.get(key).count += 1;
+    });
+    return [...map.values()];
+  }
+
+  function fmUniqueInvoices(records){
+    return new Set(records.map(fmInvoiceNumber).filter(Boolean)).size;
+  }
+
+  function fmArvalRow(record){
+    return \`<tr>
+      <td><strong>\${fmEscape(fmInvoiceNumber(record))}</strong></td>
+      <td>\${fmEscape(fmDate(record?.invoiceDate || record?.date))}</td>
+      <td><span class="vehicle-measurement-type-chip">\${fmEscape(fmRecordType(record, "ARVAL"))}</span></td>
+      <td>\${fmEscape(record?.sourceBillingType || record?.billingType || record?.billingSubcategory)}</td>
+      <td><strong>\${fmEscape(fmCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${fmEscape(record?.sourceBillingCenter || record?.company)}</td>
+      <td>\${fmEscape(record?.details || record?.description || record?.sourceDetail)}</td>
+      <td>\${fmEscape(record?.noteFiscal || record?.documentNumber || record?.sourceNoteFiscal)}</td>
+      <td>\${fmEscape(record?.costCenter || record?.obra || record?.sourceObra)}</td>
+      <td>\${fmEscape(record?.boleto || record?.sourceBoleto)}</td>
+      <td>\${fmEscape(fmCompetence(record?.competence || record?.period))}</td>
+      <td>\${fmEscape(record?.sourceFile)}<br><small>Aba: \${fmEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function fmAldRow(record){
+    return \`<tr>
+      <td><strong>\${fmEscape(fmInvoiceNumber(record))}</strong></td>
+      <td>\${fmEscape(fmDate(record?.eventDate || record?.invoiceDate || record?.date))}</td>
+      <td><span class="vehicle-measurement-type-chip">\${fmEscape(fmRecordType(record, "ALD"))}</span></td>
+      <td><strong>\${fmEscape(fmCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${fmEscape(record?.contrato || record?.sourceContract)}</td>
+      <td>\${fmEscape(record?.company || record?.sourceCompany)}</td>
+      <td>\${fmEscape(record?.sourceBranch || record?.filial)}</td>
+      <td>\${fmEscape(record?.sourceCC || record?.cc)}</td>
+      <td>\${fmEscape(record?.driver)}</td>
+      <td>\${fmEscape(record?.sourceVehicleName || record?.vehicleName || record?.vehicleModel)}</td>
+      <td>\${fmEscape(record?.sourceModel || record?.vehicleModel)}</td>
+      <td>\${fmEscape(record?.supplier || record?.sourceSupplier)}</td>
+      <td>\${fmEscape(record?.details || record?.description || record?.sourceDescription)}</td>
+      <td>\${fmEscape(record?.billingSubcategory || record?.sourceCategory)}</td>
+      <td>\${fmEscape(record?.noteFiscal || record?.sourceSupplierNote)}</td>
+      <td>\${fmEscape(record?.reference || record?.sourceReference)}</td>
+      <td>\${fmEscape(record?.documentNumber || record?.sourceDocumentNumber)}</td>
+      <td>\${fmEscape(record?.boleto || record?.sourceBoletoNumber)}</td>
+      <td>\${fmEscape(record?.costCenter || record?.currentCostCenter || record?.sourceCostCenter)}</td>
+      <td>\${fmEscape(fmCompetence(record?.competence || record?.period))}</td>
+      <td>\${fmEscape(record?.sourceFile)}<br><small>Aba: \${fmEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function fmRemovePreviousSections(body){
+    body.querySelectorAll([
+      "#vehicleMeasurementDetailsFinal",
+      "#vehicleMeasurementLoadingFinal",
+      "#vehicleDetailMeasurementSection",
+      "#vehicleDetailMeasurementInvoiceSection",
+      "#vehicleSourceSpreadsheetDetails",
+      ".vehicle-source-summary-section",
+      ".vehicle-detail-billing-section",
+      ".vehicle-source-data-section"
+    ].join(",")).forEach(section => section.remove());
+  }
+
+  function fmInsertSection(body, html){
+    const anchor = body.querySelector("#vehicleMeasurementPlacementAnchor");
+    if (anchor) {
+      anchor.insertAdjacentHTML("afterend", html);
+      return;
+    }
+
+    const sections = [...body.querySelectorAll(".vehicle-detail-section")];
+    const controls = sections.find(section => fmNormalize(section.querySelector(".vehicle-detail-section-title")?.textContent) === "FRANQUIAS E CONTROLES");
+    if (controls) controls.insertAdjacentHTML("afterend", html);
+    else body.insertAdjacentHTML("beforeend", html);
+  }
+
+  function fmLoading(body, vehicle){
+    fmRemovePreviousSections(body);
+    fmInsertSection(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementLoadingFinal">
+      <div class="vehicle-detail-section-title">Medições e faturas da locadora</div>
+      <div class="vehicle-measurement-loading-final">Carregando a planilha \${fmEscape(fmVehiclePlatform(vehicle) || vehicle?.locadora || "da locadora")} referente à placa \${fmEscape(vehicle?.placaVeiculo)}...</div>
+    </section>\`);
+  }
+
+  function fmRender(vehicle, body){
+    if (!vehicle || !body) return;
+    const platform = fmVehiclePlatform(vehicle);
+    const records = fmVehicleRecords(vehicle);
+    const total = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const invoices = fmUniqueInvoices(records);
+    const latest = records[0] || null;
+    const types = fmTypeSummary(records, platform);
+    const files = fmFiles(records);
+
+    fmRemovePreviousSections(body);
+
+    if (!platform) {
+      fmInsertSection(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementDetailsFinal">
+        <div class="vehicle-detail-section-title">Medições e faturas da locadora</div>
+        <div class="vehicle-measurement-empty-final">Este veículo pertence à locadora \${fmEscape(vehicle?.locadora || "não informada")}. As planilhas de medição disponíveis são somente ALD e ARVAL.</div>
+      </section>\`);
+      return;
+    }
+
+    const typeChips = types.length
+      ? \`<div class="vehicle-measurement-type-strip">\${types.map(([type, data]) => \`<span class="vehicle-measurement-type-chip">\${fmEscape(type)} · \${data.count} item(ns) · \${fmEscape(fmCurrency(data.value))}</span>\`).join("")}</div>\`
+      : "";
+
+    const origins = files.length
+      ? files.map(file => \`\${fmEscape(file.file)} · aba \${fmEscape(file.sheet)} · \${file.count} linha(s) · importada em \${fmEscape(file.importedAt)}\`).join("<br>")
+      : "Nenhuma planilha vinculada a esta placa.";
+
+    let table = "";
+    if (platform === "ARVAL") {
+      table = \`<div class="vehicle-measurement-table-wrap"><table>
+        <thead><tr><th>Nº Fatura</th><th>Data da Fatura</th><th>Status Fatura</th><th>Tipo Fatura</th><th>Valor</th><th>Centro Faturamento</th><th>Detalhe</th><th>Nota Fiscal</th><th>Obra</th><th>Boleto</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(fmArvalRow).join("") : '<tr><td colspan="12">Nenhuma linha da medição ARVAL foi encontrada para esta placa.</td></tr>'}</tbody>
+      </table></div>\`;
+    } else {
+      table = \`<div class="vehicle-measurement-table-wrap"><table class="ald-table">
+        <thead><tr><th>Fatura</th><th>Data do Evento</th><th>Tipo de Reembolso</th><th>Valor</th><th>Contrato</th><th>Razão Social</th><th>Filial</th><th>CC</th><th>Condutor</th><th>Veículo</th><th>Modelo</th><th>Fornecedor</th><th>Descrição do Repasse</th><th>Categoria</th><th>Nota Fornecedor</th><th>Referência</th><th>Nº Documento</th><th>Nº Boleto</th><th>Centro de Custo</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(fmAldRow).join("") : '<tr><td colspan="21">Nenhuma linha da medição ALD foi encontrada para esta placa.</td></tr>'}</tbody>
+      </table></div>\`;
+    }
+
+    const html = \`<section class="vehicle-detail-section" id="vehicleMeasurementDetailsFinal">
+      <div class="vehicle-detail-section-title">Medições e faturas da \${fmEscape(platform)}</div>
+      <div class="vehicle-detail-grid">
+        <div class="vehicle-detail-item"><small>Placa pesquisada</small><strong>\${fmEscape(vehicle?.placaVeiculo)}</strong></div>
+        <div class="vehicle-detail-item"><small>Locadora validada</small><strong>\${fmEscape(platform)}</strong></div>
+        <div class="vehicle-detail-item"><small>Valor total medido</small><strong>\${fmEscape(fmCurrency(total))}</strong></div>
+        <div class="vehicle-detail-item"><small>Linhas da medição</small><strong>\${records.length}</strong></div>
+        <div class="vehicle-detail-item"><small>Faturas identificadas</small><strong>\${invoices}</strong></div>
+        <div class="vehicle-detail-item"><small>Última competência</small><strong>\${fmEscape(fmCompetence(latest?.competence || latest?.period))}</strong></div>
+        <div class="vehicle-detail-item"><small>Última data de fatura/evento</small><strong>\${fmEscape(fmDate(latest?.invoiceDate || latest?.eventDate || latest?.date))}</strong></div>
+        <div class="vehicle-detail-item"><small>Tipos encontrados</small><strong>\${types.length}</strong></div>
+        <div class="vehicle-detail-item"><small>Planilhas vinculadas</small><strong>\${files.length}</strong></div>
+      </div>
+      \${typeChips}
+      <div class="vehicle-measurement-origin"><strong>Origem dos dados:</strong><br>\${origins}</div>
+      <div class="vehicle-measurement-table-title">Faturas e itens da medição vinculados à placa \${fmEscape(vehicle?.placaVeiculo)}</div>
+      \${table}
+    </section>\`;
+
+    fmInsertSection(body, html);
+
+    body.querySelectorAll(".vehicle-detail-highlight-card, .vehicle-detail-item").forEach(item => {
+      const label = fmNormalize(item.querySelector("small")?.textContent);
+      const value = item.querySelector("strong");
+      if (!value) return;
+      if (label === "MEDICOES VINCULADAS") value.textContent = \`\${records.length} item(ns)\`;
+      if (label === "MULTAS / FATURAS") value.textContent = \`\${invoices} fatura(s) • \${fmCurrency(total)}\`;
+    });
+  }
+
+  let requestToken = 0;
+  const baseOpenVehicleDetailsFinal = openVehicleDetails;
+
+  const finalOpenVehicleDetails = function(id){
+    const token = ++requestToken;
+    const modal = document.getElementById("vehicleDetailModal");
+    if (modal) modal.dataset.vehicleDetailId = String(id || "");
+
+    const result = baseOpenVehicleDetailsFinal(id);
+    const vehicle = Array.isArray(vehicles)
+      ? vehicles.find(item => String(item?.id || "") === String(id || ""))
+      : null;
+    const body = document.getElementById("vehicleDetailBody");
+    if (!vehicle || !body) return result;
+
+    fmLoading(body, vehicle);
+
+    (async () => {
+      await fmHydrateMeasurements();
+      if (token !== requestToken) return;
+      const currentModal = document.getElementById("vehicleDetailModal");
+      if (!currentModal?.classList.contains("open") || currentModal.dataset.vehicleDetailId !== String(id || "")) return;
+
+      const renderCurrent = () => {
+        const activeModal = document.getElementById("vehicleDetailModal");
+        if (token !== requestToken || !activeModal?.classList.contains("open") || activeModal.dataset.vehicleDetailId !== String(id || "")) return;
+        fmRender(vehicle, document.getElementById("vehicleDetailBody"));
+      };
+
+      renderCurrent();
+      setTimeout(renderCurrent, 180);
+      setTimeout(renderCurrent, 650);
+    })().catch(error => {
+      console.error("Falha ao carregar as medições do veículo.", error);
+      if (token !== requestToken) return;
+      fmRemovePreviousSections(body);
+      fmInsertSection(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementDetailsFinal"><div class="vehicle-detail-section-title">Medições e faturas da locadora</div><div class="vehicle-measurement-empty-final">Não foi possível carregar as medições salvas. Feche e abra novamente o aplicativo.</div></section>\`);
+    });
+
+    return result;
+  };
+
+  finalOpenVehicleDetails.__finalMeasurementDetails = true;
+  window.openVehicleDetails = finalOpenVehicleDetails;
+  try { openVehicleDetails = finalOpenVehicleDetails; } catch (error) {}
+})();
+<\/script>
+
+<style id="vehicle-measurement-readonly-final-style">
+  #vehicleMeasurementReadonlyFinal {
+    border-top: 5px solid #ffdd00 !important;
+  }
+  .measurement-readonly-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 15px 16px 0;
+  }
+  .measurement-readonly-head h3 {
+    margin: 0 0 4px;
+    color: #003d63;
+    font-size: 18px;
+    font-weight: 1000;
+  }
+  .measurement-readonly-head p {
+    margin: 0;
+    color: #667b88;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .measurement-readonly-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 0 11px;
+    border-radius: 999px;
+    background: #eaf3f8;
+    color: #003d63;
+    border: 1px solid #b9d2df;
+    font-size: 10px;
+    font-weight: 1000;
+    white-space: nowrap;
+  }
+  .measurement-readonly-badge::before { content: "🔒"; }
+  .measurement-readonly-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(135px, 1fr));
+    gap: 0;
+    margin-top: 13px;
+    border-top: 1px solid #e2eaf0;
+    border-bottom: 1px solid #e2eaf0;
+  }
+  .measurement-readonly-summary > div {
+    min-height: 66px;
+    padding: 12px 14px;
+    border-right: 1px solid #e2eaf0;
+    border-bottom: 1px solid #e2eaf0;
+    background: #fff;
+  }
+  .measurement-readonly-summary > div:nth-child(4n) { border-right: 0; }
+  .measurement-readonly-summary small {
+    display: block;
+    margin-bottom: 5px;
+    color: #667b88;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .25px;
+  }
+  .measurement-readonly-summary strong {
+    color: #16344a;
+    font-size: 13px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .measurement-readonly-types {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    padding: 13px 16px 0;
+  }
+  .measurement-readonly-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #fff8cf;
+    border: 1px solid #f0d960;
+    color: #5e5100;
+    font-size: 10px;
+    font-weight: 900;
+  }
+  .measurement-readonly-origin {
+    margin: 13px 16px;
+    padding: 10px 12px;
+    border: 1px solid #d5e2e9;
+    border-radius: 12px;
+    background: #eef5f9;
+    color: #39566a;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .measurement-readonly-table-title {
+    margin: 15px 16px 8px;
+    color: #003d63;
+    font-size: 14px;
+    font-weight: 1000;
+  }
+  .measurement-readonly-table-wrap {
+    margin: 0 16px 16px;
+    max-height: 440px;
+    overflow: auto;
+    border: 1px solid #d5e2e9;
+    border-radius: 13px;
+    background: #fff;
+  }
+  .measurement-readonly-table {
+    width: 100%;
+    min-width: 1550px;
+    border: 0;
+    border-radius: 0;
+  }
+  .measurement-readonly-table.ald { min-width: 2200px; }
+  .measurement-readonly-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #eaf2f7;
+    color: #003d63;
+    font-size: 9px;
+    font-weight: 1000;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .measurement-readonly-table td {
+    color: #263d4b;
+    font-size: 11px;
+    line-height: 1.35;
+    vertical-align: top;
+    max-width: 300px;
+    overflow-wrap: anywhere;
+  }
+  .measurement-readonly-empty {
+    margin: 14px 16px 16px;
+    padding: 18px;
+    border: 1px dashed #9bb7c7;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #667b88;
+    text-align: center;
+    font-weight: 800;
+  }
+  #vehicleEditModal #vehicleMeasurementReadonlyFinal,
+  #vehicleEditModal [data-measurement-readonly="true"] {
+    display: none !important;
+  }
+  @media (max-width: 900px) {
+    .measurement-readonly-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .measurement-readonly-summary > div:nth-child(4n) { border-right: 1px solid #e2eaf0; }
+    .measurement-readonly-summary > div:nth-child(2n) { border-right: 0; }
+  }
+  @media (max-width: 560px) {
+    .measurement-readonly-summary { grid-template-columns: 1fr; }
+    .measurement-readonly-summary > div { border-right: 0 !important; }
+  }
+</style>
+
+<script id="vehicle-measurement-readonly-final-script">
+(function(){
+  "use strict";
+
+  function mrNormalize(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function mrEscape(value){
+    const div = document.createElement("div");
+    div.textContent = value == null || value === "" ? "-" : String(value);
+    return div.innerHTML;
+  }
+
+  function mrPlate(value){
+    return mrNormalize(value).replace(/[^A-Z0-9]/g, "");
+  }
+
+  function mrVehiclePlatform(vehicle){
+    const locadora = mrNormalize(vehicle?.locadora);
+    if (locadora.includes("ARVAL")) return "ARVAL";
+    if (locadora.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function mrRecordPlatform(record){
+    const source = mrNormalize([
+      record?.source,
+      record?.platform,
+      record?.locadora,
+      record?.fleetLocadora,
+      record?.sourceFile,
+      record?.importSchema
+    ].filter(Boolean).join(" "));
+    if (source.includes("ARVAL")) return "ARVAL";
+    if (source.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function mrRecordPlate(record){
+    return mrPlate(
+      record?.plate ||
+      record?.placa ||
+      record?.placaVeiculo ||
+      record?.vehiclePlate ||
+      record?.sourcePlate ||
+      ""
+    );
+  }
+
+  function mrCurrency(value){
+    const number = Number(value || 0);
+    try {
+      return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    } catch (error) {
+      return \`R$ \${number.toFixed(2)}\`;
+    }
+  }
+
+  function mrDate(value){
+    if (!value) return "-";
+    try {
+      if (typeof formatDate === "function") {
+        const formatted = formatDate(value);
+        if (formatted && formatted !== "Invalid Date") return formatted;
+      }
+    } catch (error) {}
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("pt-BR");
+  }
+
+  function mrCompetence(value){
+    const text = String(value || "").trim();
+    const iso = text.match(/^(\\d{4})-(\\d{2})$/);
+    return iso ? \`\${iso[2]}/\${iso[1]}\` : (text || "-");
+  }
+
+  function mrType(record, platform){
+    if (platform === "ARVAL") {
+      return String(
+        record?.sourceStatusFatura ||
+        record?.billingCategorySourceValue ||
+        record?.billingStatus ||
+        record?.statusFatura ||
+        record?.billingCategory ||
+        "SEM CLASSIFICAÇÃO"
+      ).trim().toUpperCase();
+    }
+    return String(
+      record?.sourceReimbursementType ||
+      record?.billingCategorySourceValue ||
+      record?.reimbursementType ||
+      record?.billingType ||
+      record?.billingCategory ||
+      "SEM CLASSIFICAÇÃO"
+    ).trim().toUpperCase();
+  }
+
+  function mrInvoice(record){
+    return String(
+      record?.sourceInvoiceNumber ||
+      record?.invoiceNumber ||
+      record?.fatura ||
+      record?.documentNumber ||
+      record?.sourceDocumentNumber ||
+      ""
+    ).trim();
+  }
+
+  function mrTimestamp(record){
+    const value = record?.invoiceDate || record?.eventDate || record?.date || record?.importedAt || record?.competence || "";
+    const time = new Date(value).getTime();
+    return Number.isNaN(time) ? 0 : time;
+  }
+
+  function mrKey(record, index){
+    return String(record?.id || [
+      record?.batchId,
+      mrRecordPlatform(record),
+      mrRecordPlate(record),
+      mrInvoice(record),
+      record?.documentNumber,
+      record?.value || record?.valor,
+      record?.sourceRow || index
+    ].join("|"));
+  }
+
+  async function mrLoadAllMeasurements(){
+    let stored = [];
+    try {
+      await Promise.resolve(window.fleetLargeStorageReady);
+      if (typeof window.loadFleetMeasurements === "function") {
+        stored = await window.loadFleetMeasurements();
+      }
+    } catch (error) {
+      console.error("Não foi possível carregar as medições do banco local.", error);
+    }
+
+    const merged = new Map();
+    [...(Array.isArray(window.measurements) ? window.measurements : []),
+     ...(typeof measurements !== "undefined" && Array.isArray(measurements) ? measurements : []),
+     ...(Array.isArray(stored) ? stored : [])]
+      .forEach((record, index) => {
+        if (!record || typeof record !== "object") return;
+        merged.set(mrKey(record, index), record);
+      });
+
+    const result = [...merged.values()];
+    window.measurements = result;
+    try { measurements = result; } catch (error) {}
+    return result;
+  }
+
+  function mrRecordsForVehicle(vehicle, allRecords){
+    const plate = mrPlate(vehicle?.placaVeiculo);
+    const platform = mrVehiclePlatform(vehicle);
+    if (!plate || !platform) return [];
+
+    return (Array.isArray(allRecords) ? allRecords : [])
+      .filter(record => mrRecordPlate(record) === plate && mrRecordPlatform(record) === platform)
+      .sort((a, b) => mrTimestamp(b) - mrTimestamp(a));
+  }
+
+  function mrTypes(records, platform){
+    const map = new Map();
+    records.forEach(record => {
+      const type = mrType(record, platform);
+      const current = map.get(type) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Number(record?.value || record?.valor || 0);
+      map.set(type, current);
+    });
+    return [...map.entries()].sort((a, b) => Math.abs(b[1].value) - Math.abs(a[1].value));
+  }
+
+  function mrFiles(records){
+    const map = new Map();
+    records.forEach(record => {
+      const file = String(record?.sourceFile || "Arquivo não identificado");
+      const sheet = String(record?.sourceSheet || "-");
+      const key = \`\${record?.batchId || ""}|\${file}|\${sheet}\`;
+      if (!map.has(key)) {
+        map.set(key, {
+          file,
+          sheet,
+          count: 0,
+          importedAt: record?.importedAtLabel || record?.syncedAt || mrDate(record?.importedAt)
+        });
+      }
+      map.get(key).count += 1;
+    });
+    return [...map.values()];
+  }
+
+  function mrUniqueInvoices(records){
+    return new Set(records.map(mrInvoice).filter(Boolean)).size;
+  }
+
+  function mrRemoveOldSections(body){
+    if (!body) return;
+    body.querySelectorAll([
+      "#vehicleMeasurementReadonlyFinal",
+      "#vehicleMeasurementDetailsFinal",
+      "#vehicleMeasurementLoadingFinal",
+      "#vehicleDetailMeasurementSection",
+      "#vehicleDetailMeasurementInvoiceSection",
+      "#vehicleSourceSpreadsheetDetails",
+      ".vehicle-source-summary-section",
+      ".vehicle-detail-billing-section",
+      ".vehicle-source-data-section"
+    ].join(",")).forEach(section => section.remove());
+  }
+
+  function mrInsertAfterControls(body, html){
+    const sections = [...body.querySelectorAll(".vehicle-detail-section")];
+    const controls = sections.find(section => mrNormalize(section.querySelector(".vehicle-detail-section-title")?.textContent) === "FRANQUIAS E CONTROLES");
+    if (controls) controls.insertAdjacentHTML("afterend", html);
+    else body.insertAdjacentHTML("beforeend", html);
+  }
+
+  function mrArvalRow(record){
+    return \`<tr>
+      <td><strong>\${mrEscape(mrInvoice(record))}</strong></td>
+      <td>\${mrEscape(mrDate(record?.invoiceDate || record?.date))}</td>
+      <td><strong>\${mrEscape(mrType(record, "ARVAL"))}</strong></td>
+      <td>\${mrEscape(record?.sourceBillingType || record?.billingType || record?.billingSubcategory)}</td>
+      <td><strong>\${mrEscape(mrCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${mrEscape(record?.sourceBillingCenter || record?.company)}</td>
+      <td>\${mrEscape(record?.details || record?.description || record?.sourceDetail)}</td>
+      <td>\${mrEscape(record?.noteFiscal || record?.documentNumber || record?.sourceNoteFiscal)}</td>
+      <td>\${mrEscape(record?.costCenter || record?.obra || record?.sourceObra)}</td>
+      <td>\${mrEscape(record?.boleto || record?.sourceBoleto)}</td>
+      <td>\${mrEscape(mrCompetence(record?.competence || record?.period))}</td>
+      <td>\${mrEscape(record?.sourceFile)}<br><small>Aba: \${mrEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function mrAldRow(record){
+    return \`<tr>
+      <td><strong>\${mrEscape(mrInvoice(record))}</strong></td>
+      <td>\${mrEscape(mrDate(record?.eventDate || record?.invoiceDate || record?.date))}</td>
+      <td><strong>\${mrEscape(mrType(record, "ALD"))}</strong></td>
+      <td><strong>\${mrEscape(mrCurrency(record?.value || record?.valor))}</strong></td>
+      <td>\${mrEscape(record?.contrato || record?.sourceContract)}</td>
+      <td>\${mrEscape(record?.company || record?.sourceCompany)}</td>
+      <td>\${mrEscape(record?.sourceBranch || record?.filial)}</td>
+      <td>\${mrEscape(record?.sourceCC || record?.cc)}</td>
+      <td>\${mrEscape(record?.driver)}</td>
+      <td>\${mrEscape(record?.sourceVehicleName || record?.vehicleName || record?.vehicleModel)}</td>
+      <td>\${mrEscape(record?.sourceModel || record?.vehicleModel)}</td>
+      <td>\${mrEscape(record?.supplier || record?.sourceSupplier)}</td>
+      <td>\${mrEscape(record?.details || record?.description || record?.sourceDescription)}</td>
+      <td>\${mrEscape(record?.billingSubcategory || record?.sourceCategory)}</td>
+      <td>\${mrEscape(record?.noteFiscal || record?.sourceSupplierNote)}</td>
+      <td>\${mrEscape(record?.reference || record?.sourceReference)}</td>
+      <td>\${mrEscape(record?.documentNumber || record?.sourceDocumentNumber)}</td>
+      <td>\${mrEscape(record?.boleto || record?.sourceBoletoNumber)}</td>
+      <td>\${mrEscape(record?.costCenter || record?.currentCostCenter || record?.sourceCostCenter)}</td>
+      <td>\${mrEscape(mrCompetence(record?.competence || record?.period))}</td>
+      <td>\${mrEscape(record?.sourceFile)}<br><small>Aba: \${mrEscape(record?.sourceSheet)}</small></td>
+    </tr>\`;
+  }
+
+  function mrRender(vehicle, body, allRecords){
+    if (!vehicle || !body) return;
+    mrRemoveOldSections(body);
+
+    const platform = mrVehiclePlatform(vehicle);
+    const plate = mrPlate(vehicle?.placaVeiculo);
+
+    if (!platform) {
+      mrInsertAfterControls(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementReadonlyFinal" data-measurement-readonly="true">
+        <div class="vehicle-detail-section-title">Medições e faturas importadas</div>
+        <div class="measurement-readonly-empty">Este veículo pertence à locadora \${mrEscape(vehicle?.locadora || "não informada")}. As planilhas disponíveis são somente ALD e ARVAL.</div>
+      </section>\`);
+      return;
+    }
+
+    const records = mrRecordsForVehicle(vehicle, allRecords);
+    const total = records.reduce((sum, record) => sum + Number(record?.value || record?.valor || 0), 0);
+    const invoices = mrUniqueInvoices(records);
+    const latest = records[0] || null;
+    const types = mrTypes(records, platform);
+    const files = mrFiles(records);
+
+    const typeHtml = types.length
+      ? \`<div class="measurement-readonly-types">\${types.map(([type, data]) => \`<span class="measurement-readonly-type">\${mrEscape(type)} · \${data.count} item(ns) · \${mrEscape(mrCurrency(data.value))}</span>\`).join("")}</div>\`
+      : "";
+
+    const originHtml = files.length
+      ? files.map(file => \`\${mrEscape(file.file)} · aba \${mrEscape(file.sheet)} · \${file.count} linha(s) · importada em \${mrEscape(file.importedAt)}\`).join("<br>")
+      : "Nenhuma planilha vinculada a esta placa.";
+
+    let tableHtml = "";
+    if (platform === "ARVAL") {
+      tableHtml = \`<table class="measurement-readonly-table">
+        <thead><tr><th>Nº Fatura</th><th>Data da Fatura</th><th>Status Fatura</th><th>Tipo Fatura</th><th>Valor</th><th>Centro Faturamento</th><th>Detalhe</th><th>Nota Fiscal</th><th>Obra</th><th>Boleto</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(mrArvalRow).join("") : '<tr><td colspan="12">Nenhum registro ARVAL foi encontrado para esta placa.</td></tr>'}</tbody>
+      </table>\`;
+    } else {
+      tableHtml = \`<table class="measurement-readonly-table ald">
+        <thead><tr><th>Fatura</th><th>Data do Evento</th><th>Tipo de Reembolso</th><th>Valor</th><th>Contrato</th><th>Razão Social</th><th>Filial</th><th>CC</th><th>Condutor</th><th>Veículo</th><th>Modelo</th><th>Fornecedor</th><th>Descrição do Repasse</th><th>Categoria</th><th>Nota Fornecedor</th><th>Referência</th><th>Nº Documento</th><th>Nº Boleto</th><th>Centro de Custo</th><th>Competência</th><th>Arquivo / Aba</th></tr></thead>
+        <tbody>\${records.length ? records.map(mrAldRow).join("") : '<tr><td colspan="21">Nenhum registro ALD foi encontrado para esta placa.</td></tr>'}</tbody>
+      </table>\`;
+    }
+
+    const html = \`<section class="vehicle-detail-section" id="vehicleMeasurementReadonlyFinal" data-measurement-readonly="true">
+      <div class="vehicle-detail-section-title">Medições e faturas da \${mrEscape(platform)}</div>
+      <div class="measurement-readonly-head">
+        <div><h3>Dados importados da planilha de medição</h3><p>Vínculo automático pela placa \${mrEscape(vehicle?.placaVeiculo || plate)} e pela locadora \${mrEscape(platform)}.</p></div>
+        <span class="measurement-readonly-badge">Somente leitura</span>
+      </div>
+      <div class="measurement-readonly-summary">
+        <div><small>Placa utilizada como chave</small><strong>\${mrEscape(vehicle?.placaVeiculo || plate)}</strong></div>
+        <div><small>Locadora validada</small><strong>\${mrEscape(platform)}</strong></div>
+        <div><small>Valor total medido</small><strong>\${mrEscape(mrCurrency(total))}</strong></div>
+        <div><small>Linhas importadas</small><strong>\${records.length}</strong></div>
+        <div><small>Faturas identificadas</small><strong>\${invoices}</strong></div>
+        <div><small>Última competência</small><strong>\${mrEscape(mrCompetence(latest?.competence || latest?.period))}</strong></div>
+        <div><small>Última data de fatura/evento</small><strong>\${mrEscape(mrDate(latest?.invoiceDate || latest?.eventDate || latest?.date))}</strong></div>
+        <div><small>Planilhas vinculadas</small><strong>\${files.length}</strong></div>
+      </div>
+      \${typeHtml}
+      <div class="measurement-readonly-origin"><strong>Origem dos dados:</strong><br>\${originHtml}</div>
+      <div class="measurement-readonly-table-title">Faturas e itens da medição referentes à placa \${mrEscape(vehicle?.placaVeiculo || plate)}</div>
+      <div class="measurement-readonly-table-wrap">\${tableHtml}</div>
+    </section>\`;
+
+    mrInsertAfterControls(body, html);
+
+    body.querySelectorAll(".vehicle-detail-highlight-card, .vehicle-detail-item").forEach(item => {
+      const label = mrNormalize(item.querySelector("small")?.textContent);
+      const value = item.querySelector("strong");
+      if (!value) return;
+      if (label === "MEDICOES VINCULADAS") value.textContent = \`\${records.length} item(ns)\`;
+      if (label === "MULTAS / FATURAS") value.textContent = \`\${invoices} fatura(s) • \${mrCurrency(total)}\`;
+    });
+  }
+
+  let mrToken = 0;
+  const mrBaseOpen = window.openVehicleDetails || (typeof openVehicleDetails === "function" ? openVehicleDetails : null);
+  if (!mrBaseOpen) return;
+
+  const mrOpen = function(id){
+    const token = ++mrToken;
+    const result = mrBaseOpen(id);
+    const vehicle = Array.isArray(vehicles)
+      ? vehicles.find(item => String(item?.id || "") === String(id || ""))
+      : null;
+    const body = document.getElementById("vehicleDetailBody");
+    const modal = document.getElementById("vehicleDetailModal");
+    if (!vehicle || !body || !modal) return result;
+
+    modal.dataset.readonlyMeasurementVehicleId = String(id || "");
+    mrRemoveOldSections(body);
+    mrInsertAfterControls(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementReadonlyFinal" data-measurement-readonly="true">
+      <div class="vehicle-detail-section-title">Medições e faturas importadas</div>
+      <div class="measurement-readonly-empty">Carregando os registros da placa \${mrEscape(vehicle?.placaVeiculo)}...</div>
+    </section>\`);
+
+    (async () => {
+      const records = await mrLoadAllMeasurements();
+      if (token !== mrToken) return;
+      const currentModal = document.getElementById("vehicleDetailModal");
+      if (!currentModal?.classList.contains("open") || currentModal.dataset.readonlyMeasurementVehicleId !== String(id || "")) return;
+
+      const render = () => {
+        const activeModal = document.getElementById("vehicleDetailModal");
+        if (token !== mrToken || !activeModal?.classList.contains("open") || activeModal.dataset.readonlyMeasurementVehicleId !== String(id || "")) return;
+        mrRender(vehicle, document.getElementById("vehicleDetailBody"), records);
+      };
+
+      render();
+      setTimeout(render, 250);
+      setTimeout(render, 900);
+      setTimeout(render, 1700);
+    })().catch(error => {
+      console.error("Falha ao carregar os dados da planilha no detalhe do veículo.", error);
+      if (token !== mrToken) return;
+      mrRemoveOldSections(body);
+      mrInsertAfterControls(body, \`<section class="vehicle-detail-section" id="vehicleMeasurementReadonlyFinal" data-measurement-readonly="true">
+        <div class="vehicle-detail-section-title">Medições e faturas importadas</div>
+        <div class="measurement-readonly-empty">Não foi possível carregar os dados armazenados. Tente abrir novamente o veículo.</div>
+      </section>\`);
+    });
+
+    return result;
+  };
+
+  mrOpen.__measurementReadonlyFinal = true;
+  window.openVehicleDetails = mrOpen;
+  try { openVehicleDetails = mrOpen; } catch (error) {}
+})();
+<\/script>
+
+
+<style id="measurement-readonly-table-layout-fix">
+  /* Organização da tabela de itens das medições e faturas importadas */
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table-wrap {
+    width: auto !important;
+    max-width: calc(100% - 32px) !important;
+    max-height: 520px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    scrollbar-gutter: stable both-edges;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table {
+    width: max-content !important;
+    min-width: 2100px !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    background: #fff !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald {
+    min-width: 3650px !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table th,
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table td {
+    box-sizing: border-box !important;
+    padding: 11px 12px !important;
+    border-right: 1px solid #dce6ec !important;
+    border-bottom: 1px solid #dce6ec !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    vertical-align: top !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table th {
+    top: 0 !important;
+    z-index: 4 !important;
+    height: 48px !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    text-align: left !important;
+    box-shadow: 0 1px 0 #cbd9e1 !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table td {
+    min-height: 54px !important;
+    line-height: 1.45 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table tbody tr:nth-child(even) td {
+    background: #f8fbfd !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table tbody tr:hover td {
+    background: #fffbe2 !important;
+  }
+
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table th:last-child,
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table td:last-child {
+    border-right: 0 !important;
+  }
+
+  /* ARVAL: 12 colunas */
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(1),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(1) { width: 145px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(2),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(2) { width: 135px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(3),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(3) { width: 150px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(4),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(4) { width: 150px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(5),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(5) { width: 135px !important; text-align: right !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(6),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(6) { width: 190px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(7),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(7) { width: 390px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(8),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(8) { width: 155px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(9),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(9) { width: 190px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(10),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(10) { width: 145px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(11),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(11) { width: 140px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) th:nth-child(12),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table:not(.ald) td:nth-child(12) { width: 300px !important; }
+
+  /* ALD: 21 colunas */
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(1),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(1) { width: 145px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(2),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(2) { width: 135px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(3),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(3) { width: 215px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(4),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(4) { width: 135px !important; text-align: right !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(5),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(5) { width: 155px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(6),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(6) { width: 230px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(7),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(7) { width: 120px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(8),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(8) { width: 120px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(9),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(9) { width: 195px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(10),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(10) { width: 185px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(11),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(11) { width: 185px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(12),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(12) { width: 210px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(13),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(13) { width: 390px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(14),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(14) { width: 190px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(15),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(15) { width: 170px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(16),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(16) { width: 175px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(17),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(17) { width: 160px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(18),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(18) { width: 160px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(19),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(19) { width: 210px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(20),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(20) { width: 140px !important; }
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald th:nth-child(21),
+  #vehicleMeasurementReadonlyFinal .measurement-readonly-table.ald td:nth-child(21) { width: 300px !important; }
+
+  @media (max-width: 720px) {
+    #vehicleMeasurementReadonlyFinal .measurement-readonly-table-wrap {
+      max-width: calc(100% - 20px) !important;
+      margin-left: 10px !important;
+      margin-right: 10px !important;
+    }
+  }
+</style>
+
+
+<style id="measurement-work-filter-style">
+  #medicoesTab .measure-filters {
+    grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)) !important;
+  }
+
+  #measurementWorkFilter {
+    width: 100%;
+  }
+</style>
+
+<script id="measurement-work-filter-script">
+(function(){
+  "use strict";
+
+  function measurementWorkNormalize(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function measurementRecordPlate(record) {
+    return String(
+      record?.plate ||
+      record?.placa ||
+      record?.placaVeiculo ||
+      record?.vehiclePlate ||
+      ""
+    ).toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+
+  function measurementVehicleForRecord(record) {
+    if (!Array.isArray(window.vehicles) && typeof vehicles === "undefined") return null;
+    const fleet = Array.isArray(window.vehicles)
+      ? window.vehicles
+      : (Array.isArray(vehicles) ? vehicles : []);
+
+    if (record?.vehicleId) {
+      const byId = fleet.find(vehicle => String(vehicle?.id || "") === String(record.vehicleId));
+      if (byId) return byId;
+    }
+
+    const plate = measurementRecordPlate(record);
+    if (!plate) return null;
+
+    return fleet.find(vehicle => {
+      const vehiclePlate = String(vehicle?.placaVeiculo || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      return vehiclePlate === plate;
+    }) || null;
+  }
+
+  function measurementWorkValue(record) {
+    const importedWork =
+      record?.costCenter ||
+      record?.currentCostCenter ||
+      record?.obra ||
+      record?.sourceObra ||
+      record?.sourceCostCenter ||
+      record?.centroCusto ||
+      record?.cc ||
+      "";
+
+    if (String(importedWork || "").trim()) return String(importedWork).trim();
+
+    const vehicle = measurementVehicleForRecord(record);
+    return String(vehicle?.centroCusto || "").trim();
+  }
+
+  function ensureMeasurementWorkFilter() {
+    const filters = document.querySelector("#medicoesTab .measure-filters");
+    if (!filters) return null;
+
+    let select = document.getElementById("measurementWorkFilter");
+    if (select) return select;
+
+    const field = document.createElement("div");
+    field.className = "measurement-work-filter-field";
+    field.innerHTML = \`
+      <label for="measurementWorkFilter">Obra / Centro de Custo</label>
+      <select id="measurementWorkFilter">
+        <option value="">Todas</option>
+      </select>
+    \`;
+
+    const methodField = document.getElementById("measurementMethodFilter")?.closest("div");
+    const clearButton = filters.querySelector("button");
+    if (methodField) {
+      filters.insertBefore(field, methodField);
+    } else if (clearButton) {
+      filters.insertBefore(field, clearButton);
+    } else {
+      filters.appendChild(field);
+    }
+
+    select = field.querySelector("#measurementWorkFilter");
+    if (select && !select.dataset.bound) {
+      select.addEventListener("change", () => {
+        if (typeof renderMeasurements === "function") renderMeasurements();
+      });
+      select.dataset.bound = "true";
+    }
+
+    return select;
+  }
+
+  function populateMeasurementWorkFilter() {
+    const select = ensureMeasurementWorkFilter();
+    if (!select) return;
+
+    const current = select.value;
+    const sourceRecords = Array.isArray(window.measurements)
+      ? window.measurements
+      : (typeof measurements !== "undefined" && Array.isArray(measurements) ? measurements : []);
+
+    const valuesMap = new Map();
+    sourceRecords.forEach(record => {
+      const display = measurementWorkValue(record);
+      const normalized = measurementWorkNormalize(display);
+      if (normalized && !valuesMap.has(normalized)) valuesMap.set(normalized, display);
+    });
+
+    const values = [...valuesMap.values()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    select.innerHTML = '<option value="">Todas</option>' +
+      values.map(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        return option.outerHTML;
+      }).join("");
+
+    if (values.some(value => measurementWorkNormalize(value) === measurementWorkNormalize(current))) {
+      const matched = values.find(value => measurementWorkNormalize(value) === measurementWorkNormalize(current));
+      select.value = matched || "";
+    }
+  }
+
+  const baseBillingFilteredMeasurements =
+    typeof billingFilteredMeasurements === "function"
+      ? billingFilteredMeasurements
+      : null;
+
+  if (baseBillingFilteredMeasurements && !baseBillingFilteredMeasurements.__workFilterWrapped) {
+    const wrappedBillingFilteredMeasurements = function() {
+      const baseRecords = baseBillingFilteredMeasurements();
+      const selectedWork = document.getElementById("measurementWorkFilter")?.value || "";
+      if (!selectedWork) return baseRecords;
+
+      const normalizedSelected = measurementWorkNormalize(selectedWork);
+      return baseRecords.filter(record =>
+        measurementWorkNormalize(measurementWorkValue(record)) === normalizedSelected
+      );
+    };
+
+    wrappedBillingFilteredMeasurements.__workFilterWrapped = true;
+    billingFilteredMeasurements = wrappedBillingFilteredMeasurements;
+    window.billingFilteredMeasurements = wrappedBillingFilteredMeasurements;
+  }
+
+  const baseRenderMeasurementOptions =
+    typeof renderMeasurementOptions === "function"
+      ? renderMeasurementOptions
+      : null;
+
+  if (baseRenderMeasurementOptions && !baseRenderMeasurementOptions.__workFilterWrapped) {
+    const wrappedRenderMeasurementOptions = function() {
+      baseRenderMeasurementOptions();
+      populateMeasurementWorkFilter();
+    };
+
+    wrappedRenderMeasurementOptions.__workFilterWrapped = true;
+    renderMeasurementOptions = wrappedRenderMeasurementOptions;
+    window.renderMeasurementOptions = wrappedRenderMeasurementOptions;
+  }
+
+  const baseClearMeasurementFilters =
+    typeof clearMeasurementFilters === "function"
+      ? clearMeasurementFilters
+      : null;
+
+  if (baseClearMeasurementFilters && !baseClearMeasurementFilters.__workFilterWrapped) {
+    const wrappedClearMeasurementFilters = function() {
+      const workFilter = document.getElementById("measurementWorkFilter");
+      if (workFilter) workFilter.value = "";
+      baseClearMeasurementFilters();
+    };
+
+    wrappedClearMeasurementFilters.__workFilterWrapped = true;
+    clearMeasurementFilters = wrappedClearMeasurementFilters;
+    window.clearMeasurementFilters = wrappedClearMeasurementFilters;
+  }
+
+  ensureMeasurementWorkFilter();
+  populateMeasurementWorkFilter();
+
+  if (typeof renderMeasurements === "function") {
+    renderMeasurements();
+  }
+})();
+<\/script>
+
+
+<style id="central-import-hub-style">
+  #importacaoTab .central-import-hero {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0 0 18px;
+  }
+
+  #importacaoTab .central-import-hero-card {
+    position: relative;
+    min-height: 112px;
+    padding: 16px;
+    border: 1px solid #d7e3ea;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #ffffff, #f5f9fc);
+    box-shadow: 0 10px 24px rgba(0, 61, 99, .07);
+    overflow: hidden;
+  }
+
+  #importacaoTab .central-import-hero-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: #ffdd00;
+  }
+
+  #importacaoTab .central-import-hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: #005383;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  #importacaoTab .central-import-hero-card strong {
+    display: block;
+    color: #003d63;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  #importacaoTab .central-import-hero-card span {
+    display: block;
+    margin-top: 5px;
+    color: #667b88;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  #importacaoTab .central-import-block {
+    margin: 0 0 20px;
+    padding: 0;
+    border: 1px solid #d7e3ea;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(0, 61, 99, .07);
+    overflow: hidden;
+  }
+
+  #importacaoTab .central-import-block-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #005383;
+    border-bottom: 4px solid #ffdd00;
+  }
+
+  #importacaoTab .central-import-block-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 17px;
+  }
+
+  #importacaoTab .central-import-block-header p {
+    margin: 5px 0 0;
+    color: rgba(255,255,255,.86);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  #importacaoTab .central-import-block-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #ffdd00;
+    color: #003d63;
+    font-weight: 1000;
+  }
+
+  #importacaoTab .central-import-block-body {
+    padding: 18px;
+  }
+
+  #importacaoTab #importPanel {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  #importacaoTab #importPanel > h2,
+  #importacaoTab #importPanel > p {
+    display: none;
+  }
+
+  #importacaoTab #billingMeasurementImports {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  #importacaoTab #billingMeasurementImports > h2,
+  #importacaoTab #billingMeasurementImports > p {
+    display: none;
+  }
+
+  #importacaoTab .api-grid {
+    margin: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #importacaoTab .api-card {
+    min-height: 100%;
+  }
+
+  #importacaoTab .central-api-note {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border: 1px solid #cddde7;
+    border-left: 5px solid #ffdd00;
+    border-radius: 12px;
+    background: #f6fafc;
+    color: #39566a;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  #medicoesTab .measurement-import-location-note {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0 0 16px;
+    padding: 13px 15px;
+    border: 1px solid #cddde7;
+    border-left: 5px solid #ffdd00;
+    border-radius: 13px;
+    background: #f6fafc;
+  }
+
+  #medicoesTab .measurement-import-location-note strong {
+    display: block;
+    color: #003d63;
+    font-size: 13px;
+  }
+
+  #medicoesTab .measurement-import-location-note span {
+    display: block;
+    margin-top: 3px;
+    color: #667b88;
+    font-size: 11px;
+  }
+
+  @media (max-width: 1050px) {
+    #importacaoTab .central-import-hero { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #importacaoTab .api-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 650px) {
+    #importacaoTab .central-import-hero { grid-template-columns: 1fr; }
+    #medicoesTab .measurement-import-location-note { align-items: stretch; flex-direction: column; }
+  }
+</style>
+
+<script id="central-import-hub-script">
+(function(){
+  "use strict";
+
+  function createBlock(id, number, title, description) {
+    const section = document.createElement("section");
+    section.id = id;
+    section.className = "central-import-block";
+    section.innerHTML = \`
+      <div class="central-import-block-header">
+        <div>
+          <h2>\${title}</h2>
+          <p>\${description}</p>
+        </div>
+        <span class="central-import-block-number">\${number}</span>
+      </div>
+      <div class="central-import-block-body"></div>
+    \`;
+    return section;
+  }
+
+  function setupCentralImportHub() {
+    const importTab = document.getElementById("importacaoTab");
+    const measurementsTab = document.getElementById("medicoesTab");
+    const importPanel = document.getElementById("importPanel");
+    const billingImports = document.getElementById("billingMeasurementImports");
+    const apiGrid = measurementsTab?.querySelector(".api-grid") || document.querySelector("#importacaoTab .api-grid");
+    if (!importTab || !importPanel || !billingImports || !apiGrid) return false;
+
+    const headingTitle = importTab.querySelector(".tab-heading h2");
+    const headingText = importTab.querySelector(".tab-heading p");
+    if (headingTitle) headingTitle.innerHTML = '<span class="icon-badge">📥</span>Central de importações e integrações';
+    if (headingText) headingText.textContent = "Importe a base da frota, carregue as medições completas da ALD e da ARVAL e configure as APIs de medição em um único local.";
+
+    let hero = document.getElementById("centralImportHero");
+    if (!hero) {
+      hero = document.createElement("div");
+      hero.id = "centralImportHero";
+      hero.className = "central-import-hero";
+      hero.innerHTML = \`
+        <div class="central-import-hero-card"><span class="central-import-hero-icon">🚗</span><strong>Base da Frota</strong><span>Cadastro inicial e atualização dos veículos oficiais.</span></div>
+        <div class="central-import-hero-card"><span class="central-import-hero-icon">🧾</span><strong>Medições ALD</strong><span>Importação acumulativa das planilhas completas da ALD.</span></div>
+        <div class="central-import-hero-card"><span class="central-import-hero-icon">📊</span><strong>Medições ARVAL</strong><span>Importação acumulativa das planilhas completas da ARVAL.</span></div>
+        <div class="central-import-hero-card"><span class="central-import-hero-icon">🔗</span><strong>APIs de Medição</strong><span>Configuração e sincronização das APIs ALD e ARVAL.</span></div>
+      \`;
+      importTab.querySelector(".tab-heading")?.insertAdjacentElement("afterend", hero);
+    }
+
+    let fleetBlock = document.getElementById("centralFleetImportBlock");
+    if (!fleetBlock) {
+      fleetBlock = createBlock(
+        "centralFleetImportBlock",
+        "1",
+        "Importação da base da frota",
+        "Carregue a planilha oficial dos veículos. Este processo atualiza os cadastros utilizados como referência para o vínculo das medições por placa."
+      );
+      hero.insertAdjacentElement("afterend", fleetBlock);
+    }
+    fleetBlock.querySelector(".central-import-block-body")?.appendChild(importPanel);
+
+    let measurementBlock = document.getElementById("centralMeasurementImportBlock");
+    if (!measurementBlock) {
+      measurementBlock = createBlock(
+        "centralMeasurementImportBlock",
+        "2",
+        "Importação das medições ALD e ARVAL",
+        "Selecione uma ou várias planilhas. Cada carga é armazenada separadamente, vinculada pela placa e refletida nas abas Frota, Medições, Dashboard e Ver detalhes."
+      );
+      fleetBlock.insertAdjacentElement("afterend", measurementBlock);
+    }
+    measurementBlock.querySelector(".central-import-block-body")?.appendChild(billingImports);
+
+    let apiBlock = document.getElementById("centralMeasurementApiBlock");
+    if (!apiBlock) {
+      apiBlock = createBlock(
+        "centralMeasurementApiBlock",
+        "3",
+        "APIs de medição ALD e ARVAL",
+        "Configure os endpoints e tokens para sincronizar medições diretamente das plataformas. Os registros recebidos também são vinculados por placa e locadora."
+      );
+      measurementBlock.insertAdjacentElement("afterend", apiBlock);
+      apiBlock.querySelector(".central-import-block-body")?.insertAdjacentHTML("afterbegin", \`
+        <div class="central-api-note">
+          As placas precisam estar cadastradas na Frota. Veículos ALD recebem somente dados ALD e veículos ARVAL recebem somente dados ARVAL. Registros sem correspondência permanecem identificados para conferência.
+        </div>
+      \`);
+    }
+    apiBlock.querySelector(".central-import-block-body")?.appendChild(apiGrid);
+
+    const originalApiNote = measurementsTab?.querySelector(".api-note");
+    if (originalApiNote) originalApiNote.style.display = "none";
+
+    if (measurementsTab && !document.getElementById("measurementImportLocationNote")) {
+      const note = document.createElement("div");
+      note.id = "measurementImportLocationNote";
+      note.className = "measurement-import-location-note";
+      note.innerHTML = \`
+        <div>
+          <strong>Importações e APIs centralizadas</strong>
+          <span>Use a aba Importar Planilha para carregar novas medições ou sincronizar as APIs ALD e ARVAL.</span>
+        </div>
+        <button class="outline-btn" type="button" onclick="openTabById('importacaoTab')">ABRIR CENTRAL DE IMPORTAÇÕES</button>
+      \`;
+      measurementsTab.querySelector(".tab-heading")?.insertAdjacentElement("afterend", note);
+    }
+
+    const tabButton = [...document.querySelectorAll(".tab-button")].find(button =>
+      (button.getAttribute("onclick") || "").includes("importacaoTab")
+    );
+    if (tabButton) tabButton.innerHTML = '<span class="tab-icon">📥</span>Importações / APIs';
+
+    return true;
+  }
+
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    if (setupCentralImportHub() || attempts > 30) clearInterval(timer);
+  }, 50);
+
+  document.addEventListener("DOMContentLoaded", setupCentralImportHub, { once: true });
+  setTimeout(setupCentralImportHub, 0);
+})();
+<\/script>
+
+
+<style id="measurement-dashboard-moved-style">
+  #medicoesTab .measurement-analytics-hub {
+    margin: 18px 0 22px;
+  }
+
+  #medicoesTab .measurement-analytics-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 13px;
+    padding: 15px 17px;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 4px solid #ffdd00;
+    background: #005383;
+  }
+
+  #medicoesTab .measurement-analytics-heading h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 1000;
+  }
+
+  #medicoesTab .measurement-analytics-heading p {
+    margin: 5px 0 0;
+    color: rgba(255,255,255,.84);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  #medicoesTab .measurement-dashboard-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  #medicoesTab .measurement-dashboard-kpi-grid .powerbi-kpi {
+    min-width: 0;
+    margin: 0 !important;
+  }
+
+  #medicoesTab .measurement-dashboard-visual-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  #medicoesTab .measurement-dashboard-visual-grid > .powerbi-visual {
+    margin: 0 !important;
+    min-width: 0;
+  }
+
+  #medicoesTab .measurement-dashboard-visual-grid .bi-span-6 {
+    grid-column: span 6;
+  }
+
+  #medicoesTab .measurement-dashboard-visual-grid .bi-span-12,
+  #medicoesTab .measurement-dashboard-visual-grid .fleet-measurement-dashboard-visual {
+    grid-column: 1 / -1;
+  }
+
+  #medicoesTab .measurement-dashboard-visual-grid .dashboard-chart-stage {
+    min-height: 310px;
+  }
+
+  #dashboardTab .operational-dashboard-kpi,
+  #dashboardTab .fleet-platform-kpi,
+  #dashboardTab .dashboard-visual-billing-category,
+  #dashboardTab .dashboard-visual-billing-platform,
+  #dashboardTab .dashboard-visual-operational-measurements,
+  #dashboardTab .dashboard-visual-operational-fines,
+  #dashboardTab .fleet-measurement-dashboard-visual {
+    display: none !important;
+  }
+
+  @media (max-width: 1180px) {
+    #medicoesTab .measurement-dashboard-kpi-grid {
+      grid-template-columns: repeat(3, minmax(175px, 1fr));
+    }
+  }
+
+  @media (max-width: 860px) {
+    #medicoesTab .measurement-dashboard-kpi-grid {
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    #medicoesTab .measurement-dashboard-visual-grid .bi-span-6 {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    #medicoesTab .measurement-dashboard-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+
+    #medicoesTab .measurement-analytics-heading {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script id="measurement-dashboard-moved-script">
+(function(){
+  "use strict";
+
+  const measurementKpiAnchorIds = [
+    "dashOperationalMeasurements",
+    "dashOperationalKm",
+    "dashOperationalMeasurementValue",
+    "dashOperationalFines",
+    "dashOperationalFineValue",
+    "dashOperationalImports",
+    "dashBillingItems",
+    "dashBillingValue",
+    "dashBillingRentals",
+    "dashBillingFines",
+    "dashBillingOther",
+    "dashBillingImports",
+    "dashAldMeasurementValue",
+    "dashArvalMeasurementValue"
+  ];
+
+  const measurementVisualSelectors = [
+    ".dashboard-visual-billing-category",
+    ".dashboard-visual-billing-platform",
+    ".dashboard-visual-operational-measurements",
+    ".dashboard-visual-operational-fines",
+    ".fleet-measurement-dashboard-visual"
+  ];
+
+  function measurementTabButton() {
+    return [...document.querySelectorAll(".tab-button")].find(button =>
+      (button.getAttribute("onclick") || "").includes("medicoesTab")
+    );
+  }
+
+  function ensureMeasurementName() {
+    const button = measurementTabButton();
+    const buttonHtml = '<span class="tab-icon">🧾</span>Medições';
+    if (button && button.innerHTML !== buttonHtml) button.innerHTML = buttonHtml;
+
+    const tab = document.getElementById("medicoesTab");
+    const title = tab?.querySelector(".tab-heading h2");
+    const description = tab?.querySelector(".tab-heading p");
+    const titleHtml = '<span class="icon-badge">🧾</span>Medições';
+    const descriptionText =
+      "Consulte as medições ALD e ARVAL vinculadas por placa, acompanhe indicadores, gráficos, faturas, valores e dados consolidados.";
+
+    if (title && title.innerHTML !== titleHtml) title.innerHTML = titleHtml;
+    if (description && description.textContent !== descriptionText) {
+      description.textContent = descriptionText;
+    }
+  }
+
+  function ensureMeasurementAnalyticsHub() {
+    const tab = document.getElementById("medicoesTab");
+    if (!tab) return null;
+
+    let hub = document.getElementById("measurementAnalyticsHub");
+    if (!hub) {
+      hub = document.createElement("section");
+      hub.id = "measurementAnalyticsHub";
+      hub.className = "measurement-analytics-hub";
+      hub.innerHTML = \`
+        <div class="measurement-analytics-heading">
+          <div>
+            <h2>Indicadores e análises das medições</h2>
+            <p>Cartões e gráficos consolidados das medições ALD e ARVAL, retirados do Dashboard geral da frota.</p>
+          </div>
+        </div>
+        <div class="measurement-dashboard-kpi-grid" id="measurementDashboardKpiGrid"></div>
+        <div class="measurement-dashboard-visual-grid" id="measurementDashboardVisualGrid"></div>
+      \`;
+
+      const filterPanel = tab.querySelector(".measure-filter-panel");
+      const existingKpis = tab.querySelector(".measure-kpi-grid");
+      if (filterPanel) filterPanel.insertAdjacentElement("afterend", hub);
+      else if (existingKpis) existingKpis.insertAdjacentElement("beforebegin", hub);
+      else tab.appendChild(hub);
+    }
+
+    return hub;
+  }
+
+  function moveMeasurementCards() {
+    const destination = document.getElementById("measurementDashboardKpiGrid");
+    if (!destination) return;
+
+    measurementKpiAnchorIds.forEach(id => {
+      const anchor = document.getElementById(id);
+      const card = anchor?.closest(".powerbi-kpi");
+      if (card && card.parentElement !== destination) {
+        card.style.display = "";
+        destination.appendChild(card);
+      }
+    });
+  }
+
+  function moveMeasurementVisuals() {
+    const destination = document.getElementById("measurementDashboardVisualGrid");
+    if (!destination) return;
+
+    measurementVisualSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(visual => {
+        if (visual.parentElement !== destination) {
+          visual.style.display = "";
+          destination.appendChild(visual);
+        }
+      });
+    });
+  }
+
+  function resizeMeasurementCharts() {
+    if (!window.Chart) return;
+
+    [
+      "operationalMeasurementChart",
+      "operationalFineChart",
+      "billingCategoryChart",
+      "billingPlatformChart"
+    ].forEach(id => {
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
+      try {
+        const chart = typeof window.Chart.getChart === "function"
+          ? window.Chart.getChart(canvas)
+          : null;
+        chart?.resize();
+        chart?.update("none");
+      } catch (error) {
+        console.warn(\`Não foi possível redimensionar o gráfico \${id}.\`, error);
+      }
+    });
+  }
+
+  function refreshMeasurementAnalytics() {
+    try {
+      if (typeof renderOperationalDashboard === "function") renderOperationalDashboard();
+    } catch (error) {
+      console.warn("Falha ao atualizar os indicadores operacionais das medições.", error);
+    }
+
+    try {
+      if (typeof renderBillingDashboard === "function") renderBillingDashboard();
+    } catch (error) {
+      console.warn("Falha ao atualizar os cartões e gráficos das faturas.", error);
+    }
+
+    try {
+      if (typeof pmRenderDashboard === "function") pmRenderDashboard();
+    } catch (error) {
+      console.warn("Falha ao atualizar o consolidado por placa.", error);
+    }
+
+    setTimeout(resizeMeasurementCharts, 40);
+  }
+
+  function organizeMeasurementAnalytics() {
+    ensureMeasurementName();
+    const hub = ensureMeasurementAnalyticsHub();
+    if (!hub) return false;
+
+    moveMeasurementCards();
+    moveMeasurementVisuals();
+
+    const kpiGrid = document.getElementById("measurementDashboardKpiGrid");
+    const visualGrid = document.getElementById("measurementDashboardVisualGrid");
+    if (kpiGrid) {
+      const shouldHide = !kpiGrid.children.length;
+      if (kpiGrid.hidden !== shouldHide) kpiGrid.hidden = shouldHide;
+    }
+    if (visualGrid) {
+      const shouldHide = !visualGrid.children.length;
+      if (visualGrid.hidden !== shouldHide) visualGrid.hidden = shouldHide;
+    }
+
+    return true;
+  }
+
+  const button = measurementTabButton();
+  if (button && !button.dataset.measurementAnalyticsBound) {
+    button.addEventListener("click", () => {
+      setTimeout(() => {
+        organizeMeasurementAnalytics();
+        refreshMeasurementAnalytics();
+      }, 40);
+    });
+    button.dataset.measurementAnalyticsBound = "true";
+  }
+
+  [
+    "measurementSourceFilter",
+    "measurementPlateFilter",
+    "measurementCategoryFilter",
+    "measurementBoletoFilter",
+    "measurementMethodFilter",
+    "measurementWorkFilter",
+    "measurementStartFilter",
+    "measurementEndFilter"
+  ].forEach(id => {
+    const element = document.getElementById(id);
+    if (!element || element.dataset.measurementAnalyticsBound) return;
+
+    element.addEventListener("change", () => {
+      setTimeout(() => {
+        organizeMeasurementAnalytics();
+        refreshMeasurementAnalytics();
+      }, 20);
+    });
+    element.dataset.measurementAnalyticsBound = "true";
+  });
+
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    organizeMeasurementAnalytics();
+
+    const cardsReady = measurementKpiAnchorIds.some(id => document.getElementById(id));
+    const visualsReady = measurementVisualSelectors.some(selector => document.querySelector(selector));
+
+    if ((cardsReady && visualsReady) || attempts > 80) {
+      clearInterval(timer);
+      refreshMeasurementAnalytics();
+    }
+  }, 75);
+
+  const observer = new MutationObserver(() => {
+    clearTimeout(observer.__measurementTimer);
+    observer.__measurementTimer = setTimeout(organizeMeasurementAnalytics, 30);
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  document.addEventListener("DOMContentLoaded", organizeMeasurementAnalytics, { once: true });
+  setTimeout(organizeMeasurementAnalytics, 0);
+  setTimeout(refreshMeasurementAnalytics, 300);
+})();
+<\/script>
+
+
+<style id="fleet-without-measurements-fines-style">
+  /* A aba Frota exibe somente dados cadastrais, contratuais e de movimentação. */
+  #vehicleDetailModal #vehicleDetailMeasurementSection,
+  #vehicleDetailModal #vehicleDetailMeasurementInvoiceSection,
+  #vehicleDetailModal #vehicleSourceSpreadsheetDetails,
+  #vehicleDetailModal #vehicleMeasurementLoadingFinal,
+  #vehicleDetailModal #vehicleMeasurementDetailsFinal,
+  #vehicleDetailModal #vehicleMeasurementReadonlyFinal,
+  #vehicleDetailModal #vehicleMeasurementPlacementAnchor,
+  #vehicleDetailModal .vehicle-detail-measurement-section,
+  #vehicleDetailModal .vehicle-detail-billing-section,
+  #vehicleDetailModal .vehicle-source-data-section,
+  #vehicleDetailModal .vehicle-source-summary-section,
+  #vehicleDetailModal [data-measurement-readonly="true"] {
+    display: none !important;
+  }
+</style>
+
+<script id="fleet-without-measurements-fines-script">
+(function(){
+  "use strict";
+
+  const normalizedText = value => String(value || "")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .trim()
+    .toUpperCase();
+
+  const forbiddenLabel = value => {
+    const text = normalizedText(value);
+    return text.includes("MEDICOES") || text.includes("MULTAS") || text.includes("FATURAS");
+  };
+
+  function cleanFleetVehicleDetails(body){
+    if (!body) return;
+
+    [
+      "#vehicleDetailMeasurementSection",
+      "#vehicleDetailMeasurementInvoiceSection",
+      "#vehicleSourceSpreadsheetDetails",
+      "#vehicleMeasurementLoadingFinal",
+      "#vehicleMeasurementDetailsFinal",
+      "#vehicleMeasurementReadonlyFinal",
+      "#vehicleMeasurementPlacementAnchor",
+      ".vehicle-detail-measurement-section",
+      ".vehicle-detail-billing-section",
+      ".vehicle-source-data-section",
+      ".vehicle-source-summary-section",
+      "[data-measurement-readonly='true']"
+    ].forEach(selector => body.querySelectorAll(selector).forEach(element => element.remove()));
+
+    body.querySelectorAll(".vehicle-detail-highlight-card, .vehicle-detail-item").forEach(item => {
+      const label = item.querySelector("small")?.textContent || "";
+      if (forbiddenLabel(label)) item.remove();
+    });
+
+    body.querySelectorAll(".vehicle-detail-section").forEach(section => {
+      const title = section.querySelector(":scope > .vehicle-detail-section-title")?.textContent || "";
+      if (forbiddenLabel(title)) {
+        section.remove();
+        return;
+      }
+
+      const grid = section.querySelector(":scope > .vehicle-detail-grid");
+      if (grid && !grid.querySelector(".vehicle-detail-item")) section.remove();
+    });
+  }
+
+  window.cleanFleetVehicleDetails = cleanFleetVehicleDetails;
+
+  const detailBody = document.getElementById("vehicleDetailBody");
+  if (detailBody) {
+    const observer = new MutationObserver(() => cleanFleetVehicleDetails(detailBody));
+    observer.observe(detailBody, { childList: true, subtree: true });
+  }
+
+  if (typeof openVehicleDetails === "function" && !openVehicleDetails.__fleetWithoutMeasurementsFines) {
+    const baseOpenVehicleDetails = openVehicleDetails;
+    const wrappedOpenVehicleDetails = function(id){
+      const result = baseOpenVehicleDetails(id);
+      const body = document.getElementById("vehicleDetailBody");
+      cleanFleetVehicleDetails(body);
+      setTimeout(() => cleanFleetVehicleDetails(body), 0);
+      setTimeout(() => cleanFleetVehicleDetails(body), 80);
+      setTimeout(() => cleanFleetVehicleDetails(body), 300);
+      setTimeout(() => cleanFleetVehicleDetails(body), 900);
+      return result;
+    };
+    wrappedOpenVehicleDetails.__fleetWithoutMeasurementsFines = true;
+    openVehicleDetails = wrappedOpenVehicleDetails;
+    window.openVehicleDetails = wrappedOpenVehicleDetails;
+  }
+
+  if (typeof renderVehicles === "function" && !renderVehicles.__fleetWithoutMeasurementsFines) {
+    const baseRenderVehicles = renderVehicles;
+    const wrappedRenderVehicles = function(){
+      const result = baseRenderVehicles();
+      document.querySelectorAll("#vehicleGrid .vehicle-card").forEach(card => {
+        const plate = card.querySelector(".plate")?.textContent?.trim() || "selecionado";
+        card.setAttribute("aria-label", \`Abrir detalhes do veículo \${plate}\`);
+      });
+      return result;
+    };
+    wrappedRenderVehicles.__fleetWithoutMeasurementsFines = true;
+    renderVehicles = wrappedRenderVehicles;
+    window.renderVehicles = wrappedRenderVehicles;
+  }
+
+  cleanFleetVehicleDetails(document.getElementById("vehicleDetailBody"));
+})();
+<\/script>
+
+
+<script id="measurement-tab-order-fix-script">
+(function(){
+  "use strict";
+
+  function placeMeasurementAfterDashboard(){
+    const nav = document.querySelector('.tabs-nav');
+    if (!nav) return;
+
+    const dashboard = [...nav.querySelectorAll('.tab-button')].find(button =>
+      (button.getAttribute('onclick') || '').includes("dashboardTab")
+    );
+    const measurements = [...nav.querySelectorAll('.tab-button')].find(button =>
+      (button.getAttribute('onclick') || '').includes("medicoesTab")
+    );
+
+    if (!dashboard || !measurements) return;
+
+    const measurementHtml = '<span class="tab-icon">🧾</span>Medições';
+    if (measurements.innerHTML !== measurementHtml) measurements.innerHTML = measurementHtml;
+
+    if (dashboard.nextElementSibling !== measurements) {
+      dashboard.insertAdjacentElement('afterend', measurements);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', placeMeasurementAfterDashboard, { once: true });
+  setTimeout(placeMeasurementAfterDashboard, 0);
+  setTimeout(placeMeasurementAfterDashboard, 250);
+})();
+<\/script>
+
+
+<style id="fleet-measurement-compact-layout-style">
+  /* Remove a instrução de medições dos cards da aba Frota. */
+  #vehicleGrid .vehicle-card-clickable .vehicle-card-top::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /* KPIs de Medições mais compactos e sem sobreposição. */
+  #medicoesTab #measurementDashboardKpiGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    gap: 9px !important;
+    margin-bottom: 14px !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi {
+    min-width: 0 !important;
+    min-height: 96px !important;
+    padding: 10px 11px !important;
+    border-radius: 13px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 3px !important;
+    overflow: hidden !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid .metric-icon {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 9px !important;
+    font-size: 14px !important;
+    margin-bottom: 1px !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid small {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 9.5px !important;
+    line-height: 1.2 !important;
+    letter-spacing: .01em !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong {
+    display: block !important;
+    width: 100% !important;
+    margin: 1px 0 0 !important;
+    font-size: clamp(18px, 1.55vw, 23px) !important;
+    line-height: 1.08 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span {
+    display: block !important;
+    width: 100% !important;
+    margin-top: auto !important;
+    font-size: 9px !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #medicoesTab #measurementLastSync {
+    font-size: 15px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* A grade amarela anterior não deve mais ocupar espaço. */
+  #medicoesTab .measure-kpi-grid.measurement-legacy-kpis-hidden {
+    display: none !important;
+  }
+
+  /* Rolagem horizontal e vertical da tabela de itens importados. */
+  #medicoesTab .measurement-items-scroll {
+    width: 100% !important;
+    max-height: 520px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    scrollbar-gutter: stable both-edges !important;
+    overscroll-behavior: contain !important;
+    border: 1px solid #d8e4ec !important;
+    border-radius: 13px !important;
+    background: #fff !important;
+  }
+
+  #medicoesTab .measurement-items-scroll table {
+    width: 100% !important;
+    min-width: 1720px !important;
+    table-layout: fixed !important;
+    margin: 0 !important;
+  }
+
+  #medicoesTab .measurement-items-scroll thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 4 !important;
+    background: #005383 !important;
+    color: #fff !important;
+    box-shadow: 0 1px 0 #d8e4ec !important;
+  }
+
+  #medicoesTab .measurement-items-scroll th,
+  #medicoesTab .measurement-items-scroll td {
+    vertical-align: top !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  #medicoesTab .measurement-items-scroll th:nth-child(1),
+  #medicoesTab .measurement-items-scroll td:nth-child(1) { width: 92px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(2),
+  #medicoesTab .measurement-items-scroll td:nth-child(2) { width: 170px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(3),
+  #medicoesTab .measurement-items-scroll td:nth-child(3) { width: 150px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(4),
+  #medicoesTab .measurement-items-scroll td:nth-child(4) { width: 125px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(5),
+  #medicoesTab .measurement-items-scroll td:nth-child(5) { width: 145px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(6),
+  #medicoesTab .measurement-items-scroll td:nth-child(6) { width: 160px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(7),
+  #medicoesTab .measurement-items-scroll td:nth-child(7) { width: 190px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(8),
+  #medicoesTab .measurement-items-scroll td:nth-child(8) { width: 260px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(9),
+  #medicoesTab .measurement-items-scroll td:nth-child(9) { width: 135px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(10),
+  #medicoesTab .measurement-items-scroll td:nth-child(10) { width: 170px !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(11),
+  #medicoesTab .measurement-items-scroll td:nth-child(11) { width: 125px !important; text-align: right !important; }
+  #medicoesTab .measurement-items-scroll th:nth-child(12),
+  #medicoesTab .measurement-items-scroll td:nth-child(12) { width: 145px !important; }
+
+  #medicoesTab .measurement-items-scroll::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  #medicoesTab .measurement-items-scroll::-webkit-scrollbar-thumb {
+    background: #7f9dad;
+    border: 3px solid #eef4f7;
+    border-radius: 999px;
+  }
+
+  #medicoesTab .measurement-items-scroll::-webkit-scrollbar-track {
+    background: #eef4f7;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 700px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+</style>
+
+<script id="fleet-measurement-compact-layout-script">
+(function(){
+  "use strict";
+
+  function prepareBlueMetricCard(card, config) {
+    if (!card) return null;
+    if (card.dataset.compactBlueMetric !== config.valueId) {
+      card.className = "powerbi-kpi measurement-dashboard-blue-kpi";
+      card.innerHTML = \`
+        <div class="metric-icon">\${config.icon}</div>
+        <small>\${config.label}</small>
+        <strong id="\${config.valueId}">\${config.initial}</strong>
+        <span>\${config.caption}</span>
+      \`;
+      card.dataset.compactBlueMetric = config.valueId;
+    }
+    return card;
+  }
+
+  function organizeMeasurementKpis() {
+    const destination = document.getElementById("measurementDashboardKpiGrid");
+    const legacyGrid = document.querySelector("#medicoesTab .measure-kpi-grid");
+    if (!destination || !legacyGrid) return false;
+
+    ["measurementTotal", "measurementKmTotal", "measurementValueTotal"].forEach(id => {
+      document.getElementById(id)?.closest(".measure-kpi, .powerbi-kpi")?.remove();
+    });
+
+    const unlinkedExisting = document.getElementById("measurementUnlinked");
+    const unlinkedCard = prepareBlueMetricCard(
+      unlinkedExisting?.closest(".measure-kpi, .powerbi-kpi"),
+      {
+        icon: "🔗",
+        label: "Sem vínculo por placa",
+        valueId: "measurementUnlinked",
+        initial: unlinkedExisting?.textContent || "0",
+        caption: "Itens sem correspondência na Frota"
+      }
+    );
+
+    const lastImportExisting = document.getElementById("measurementLastSync");
+    const lastImportCard = prepareBlueMetricCard(
+      lastImportExisting?.closest(".measure-kpi, .powerbi-kpi"),
+      {
+        icon: "🕒",
+        label: "Última importação",
+        valueId: "measurementLastSync",
+        initial: lastImportExisting?.textContent || "-",
+        caption: "Carga mais recente armazenada"
+      }
+    );
+
+    if (unlinkedCard && unlinkedCard.parentElement !== destination) destination.appendChild(unlinkedCard);
+    if (lastImportCard && lastImportCard.parentElement !== destination) destination.appendChild(lastImportCard);
+
+    const importsCard = document.getElementById("dashBillingImports")?.closest(".powerbi-kpi");
+    const importsCaption = importsCard?.querySelector("span");
+    if (importsCaption && !importsCaption.dataset.captionCleaned) {
+      importsCaption.textContent = "Cargas de medição armazenadas";
+      importsCaption.dataset.captionCleaned = "true";
+    }
+
+    legacyGrid.classList.add("measurement-legacy-kpis-hidden");
+    if (!legacyGrid.children.length) legacyGrid.remove();
+
+    if (typeof renderMeasurements === "function") {
+      try { renderMeasurements(); } catch (error) {
+        console.warn("Não foi possível atualizar os KPIs compactos de medições.", error);
+      }
+    }
+    return true;
+  }
+
+  function enableMeasurementTableScroll() {
+    const tableBody = document.getElementById("measurementsTable");
+    const wrapper = tableBody?.closest(".table-wrap");
+    if (!wrapper) return false;
+    wrapper.classList.add("measurement-items-scroll");
+    return true;
+  }
+
+  function applyMeasurementCompactLayout() {
+    const kpisReady = organizeMeasurementKpis();
+    const tableReady = enableMeasurementTableScroll();
+    return kpisReady && tableReady;
+  }
+
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("medicoesTab")
+  );
+
+  if (measurementButton && !measurementButton.dataset.compactMeasurementBound) {
+    measurementButton.addEventListener("click", () => setTimeout(applyMeasurementCompactLayout, 30));
+    measurementButton.dataset.compactMeasurementBound = "true";
+  }
+
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    if (applyMeasurementCompactLayout() || attempts >= 80) clearInterval(timer);
+  }, 75);
+
+  document.addEventListener("DOMContentLoaded", applyMeasurementCompactLayout, { once: true });
+  setTimeout(applyMeasurementCompactLayout, 0);
+  setTimeout(applyMeasurementCompactLayout, 300);
+})();
+<\/script>
+
+
+<style id="measurement-blue-cards-and-work-filter-final-style">
+  /* Cartões da aba Medições no mesmo padrão visual do Dashboard. */
+  #medicoesTab #measurementDashboardKpiGrid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(126px, auto) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin: 0 0 18px !important;
+    align-items: stretch !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 126px !important;
+    height: auto !important;
+    padding: 14px 15px 13px !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    border: 1px solid #d8dee7 !important;
+    border-top: 4px solid var(--seel-blue-bright) !important;
+    border-radius: 14px !important;
+    color: #102846 !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 18px rgba(12, 31, 58, .04) !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(2) { border-top-color: #00a6d6 !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(3) { border-top-color: #ffd900 !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(4) { border-top-color: #2f80ed !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(5) { border-top-color: #8ec5ff !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(6) { border-top-color: #00518f !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(7) { border-top-color: #00a6d6 !important; }
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi:nth-child(8) { border-top-color: #2f80ed !important; }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 10px !important;
+    bottom: 8px !important;
+    width: 74px !important;
+    height: 18px !important;
+    background: linear-gradient(180deg, rgba(0,105,180,.08), rgba(255,217,0,.10)) !important;
+    border-radius: 999px !important;
+    pointer-events: none !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid .metric-icon {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    margin: 0 !important;
+    border: 1px solid #c9ddf5 !important;
+    border-radius: 10px !important;
+    color: var(--seel-blue-dark) !important;
+    background: #edf5ff !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    z-index: 1 !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid small {
+    display: block !important;
+    width: calc(100% - 42px) !important;
+    min-height: 25px !important;
+    margin: 0 !important;
+    color: #5f6f82 !important;
+    font-size: 10px !important;
+    font-weight: 850 !important;
+    line-height: 1.25 !important;
+    letter-spacing: .045em !important;
+    text-transform: uppercase !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong {
+    display: block !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    margin: 10px 0 4px !important;
+    padding: 0 !important;
+    color: #102846 !important;
+    font-size: clamp(23px, 1.5vw, 30px) !important;
+    font-weight: 1000 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.035em !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-long-value {
+    font-size: clamp(19px, 1.25vw, 25px) !important;
+    letter-spacing: -.025em !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid strong.measurement-kpi-extra-long-value,
+  #medicoesTab #measurementLastSync {
+    font-size: clamp(16px, 1.05vw, 21px) !important;
+    line-height: 1.14 !important;
+    letter-spacing: -.015em !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span {
+    display: block !important;
+    width: 100% !important;
+    min-height: 24px !important;
+    margin: auto 0 0 !important;
+    color: var(--seel-blue) !important;
+    font-size: 9.5px !important;
+    font-weight: 650 !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #medicoesTab #measurementDashboardKpiGrid span b,
+  #medicoesTab #measurementDashboardKpiGrid span strong {
+    display: inline !important;
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    color: var(--seel-blue-dark) !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: normal !important;
+  }
+
+  /* Campo de obra com melhor leitura. */
+  #medicoesTab .measurement-work-filter-field {
+    min-width: 210px !important;
+  }
+
+  #medicoesTab #measurementWorkFilter {
+    width: 100% !important;
+    min-height: 40px !important;
+    text-overflow: ellipsis !important;
+  }
+
+  @media (max-width: 1540px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 1160px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 780px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #medicoesTab #measurementDashboardKpiGrid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<script id="measurement-blue-cards-and-work-filter-final-script">
+(function(){
+  "use strict";
+
+  function normalizeWorkValue(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/\\s+/g, " ")
+      .trim()
+      .toUpperCase();
+  }
+
+  function validWorkValue(value) {
+    const normalized = normalizeWorkValue(value);
+    return normalized && !["-", "N/A", "NA", "NAO INFORMADO", "SEM OBRA", "SEM CENTRO DE CUSTO"].includes(normalized);
+  }
+
+  /* Retorna exclusivamente os campos originados nas planilhas de medição. */
+  function importedWorkValues(record) {
+    const candidates = [
+      record?.sourceObra,          // ARVAL: coluna Obra
+      record?.sourceCostCenter,    // ALD: coluna Centro de Custo
+      record?.sourceCC,            // ALD: coluna CC
+      record?.costCenter,          // Campo consolidado do importador
+      record?.obra,
+      record?.centroCusto,
+      record?.centroDeCusto,
+      record?.cc
+    ];
+
+    if (record?.rawData && typeof record.rawData === "object") {
+      candidates.push(
+        record.rawData.Obra,
+        record.rawData.OBRA,
+        record.rawData["Centro de Custo"],
+        record.rawData["CENTRO DE CUSTO"],
+        record.rawData.CC
+      );
+    }
+
+    const unique = new Map();
+    candidates.forEach(value => {
+      const display = String(value ?? "").trim();
+      const normalized = normalizeWorkValue(display);
+      if (validWorkValue(display) && !unique.has(normalized)) unique.set(normalized, display);
+    });
+    return [...unique.values()];
+  }
+
+  function currentMeasurementRecords() {
+    const records = [];
+    const seen = new Set();
+    const sources = [];
+
+    if (Array.isArray(window.measurements)) sources.push(window.measurements);
+    try {
+      if (typeof measurements !== "undefined" && Array.isArray(measurements)) sources.push(measurements);
+    } catch (error) {}
+
+    sources.flat().forEach((record, index) => {
+      if (!record) return;
+      const key = String(record.id || \`\${record.batchId || ""}|\${record.source || ""}|\${record.plate || record.placa || ""}|\${record.invoiceNumber || ""}|\${index}\`);
+      if (!seen.has(key)) {
+        seen.add(key);
+        records.push(record);
+      }
+    });
+    return records;
+  }
+
+  function ensureWorkFilter() {
+    const filters = document.querySelector("#medicoesTab .measure-filters");
+    if (!filters) return null;
+
+    let select = document.getElementById("measurementWorkFilter");
+    if (select) return select;
+
+    const field = document.createElement("div");
+    field.className = "measurement-work-filter-field";
+    field.innerHTML = \`
+      <label for="measurementWorkFilter">Obra / Centro de Custo</label>
+      <select id="measurementWorkFilter">
+        <option value="">Todas</option>
+      </select>
+    \`;
+
+    const clearButton = filters.querySelector("button");
+    if (clearButton) filters.insertBefore(field, clearButton);
+    else filters.appendChild(field);
+
+    select = field.querySelector("select");
+    if (select && !select.dataset.finalWorkFilterBound) {
+      select.addEventListener("change", () => {
+        if (typeof renderMeasurements === "function") renderMeasurements();
+      });
+      select.dataset.finalWorkFilterBound = "true";
+    }
+    return select;
+  }
+
+  function populateImportedWorkFilter() {
+    const select = ensureWorkFilter();
+    if (!select) return;
+
+    const selectedNormalized = normalizeWorkValue(select.value);
+    const values = new Map();
+
+    currentMeasurementRecords().forEach(record => {
+      importedWorkValues(record).forEach(display => {
+        const normalized = normalizeWorkValue(display);
+        if (normalized && !values.has(normalized)) values.set(normalized, display);
+      });
+    });
+
+    const ordered = [...values.entries()]
+      .sort((a, b) => a[1].localeCompare(b[1], "pt-BR", { numeric: true, sensitivity: "base" }));
+
+    const fragment = document.createDocumentFragment();
+    const allOption = document.createElement("option");
+    allOption.value = "";
+    allOption.textContent = "Todas";
+    fragment.appendChild(allOption);
+
+    if (!ordered.length) {
+      const emptyOption = document.createElement("option");
+      emptyOption.value = "";
+      emptyOption.textContent = "Nenhuma obra encontrada nas planilhas importadas";
+      emptyOption.disabled = true;
+      fragment.appendChild(emptyOption);
+    } else {
+      ordered.forEach(([normalized, display]) => {
+        const option = document.createElement("option");
+        option.value = display;
+        option.textContent = display;
+        option.dataset.normalizedValue = normalized;
+        fragment.appendChild(option);
+      });
+    }
+
+    select.replaceChildren(fragment);
+    const selectedEntry = ordered.find(([normalized]) => normalized === selectedNormalized);
+    if (selectedEntry) select.value = selectedEntry[1];
+    select.dataset.importedWorkCount = String(ordered.length);
+  }
+
+  /* Substitui apenas a etapa de Obra do filtro anterior, usando todas as colunas da planilha. */
+  const previousBillingFilteredMeasurements =
+    typeof billingFilteredMeasurements === "function" ? billingFilteredMeasurements : null;
+
+  if (previousBillingFilteredMeasurements && !previousBillingFilteredMeasurements.__finalImportedWorkFilter) {
+    const finalBillingFilteredMeasurements = function() {
+      const select = document.getElementById("measurementWorkFilter");
+      const selected = select?.value || "";
+      let baseRecords = [];
+
+      if (select && selected) select.value = "";
+      try {
+        baseRecords = previousBillingFilteredMeasurements();
+      } finally {
+        if (select && selected) select.value = selected;
+      }
+
+      if (!selected) return baseRecords;
+      const target = normalizeWorkValue(selected);
+      return baseRecords.filter(record =>
+        importedWorkValues(record).some(value => normalizeWorkValue(value) === target)
+      );
+    };
+
+    finalBillingFilteredMeasurements.__finalImportedWorkFilter = true;
+    billingFilteredMeasurements = finalBillingFilteredMeasurements;
+    window.billingFilteredMeasurements = finalBillingFilteredMeasurements;
+  }
+
+  const previousRenderMeasurementOptions =
+    typeof renderMeasurementOptions === "function" ? renderMeasurementOptions : null;
+
+  if (previousRenderMeasurementOptions && !previousRenderMeasurementOptions.__finalImportedWorkOptions) {
+    const finalRenderMeasurementOptions = function() {
+      previousRenderMeasurementOptions();
+      populateImportedWorkFilter();
+    };
+    finalRenderMeasurementOptions.__finalImportedWorkOptions = true;
+    renderMeasurementOptions = finalRenderMeasurementOptions;
+    window.renderMeasurementOptions = finalRenderMeasurementOptions;
+  }
+
+  function classifyKpiValues() {
+    document.querySelectorAll("#medicoesTab #measurementDashboardKpiGrid > .powerbi-kpi").forEach(card => {
+      card.classList.add("measurement-unified-blue-card");
+      const value = card.querySelector(":scope > strong");
+      if (!value) return;
+      const length = String(value.textContent || "").trim().length;
+      value.classList.toggle("measurement-kpi-long-value", length > 12 && length <= 20);
+      value.classList.toggle("measurement-kpi-extra-long-value", length > 20);
+    });
+  }
+
+  const previousRenderMeasurements =
+    typeof renderMeasurements === "function" ? renderMeasurements : null;
+
+  if (previousRenderMeasurements && !previousRenderMeasurements.__finalBlueCardsWorkFilter) {
+    const finalRenderMeasurements = function() {
+      populateImportedWorkFilter();
+      const result = previousRenderMeasurements();
+      populateImportedWorkFilter();
+      classifyKpiValues();
+      return result;
+    };
+    finalRenderMeasurements.__finalBlueCardsWorkFilter = true;
+    renderMeasurements = finalRenderMeasurements;
+    window.renderMeasurements = finalRenderMeasurements;
+  }
+
+  if (typeof clearMeasurementFilters === "function" && !clearMeasurementFilters.__finalImportedWorkFilter) {
+    const previousClearMeasurementFilters = clearMeasurementFilters;
+    const finalClearMeasurementFilters = function() {
+      const select = document.getElementById("measurementWorkFilter");
+      if (select) select.value = "";
+      return previousClearMeasurementFilters();
+    };
+    finalClearMeasurementFilters.__finalImportedWorkFilter = true;
+    clearMeasurementFilters = finalClearMeasurementFilters;
+    window.clearMeasurementFilters = finalClearMeasurementFilters;
+  }
+
+  if (typeof window.loadFleetMeasurements === "function" && !window.loadFleetMeasurements.__finalWorkOptionsRefresh) {
+    const previousLoadFleetMeasurements = window.loadFleetMeasurements;
+    window.loadFleetMeasurements = async function() {
+      const result = await previousLoadFleetMeasurements.apply(this, arguments);
+      setTimeout(() => {
+        populateImportedWorkFilter();
+        classifyKpiValues();
+      }, 0);
+      return result;
+    };
+    window.loadFleetMeasurements.__finalWorkOptionsRefresh = true;
+  }
+
+  if (typeof importBillingMeasurementFiles === "function" && !importBillingMeasurementFiles.__finalWorkOptionsRefresh) {
+    const previousImportBillingMeasurementFiles = importBillingMeasurementFiles;
+    const finalImportBillingMeasurementFiles = async function() {
+      const result = await previousImportBillingMeasurementFiles.apply(this, arguments);
+      populateImportedWorkFilter();
+      classifyKpiValues();
+      return result;
+    };
+    finalImportBillingMeasurementFiles.__finalWorkOptionsRefresh = true;
+    importBillingMeasurementFiles = finalImportBillingMeasurementFiles;
+    window.importBillingMeasurementFiles = finalImportBillingMeasurementFiles;
+  }
+
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("medicoesTab")
+  );
+  if (measurementButton && !measurementButton.dataset.finalWorkOptionsBound) {
+    measurementButton.addEventListener("click", () => {
+      setTimeout(() => {
+        populateImportedWorkFilter();
+        classifyKpiValues();
+      }, 50);
+    });
+    measurementButton.dataset.finalWorkOptionsBound = "true";
+  }
+
+  const kpiObserver = new MutationObserver(() => classifyKpiValues());
+  const kpiGrid = document.getElementById("measurementDashboardKpiGrid");
+  if (kpiGrid) kpiObserver.observe(kpiGrid, { childList: true, subtree: true, characterData: true });
+
+  let attempts = 0;
+  const refreshTimer = setInterval(() => {
+    attempts += 1;
+    populateImportedWorkFilter();
+    classifyKpiValues();
+    const count = Number(document.getElementById("measurementWorkFilter")?.dataset.importedWorkCount || 0);
+    if (count > 0 || attempts >= 100) clearInterval(refreshTimer);
+  }, 120);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    populateImportedWorkFilter();
+    classifyKpiValues();
+  }, { once: true });
+  setTimeout(populateImportedWorkFilter, 0);
+  setTimeout(populateImportedWorkFilter, 350);
+  setTimeout(classifyKpiValues, 0);
+  setTimeout(classifyKpiValues, 350);
+})();
+<\/script>
+
+
+<style id="measurement-live-filter-final-style">
+  #medicoesTab .measurement-filter-live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 30px;
+    margin: 0 0 12px;
+    padding: 6px 10px;
+    border: 1px solid #cfe0ee;
+    border-radius: 999px;
+    color: #31536d;
+    background: #f7fbfe;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  #medicoesTab .measurement-filter-live-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00a6d6;
+    box-shadow: 0 0 0 4px rgba(0, 166, 214, .12);
+  }
+</style>
+
+<script id="measurement-live-filter-final-script">
+(function(){
+  "use strict";
+
+  const FILTER_IDS = new Set([
+    "measurementSourceFilter",
+    "measurementPlateFilter",
+    "measurementCategoryFilter",
+    "measurementBoletoFilter",
+    "measurementMethodFilter",
+    "measurementWorkFilter",
+    "measurementStartFilter",
+    "measurementEndFilter"
+  ]);
+
+  function normalizeText(value) {
+    return String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/\\s+/g, " ")
+      .trim()
+      .toUpperCase();
+  }
+
+  function normalizePlate(value) {
+    return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+
+  function safeCurrency(value) {
+    try {
+      return typeof formatCurrency === "function"
+        ? formatCurrency(Number(value || 0))
+        : Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    } catch (error) {
+      return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+  }
+
+  function safeCategory(record) {
+    try {
+      return String(typeof measurementCategory === "function" ? measurementCategory(record) : record?.billingCategory || "OUTROS");
+    } catch (error) {
+      return String(record?.billingCategory || "OUTROS");
+    }
+  }
+
+  function recordMethod(record) {
+    const explicit = normalizeText(record?.sourceMethod || record?.importMethod || record?.originMethod || "");
+    if (explicit) return explicit;
+    return record?.batchId || record?.sourceFile ? "PLANILHA" : "API";
+  }
+
+  function recordWorkValues(record) {
+    const values = [
+      record?.sourceObra,
+      record?.sourceCostCenter,
+      record?.sourceCC,
+      record?.costCenter,
+      record?.currentCostCenter,
+      record?.obra,
+      record?.centroCusto,
+      record?.centroDeCusto,
+      record?.cc
+    ];
+
+    if (record?.rawData && typeof record.rawData === "object") {
+      values.push(
+        record.rawData.Obra,
+        record.rawData.OBRA,
+        record.rawData.obra,
+        record.rawData["Centro de Custo"],
+        record.rawData["CENTRO DE CUSTO"],
+        record.rawData["Centro Custo"],
+        record.rawData.CC,
+        record.rawData.cc
+      );
+    }
+
+    const unique = new Set();
+    values.forEach(value => {
+      const normalized = normalizeText(value);
+      if (normalized && normalized !== "-" && normalized !== "N/A") unique.add(normalized);
+    });
+    return unique;
+  }
+
+  function parseMeasurementDate(value) {
+    if (value === null || value === undefined || value === "") return null;
+
+    if (typeof value === "number" && Number.isFinite(value)) {
+      if (value > 20000 && value < 100000) {
+        const date = new Date(Date.UTC(1899, 11, 30));
+        date.setUTCDate(date.getUTCDate() + Math.floor(value));
+        return date;
+      }
+      const numericDate = new Date(value);
+      return Number.isNaN(numericDate.getTime()) ? null : numericDate;
+    }
+
+    const text = String(value).trim();
+    if (!text || text === "-") return null;
+
+    let match = text.match(/^(\\d{4})[-\\/.](\\d{1,2})[-\\/.](\\d{1,2})/);
+    if (match) {
+      const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    match = text.match(/^(\\d{1,2})[-\\/.](\\d{1,2})[-\\/.](\\d{2,4})/);
+    if (match) {
+      let year = Number(match[3]);
+      if (year < 100) year += year >= 70 ? 1900 : 2000;
+      const date = new Date(Date.UTC(year, Number(match[2]) - 1, Number(match[1])));
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    const parsed = new Date(text);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function recordDate(record) {
+    return parseMeasurementDate(
+      record?.invoiceDate ||
+      record?.date ||
+      record?.eventDate ||
+      record?.dataEvento ||
+      record?.dueDate ||
+      record?.competenceDate ||
+      ""
+    );
+  }
+
+  function readFilter(id) {
+    return document.getElementById(id)?.value || "";
+  }
+
+  function allMeasurementRecords() {
+    try {
+      return Array.isArray(measurements) ? measurements : [];
+    } catch (error) {
+      return Array.isArray(window.measurements) ? window.measurements : [];
+    }
+  }
+
+  function finalFilteredMeasurements() {
+    const source = normalizeText(readFilter("measurementSourceFilter"));
+    const plate = normalizePlate(readFilter("measurementPlateFilter"));
+    const category = normalizeText(readFilter("measurementCategoryFilter"));
+    const boleto = normalizeText(readFilter("measurementBoletoFilter"));
+    const method = normalizeText(readFilter("measurementMethodFilter"));
+    const work = normalizeText(readFilter("measurementWorkFilter"));
+    const start = parseMeasurementDate(readFilter("measurementStartFilter"));
+    const end = parseMeasurementDate(readFilter("measurementEndFilter"));
+
+    if (end) end.setUTCHours(23, 59, 59, 999);
+
+    return allMeasurementRecords().filter(record => {
+      const itemSource = normalizeText(record?.source || record?.platform || "");
+      const itemPlate = normalizePlate(record?.plate || record?.placa || record?.vehiclePlate || "");
+      const itemCategory = normalizeText(safeCategory(record));
+      const itemBoleto = normalizeText(record?.boleto || record?.boletoNumber || "");
+      const itemMethod = recordMethod(record);
+      const itemDate = recordDate(record);
+
+      if (source && itemSource !== source) return false;
+      if (plate && itemPlate !== plate) return false;
+      if (category && itemCategory !== category) return false;
+      if (boleto && itemBoleto !== boleto) return false;
+      if (method && itemMethod !== method) return false;
+      if (work && !recordWorkValues(record).has(work)) return false;
+      if (start && (!itemDate || itemDate < start)) return false;
+      if (end && (!itemDate || itemDate > end)) return false;
+      return true;
+    });
+  }
+
+  finalFilteredMeasurements.__measurementLiveFilterFinal = true;
+  try { billingFilteredMeasurements = finalFilteredMeasurements; } catch (error) {}
+  window.billingFilteredMeasurements = finalFilteredMeasurements;
+  window.getMeasurementFilteredRecords = finalFilteredMeasurements;
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  }
+
+  function sourceOf(record) {
+    return normalizeText(record?.source || record?.platform || "OUTROS") || "OUTROS";
+  }
+
+  function summarize(records, source) {
+    const selected = source ? records.filter(record => sourceOf(record) === source) : records;
+    const invoices = new Set(
+      selected
+        .map(record => \`\${sourceOf(record)}|\${record?.invoiceNumber || record?.documentNumber || ""}\`)
+        .filter(key => !key.endsWith("|"))
+    );
+    return {
+      records: selected,
+      count: selected.length,
+      value: selected.reduce((sum, record) => sum + Number(record?.value || 0), 0),
+      invoices: invoices.size
+    };
+  }
+
+  function findVehicle(record) {
+    let fleet = [];
+    try { fleet = Array.isArray(vehicles) ? vehicles : []; } catch (error) {}
+    if (!fleet.length && Array.isArray(window.vehicles)) fleet = window.vehicles;
+
+    if (record?.vehicleId) {
+      const byId = fleet.find(vehicle => String(vehicle?.id || "") === String(record.vehicleId));
+      if (byId) return byId;
+    }
+
+    const plate = normalizePlate(record?.plate || record?.placa || "");
+    return fleet.find(vehicle => normalizePlate(vehicle?.placaVeiculo || vehicle?.placa || "") === plate) || null;
+  }
+
+  function uniqueVehicleCount(records) {
+    const keys = new Set();
+    records.forEach(record => {
+      const vehicle = findVehicle(record);
+      const key = vehicle?.id || normalizePlate(record?.plate || record?.placa || "");
+      if (key) keys.add(String(key));
+    });
+    return keys.size;
+  }
+
+  function filteredLoadCount(records) {
+    const keys = new Set();
+    records.forEach(record => {
+      const key = record?.batchId || [
+        sourceOf(record),
+        recordMethod(record),
+        record?.sourceFile || "",
+        record?.importedAt || record?.syncedAt || ""
+      ].join("|");
+      if (key) keys.add(String(key));
+    });
+    return keys.size;
+  }
+
+  function latestRecord(records) {
+    return [...records].sort((a, b) => {
+      const aDate = parseMeasurementDate(a?.importedAt || a?.syncedAt || a?.invoiceDate || a?.date || "")?.getTime() || 0;
+      const bDate = parseMeasurementDate(b?.importedAt || b?.syncedAt || b?.invoiceDate || b?.date || "")?.getTime() || 0;
+      return bDate - aDate;
+    })[0] || null;
+  }
+
+  function updateMeasurementCards(records) {
+    const total = summarize(records);
+    const ald = summarize(records, "ALD");
+    const arval = summarize(records, "ARVAL");
+    const rentals = records.filter(record => normalizeText(safeCategory(record)) === "LOCACAO");
+    const finesOnly = records.filter(record => normalizeText(safeCategory(record)) === "MULTAS");
+    const other = records.filter(record => !["LOCACAO", "MULTAS"].includes(normalizeText(safeCategory(record))));
+    const unlinked = records.filter(record => !record?.linked && !record?.vehicleId).length;
+    const loads = filteredLoadCount(records);
+    const latest = latestRecord(records);
+    const latestLabel = latest?.importedAtLabel || latest?.syncedAt || latest?.importedAt || "-";
+
+    setText("dashBillingItems", total.count);
+    setText("dashBillingValue", safeCurrency(total.value));
+    setText("dashBillingInvoices", total.invoices);
+    setText("dashBillingRentals", rentals.length);
+    setText("dashBillingFines", finesOnly.length);
+    setText("dashBillingOther", other.length);
+    setText("dashBillingImports", loads);
+    setText("dashBillingUnlinked", unlinked);
+
+    setText("dashAldMeasurementValue", safeCurrency(ald.value));
+    setText("dashAldMeasurementVehicles", uniqueVehicleCount(ald.records));
+    setText("dashAldMeasurementItems", ald.count);
+    setText("dashArvalMeasurementValue", safeCurrency(arval.value));
+    setText("dashArvalMeasurementVehicles", uniqueVehicleCount(arval.records));
+    setText("dashArvalMeasurementItems", arval.count);
+
+    setText("measurementUnlinked", unlinked);
+    setText("measurementLastSync", latestLabel);
+
+    setText("dashOperationalMeasurements", total.count);
+    setText("dashOperationalKm", records.reduce((sum, record) => sum + Number(record?.km || 0), 0).toLocaleString("pt-BR"));
+    setText("dashOperationalMeasurementValue", safeCurrency(total.value));
+    setText("dashOperationalFines", finesOnly.length);
+    setText("dashOperationalFineValue", safeCurrency(finesOnly.reduce((sum, record) => sum + Number(record?.value || 0), 0)));
+    setText("dashOperationalFineCount", finesOnly.length);
+    setText("dashOperationalInvoiceCount", total.invoices);
+    setText("dashOperationalImports", loads);
+    setText("dashOperationalUnlinked", unlinked);
+  }
+
+  function renderMeasurementCharts(records) {
+    if (typeof makeChart !== "function") return;
+
+    const categoryTotals = records.reduce((acc, record) => {
+      const key = safeCategory(record) || "OUTROS";
+      acc[key] = (acc[key] || 0) + Number(record?.value || 0);
+      return acc;
+    }, {});
+    const categoryEntries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+    try {
+      billingCategoryChart = makeChart(
+        "billingCategoryChart",
+        "bar",
+        categoryEntries.length ? categoryEntries.map(([label]) => label) : ["Sem dados"],
+        categoryEntries.length ? categoryEntries.map(([, value]) => value) : [0],
+        billingCategoryChart,
+        { label: "Valor medido", showLegend: false, valueFormat: "currency", indexAxis: "y", dataLabelFontSize: 10 }
+      );
+    } catch (error) {
+      console.warn("Não foi possível atualizar o gráfico por categoria.", error);
+    }
+
+    const platformTotals = records.reduce((acc, record) => {
+      const key = sourceOf(record);
+      acc[key] = (acc[key] || 0) + Number(record?.value || 0);
+      return acc;
+    }, {});
+    const platformEntries = Object.entries(platformTotals).sort((a, b) => b[1] - a[1]);
+    try {
+      billingPlatformChart = makeChart(
+        "billingPlatformChart",
+        "doughnut",
+        platformEntries.length ? platformEntries.map(([label]) => label) : ["Sem dados"],
+        platformEntries.length ? platformEntries.map(([, value]) => value) : [0],
+        billingPlatformChart,
+        { showLegend: true, valueFormat: "currency", dataLabelFontSize: 10 }
+      );
+    } catch (error) {
+      console.warn("Não foi possível atualizar o gráfico por plataforma.", error);
+    }
+
+    const sourceCounts = records.reduce((acc, record) => {
+      const key = sourceOf(record);
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const sourceEntries = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]);
+    try {
+      operationalMeasurementChartInstance = makeChart(
+        "operationalMeasurementChart",
+        "doughnut",
+        sourceEntries.length ? sourceEntries.map(([label]) => label) : ["Sem dados"],
+        sourceEntries.length ? sourceEntries.map(([, value]) => value) : [0],
+        operationalMeasurementChartInstance,
+        { showLegend: true, valueFormat: "value-percent", dataLabelFontSize: 10 }
+      );
+    } catch (error) {
+      console.warn("Não foi possível atualizar o gráfico de itens por plataforma.", error);
+    }
+
+    const fineTotals = records
+      .filter(record => normalizeText(safeCategory(record)) === "MULTAS")
+      .reduce((acc, record) => {
+        const key = sourceOf(record);
+        acc[key] = (acc[key] || 0) + Number(record?.value || 0);
+        return acc;
+      }, {});
+    const fineEntries = Object.entries(fineTotals).sort((a, b) => b[1] - a[1]);
+    try {
+      operationalFineChartInstance = makeChart(
+        "operationalFineChart",
+        "bar",
+        fineEntries.length ? fineEntries.map(([label]) => label) : ["Sem dados"],
+        fineEntries.length ? fineEntries.map(([, value]) => value) : [0],
+        operationalFineChartInstance,
+        { label: "Valor das multas", showLegend: false, valueFormat: "currency" }
+      );
+    } catch (error) {
+      console.warn("Não foi possível atualizar o gráfico de multas.", error);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function competenceLabel(record) {
+    const value = String(record?.competence || record?.period || "").trim();
+    if (/^\\d{4}-\\d{2}$/.test(value)) return value.split("-").reverse().join("/");
+    return value || "-";
+  }
+
+  function renderMeasurementByPlate(records) {
+    const ald = summarize(records, "ALD");
+    const arval = summarize(records, "ARVAL");
+    const maxValue = Math.max(Math.abs(ald.value), Math.abs(arval.value), 1);
+    const bars = document.getElementById("fleetPlatformMeasurementBars");
+    if (bars) {
+      bars.innerHTML = [ald, arval].map(summary => {
+        const width = Math.max(0, Math.min(100, Math.round((Math.abs(summary.value) / maxValue) * 100)));
+        const source = summary === ald ? "ALD" : "ARVAL";
+        return \`<div class="fleet-platform-bar-card"><div class="fleet-platform-bar-head"><strong>\${source}</strong><span>\${escapeHtml(safeCurrency(summary.value))} · \${summary.count} item(ns)</span></div><div class="fleet-platform-bar-track"><div class="fleet-platform-bar-fill \${source.toLowerCase()}" style="width:\${width}%"></div></div></div>\`;
+      }).join("");
+    }
+
+    const grouped = new Map();
+    records.forEach(record => {
+      const plate = normalizePlate(record?.plate || record?.placa || "") || "SEM-PLACA";
+      if (!grouped.has(plate)) grouped.set(plate, []);
+      grouped.get(plate).push(record);
+    });
+
+    const rows = [...grouped.entries()].map(([plate, plateRecords]) => {
+      const vehicle = findVehicle(plateRecords[0]);
+      const vehicleAld = summarize(plateRecords, "ALD");
+      const vehicleArval = summarize(plateRecords, "ARVAL");
+      const total = vehicleAld.value + vehicleArval.value;
+      const latest = latestRecord(plateRecords);
+      const work = [...recordWorkValues(plateRecords[0])][0] || vehicle?.centroCusto || "-";
+      return { plate, plateRecords, vehicle, vehicleAld, vehicleArval, total, latest, work };
+    }).sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+
+    const table = document.getElementById("fleetMeasurementByPlateTable");
+    if (!table) return;
+    if (!rows.length) {
+      table.innerHTML = '<tr><td colspan="7">Nenhuma medição encontrada para os filtros selecionados.</td></tr>';
+      return;
+    }
+
+    table.innerHTML = rows.map(row => \`
+      <tr>
+        <td><strong>\${escapeHtml(row.plate === "SEM-PLACA" ? "-" : row.plate)}</strong></td>
+        <td>\${escapeHtml(row.vehicle?.modeloVeiculo || row.plateRecords[0]?.vehicleModel || "-")}<br><small>\${escapeHtml(row.vehicle?.locadora || sourceOf(row.plateRecords[0]))}</small></td>
+        <td>\${escapeHtml(row.work)}</td>
+        <td class="platform-value-cell"><span class="platform-chip ald">ALD</span><strong>\${escapeHtml(safeCurrency(row.vehicleAld.value))}</strong><small>\${row.vehicleAld.count} item(ns) · \${row.vehicleAld.invoices} fatura(s)</small></td>
+        <td class="platform-value-cell"><span class="platform-chip arval">ARVAL</span><strong>\${escapeHtml(safeCurrency(row.vehicleArval.value))}</strong><small>\${row.vehicleArval.count} item(ns) · \${row.vehicleArval.invoices} fatura(s)</small></td>
+        <td><strong>\${escapeHtml(safeCurrency(row.total))}</strong></td>
+        <td>\${escapeHtml(competenceLabel(row.latest))}</td>
+      </tr>\`).join("");
+  }
+
+  function ensureFilterStatus() {
+    const filtersPanel = document.querySelector("#medicoesTab .measure-filter-panel");
+    if (!filtersPanel) return null;
+    let status = document.getElementById("measurementFilterLiveStatus");
+    if (!status) {
+      status = document.createElement("div");
+      status.id = "measurementFilterLiveStatus";
+      status.className = "measurement-filter-live-status";
+      filtersPanel.insertAdjacentElement("afterend", status);
+    }
+    return status;
+  }
+
+  function activeFilterCount() {
+    return [...FILTER_IDS].filter(id => Boolean(readFilter(id))).length;
+  }
+
+  function updateFilterStatus(records) {
+    const status = ensureFilterStatus();
+    if (!status) return;
+    const count = activeFilterCount();
+    status.textContent = count
+      ? \`\${records.length} item(ns) exibido(s) com \${count} filtro(s) ativo(s)\`
+      : \`\${records.length} item(ns) exibido(s) — base completa\`;
+  }
+
+  function refreshMeasurementAnalytics() {
+    const records = finalFilteredMeasurements();
+    updateMeasurementCards(records);
+    renderMeasurementCharts(records);
+    renderMeasurementByPlate(records);
+    updateFilterStatus(records);
+
+    if (typeof classifyKpiValues === "function") {
+      try { classifyKpiValues(); } catch (error) {}
+    }
+  }
+
+  window.refreshMeasurementAnalytics = refreshMeasurementAnalytics;
+
+  renderBillingDashboard = function(){
+    refreshMeasurementAnalytics();
+  };
+
+  renderOperationalDashboard = function(){
+    refreshMeasurementAnalytics();
+  };
+
+  pmRenderDashboard = function(){
+    refreshMeasurementAnalytics();
+  };
+
+  const previousRenderMeasurements = typeof renderMeasurements === "function" ? renderMeasurements : null;
+  if (previousRenderMeasurements && !previousRenderMeasurements.__measurementLiveFilterFinal) {
+    const finalRenderMeasurements = function() {
+      const result = previousRenderMeasurements.apply(this, arguments);
+      refreshMeasurementAnalytics();
+      return result;
+    };
+    finalRenderMeasurements.__measurementLiveFilterFinal = true;
+    renderMeasurements = finalRenderMeasurements;
+    window.renderMeasurements = finalRenderMeasurements;
+  }
+
+  let refreshTimer = null;
+  function scheduleFullRefresh() {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      try {
+        if (typeof renderMeasurements === "function") renderMeasurements();
+        else refreshMeasurementAnalytics();
+      } catch (error) {
+        console.error("Falha ao aplicar os filtros das medições.", error);
+      }
+    }, 25);
+  }
+
+  document.addEventListener("change", event => {
+    if (FILTER_IDS.has(event.target?.id)) scheduleFullRefresh();
+  }, true);
+
+  document.addEventListener("input", event => {
+    if (["measurementStartFilter", "measurementEndFilter"].includes(event.target?.id)) scheduleFullRefresh();
+  }, true);
+
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("medicoesTab")
+  );
+  if (measurementButton && !measurementButton.dataset.liveMeasurementFiltersBound) {
+    measurementButton.addEventListener("click", () => setTimeout(scheduleFullRefresh, 40));
+    measurementButton.dataset.liveMeasurementFiltersBound = "true";
+  }
+
+  document.addEventListener("DOMContentLoaded", scheduleFullRefresh, { once: true });
+  setTimeout(scheduleFullRefresh, 0);
+  setTimeout(scheduleFullRefresh, 400);
+})();
+<\/script>
+
+
+<style>
+  #dashboardTab > .stats{display:none !important;}
+  #dashboardTab .dashboard-summary-scroll{
+    max-height: 430px;
+    overflow: auto;
+    border: 1px solid #d5e0ea;
+    border-radius: 18px;
+    background: #fff;
+  }
+  #dashboardTab .dashboard-summary-scroll table{min-width: 100%;}
+  #dashboardTab .dashboard-summary-scroll thead th{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #eff5fb;
+  }
+  #dashboardTab .dashboard-summary-scroll::-webkit-scrollbar,
+  #dashboardTab .dashboard-scroll-chart::-webkit-scrollbar,
+  #dashboardTab .executive-alert-grid::-webkit-scrollbar{
+    width: 10px;
+    height: 10px;
+  }
+  #dashboardTab .dashboard-summary-scroll::-webkit-scrollbar-thumb,
+  #dashboardTab .dashboard-scroll-chart::-webkit-scrollbar-thumb,
+  #dashboardTab .executive-alert-grid::-webkit-scrollbar-thumb{
+    background: #b8c8d8;
+    border-radius: 999px;
+  }
+  #dashboardTab .dashboard-scroll-chart-shell{
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #dashboardTab .dashboard-scroll-chart{
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 4px 4px 0;
+  }
+  #dashboardTab .dashboard-scroll-chart .chart-inner{
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+  }
+  #dashboardTab .dashboard-visual-centers .visual-title-row{
+    margin-bottom: 6px;
+  }
+  #dashboardTab .dashboard-visual-alerts .contract-risk-list{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #dashboardTab .executive-alert-summary{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(12,88,143,0.08), rgba(245,198,0,0.10));
+    border: 1px solid #dbe6f1;
+  }
+  #dashboardTab .executive-alert-summary-main{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  #dashboardTab .executive-alert-summary-icon{
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    border-radius: 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 24px;
+    background: #0c588f;
+    color: #fff;
+    box-shadow: 0 12px 20px rgba(12,88,143,0.18);
+  }
+  #dashboardTab .executive-alert-summary h4{
+    margin: 0 0 4px;
+    font-size: 22px;
+    color: #12395c;
+  }
+  #dashboardTab .executive-alert-summary p{
+    margin: 0;
+    color: #5a6f85;
+    line-height: 1.45;
+  }
+  #dashboardTab .executive-alert-badges{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  #dashboardTab .executive-alert-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .02em;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  #dashboardTab .executive-alert-badge.critical{background:#fff1f1;color:#b42318;border-color:#f3c5c5;}
+  #dashboardTab .executive-alert-badge.warning{background:#fff9e8;color:#a15c00;border-color:#f6df96;}
+  #dashboardTab .executive-alert-badge.info{background:#edf6ff;color:#0c588f;border-color:#cfe2f6;}
+  #dashboardTab .executive-alert-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  #dashboardTab .executive-alert-card{
+    position: relative;
+    border: 1px solid #d9e3ec;
+    border-radius: 18px;
+    background: #fff;
+    padding: 16px;
+    min-height: 168px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(14,51,84,0.06);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  #dashboardTab .executive-alert-card::before{
+    content:"";
+    position:absolute;
+    left:0;top:0;right:0;
+    height:5px;
+    background:#0c588f;
+  }
+  #dashboardTab .executive-alert-card.critical::before{background:#d92d20;}
+  #dashboardTab .executive-alert-card.warning::before{background:#f5c600;}
+  #dashboardTab .executive-alert-card.info::before{background:#0c588f;}
+  #dashboardTab .executive-alert-card.neutral::before{background:#7a8ea5;}
+  #dashboardTab .executive-alert-card-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  #dashboardTab .executive-alert-icon{
+    width:42px;height:42px;min-width:42px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;color:#fff;background:#0c588f;
+  }
+  #dashboardTab .executive-alert-card.critical .executive-alert-icon{background:#d92d20;}
+  #dashboardTab .executive-alert-card.warning .executive-alert-icon{background:#d6a100;color:#17365d;}
+  #dashboardTab .executive-alert-card.info .executive-alert-icon{background:#0c588f;}
+  #dashboardTab .executive-alert-card.neutral .executive-alert-icon{background:#7a8ea5;}
+  #dashboardTab .executive-alert-title-wrap small{
+    display:block;
+    color:#6c8297;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-size:11px;
+    margin-bottom:3px;
+  }
+  #dashboardTab .executive-alert-title-wrap h5{
+    margin:0;
+    font-size:16px;
+    color:#17365d;
+    line-height:1.25;
+  }
+  #dashboardTab .executive-alert-metric{
+    display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;
+  }
+  #dashboardTab .executive-alert-metric strong{
+    font-size:34px;
+    line-height:1;
+    color:#17365d;
+  }
+  #dashboardTab .executive-alert-metric span{
+    font-size:13px;color:#5f7389;font-weight:700;
+  }
+  #dashboardTab .executive-alert-action{
+    margin-top:auto;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background:#f7fafc;
+    border:1px dashed #c9d6e4;
+    color:#4f6478;
+    font-size:13px;
+    line-height:1.4;
+  }
+  #dashboardTab .executive-alert-action strong{color:#17365d;}
+  @media (max-width: 900px){
+    #dashboardTab .executive-alert-summary{padding:14px;}
+    #dashboardTab .executive-alert-summary h4{font-size:20px;}
+    #dashboardTab .dashboard-scroll-chart{max-height:340px;}
+  }
+</style>
+<script>
+(function(){
+  if (typeof window === 'undefined') return;
+
+  let centroCustoChartInstance = null;
+
+  function dashboardPalette(index){
+    const colors = ['#0c588f','#2f7dbd','#f5c600','#6c8297','#2a9d8f','#f28e2b','#5b8def','#7d5fff','#3b82f6','#00a3a3','#ffb703','#94a3b8'];
+    return colors[index % colors.length];
+  }
+
+  function escapeHtml(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  function percentOf(value, total){
+    if (!total) return '0%';
+    return Math.round((Number(value || 0) / total) * 100) + '%';
+  }
+
+  function ensureDashboardSummaryScroll(){
+    const heading = Array.from(document.querySelectorAll('#dashboardTab .panel-card h2')).find(el => (el.textContent || '').trim() === 'Resumo dos veículos cadastrados');
+    const wrapper = heading ? heading.parentElement.querySelector('.table-wrap') : null;
+    if (wrapper) wrapper.classList.add('dashboard-summary-scroll');
+  }
+
+  function renderCentroCustoBarsOverride(items) {
+    const target = document.getElementById('centroCustoBars');
+    if (!target) return;
+
+    const grouped = groupCount(items, 'centroCusto');
+    const entries = Object.entries(grouped)
+      .map(([label, value]) => [label || 'Não cadastrado', value])
+      .sort((a, b) => b[1] - a[1]);
+
+    if (!entries.length) {
+      if (centroCustoChartInstance && typeof centroCustoChartInstance.destroy === 'function') centroCustoChartInstance.destroy();
+      centroCustoChartInstance = null;
+      target.innerHTML = '<div class="risk-item">Sem dados disponíveis para o filtro selecionado.</div>';
+      return;
+    }
+
+    target.innerHTML = '<div class="dashboard-scroll-chart"><div class="chart-inner"><canvas id="centroCustoChart"></canvas></div></div>';
+    const scroll = target.querySelector('.dashboard-scroll-chart');
+    const inner = target.querySelector('.chart-inner');
+    if (inner) inner.style.height = Math.max(260, entries.length * 44) + 'px';
+    if (scroll) scroll.scrollTop = 0;
+
+    const labels = entries.map(([label]) => label);
+    const data = entries.map(([, value]) => value);
+    const colors = labels.map((_, index) => dashboardPalette(index));
+
+    const existing = centroCustoChartInstance;
+    if (existing && typeof existing.destroy === 'function') existing.destroy();
+
+    const canvasId = 'centroCustoChart';
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    centroCustoChartInstance = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      plugins: (typeof seelDataLabelsPlugin !== 'undefined') ? [seelDataLabelsPlugin] : [],
+      data: {
+        labels,
+        datasets: [{
+          data,
+          label: 'Veículos',
+          backgroundColor: colors,
+          borderRadius: 10,
+          borderSkipped: false,
+          barThickness: 22,
+          maxBarThickness: 22
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 450 },
+        layout: { padding: { right: 24 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#ffffff',
+            titleColor: '#17365d',
+            bodyColor: '#17365d',
+            borderColor: '#d8dee7',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+            callbacks: {
+              label: function(context){
+                return ' ' + context.raw + ' veículo(s)';
+              }
+            }
+          },
+          seelDataLabels: {
+            display: true,
+            format: 'number',
+            fontSize: 11,
+            hideZero: true,
+            color: '#17365d',
+            anchor: 'end',
+            align: 'right',
+            offset: 4
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: '#edf2f7' },
+            ticks: { precision: 0, color: '#5a6f85', font: { weight: 'bold', size: 11 } }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#17365d', font: { weight: 'bold', size: 11 } }
+          }
+        }
+      }
+    });
+  }
+
+  function renderContractRiskListOverride(items) {
+    const target = document.getElementById('contractRiskList');
+    if (!target) return;
+
+    const total = items.length;
+    const vencidos = items.filter(v => getContractExpiryBucket(v.terminoContrato) === 'vencidos').length;
+    const vencendo30 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === '0-30').length;
+    const vencendo60 = items.filter(v => getContractExpiryBucket(v.terminoContrato) === '31-60').length;
+    const semTermino = items.filter(v => getContractExpiryBucket(v.terminoContrato) === 'sem-data').length;
+    const semCondutor = items.filter(v => !String(v.condutor || '').trim()).length;
+    const semCartao = items.filter(v => !String(v.cartaoCombustivel || '').trim()).length;
+    const semCobli = items.filter(v => !String(v.cobli || '').trim()).length;
+    const manutencao = items.filter(v => canonicalVehicleStatus(v.statusCarro) === 'Em Manutenção').length;
+
+    const criticalTotal = vencidos + semTermino;
+    const warningTotal = vencendo30 + vencendo60;
+    const pendingCadastro = semCondutor + semCartao + semCobli;
+
+    const cards = [
+      {
+        tone: 'critical', icon: '⛔', eyebrow: 'Prioridade alta', title: 'Contratos vencidos', value: vencidos,
+        meta: percentOf(vencidos, total) + ' da frota filtrada',
+        actionTitle: 'Ação recomendada', action: 'Atuar imediatamente na renovação, devolução ou regularização contratual.'
+      },
+      {
+        tone: 'warning', icon: '📅', eyebrow: 'Janela de ação', title: 'Vencendo em até 30 dias', value: vencendo30,
+        meta: percentOf(vencendo30, total) + ' da frota filtrada',
+        actionTitle: 'Ação recomendada', action: 'Priorizar tratativa com a locadora e confirmar continuidade operacional.'
+      },
+      {
+        tone: 'warning', icon: '🗓️', eyebrow: 'Acompanhamento', title: 'Vencendo entre 31 e 60 dias', value: vencendo60,
+        meta: percentOf(vencendo60, total) + ' da frota filtrada',
+        actionTitle: 'Ação recomendada', action: 'Programar negociação antecipada para evitar pressão de prazo.'
+      },
+      {
+        tone: 'neutral', icon: '📝', eyebrow: 'Qualidade cadastral', title: 'Sem término informado', value: semTermino,
+        meta: percentOf(semTermino, total) + ' com cadastro incompleto',
+        actionTitle: 'Ação recomendada', action: 'Corrigir dados do contrato para manter previsibilidade de vencimento.'
+      },
+      {
+        tone: 'info', icon: '👤', eyebrow: 'Cadastro operacional', title: 'Pendências de cadastro', value: pendingCadastro,
+        meta: semCondutor + ' sem condutor • ' + semCartao + ' sem cartão • ' + semCobli + ' sem Cobli',
+        actionTitle: 'Ação recomendada', action: 'Completar cadastro para reduzir risco operacional e falhas de controle.'
+      },
+      {
+        tone: manutencao > 0 ? 'warning' : 'info', icon: '🛠️', eyebrow: 'Disponibilidade', title: 'Veículos em manutenção', value: manutencao,
+        meta: percentOf(manutencao, total) + ' da frota filtrada',
+        actionTitle: 'Ação recomendada', action: 'Reavaliar disponibilidade e plano de contingência para não impactar a obra.'
+      }
+    ];
+
+    const summary = \`
+      <div class="executive-alert-summary">
+        <div class="executive-alert-summary-main">
+          <div class="executive-alert-summary-icon">⚠️</div>
+          <div>
+            <h4>Painel executivo de alertas</h4>
+            <p>Concentre a atuação nos contratos vencidos, vencimentos próximos e pendências cadastrais para evitar impacto operacional.</p>
+          </div>
+        </div>
+        <div class="executive-alert-badges">
+          <span class="executive-alert-badge critical">🔴 \${criticalTotal} crítico(s)</span>
+          <span class="executive-alert-badge warning">🟡 \${warningTotal} em atenção</span>
+          <span class="executive-alert-badge info">🔵 \${pendingCadastro} pendência(s) cadastrais</span>
+        </div>
+      </div>\`;
+
+    const grid = '<div class="executive-alert-grid">' + cards.map(card => \`
+      <article class="executive-alert-card \${card.tone}">
+        <div class="executive-alert-card-header">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div class="executive-alert-icon">\${card.icon}</div>
+            <div class="executive-alert-title-wrap">
+              <small>\${escapeHtml(card.eyebrow)}</small>
+              <h5>\${escapeHtml(card.title)}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="executive-alert-metric">
+          <strong>\${card.value}</strong>
+          <span>\${escapeHtml(card.meta)}</span>
+        </div>
+        <div class="executive-alert-action"><strong>\${escapeHtml(card.actionTitle)}:</strong> \${escapeHtml(card.action)}</div>
+      </article>\`).join('') + '</div>';
+
+    target.innerHTML = summary + grid;
+  }
+
+  window.renderCentroCustoBars = renderCentroCustoBarsOverride;
+  try { renderCentroCustoBars = renderCentroCustoBarsOverride; } catch (error) {}
+  window.renderContractRiskList = renderContractRiskListOverride;
+  try { renderContractRiskList = renderContractRiskListOverride; } catch (error) {}
+
+  const previousRenderDashboardIndicatorsExecutive = window.renderDashboardIndicators;
+  if (typeof previousRenderDashboardIndicatorsExecutive === 'function' && !previousRenderDashboardIndicatorsExecutive.__executiveDashboardOverride) {
+    const wrapped = function(){
+      const result = previousRenderDashboardIndicatorsExecutive.apply(this, arguments);
+      ensureDashboardSummaryScroll();
+      return result;
+    };
+    wrapped.__executiveDashboardOverride = true;
+    window.renderDashboardIndicators = wrapped;
+    renderDashboardIndicators = wrapped;
+  }
+
+  ensureDashboardSummaryScroll();
+  setTimeout(ensureDashboardSummaryScroll, 0);
+})();
+<\/script>
+
+
+<style id="dashboard-all-vehicles-and-chart-labels-style">
+  #dashboardTab .dashboard-summary-scroll {
+    width: 100% !important;
+    max-height: 520px !important;
+    overflow: auto !important;
+    border: 1px solid #d5e0ea !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  #dashboardTab .dashboard-summary-scroll table {
+    width: 100% !important;
+    min-width: 1180px !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 4 !important;
+    padding: 12px 13px !important;
+    background: #edf4fa !important;
+    color: #17365d !important;
+    border-bottom: 2px solid #cbd9e6 !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    letter-spacing: .03em !important;
+    text-transform: uppercase !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    vertical-align: middle !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll tbody td {
+    padding: 11px 13px !important;
+    color: #30485f !important;
+    border-bottom: 1px solid #e3eaf1 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    vertical-align: middle !important;
+    background: #ffffff !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll tbody tr:nth-child(even) td {
+    background: #f8fbfd !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll tbody tr:hover td {
+    background: #eef6fc !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll th:nth-child(1),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(1) { width: 125px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(2),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(2) { width: 105px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(3),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(3) { width: 190px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(4),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(4) { width: 155px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(5),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(5) { width: 205px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(6),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(6) { width: 210px !important; }
+  #dashboardTab .dashboard-summary-scroll th:nth-child(7),
+  #dashboardTab .dashboard-summary-scroll td:nth-child(7) { width: 190px !important; }
+
+  #dashboardTab .dashboard-status-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    max-width: 100% !important;
+    padding: 6px 9px !important;
+    border-radius: 999px !important;
+    background: #edf5ff !important;
+    color: #00518f !important;
+    border: 1px solid #cfe0f0 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+  }
+
+  #dashboardTab .dashboard-status-pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    border-radius: 50%;
+    background: #2f80ed;
+  }
+
+  #dashboardTab .dashboard-status-pill.available::before { background: #2a9d8f; }
+  #dashboardTab .dashboard-status-pill.in-use::before { background: #2f80ed; }
+  #dashboardTab .dashboard-status-pill.maintenance::before { background: #f5c600; }
+  #dashboardTab .dashboard-status-pill.returned::before { background: #7a8ea5; }
+
+  #dashboardTab .dashboard-table-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  #dashboardTab .dashboard-table-title-row h2 {
+    margin: 0 !important;
+  }
+
+  #dashboardTab .dashboard-table-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #edf5ff;
+    color: #00518f;
+    border: 1px solid #cfe0f0;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  #dashboardTab .dashboard-summary-scroll::-webkit-scrollbar {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll::-webkit-scrollbar-thumb {
+    background: #aebfd0 !important;
+    border: 2px solid #eef3f7 !important;
+    border-radius: 999px !important;
+  }
+
+  #dashboardTab .dashboard-summary-scroll::-webkit-scrollbar-track {
+    background: #eef3f7 !important;
+    border-radius: 999px !important;
+  }
+
+  #dashboardTab .dashboard-chart-stage,
+  #medicoesTab .dashboard-chart-stage {
+    overflow: visible !important;
+  }
+</style>
+
+<script id="dashboard-all-vehicles-and-chart-labels-script">
+(function(){
+  "use strict";
+
+  function dashEscape(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function statusTone(status) {
+    const normalized = String(status || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+    if (normalized.includes("disponivel")) return "available";
+    if (normalized.includes("alugado") || normalized.includes("em uso")) return "in-use";
+    if (normalized.includes("em manutencao") || normalized.includes("manutencao")) return "maintenance";
+    if (normalized.includes("devolvido")) return "returned";
+    return "";
+  }
+
+  function dashboardVehiclesForTable() {
+    try {
+      if (typeof getDashboardFilteredVehicles === "function") {
+        const filtered = getDashboardFilteredVehicles();
+        if (Array.isArray(filtered)) return filtered;
+      }
+    } catch (error) {
+      console.warn("Não foi possível aplicar os filtros do Dashboard na tabela.", error);
+    }
+
+    if (Array.isArray(window.vehicles)) return window.vehicles;
+    try {
+      if (typeof vehicles !== "undefined" && Array.isArray(vehicles)) return vehicles;
+    } catch (error) {}
+    return [];
+  }
+
+  function ensureDashboardTableTitle() {
+    const table = document.getElementById("dashboardSummaryTable");
+    const panel = table?.closest(".panel-card");
+    const title = panel?.querySelector(":scope > h2");
+    if (!panel || !title) return;
+
+    let row = panel.querySelector(".dashboard-table-title-row");
+    if (!row) {
+      row = document.createElement("div");
+      row.className = "dashboard-table-title-row";
+      panel.insertBefore(row, title);
+      row.appendChild(title);
+      const count = document.createElement("span");
+      count.id = "dashboardTableVehicleCount";
+      count.className = "dashboard-table-count";
+      row.appendChild(count);
+    }
+    title.textContent = "Todos os veículos cadastrados";
+  }
+
+  function renderDashboardSummaryTableComplete() {
+    const body = document.getElementById("dashboardSummaryTable");
+    if (!body) return;
+
+    ensureDashboardTableTitle();
+    const records = dashboardVehiclesForTable()
+      .slice()
+      .sort((a, b) => String(a?.placaVeiculo || "").localeCompare(String(b?.placaVeiculo || ""), "pt-BR"));
+
+    const count = document.getElementById("dashboardTableVehicleCount");
+    if (count) count.textContent = \`\${records.length} veículo(s) exibido(s)\`;
+
+    body.innerHTML = "";
+    if (!records.length) {
+      body.innerHTML = '<tr><td colspan="7">Nenhum veículo encontrado para os filtros selecionados.</td></tr>';
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    records.forEach(vehicle => {
+      const row = document.createElement("tr");
+      const status = String(vehicle?.statusCarro || "-");
+      row.innerHTML = \`
+        <td><span class="dashboard-status-pill \${statusTone(status)}">\${dashEscape(status)}</span></td>
+        <td><strong>\${dashEscape(vehicle?.placaVeiculo || "-")}</strong></td>
+        <td>\${dashEscape(vehicle?.modeloVeiculo || "-")}</td>
+        <td>\${dashEscape(vehicle?.categoriaVeiculo || "-")}</td>
+        <td>\${dashEscape(vehicle?.condutor || "-")}</td>
+        <td>\${dashEscape(vehicle?.centroCusto || "-")}</td>
+        <td>\${dashEscape(vehicle?.contrato || "-")}</td>
+      \`;
+      fragment.appendChild(row);
+    });
+    body.appendChild(fragment);
+
+    const wrapper = body.closest(".table-wrap");
+    if (wrapper) wrapper.classList.add("dashboard-summary-scroll");
+  }
+
+  window.renderDashboardSummaryTable = renderDashboardSummaryTableComplete;
+  try { renderDashboardSummaryTable = renderDashboardSummaryTableComplete; } catch (error) {}
+
+  const chartFactory = typeof window.makeChart === "function"
+    ? window.makeChart
+    : (typeof makeChart === "function" ? makeChart : null);
+
+  if (chartFactory && !chartFactory.__forceAllDataLabels) {
+    const labeledChartFactory = function(canvasId, type, labels, data, existingChart, options = {}) {
+      return chartFactory(
+        canvasId,
+        type,
+        labels,
+        data,
+        existingChart,
+        Object.assign({}, options, {
+          showDataLabels: true,
+          dataLabelFontSize: options.dataLabelFontSize || 11
+        })
+      );
+    };
+    labeledChartFactory.__forceAllDataLabels = true;
+    window.makeChart = labeledChartFactory;
+    try { makeChart = labeledChartFactory; } catch (error) {}
+  }
+
+  function refreshAllLabeledCharts() {
+    try {
+      if (typeof renderDashboardIndicators === "function") renderDashboardIndicators();
+    } catch (error) {
+      console.warn("Não foi possível atualizar os gráficos do Dashboard.", error);
+    }
+
+    try {
+      if (typeof refreshMeasurementAnalytics === "function") refreshMeasurementAnalytics();
+      else if (typeof renderMeasurements === "function") renderMeasurements();
+    } catch (error) {
+      console.warn("Não foi possível atualizar os gráficos de Medições.", error);
+    }
+
+    renderDashboardSummaryTableComplete();
+  }
+
+  const dashboardFilters = [
+    "dashStatusFilter",
+    "dashLocadoraFilter",
+    "dashCentroCustoFilter",
+    "dashCategoriaFilter",
+    "dashContratoFilter"
+  ];
+
+  document.addEventListener("change", event => {
+    if (dashboardFilters.includes(event.target?.id)) {
+      setTimeout(renderDashboardSummaryTableComplete, 20);
+    }
+  }, true);
+
+  const dashboardButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("dashboardTab")
+  );
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("medicoesTab")
+  );
+
+  dashboardButton?.addEventListener("click", () => setTimeout(refreshAllLabeledCharts, 50));
+  measurementButton?.addEventListener("click", () => setTimeout(refreshAllLabeledCharts, 50));
+
+  document.addEventListener("DOMContentLoaded", refreshAllLabeledCharts, { once: true });
+  setTimeout(refreshAllLabeledCharts, 0);
+  setTimeout(refreshAllLabeledCharts, 450);
+})();
+<\/script>
+
+
+<style id="smart-fleet-alerts-style">
+  #dashboardTab .dashboard-visual-alerts .contract-risk-list.smart-fleet-alerts {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+
+  #dashboardTab .smart-alert-summary {
+    display: grid;
+    grid-template-columns: minmax(230px, 1.3fr) repeat(3, minmax(145px, .55fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  #dashboardTab .smart-alert-summary-main,
+  #dashboardTab .smart-alert-summary-metric {
+    position: relative;
+    min-width: 0;
+    border: 1px solid #d9e4ee;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(14, 51, 84, .055);
+    overflow: hidden;
+  }
+
+  #dashboardTab .smart-alert-summary-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px 16px;
+    border-top: 4px solid #0c588f;
+  }
+
+  #dashboardTab .smart-alert-summary-main.critical { border-top-color: #d92d20; }
+  #dashboardTab .smart-alert-summary-main.warning { border-top-color: #f5c600; }
+  #dashboardTab .smart-alert-summary-main.positive { border-top-color: #15966b; }
+
+  #dashboardTab .smart-alert-summary-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 13px;
+    background: #edf5ff;
+    color: #0c588f;
+    font-size: 20px;
+  }
+
+  #dashboardTab .smart-alert-summary-main h4 {
+    margin: 0 0 4px;
+    color: #17365d;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  #dashboardTab .smart-alert-summary-main p {
+    margin: 0;
+    color: #60758a;
+    font-size: 12px;
+    line-height: 1.42;
+  }
+
+  #dashboardTab .smart-alert-summary-main time {
+    display: block;
+    margin-top: 7px;
+    color: #8394a6;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  #dashboardTab .smart-alert-summary-metric {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px 14px;
+    border-top: 4px solid #0c588f;
+  }
+
+  #dashboardTab .smart-alert-summary-metric.critical { border-top-color: #d92d20; }
+  #dashboardTab .smart-alert-summary-metric.warning { border-top-color: #f5c600; }
+  #dashboardTab .smart-alert-summary-metric.positive { border-top-color: #15966b; }
+
+  #dashboardTab .smart-alert-summary-metric small {
+    color: #667b8f;
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: .045em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  #dashboardTab .smart-alert-summary-metric strong {
+    margin: 5px 0 3px;
+    color: #17365d;
+    font-size: clamp(22px, 1.65vw, 30px);
+    line-height: 1;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .smart-alert-summary-metric span {
+    color: #6c8093;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  #dashboardTab .smart-alert-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 2px;
+  }
+
+  #dashboardTab .smart-alert-section-title h4 {
+    margin: 0;
+    color: #17365d;
+    font-size: 14px;
+  }
+
+  #dashboardTab .smart-alert-section-title span {
+    color: #6b7f92;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  #dashboardTab .smart-alert-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 11px !important;
+    width: 100% !important;
+  }
+
+  #dashboardTab .smart-alert-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 150px;
+    padding: 13px 13px 12px;
+    border: 1px solid #dce5ed;
+    border-top: 4px solid #0c588f;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(14, 51, 84, .05);
+    overflow: hidden;
+  }
+
+  #dashboardTab .smart-alert-card.critical { border-top-color: #d92d20; }
+  #dashboardTab .smart-alert-card.warning { border-top-color: #f5c600; }
+  #dashboardTab .smart-alert-card.positive { border-top-color: #15966b; }
+  #dashboardTab .smart-alert-card.neutral { border-top-color: #7a8ea5; }
+
+  #dashboardTab .smart-alert-card-head {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 9px;
+    align-items: start;
+  }
+
+  #dashboardTab .smart-alert-card-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: #edf5ff;
+    color: #0c588f;
+    font-size: 16px;
+  }
+
+  #dashboardTab .smart-alert-card.critical .smart-alert-card-icon { background: #fff0ef; color: #b42318; }
+  #dashboardTab .smart-alert-card.warning .smart-alert-card-icon { background: #fff8dc; color: #9a6700; }
+  #dashboardTab .smart-alert-card.positive .smart-alert-card-icon { background: #eaf8f2; color: #087a56; }
+  #dashboardTab .smart-alert-card.neutral .smart-alert-card-icon { background: #f0f3f6; color: #637487; }
+
+  #dashboardTab .smart-alert-card-heading {
+    min-width: 0;
+  }
+
+  #dashboardTab .smart-alert-card-heading small {
+    display: block;
+    margin: 0 0 3px;
+    color: #718497;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: .045em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  #dashboardTab .smart-alert-card-heading h5 {
+    margin: 0;
+    color: #17365d;
+    font-size: 12.5px;
+    line-height: 1.22;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .smart-alert-priority {
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: #0c588f;
+    background: #edf5ff;
+    font-size: 8.5px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #dashboardTab .smart-alert-card.critical .smart-alert-priority { background: #fff0ef; color: #b42318; }
+  #dashboardTab .smart-alert-card.warning .smart-alert-priority { background: #fff8dc; color: #8a5d00; }
+  #dashboardTab .smart-alert-card.positive .smart-alert-priority { background: #eaf8f2; color: #087a56; }
+  #dashboardTab .smart-alert-card.neutral .smart-alert-priority { background: #f0f3f6; color: #637487; }
+
+  #dashboardTab .smart-alert-card-value {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 11px 0 7px;
+  }
+
+  #dashboardTab .smart-alert-card-value strong {
+    color: #17365d;
+    font-size: clamp(23px, 1.55vw, 29px);
+    line-height: 1;
+    letter-spacing: -.03em;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .smart-alert-card-value span {
+    color: #6b7f92;
+    font-size: 9.5px;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  #dashboardTab .smart-alert-card-analysis {
+    margin: 0 0 8px;
+    color: #53697e;
+    font-size: 10.5px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .smart-alert-card-action {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #edf1f5;
+    color: #445d73;
+    font-size: 9.5px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .smart-alert-card-action strong {
+    color: #17365d;
+  }
+
+  @media (max-width: 1420px) {
+    #dashboardTab .smart-alert-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    #dashboardTab .smart-alert-summary { grid-template-columns: minmax(230px, 1.4fr) repeat(3, minmax(135px, .5fr)); }
+  }
+
+  @media (max-width: 980px) {
+    #dashboardTab .smart-alert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    #dashboardTab .smart-alert-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #dashboardTab .smart-alert-summary-main { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 580px) {
+    #dashboardTab .smart-alert-grid,
+    #dashboardTab .smart-alert-summary { grid-template-columns: 1fr !important; }
+    #dashboardTab .smart-alert-summary-main { grid-column: auto; }
+  }
+</style>
+
+<script id="smart-fleet-alerts-script">
+(function(){
+  "use strict";
+
+  function smartNormalize(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function smartEscape(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function smartNumber(value) {
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    const raw = String(value || "").trim();
+    if (!raw) return 0;
+    const normalized = raw
+      .replace(/R\\$/gi, "")
+      .replace(/\\s/g, "")
+      .replace(/\\.(?=\\d{3}(?:\\D|$))/g, "")
+      .replace(",", ".")
+      .replace(/[^0-9.-]/g, "");
+    const number = Number(normalized);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function smartCurrency(value) {
+    try {
+      if (typeof formatCurrency === "function") return formatCurrency(value);
+    } catch (error) {}
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value || 0));
+  }
+
+  function smartPercent(value, total) {
+    return total > 0 ? Math.round((Number(value || 0) / total) * 100) : 0;
+  }
+
+  function smartGroup(items, field) {
+    return items.reduce((acc, item) => {
+      const label = String(item?.[field] || "").trim();
+      if (!label) return acc;
+      acc[label] = (acc[label] || 0) + 1;
+      return acc;
+    }, {});
+  }
+
+  function smartTopShare(items, field) {
+    const grouped = smartGroup(items, field);
+    const entries = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
+    const top = entries[0] || ["Não informado", 0];
+    return {
+      label: top[0],
+      count: top[1],
+      share: smartPercent(top[1], items.length),
+      distinct: entries.length
+    };
+  }
+
+  function smartContractBucket(vehicle) {
+    try {
+      if (typeof getContractExpiryBucket === "function") return getContractExpiryBucket(vehicle?.terminoContrato);
+    } catch (error) {}
+    const raw = String(vehicle?.terminoContrato || "").trim();
+    if (!raw) return "sem-data";
+    const date = new Date(raw + (raw.length === 10 ? "T12:00:00" : ""));
+    if (Number.isNaN(date.getTime())) return "sem-data";
+    const days = Math.ceil((date.getTime() - Date.now()) / 86400000);
+    if (days < 0) return "vencidos";
+    if (days <= 30) return "0-30";
+    if (days <= 60) return "31-60";
+    if (days <= 90) return "61-90";
+    return "+90";
+  }
+
+  function smartToneRank(tone) {
+    return { critical: 0, warning: 1, neutral: 2, positive: 3 }[tone] ?? 2;
+  }
+
+  function smartToneLabel(tone) {
+    return { critical: "Crítico", warning: "Atenção", neutral: "Monitorar", positive: "Controlado" }[tone] || "Monitorar";
+  }
+
+  function smartFleetRecords() {
+    try {
+      if (typeof getDashboardFilteredVehicles === "function") {
+        const filtered = getDashboardFilteredVehicles();
+        if (Array.isArray(filtered)) return filtered;
+      }
+    } catch (error) {}
+    if (Array.isArray(window.vehicles)) return window.vehicles;
+    try {
+      if (typeof vehicles !== "undefined" && Array.isArray(vehicles)) return vehicles;
+    } catch (error) {}
+    return [];
+  }
+
+  function buildSmartFleetAnalysis(items) {
+    const total = items.length;
+    const activeItems = items.filter(vehicle => smartNormalize(vehicle?.statusCarro) !== "devolvido");
+    const activeTotal = activeItems.length || total;
+    const currentYear = new Date().getFullYear();
+
+    const emUso = items.filter(vehicle => smartNormalize(canonicalVehicleStatus(vehicle?.statusCarro)) === "alugado").length;
+    const disponiveis = items.filter(vehicle => smartNormalize(vehicle?.statusCarro) === "disponivel").length;
+    const manutencao = items.filter(vehicle => smartNormalize(canonicalVehicleStatus(vehicle?.statusCarro)) === "em manutencao").length;
+    const devolvidos = items.filter(vehicle => smartNormalize(vehicle?.statusCarro) === "devolvido").length;
+
+    const expiredItems = items.filter(vehicle => smartContractBucket(vehicle) === "vencidos");
+    const due30Items = items.filter(vehicle => smartContractBucket(vehicle) === "0-30");
+    const due60Items = items.filter(vehicle => smartContractBucket(vehicle) === "31-60");
+    const noEndDateItems = items.filter(vehicle => smartContractBucket(vehicle) === "sem-data");
+
+    const totalCost = items.reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0);
+    const averageCost = total ? totalCost / total : 0;
+    const idleCost = items
+      .filter(vehicle => smartNormalize(vehicle?.statusCarro) === "disponivel")
+      .reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0);
+    const maintenanceCost = items
+      .filter(vehicle => smartNormalize(vehicle?.statusCarro) === "manutencao")
+      .reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0);
+    const contractExposure = [...expiredItems, ...due30Items]
+      .reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0);
+
+    const highCostThreshold = averageCost > 0 ? averageCost * 1.25 : 0;
+    const highCostItems = items.filter(vehicle => smartNumber(vehicle?.valoresPraticados) > highCostThreshold && highCostThreshold > 0);
+
+    const oldFleetItems = items.filter(vehicle => {
+      const year = Number(String(vehicle?.anoModelo || "").match(/\\d{4}/)?.[0] || 0);
+      return year > 0 && year <= currentYear - 8;
+    });
+
+    const requiredFields = ["placaVeiculo", "modeloVeiculo", "categoriaVeiculo", "locadora", "centroCusto", "condutor", "contrato", "terminoContrato", "cartaoCombustivel", "cobli"];
+    const missingByField = requiredFields.reduce((acc, field) => {
+      acc[field] = items.filter(vehicle => !String(vehicle?.[field] || "").trim()).length;
+      return acc;
+    }, {});
+    const totalExpectedFields = total * requiredFields.length;
+    const totalMissingFields = Object.values(missingByField).reduce((sum, count) => sum + count, 0);
+    const dataQuality = totalExpectedFields ? Math.max(0, Math.round(((totalExpectedFields - totalMissingFields) / totalExpectedFields) * 100)) : 100;
+    const vehiclesWithPendingData = items.filter(vehicle => requiredFields.some(field => !String(vehicle?.[field] || "").trim())).length;
+
+    const utilization = smartPercent(emUso, activeTotal);
+    const maintenanceShare = smartPercent(manutencao, activeTotal);
+    const oldFleetShare = smartPercent(oldFleetItems.length, total);
+    const highCostShare = smartPercent(highCostItems.length, total);
+    const topRental = smartTopShare(items, "locadora");
+    const topCenter = smartTopShare(items, "centroCusto");
+
+    let healthScore = 100;
+    healthScore -= Math.min(28, smartPercent(expiredItems.length, total) * 1.2);
+    healthScore -= Math.min(16, smartPercent(due30Items.length, total) * .65);
+    healthScore -= Math.min(12, smartPercent(noEndDateItems.length, total) * .55);
+    healthScore -= Math.min(12, maintenanceShare * .55);
+    healthScore -= Math.min(14, Math.max(0, 70 - utilization) * .35);
+    healthScore -= Math.min(10, Math.max(0, 90 - dataQuality) * .45);
+    if (topRental.share >= 70) healthScore -= 6;
+    else if (topRental.share >= 50) healthScore -= 3;
+    healthScore = Math.max(0, Math.round(healthScore));
+
+    let headlineTone = "positive";
+    let headlineIcon = "✅";
+    let headline = "Frota sob controle";
+    let headlineText = "Os dados atuais não indicam concentração crítica de riscos. Mantenha o monitoramento dos contratos e da utilização.";
+
+    if (expiredItems.length > 0) {
+      headlineTone = "critical";
+      headlineIcon = "⛔";
+      headline = "Risco contratual exige atuação imediata";
+      headlineText = \`\${expiredItems.length} veículo(s) possuem contrato vencido, com exposição mensal estimada em \${smartCurrency(expiredItems.reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0))}.\`;
+    } else if (due30Items.length > 0 || noEndDateItems.length > 0) {
+      headlineTone = "warning";
+      headlineIcon = "⚠️";
+      headline = "Renovações e cadastros precisam de prioridade";
+      headlineText = \`\${due30Items.length} contrato(s) vencem em até 30 dias e \${noEndDateItems.length} veículo(s) estão sem data de término.\`;
+    } else if (utilization < 60 && disponiveis > 0) {
+      headlineTone = "warning";
+      headlineIcon = "📉";
+      headline = "Há oportunidade de otimização da frota";
+      headlineText = \`A utilização está em \${utilization}% e os veículos disponíveis representam \${smartCurrency(idleCost)} de custo mensal estimado.\`;
+    } else if (maintenanceShare >= 15) {
+      headlineTone = "warning";
+      headlineIcon = "🛠️";
+      headline = "Disponibilidade operacional requer acompanhamento";
+      headlineText = \`\${manutencao} veículo(s) estão em manutenção, equivalentes a \${maintenanceShare}% da frota ativa filtrada.\`;
+    }
+
+    const cards = [];
+
+    cards.push({
+      key: "expired",
+      tone: expiredItems.length ? "critical" : "positive",
+      icon: "⛔",
+      eyebrow: "Risco contratual",
+      title: "Contratos vencidos",
+      value: String(expiredItems.length),
+      meta: \`\${smartPercent(expiredItems.length, total)}% da frota • \${smartCurrency(expiredItems.reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0))}/mês\`,
+      analysis: expiredItems.length ? "A operação mantém veículos com prazo contratual expirado." : "Nenhum contrato vencido no recorte atual.",
+      action: expiredItems.length ? "Definir renovação, devolução ou regularização imediata por placa." : "Manter rotina semanal de conferência dos vencimentos."
+    });
+
+    cards.push({
+      key: "due30",
+      tone: due30Items.length ? "warning" : "positive",
+      icon: "📅",
+      eyebrow: "Próximos 30 dias",
+      title: "Contratos próximos do vencimento",
+      value: String(due30Items.length),
+      meta: \`\${smartCurrency(due30Items.reduce((sum, vehicle) => sum + smartNumber(vehicle?.valoresPraticados), 0))}/mês sob decisão\`,
+      analysis: due30Items.length ? "Há janela curta para negociar continuidade ou substituição." : "Não há vencimentos imediatos no filtro atual.",
+      action: due30Items.length ? "Antecipar tratativa com locadora e validar necessidade da obra." : "Manter programação preventiva de renovações."
+    });
+
+    cards.push({
+      key: "due60",
+      tone: due60Items.length > Math.max(2, total * .12) ? "warning" : (due60Items.length ? "neutral" : "positive"),
+      icon: "🗓️",
+      eyebrow: "Planejamento 31–60 dias",
+      title: "Carteira de renovações",
+      value: String(due60Items.length),
+      meta: \`\${smartPercent(due60Items.length, total)}% da frota filtrada\`,
+      analysis: due60Items.length ? "Volume que deve entrar no pipeline de negociação." : "Sem renovações previstas nessa janela.",
+      action: due60Items.length ? "Criar agenda de negociação e responsáveis por contrato." : "Preservar o acompanhamento mensal."
+    });
+
+    cards.push({
+      key: "missingDates",
+      tone: noEndDateItems.length ? "warning" : "positive",
+      icon: "📝",
+      eyebrow: "Qualidade contratual",
+      title: "Sem término informado",
+      value: String(noEndDateItems.length),
+      meta: \`\${smartPercent(noEndDateItems.length, total)}% sem previsibilidade\`,
+      analysis: noEndDateItems.length ? "A ausência de data impede alertas e planejamento confiáveis." : "Datas de término completas no recorte.",
+      action: noEndDateItems.length ? "Completar datas e validar o contrato de cada veículo." : "Manter o preenchimento obrigatório."
+    });
+
+    cards.push({
+      key: "utilization",
+      tone: utilization < 55 ? "critical" : utilization < 75 ? "warning" : "positive",
+      icon: "📈",
+      eyebrow: "Eficiência operacional",
+      title: "Utilização da frota ativa",
+      value: \`\${utilization}%\`,
+      meta: \`\${emUso} em uso • \${disponiveis} disponível(is) • \${devolvidos} devolvido(s)\`,
+      analysis: utilization < 55 ? "A taxa indica capacidade ociosa relevante." : utilization < 75 ? "A utilização está abaixo da faixa de eficiência recomendada." : "A utilização está em nível operacional saudável.",
+      action: utilization < 75 ? "Revisar alocação por obra e necessidade dos veículos disponíveis." : "Manter balanceamento entre obras e reserva operacional."
+    });
+
+    cards.push({
+      key: "idleCost",
+      tone: idleCost > totalCost * .18 && idleCost > 0 ? "warning" : idleCost > 0 ? "neutral" : "positive",
+      icon: "💸",
+      eyebrow: "Oportunidade financeira",
+      title: "Custo mensal disponível",
+      value: smartCurrency(idleCost),
+      meta: \`\${disponiveis} veículo(s) sem uso\`,
+      analysis: idleCost > 0 ? "Valor mensal associado a veículos disponíveis no momento." : "Não há custo identificado em veículos disponíveis.",
+      action: idleCost > 0 ? "Validar remanejamento, devolução ou uso compartilhado entre obras." : "Manter controle de disponibilidade."
+    });
+
+    cards.push({
+      key: "maintenance",
+      tone: maintenanceShare >= 20 ? "critical" : maintenanceShare >= 10 ? "warning" : manutencao ? "neutral" : "positive",
+      icon: "🛠️",
+      eyebrow: "Disponibilidade operacional",
+      title: "Veículos em manutenção",
+      value: String(manutencao),
+      meta: \`\${maintenanceShare}% da frota ativa • \${smartCurrency(maintenanceCost)}/mês\`,
+      analysis: manutencao ? "Unidades indisponíveis podem pressionar a operação e gerar substituições." : "Nenhum veículo em manutenção no recorte.",
+      action: manutencao ? "Acompanhar prazo de retorno, veículo reserva e impacto por obra." : "Manter plano preventivo de manutenção."
+    });
+
+    cards.push({
+      key: "dataQuality",
+      tone: dataQuality < 75 ? "critical" : dataQuality < 90 ? "warning" : "positive",
+      icon: "🧩",
+      eyebrow: "Governança de dados",
+      title: "Qualidade cadastral",
+      value: \`\${dataQuality}%\`,
+      meta: \`\${vehiclesWithPendingData} veículo(s) com alguma pendência\`,
+      analysis: dataQuality < 90 ? \`Principais lacunas: \${missingByField.condutor} sem condutor, \${missingByField.centroCusto} sem centro e \${missingByField.contrato} sem contrato.\` : "A base possui alto nível de completude.",
+      action: dataQuality < 90 ? "Priorizar os campos que afetam rastreabilidade, custos e alertas." : "Manter validações na entrada e edição dos cadastros."
+    });
+
+    cards.push({
+      key: "rentalConcentration",
+      tone: topRental.share >= 70 ? "critical" : topRental.share >= 50 ? "warning" : "positive",
+      icon: "🏢",
+      eyebrow: "Concentração de fornecedor",
+      title: "Dependência por locadora",
+      value: \`\${topRental.share}%\`,
+      meta: \`\${topRental.label} • \${topRental.count} veículo(s) • \${topRental.distinct} locadora(s)\`,
+      analysis: topRental.share >= 50 ? "A frota apresenta concentração relevante em uma única locadora." : "A distribuição entre locadoras reduz dependência excessiva.",
+      action: topRental.share >= 50 ? "Avaliar risco, condições comerciais e alternativas de fornecimento." : "Preservar concorrência e benchmarking de preços."
+    });
+
+    cards.push({
+      key: "centerConcentration",
+      tone: topCenter.share >= 50 ? "warning" : "positive",
+      icon: "📍",
+      eyebrow: "Alocação operacional",
+      title: "Concentração por centro de custo",
+      value: \`\${topCenter.share}%\`,
+      meta: \`\${topCenter.label} • \${topCenter.count} veículo(s)\`,
+      analysis: topCenter.share >= 50 ? "Uma obra ou centro concentra a maior parte da frota filtrada." : "A frota está distribuída entre os centros de custo.",
+      action: topCenter.share >= 50 ? "Validar necessidade, utilização e possível remanejamento entre obras." : "Manter revisão periódica de alocação."
+    });
+
+    cards.push({
+      key: "highCost",
+      tone: highCostShare >= 20 ? "warning" : highCostItems.length ? "neutral" : "positive",
+      icon: "💰",
+      eyebrow: "Eficiência de custos",
+      title: "Veículos acima do custo médio",
+      value: String(highCostItems.length),
+      meta: highCostThreshold ? \`acima de \${smartCurrency(highCostThreshold)}/mês\` : "sem base de custo suficiente",
+      analysis: highCostItems.length ? \`\${highCostShare}% da frota supera em pelo menos 25% o custo médio atual.\` : "Não foram identificados veículos com custo significativamente acima da média.",
+      action: highCostItems.length ? "Revisar categoria, contrato, locadora e justificativa operacional." : "Manter comparação entre custo, categoria e utilização."
+    });
+
+    cards.push({
+      key: "aging",
+      tone: oldFleetShare >= 25 ? "warning" : oldFleetItems.length ? "neutral" : "positive",
+      icon: "🚘",
+      eyebrow: "Ciclo de vida",
+      title: "Frota com 8 anos ou mais",
+      value: String(oldFleetItems.length),
+      meta: \`\${oldFleetShare}% da frota filtrada\`,
+      analysis: oldFleetItems.length ? "Veículos mais antigos podem elevar manutenção e indisponibilidade." : "Não há veículos antigos identificados pelo ano modelo.",
+      action: oldFleetItems.length ? "Cruzar idade, custo e manutenção para priorizar substituições." : "Manter monitoramento do ciclo de renovação."
+    });
+
+    cards.sort((a, b) => smartToneRank(a.tone) - smartToneRank(b.tone));
+
+    const criticalCards = cards.filter(card => card.tone === "critical").length;
+    const warningCards = cards.filter(card => card.tone === "warning").length;
+
+    return {
+      total,
+      totalCost,
+      contractExposure,
+      healthScore,
+      headlineTone,
+      headlineIcon,
+      headline,
+      headlineText,
+      criticalCards,
+      warningCards,
+      cards
+    };
+  }
+
+  function renderSmartFleetAlerts(items) {
+    const target = document.getElementById("contractRiskList");
+    if (!target) return;
+
+    const analysis = buildSmartFleetAnalysis(Array.isArray(items) ? items : []);
+    target.classList.add("smart-fleet-alerts");
+
+    const scoreTone = analysis.healthScore < 55 ? "critical" : analysis.healthScore < 78 ? "warning" : "positive";
+    const updatedAt = new Date().toLocaleString("pt-BR");
+
+    const cardsHtml = analysis.cards.map(card => \`
+      <article class="smart-alert-card \${smartEscape(card.tone)}" data-analysis-key="\${smartEscape(card.key)}">
+        <div class="smart-alert-card-head">
+          <div class="smart-alert-card-icon">\${card.icon}</div>
+          <div class="smart-alert-card-heading">
+            <small>\${smartEscape(card.eyebrow)}</small>
+            <h5>\${smartEscape(card.title)}</h5>
+          </div>
+          <span class="smart-alert-priority">\${smartEscape(smartToneLabel(card.tone))}</span>
+        </div>
+        <div class="smart-alert-card-value">
+          <strong>\${smartEscape(card.value)}</strong>
+          <span>\${smartEscape(card.meta)}</span>
+        </div>
+        <p class="smart-alert-card-analysis">\${smartEscape(card.analysis)}</p>
+        <div class="smart-alert-card-action"><strong>Ação:</strong> \${smartEscape(card.action)}</div>
+      </article>
+    \`).join("");
+
+    target.innerHTML = \`
+      <section class="smart-alert-summary">
+        <div class="smart-alert-summary-main \${smartEscape(analysis.headlineTone)}">
+          <div class="smart-alert-summary-icon">\${analysis.headlineIcon}</div>
+          <div>
+            <h4>\${smartEscape(analysis.headline)}</h4>
+            <p>\${smartEscape(analysis.headlineText)}</p>
+            <time>Recalculado automaticamente em \${smartEscape(updatedAt)}</time>
+          </div>
+        </div>
+        <div class="smart-alert-summary-metric \${scoreTone}">
+          <small>Índice de controle</small>
+          <strong>\${analysis.healthScore}/100</strong>
+          <span>Composto por contratos, utilização, manutenção e qualidade cadastral.</span>
+        </div>
+        <div class="smart-alert-summary-metric \${analysis.criticalCards ? "critical" : "positive"}">
+          <small>Análises críticas</small>
+          <strong>\${analysis.criticalCards}</strong>
+          <span>\${analysis.warningCards} análise(s) adicional(is) em atenção.</span>
+        </div>
+        <div class="smart-alert-summary-metric \${analysis.contractExposure > 0 ? "warning" : "positive"}">
+          <small>Exposição contratual</small>
+          <strong>\${smartEscape(smartCurrency(analysis.contractExposure))}</strong>
+          <span>Custo mensal de contratos vencidos ou a vencer em até 30 dias.</span>
+        </div>
+      </section>
+      <div class="smart-alert-section-title">
+        <h4>Análises automáticas priorizadas</h4>
+        <span>\${analysis.total} veículo(s) considerados no filtro atual</span>
+      </div>
+      <section class="smart-alert-grid">\${cardsHtml}</section>
+    \`;
+  }
+
+  window.renderSmartFleetAlerts = renderSmartFleetAlerts;
+
+  const previousDashboardRenderer = typeof renderDashboardIndicators === "function"
+    ? renderDashboardIndicators
+    : window.renderDashboardIndicators;
+
+  if (typeof previousDashboardRenderer === "function" && !previousDashboardRenderer.__smartFleetAlertsWrapped) {
+    const smartDashboardRenderer = function() {
+      const result = previousDashboardRenderer.apply(this, arguments);
+      try {
+        renderSmartFleetAlerts(smartFleetRecords());
+      } catch (error) {
+        console.error("Não foi possível recalcular os alertas inteligentes da frota.", error);
+      }
+      return result;
+    };
+    smartDashboardRenderer.__smartFleetAlertsWrapped = true;
+    window.renderDashboardIndicators = smartDashboardRenderer;
+    try { renderDashboardIndicators = smartDashboardRenderer; } catch (error) {}
+  }
+
+  const dashboardFilterIds = new Set([
+    "dashStatusFilter",
+    "dashLocadoraFilter",
+    "dashCentroCustoFilter",
+    "dashCategoriaFilter",
+    "dashContratoFilter"
+  ]);
+
+  let smartAlertTimer = null;
+  function scheduleSmartAlertRefresh(delay = 35) {
+    clearTimeout(smartAlertTimer);
+    smartAlertTimer = setTimeout(() => renderSmartFleetAlerts(smartFleetRecords()), delay);
+  }
+
+  document.addEventListener("change", event => {
+    if (dashboardFilterIds.has(event.target?.id)) scheduleSmartAlertRefresh();
+  }, true);
+
+  const dashboardButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("dashboardTab")
+  );
+  dashboardButton?.addEventListener("click", () => scheduleSmartAlertRefresh(50));
+
+  document.addEventListener("DOMContentLoaded", () => scheduleSmartAlertRefresh(0), { once: true });
+  setTimeout(() => scheduleSmartAlertRefresh(0), 0);
+  setTimeout(() => scheduleSmartAlertRefresh(0), 450);
+})();
+<\/script>
+
+
+<style id="smart-measurement-alerts-style">
+  #medicoesTab .measurement-smart-alert-panel {
+    grid-column: 1 / -1;
+    margin: 16px 0 20px;
+    padding: 16px;
+    border: 1px solid #dbe5ee;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(14, 51, 84, .055);
+  }
+
+  #medicoesTab .measurement-smart-alert-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 13px;
+  }
+
+  #medicoesTab .measurement-smart-alert-heading-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    min-width: 0;
+  }
+
+  #medicoesTab .measurement-smart-alert-heading-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 13px;
+    color: #ffffff;
+    background: #0c588f;
+    font-size: 19px;
+    box-shadow: 0 9px 18px rgba(12, 88, 143, .16);
+  }
+
+  #medicoesTab .measurement-smart-alert-heading h3 {
+    margin: 0 0 4px;
+    color: #17365d;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  #medicoesTab .measurement-smart-alert-heading p {
+    margin: 0;
+    max-width: 850px;
+    color: #62778b;
+    font-size: 11.5px;
+    line-height: 1.42;
+  }
+
+  #medicoesTab .measurement-smart-alert-updated {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    border: 1px solid #d4e1ec;
+    border-radius: 999px;
+    color: #577087;
+    background: #f7fafc;
+    font-size: 9.5px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  #medicoesTab .measurement-smart-summary {
+    display: grid;
+    grid-template-columns: minmax(240px, 1.4fr) repeat(3, minmax(145px, .55fr));
+    gap: 11px;
+    margin-bottom: 13px;
+  }
+
+  #medicoesTab .measurement-smart-summary-main,
+  #medicoesTab .measurement-smart-summary-metric {
+    position: relative;
+    min-width: 0;
+    min-height: 112px;
+    border: 1px solid #dae5ee;
+    border-top: 4px solid #0c588f;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 8px 18px rgba(14, 51, 84, .045);
+    overflow: hidden;
+  }
+
+  #medicoesTab .measurement-smart-summary-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px 14px;
+  }
+
+  #medicoesTab .measurement-smart-summary-main.critical,
+  #medicoesTab .measurement-smart-summary-metric.critical { border-top-color: #d92d20; }
+  #medicoesTab .measurement-smart-summary-main.warning,
+  #medicoesTab .measurement-smart-summary-metric.warning { border-top-color: #f5c600; }
+  #medicoesTab .measurement-smart-summary-main.positive,
+  #medicoesTab .measurement-smart-summary-metric.positive { border-top-color: #15966b; }
+
+  #medicoesTab .measurement-smart-summary-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 12px;
+    color: #0c588f;
+    background: #edf5ff;
+    font-size: 18px;
+  }
+
+  #medicoesTab .measurement-smart-summary-main h4 {
+    margin: 0 0 4px;
+    color: #17365d;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  #medicoesTab .measurement-smart-summary-main p {
+    margin: 0;
+    color: #60758a;
+    font-size: 10.5px;
+    line-height: 1.38;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-summary-metric {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 11px 13px;
+  }
+
+  #medicoesTab .measurement-smart-summary-metric small {
+    color: #687d91;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: .045em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  #medicoesTab .measurement-smart-summary-metric strong {
+    margin: 5px 0 3px;
+    color: #17365d;
+    font-size: clamp(20px, 1.45vw, 27px);
+    line-height: 1.02;
+    letter-spacing: -.025em;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-summary-metric span {
+    color: #6b8094;
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 2px 0 9px;
+  }
+
+  #medicoesTab .measurement-smart-alert-section-title h4 {
+    margin: 0;
+    color: #17365d;
+    font-size: 13px;
+  }
+
+  #medicoesTab .measurement-smart-alert-section-title span {
+    color: #708497;
+    font-size: 9.5px;
+    font-weight: 750;
+  }
+
+  #medicoesTab .measurement-smart-alert-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  #medicoesTab .measurement-smart-alert-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 142px;
+    padding: 12px;
+    border: 1px solid #dce5ed;
+    border-top: 4px solid #0c588f;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 7px 16px rgba(14, 51, 84, .045);
+    overflow: hidden;
+  }
+
+  #medicoesTab .measurement-smart-alert-card.critical { border-top-color: #d92d20; }
+  #medicoesTab .measurement-smart-alert-card.warning { border-top-color: #f5c600; }
+  #medicoesTab .measurement-smart-alert-card.positive { border-top-color: #15966b; }
+  #medicoesTab .measurement-smart-alert-card.neutral { border-top-color: #7a8ea5; }
+
+  #medicoesTab .measurement-smart-alert-card-head {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: start;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    color: #0c588f;
+    background: #edf5ff;
+    font-size: 15px;
+  }
+
+  #medicoesTab .measurement-smart-alert-card.critical .measurement-smart-alert-card-icon { color: #b42318; background: #fff0ef; }
+  #medicoesTab .measurement-smart-alert-card.warning .measurement-smart-alert-card-icon { color: #8a5d00; background: #fff8dc; }
+  #medicoesTab .measurement-smart-alert-card.positive .measurement-smart-alert-card-icon { color: #087a56; background: #eaf8f2; }
+  #medicoesTab .measurement-smart-alert-card.neutral .measurement-smart-alert-card-icon { color: #637487; background: #f0f3f6; }
+
+  #medicoesTab .measurement-smart-alert-card-heading {
+    min-width: 0;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-heading small {
+    display: block;
+    margin: 0 0 2px;
+    color: #74879a;
+    font-size: 7.8px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-heading h5 {
+    margin: 0;
+    color: #17365d;
+    font-size: 11.5px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-priority {
+    padding: 4px 6px;
+    border-radius: 999px;
+    color: #0c588f;
+    background: #edf5ff;
+    font-size: 7.8px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #medicoesTab .measurement-smart-alert-card.critical .measurement-smart-alert-priority { color: #b42318; background: #fff0ef; }
+  #medicoesTab .measurement-smart-alert-card.warning .measurement-smart-alert-priority { color: #8a5d00; background: #fff8dc; }
+  #medicoesTab .measurement-smart-alert-card.positive .measurement-smart-alert-priority { color: #087a56; background: #eaf8f2; }
+  #medicoesTab .measurement-smart-alert-card.neutral .measurement-smart-alert-priority { color: #637487; background: #f0f3f6; }
+
+  #medicoesTab .measurement-smart-alert-card-value {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 9px 0 6px;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-value strong {
+    color: #17365d;
+    font-size: clamp(21px, 1.35vw, 27px);
+    line-height: 1;
+    letter-spacing: -.03em;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-value span {
+    color: #6a7f93;
+    font-size: 8.8px;
+    font-weight: 750;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-analysis {
+    margin: 0 0 6px;
+    color: #53697e;
+    font-size: 9.5px;
+    line-height: 1.32;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-action {
+    margin-top: auto;
+    padding-top: 7px;
+    border-top: 1px solid #edf1f5;
+    color: #445d73;
+    font-size: 8.8px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  #medicoesTab .measurement-smart-alert-card-action strong {
+    color: #17365d;
+  }
+
+  @media (max-width: 1420px) {
+    #medicoesTab .measurement-smart-alert-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #medicoesTab .measurement-smart-summary { grid-template-columns: minmax(230px, 1.35fr) repeat(3, minmax(135px, .5fr)); }
+  }
+
+  @media (max-width: 980px) {
+    #medicoesTab .measurement-smart-alert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #medicoesTab .measurement-smart-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #medicoesTab .measurement-smart-summary-main { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 620px) {
+    #medicoesTab .measurement-smart-alert-heading { flex-direction: column; }
+    #medicoesTab .measurement-smart-alert-updated { white-space: normal; }
+    #medicoesTab .measurement-smart-alert-grid,
+    #medicoesTab .measurement-smart-summary { grid-template-columns: 1fr; }
+    #medicoesTab .measurement-smart-summary-main { grid-column: auto; }
+  }
+</style>
+
+<script id="smart-measurement-alerts-script">
+(function(){
+  "use strict";
+
+  function msNormalize(value) {
+    return String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/\\s+/g, " ")
+      .trim()
+      .toUpperCase();
+  }
+
+  function msEscape(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function msNumber(value) {
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    const raw = String(value ?? "").trim();
+    if (!raw) return 0;
+    const normalized = raw
+      .replace(/R\\$/gi, "")
+      .replace(/\\s/g, "")
+      .replace(/\\.(?=\\d{3}(?:\\D|$))/g, "")
+      .replace(",", ".")
+      .replace(/[^0-9.-]/g, "");
+    const number = Number(normalized);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function msCurrency(value) {
+    try {
+      if (typeof formatCurrency === "function") return formatCurrency(Number(value || 0));
+    } catch (error) {}
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value || 0));
+  }
+
+  function msPercent(value, total) {
+    return total > 0 ? Math.round((Number(value || 0) / total) * 100) : 0;
+  }
+
+  function msParseDate(value) {
+    if (value === null || value === undefined || value === "") return null;
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+    if (typeof value === "number" && Number.isFinite(value)) {
+      if (value > 20000 && value < 100000) {
+        const excel = new Date(Date.UTC(1899, 11, 30));
+        excel.setUTCDate(excel.getUTCDate() + Math.floor(value));
+        return excel;
+      }
+      const numeric = new Date(value);
+      return Number.isNaN(numeric.getTime()) ? null : numeric;
+    }
+    const text = String(value).trim();
+    if (!text || text === "-") return null;
+    let match = text.match(/^(\\d{4})[-\\/.](\\d{1,2})[-\\/.](\\d{1,2})/);
+    if (match) return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    match = text.match(/^(\\d{1,2})[-\\/.](\\d{1,2})[-\\/.](\\d{2,4})/);
+    if (match) {
+      let year = Number(match[3]);
+      if (year < 100) year += year >= 70 ? 1900 : 2000;
+      return new Date(Date.UTC(year, Number(match[2]) - 1, Number(match[1])));
+    }
+    const parsed = new Date(text);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function msPlate(record) {
+    return String(record?.plate || record?.placa || record?.vehiclePlate || "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+  }
+
+  function msSource(record) {
+    return msNormalize(record?.source || record?.platform || "OUTROS") || "OUTROS";
+  }
+
+  function msCategory(record) {
+    try {
+      if (typeof measurementCategory === "function") return msNormalize(measurementCategory(record));
+    } catch (error) {}
+    return msNormalize(record?.billingCategory || record?.measurementCategory || record?.category || record?.billingStatus || record?.status || "OUTROS") || "OUTROS";
+  }
+
+  function msMethod(record) {
+    const explicit = msNormalize(record?.sourceMethod || record?.importMethod || record?.originMethod || "");
+    if (explicit) return explicit;
+    return record?.batchId || record?.sourceFile ? "PLANILHA" : "API";
+  }
+
+  function msWork(record) {
+    const candidates = [
+      record?.sourceObra,
+      record?.sourceCostCenter,
+      record?.sourceCC,
+      record?.costCenter,
+      record?.currentCostCenter,
+      record?.obra,
+      record?.centroCusto,
+      record?.centroDeCusto,
+      record?.cc,
+      record?.rawData?.Obra,
+      record?.rawData?.OBRA,
+      record?.rawData?.["Centro de Custo"],
+      record?.rawData?.["CENTRO DE CUSTO"],
+      record?.rawData?.CC
+    ];
+    return candidates.map(value => String(value ?? "").trim()).find(Boolean) || "Não informado";
+  }
+
+  function msRecordDate(record) {
+    return msParseDate(
+      record?.invoiceDate ||
+      record?.eventDate ||
+      record?.dataEvento ||
+      record?.date ||
+      record?.dueDate ||
+      record?.competenceDate ||
+      record?.competence ||
+      ""
+    );
+  }
+
+  function msImportDate(record) {
+    return msParseDate(record?.importedAt || record?.syncedAt || record?.createdAt || record?.loadDate || "");
+  }
+
+  function msInvoice(record) {
+    return String(record?.invoiceNumber || record?.documentNumber || record?.notaFiscal || record?.nf || record?.fatura || "").trim();
+  }
+
+  function msLinked(record) {
+    if (record?.linked === true || record?.vehicleId) return true;
+    const plate = msPlate(record);
+    if (!plate) return false;
+    let fleet = [];
+    try { fleet = Array.isArray(vehicles) ? vehicles : []; } catch (error) {}
+    if (!fleet.length && Array.isArray(window.vehicles)) fleet = window.vehicles;
+    return fleet.some(vehicle => String(vehicle?.placaVeiculo || vehicle?.placa || "").toUpperCase().replace(/[^A-Z0-9]/g, "") === plate);
+  }
+
+  function msFilteredRecords() {
+    try {
+      if (typeof window.getMeasurementFilteredRecords === "function") {
+        const records = window.getMeasurementFilteredRecords();
+        if (Array.isArray(records)) return records;
+      }
+    } catch (error) {}
+    try {
+      if (typeof window.billingFilteredMeasurements === "function") {
+        const records = window.billingFilteredMeasurements();
+        if (Array.isArray(records)) return records;
+      }
+    } catch (error) {}
+    try { if (Array.isArray(measurements)) return measurements; } catch (error) {}
+    return Array.isArray(window.measurements) ? window.measurements : [];
+  }
+
+  function msGroupValue(records, keyFn) {
+    const grouped = new Map();
+    records.forEach(record => {
+      const key = String(keyFn(record) || "Não informado");
+      const current = grouped.get(key) || { count: 0, value: 0 };
+      current.count += 1;
+      current.value += Math.abs(msNumber(record?.value ?? record?.amount ?? record?.totalValue ?? 0));
+      grouped.set(key, current);
+    });
+    return [...grouped.entries()].sort((a, b) => b[1].value - a[1].value || b[1].count - a[1].count);
+  }
+
+  function msToneRank(tone) {
+    return ({ critical: 0, warning: 1, neutral: 2, positive: 3 })[tone] ?? 4;
+  }
+
+  function msToneLabel(tone) {
+    return ({ critical: "CRÍTICO", warning: "ATENÇÃO", neutral: "MONITORAR", positive: "SAUDÁVEL" })[tone] || "ANÁLISE";
+  }
+
+  function msDaysSince(date) {
+    if (!date) return null;
+    return Math.max(0, Math.floor((Date.now() - date.getTime()) / 86400000));
+  }
+
+  function ensureMeasurementSmartAlertsPanel() {
+    const tab = document.getElementById("medicoesTab");
+    if (!tab) return null;
+
+    let panel = document.getElementById("measurementSmartAlertsPanel");
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.id = "measurementSmartAlertsPanel";
+      panel.className = "measurement-smart-alert-panel";
+      panel.innerHTML = \`
+        <div class="measurement-smart-alert-heading">
+          <div class="measurement-smart-alert-heading-main">
+            <div class="measurement-smart-alert-heading-icon">🧠</div>
+            <div>
+              <h3>Alertas inteligentes das medições</h3>
+              <p>Análises automáticas de vínculo, qualidade, custos, concentração, multas e atualização das cargas, recalculadas conforme os filtros atuais.</p>
+            </div>
+          </div>
+          <span class="measurement-smart-alert-updated" id="measurementSmartAlertUpdated">Aguardando análise</span>
+        </div>
+        <div id="measurementSmartAlertsContent"></div>
+      \`;
+    }
+
+    const hub = document.getElementById("measurementAnalyticsHub");
+    const tableHeading = [...tab.querySelectorAll(".panel-card h2")].find(heading =>
+      /Itens das medições|Medições integradas/i.test(heading.textContent || "")
+    );
+    const tablePanel = tableHeading?.closest(".panel-card");
+
+    if (hub && panel.previousElementSibling !== hub) hub.insertAdjacentElement("afterend", panel);
+    else if (!hub && tablePanel && panel.nextElementSibling !== tablePanel) tablePanel.insertAdjacentElement("beforebegin", panel);
+    else if (!panel.isConnected) tab.appendChild(panel);
+
+    return panel;
+  }
+
+  function buildMeasurementSmartAnalysis(records) {
+    const total = records.length;
+    const totalValue = records.reduce((sum, record) => sum + msNumber(record?.value ?? record?.amount ?? record?.totalValue ?? 0), 0);
+    const absoluteValue = records.reduce((sum, record) => sum + Math.abs(msNumber(record?.value ?? record?.amount ?? record?.totalValue ?? 0)), 0);
+    const linked = records.filter(msLinked);
+    const unlinked = records.filter(record => !msLinked(record));
+    const unlinkedValue = unlinked.reduce((sum, record) => sum + Math.abs(msNumber(record?.value ?? 0)), 0);
+    const fines = records.filter(record => msCategory(record).includes("MULTA"));
+    const fineValue = fines.reduce((sum, record) => sum + Math.abs(msNumber(record?.value ?? 0)), 0);
+    const rentals = records.filter(record => msCategory(record).includes("LOCACAO"));
+    const zeroOrNegative = records.filter(record => msNumber(record?.value ?? 0) <= 0);
+    const missingPlate = records.filter(record => !msPlate(record));
+    const missingInvoice = records.filter(record => !msInvoice(record));
+    const missingDate = records.filter(record => !msRecordDate(record));
+    const missingCategory = records.filter(record => !msCategory(record) || msCategory(record) === "OUTROS");
+
+    const duplicateMap = new Map();
+    records.forEach(record => {
+      const key = [
+        msSource(record),
+        msPlate(record),
+        msInvoice(record),
+        msCategory(record),
+        msNumber(record?.value ?? 0).toFixed(2),
+        msRecordDate(record)?.toISOString().slice(0, 10) || ""
+      ].join("|");
+      if (!msInvoice(record) && !msPlate(record)) return;
+      duplicateMap.set(key, (duplicateMap.get(key) || 0) + 1);
+    });
+    const duplicateExtras = [...duplicateMap.values()].reduce((sum, count) => sum + Math.max(0, count - 1), 0);
+
+    const platformGroups = msGroupValue(records, msSource);
+    const topPlatform = platformGroups[0] || ["Não informado", { count: 0, value: 0 }];
+    const platformShare = absoluteValue > 0
+      ? Math.round((topPlatform[1].value / absoluteValue) * 100)
+      : msPercent(topPlatform[1].count, total);
+
+    const plateGroups = msGroupValue(records.filter(record => msPlate(record)), msPlate);
+    const topPlate = plateGroups[0] || ["Não informado", { count: 0, value: 0 }];
+    const plateShare = absoluteValue > 0 ? Math.round((topPlate[1].value / absoluteValue) * 100) : 0;
+
+    const workGroups = msGroupValue(records, msWork);
+    const topWork = workGroups[0] || ["Não informado", { count: 0, value: 0 }];
+    const workShare = absoluteValue > 0
+      ? Math.round((topWork[1].value / absoluteValue) * 100)
+      : msPercent(topWork[1].count, total);
+
+    const positiveValues = records
+      .map(record => Math.abs(msNumber(record?.value ?? 0)))
+      .filter(value => value > 0);
+    const mean = positiveValues.length ? positiveValues.reduce((sum, value) => sum + value, 0) / positiveValues.length : 0;
+    const variance = positiveValues.length
+      ? positiveValues.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / positiveValues.length
+      : 0;
+    const standardDeviation = Math.sqrt(variance);
+    const anomalyThreshold = Math.max(mean * 2, mean + 2 * standardDeviation);
+    const highValueItems = anomalyThreshold > 0
+      ? records.filter(record => Math.abs(msNumber(record?.value ?? 0)) > anomalyThreshold)
+      : [];
+    const highValueExposure = highValueItems.reduce((sum, record) => sum + Math.abs(msNumber(record?.value ?? 0)), 0);
+
+    const latestImport = records
+      .map(msImportDate)
+      .filter(Boolean)
+      .sort((a, b) => b.getTime() - a.getTime())[0] || null;
+    const daysSinceImport = msDaysSince(latestImport);
+
+    const apiRecords = records.filter(record => msMethod(record) === "API");
+    const spreadsheetRecords = records.filter(record => msMethod(record) !== "API");
+    const apiShare = msPercent(apiRecords.length, total);
+
+    const completenessProblems = new Set();
+    missingPlate.forEach(record => completenessProblems.add(record));
+    missingInvoice.forEach(record => completenessProblems.add(record));
+    missingDate.forEach(record => completenessProblems.add(record));
+    missingCategory.forEach(record => completenessProblems.add(record));
+    const completeness = total ? Math.max(0, 100 - msPercent(completenessProblems.size, total)) : 100;
+
+    const linkage = msPercent(linked.length, total);
+    const fineShare = msPercent(fines.length, total);
+    const invalidValueShare = msPercent(zeroOrNegative.length, total);
+    const duplicateShare = msPercent(duplicateExtras, total);
+
+    let score = 100;
+    score -= Math.min(28, msPercent(unlinked.length, total) * .55);
+    score -= Math.min(18, (100 - completeness) * .35);
+    score -= Math.min(12, duplicateShare * .5);
+    score -= Math.min(10, invalidValueShare * .35);
+    if (platformShare >= 85 && platformGroups.length > 1) score -= 6;
+    if (plateShare >= 35) score -= 6;
+    if (fineShare >= 25) score -= 6;
+    if (daysSinceImport !== null && daysSinceImport > 45) score -= 8;
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    const cards = [];
+
+    cards.push({
+      key: "linkage",
+      tone: linkage < 80 ? "critical" : linkage < 95 ? "warning" : "positive",
+      icon: "🔗",
+      eyebrow: "Rastreabilidade",
+      title: "Vínculo por placa",
+      value: \`\${linkage}%\`,
+      meta: \`\${linked.length} vinculado(s) • \${unlinked.length} sem vínculo\`,
+      analysis: linkage < 95 ? "Parte das medições não está conectada a veículos da frota, reduzindo a rastreabilidade." : "O vínculo das medições com a frota está em nível saudável.",
+      action: linkage < 95 ? "Revisar placas divergentes, veículos não cadastrados e formatação das placas importadas." : "Manter validação automática por placa nas próximas cargas."
+    });
+
+    cards.push({
+      key: "unlinkedValue",
+      tone: unlinkedValue > absoluteValue * .15 && unlinkedValue > 0 ? "critical" : unlinkedValue > 0 ? "warning" : "positive",
+      icon: "💸",
+      eyebrow: "Exposição financeira",
+      title: "Valor sem vínculo",
+      value: msCurrency(unlinkedValue),
+      meta: \`\${msPercent(unlinkedValue, absoluteValue)}% do valor medido\`,
+      analysis: unlinkedValue > 0 ? "Há valores que não podem ser atribuídos com segurança a um veículo cadastrado." : "Todos os valores do recorte estão vinculados a placas da frota.",
+      action: unlinkedValue > 0 ? "Priorizar a regularização dos itens de maior valor antes da validação das faturas." : "Manter conferência por placa e locadora."
+    });
+
+    cards.push({
+      key: "fines",
+      tone: fineShare >= 25 ? "critical" : fineShare >= 10 ? "warning" : fines.length ? "neutral" : "positive",
+      icon: "⚠️",
+      eyebrow: "Desvio operacional",
+      title: "Multas nas medições",
+      value: String(fines.length),
+      meta: \`\${fineShare}% dos itens • \${msCurrency(fineValue)}\`,
+      analysis: fines.length ? "As multas representam custo não planejado e devem ser tratadas por condutor, obra e recorrência." : "Não foram identificadas multas no recorte atual.",
+      action: fines.length ? "Classificar responsáveis, verificar reincidência e acompanhar recuperação ou desconto." : "Manter acompanhamento preventivo e orientação aos condutores."
+    });
+
+    cards.push({
+      key: "completeness",
+      tone: completeness < 75 ? "critical" : completeness < 92 ? "warning" : "positive",
+      icon: "🧩",
+      eyebrow: "Governança de dados",
+      title: "Completude das medições",
+      value: \`\${completeness}%\`,
+      meta: \`\${completenessProblems.size} item(ns) com lacunas\`,
+      analysis: completeness < 92 ? \`\${missingPlate.length} sem placa, \${missingInvoice.length} sem fatura, \${missingDate.length} sem data e \${missingCategory.length} sem categoria definida.\` : "Os campos essenciais estão preenchidos na maior parte da base.",
+      action: completeness < 92 ? "Corrigir as colunas de origem e validar o padrão antes da próxima importação." : "Preservar validações obrigatórias nos arquivos e APIs."
+    });
+
+    cards.push({
+      key: "duplicates",
+      tone: duplicateShare >= 8 ? "critical" : duplicateExtras > 0 ? "warning" : "positive",
+      icon: "📑",
+      eyebrow: "Conferência de cargas",
+      title: "Possíveis duplicidades",
+      value: String(duplicateExtras),
+      meta: \`\${duplicateShare}% da base filtrada\`,
+      analysis: duplicateExtras ? "Foram encontrados registros com mesma plataforma, placa, fatura, valor, categoria e data." : "Não foram identificadas duplicidades pelos campos principais.",
+      action: duplicateExtras ? "Comparar os arquivos importados e excluir cargas repetidas antes da consolidação." : "Manter chave de controle por fatura, placa e competência."
+    });
+
+    cards.push({
+      key: "invalidValues",
+      tone: invalidValueShare >= 10 ? "critical" : zeroOrNegative.length ? "warning" : "positive",
+      icon: "🧾",
+      eyebrow: "Consistência financeira",
+      title: "Valores zerados ou negativos",
+      value: String(zeroOrNegative.length),
+      meta: \`\${invalidValueShare}% dos itens\`,
+      analysis: zeroOrNegative.length ? "Itens zerados ou negativos podem representar estornos, créditos ou falhas de leitura." : "Os valores financeiros do recorte estão positivos.",
+      action: zeroOrNegative.length ? "Separar créditos legítimos de inconsistências e validar a natureza de cada lançamento." : "Manter regra de validação financeira na importação."
+    });
+
+    cards.push({
+      key: "platformConcentration",
+      tone: platformShare >= 85 && platformGroups.length > 1 ? "warning" : "positive",
+      icon: "🏢",
+      eyebrow: "Concentração de plataforma",
+      title: "Participação por locadora",
+      value: \`\${platformShare}%\`,
+      meta: \`\${topPlatform[0]} • \${msCurrency(topPlatform[1].value)}\`,
+      analysis: platformShare >= 85 && platformGroups.length > 1 ? "Uma plataforma concentra quase todo o valor das medições filtradas." : "A participação entre plataformas não apresenta concentração excessiva no recorte.",
+      action: platformShare >= 85 && platformGroups.length > 1 ? "Comparar custos, tipos de cobrança e condições entre ALD e ARVAL." : "Manter análise comparativa por plataforma."
+    });
+
+    cards.push({
+      key: "plateConcentration",
+      tone: plateShare >= 35 ? "critical" : plateShare >= 20 ? "warning" : "positive",
+      icon: "🚗",
+      eyebrow: "Concentração por veículo",
+      title: "Maior impacto por placa",
+      value: \`\${plateShare}%\`,
+      meta: \`\${topPlate[0]} • \${msCurrency(topPlate[1].value)}\`,
+      analysis: plateShare >= 20 ? "Uma única placa concentra parcela relevante do valor medido no período." : "Os valores estão distribuídos entre os veículos.",
+      action: plateShare >= 20 ? "Abrir os itens da placa e validar locação, multas, taxas e eventos extraordinários." : "Manter ranking de valores por placa."
+    });
+
+    cards.push({
+      key: "workConcentration",
+      tone: workShare >= 55 ? "warning" : "positive",
+      icon: "📍",
+      eyebrow: "Concentração por obra",
+      title: "Maior centro de custo",
+      value: \`\${workShare}%\`,
+      meta: \`\${topWork[0]} • \${msCurrency(topWork[1].value)}\`,
+      analysis: workShare >= 55 ? "Uma obra ou centro de custo concentra a maior parcela das medições." : "As medições estão distribuídas entre os centros de custo.",
+      action: workShare >= 55 ? "Validar quantidade de veículos, utilização e cobranças extraordinárias da obra." : "Manter comparação de custo por obra e veículo."
+    });
+
+    cards.push({
+      key: "highValue",
+      tone: highValueItems.length >= Math.max(3, Math.ceil(total * .08)) ? "critical" : highValueItems.length ? "warning" : "positive",
+      icon: "📈",
+      eyebrow: "Anomalias financeiras",
+      title: "Itens acima do padrão",
+      value: String(highValueItems.length),
+      meta: anomalyThreshold > 0 ? \`acima de \${msCurrency(anomalyThreshold)}\` : "sem base suficiente",
+      analysis: highValueItems.length ? \`\${msCurrency(highValueExposure)} está concentrado em lançamentos acima do padrão estatístico do recorte.\` : "Não foram encontrados valores significativamente acima do comportamento da base.",
+      action: highValueItems.length ? "Revisar documentos, período faturado e composição dos itens de maior valor." : "Manter análise de desvios após cada carga."
+    });
+
+    cards.push({
+      key: "freshness",
+      tone: daysSinceImport === null ? "warning" : daysSinceImport > 45 ? "critical" : daysSinceImport > 20 ? "warning" : "positive",
+      icon: "🕒",
+      eyebrow: "Atualização da base",
+      title: "Recência das medições",
+      value: daysSinceImport === null ? "-" : \`\${daysSinceImport} dia(s)\`,
+      meta: latestImport ? \`última carga em \${latestImport.toLocaleDateString("pt-BR")}\` : "data de importação não identificada",
+      analysis: daysSinceImport === null ? "Não foi possível determinar a data da carga mais recente." : daysSinceImport > 20 ? "A base pode estar defasada para acompanhamento financeiro e operacional." : "As medições foram atualizadas recentemente.",
+      action: daysSinceImport === null || daysSinceImport > 20 ? "Executar nova importação ou sincronização e validar a competência atual." : "Manter rotina de atualização periódica."
+    });
+
+    cards.push({
+      key: "automation",
+      tone: apiShare < 25 && total ? "warning" : apiShare >= 70 ? "positive" : "neutral",
+      icon: "🔄",
+      eyebrow: "Automação de dados",
+      title: "Integrações por API",
+      value: \`\${apiShare}%\`,
+      meta: \`\${apiRecords.length} API • \${spreadsheetRecords.length} planilha\`,
+      analysis: apiShare < 25 && total ? "A operação depende majoritariamente de arquivos manuais, com maior risco de atraso e duplicidade." : apiShare >= 70 ? "A maior parte dos dados é atualizada por integração automatizada." : "A base utiliza uma combinação de APIs e planilhas.",
+      action: apiShare < 25 && total ? "Ampliar a sincronização automática e manter planilhas apenas como contingência." : "Monitorar falhas de integração e preservar histórico das cargas."
+    });
+
+    cards.sort((a, b) => msToneRank(a.tone) - msToneRank(b.tone));
+
+    const critical = cards.filter(card => card.tone === "critical").length;
+    const warnings = cards.filter(card => card.tone === "warning").length;
+    const financialAttention = unlinkedValue + fineValue + highValueExposure;
+
+    let headlineTone = "positive";
+    let headlineIcon = "✅";
+    let headline = "Medições sob controle";
+    let headlineText = "O recorte atual apresenta bom vínculo, qualidade e consistência financeira.";
+    if (!total) {
+      headlineTone = "warning";
+      headlineIcon = "📭";
+      headline = "Nenhuma medição no filtro atual";
+      headlineText = "Revise os filtros ou importe uma nova planilha para gerar as análises automáticas.";
+    } else if (score < 55 || critical >= 3) {
+      headlineTone = "critical";
+      headlineIcon = "⛔";
+      headline = "Ação imediata nas medições";
+      headlineText = "Existem riscos relevantes de vínculo, qualidade ou exposição financeira que devem ser tratados antes da validação das faturas.";
+    } else if (score < 80 || critical || warnings >= 3) {
+      headlineTone = "warning";
+      headlineIcon = "⚠️";
+      headline = "Medições exigem atenção gerencial";
+      headlineText = "O painel identificou desvios que podem afetar rastreabilidade, custos e confiabilidade da base.";
+    }
+
+    return {
+      total,
+      totalValue,
+      score,
+      completeness,
+      critical,
+      warnings,
+      financialAttention,
+      headlineTone,
+      headlineIcon,
+      headline,
+      headlineText,
+      cards
+    };
+  }
+
+  function renderMeasurementSmartAlerts() {
+    const panel = ensureMeasurementSmartAlertsPanel();
+    const content = document.getElementById("measurementSmartAlertsContent");
+    const updated = document.getElementById("measurementSmartAlertUpdated");
+    if (!panel || !content) return;
+
+    const records = msFilteredRecords();
+    const analysis = buildMeasurementSmartAnalysis(records);
+    const scoreTone = analysis.score < 55 ? "critical" : analysis.score < 80 ? "warning" : "positive";
+    const timestamp = new Date().toLocaleString("pt-BR");
+
+    const cardsHtml = analysis.cards.map(card => \`
+      <article class="measurement-smart-alert-card \${msEscape(card.tone)}" data-measurement-analysis-key="\${msEscape(card.key)}">
+        <div class="measurement-smart-alert-card-head">
+          <div class="measurement-smart-alert-card-icon">\${card.icon}</div>
+          <div class="measurement-smart-alert-card-heading">
+            <small>\${msEscape(card.eyebrow)}</small>
+            <h5>\${msEscape(card.title)}</h5>
+          </div>
+          <span class="measurement-smart-alert-priority">\${msEscape(msToneLabel(card.tone))}</span>
+        </div>
+        <div class="measurement-smart-alert-card-value">
+          <strong>\${msEscape(card.value)}</strong>
+          <span>\${msEscape(card.meta)}</span>
+        </div>
+        <p class="measurement-smart-alert-card-analysis">\${msEscape(card.analysis)}</p>
+        <div class="measurement-smart-alert-card-action"><strong>Ação:</strong> \${msEscape(card.action)}</div>
+      </article>
+    \`).join("");
+
+    content.innerHTML = \`
+      <section class="measurement-smart-summary">
+        <div class="measurement-smart-summary-main \${msEscape(analysis.headlineTone)}">
+          <div class="measurement-smart-summary-icon">\${analysis.headlineIcon}</div>
+          <div>
+            <h4>\${msEscape(analysis.headline)}</h4>
+            <p>\${msEscape(analysis.headlineText)}</p>
+          </div>
+        </div>
+        <div class="measurement-smart-summary-metric \${scoreTone}">
+          <small>Índice de controle</small>
+          <strong>\${analysis.score}/100</strong>
+          <span>Vínculo, qualidade, duplicidade, concentração e atualização.</span>
+        </div>
+        <div class="measurement-smart-summary-metric \${analysis.critical ? "critical" : analysis.warnings ? "warning" : "positive"}">
+          <small>Análises prioritárias</small>
+          <strong>\${analysis.critical}</strong>
+          <span>\${analysis.warnings} análise(s) adicional(is) em atenção.</span>
+        </div>
+        <div class="measurement-smart-summary-metric \${analysis.financialAttention > 0 ? "warning" : "positive"}">
+          <small>Valor sob atenção</small>
+          <strong>\${msEscape(msCurrency(analysis.financialAttention))}</strong>
+          <span>Sem vínculo, multas e lançamentos acima do padrão.</span>
+        </div>
+      </section>
+      <div class="measurement-smart-alert-section-title">
+        <h4>Análises automáticas priorizadas</h4>
+        <span>\${analysis.total} item(ns) considerado(s) no filtro atual • \${msEscape(msCurrency(analysis.totalValue))}</span>
+      </div>
+      <section class="measurement-smart-alert-grid">\${cardsHtml}</section>
+    \`;
+
+    if (updated) updated.textContent = \`Recalculado em \${timestamp}\`;
+  }
+
+  window.renderMeasurementSmartAlerts = renderMeasurementSmartAlerts;
+
+  let refreshTimer = null;
+  function scheduleMeasurementSmartAlerts(delay = 35) {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      try { renderMeasurementSmartAlerts(); }
+      catch (error) { console.error("Não foi possível recalcular os alertas inteligentes das medições.", error); }
+    }, delay);
+  }
+
+  const previousGlobalRefresh = window.refreshMeasurementAnalytics;
+  if (typeof previousGlobalRefresh === "function" && !previousGlobalRefresh.__smartMeasurementAlertsWrapped) {
+    const wrappedRefresh = function() {
+      const result = previousGlobalRefresh.apply(this, arguments);
+      scheduleMeasurementSmartAlerts(20);
+      return result;
+    };
+    wrappedRefresh.__smartMeasurementAlertsWrapped = true;
+    window.refreshMeasurementAnalytics = wrappedRefresh;
+  }
+
+  const measurementFilterIds = new Set([
+    "measurementSourceFilter",
+    "measurementPlateFilter",
+    "measurementCategoryFilter",
+    "measurementBoletoFilter",
+    "measurementMethodFilter",
+    "measurementWorkFilter",
+    "measurementStartFilter",
+    "measurementEndFilter"
+  ]);
+
+  document.addEventListener("change", event => {
+    if (measurementFilterIds.has(event.target?.id)) scheduleMeasurementSmartAlerts(25);
+  }, true);
+
+  document.addEventListener("input", event => {
+    if (["measurementStartFilter", "measurementEndFilter"].includes(event.target?.id)) scheduleMeasurementSmartAlerts(25);
+  }, true);
+
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("medicoesTab")
+  );
+  if (measurementButton && !measurementButton.dataset.smartMeasurementAlertsBound) {
+    measurementButton.addEventListener("click", () => scheduleMeasurementSmartAlerts(60));
+    measurementButton.dataset.smartMeasurementAlertsBound = "true";
+  }
+
+  if (typeof window.importBillingMeasurementFiles === "function" && !window.importBillingMeasurementFiles.__smartMeasurementAlertsWrapped) {
+    const previousImport = window.importBillingMeasurementFiles;
+    window.importBillingMeasurementFiles = async function() {
+      const result = await previousImport.apply(this, arguments);
+      scheduleMeasurementSmartAlerts(80);
+      return result;
+    };
+    window.importBillingMeasurementFiles.__smartMeasurementAlertsWrapped = true;
+    try { importBillingMeasurementFiles = window.importBillingMeasurementFiles; } catch (error) {}
+  }
+
+  if (typeof window.loadFleetMeasurements === "function" && !window.loadFleetMeasurements.__smartMeasurementAlertsWrapped) {
+    const previousLoad = window.loadFleetMeasurements;
+    window.loadFleetMeasurements = async function() {
+      const result = await previousLoad.apply(this, arguments);
+      scheduleMeasurementSmartAlerts(50);
+      return result;
+    };
+    window.loadFleetMeasurements.__smartMeasurementAlertsWrapped = true;
+  }
+
+  const measurementTable = document.getElementById("measurementsTable");
+  if (measurementTable) {
+    const observer = new MutationObserver(() => scheduleMeasurementSmartAlerts(45));
+    observer.observe(measurementTable, { childList: true, subtree: true });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => scheduleMeasurementSmartAlerts(80), { once: true });
+  setTimeout(scheduleMeasurementSmartAlerts, 0);
+  setTimeout(scheduleMeasurementSmartAlerts, 450);
+})();
+<\/script>
+
+
+<style id="remove-fleet-platform-measurement-bars-style">
+  #medicoesTab #fleetPlatformMeasurementBars,
+  #medicoesTab .fleet-platform-bars#fleetPlatformMeasurementBars {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+
+  #medicoesTab .fleet-measurement-dashboard-visual .fleet-measurement-table-wrap {
+    margin-top: 0 !important;
+  }
+</style>
+
+<script id="remove-fleet-platform-measurement-bars-script">
+(function(){
+  "use strict";
+
+  function removePlatformComparisonBars(){
+    const bars = document.getElementById("fleetPlatformMeasurementBars");
+    if (bars) bars.remove();
+  }
+
+  removePlatformComparisonBars();
+  document.addEventListener("DOMContentLoaded", removePlatformComparisonBars, { once: true });
+
+  const observer = new MutationObserver(() => {
+    const bars = document.getElementById("fleetPlatformMeasurementBars");
+    if (bars) bars.remove();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+<\/script>
+
+
+<style id="measurement-single-rental-column-style">
+  #medicoesTab .fleet-measurement-table-wrap table {
+    min-width: 920px !important;
+    table-layout: fixed !important;
+  }
+
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(1),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(1) { width: 105px !important; }
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(2),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(2) { width: 190px !important; }
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(3),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(3) { width: 170px !important; }
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(4),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(4) { width: 220px !important; }
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(5),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(5) { width: 150px !important; }
+  #medicoesTab .fleet-measurement-table-wrap th:nth-child(6),
+  #medicoesTab .fleet-measurement-table-wrap td:nth-child(6) { width: 145px !important; }
+
+  #medicoesTab .fleet-measurement-table-wrap th,
+  #medicoesTab .fleet-measurement-table-wrap td {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    vertical-align: middle !important;
+  }
+
+  #medicoesTab .fleet-measurement-table-wrap .platform-value-cell {
+    min-width: 0 !important;
+  }
+
+  #medicoesTab .fleet-measurement-table-wrap .platform-value-cell strong,
+  #medicoesTab .fleet-measurement-table-wrap .platform-value-cell small {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+</style>
+
+<script id="measurement-single-rental-column-script">
+(function(){
+  "use strict";
+
+  let transforming = false;
+
+  function normalizeText(value){
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toUpperCase();
+  }
+
+  function countFromCell(cell){
+    const text = String(cell?.textContent || "");
+    const match = text.match(/(\\d+)\\s*item/i);
+    return match ? Number(match[1]) : 0;
+  }
+
+  function currencyMagnitude(cell){
+    const text = String(cell?.querySelector("strong")?.textContent || cell?.textContent || "");
+    const match = text.match(/-?\\s*R\\$\\s*([\\d.]+(?:,\\d+)?)/i);
+    if (!match) return 0;
+    return Math.abs(Number(match[1].replace(/\\./g, "").replace(",", ".")) || 0);
+  }
+
+  function vehicleRentalSource(row){
+    const rental = normalizeText(row.cells?.[1]?.querySelector("small")?.textContent || "");
+    if (rental.includes("ARVAL")) return "ARVAL";
+    if (rental.includes("ALD")) return "ALD";
+    return "";
+  }
+
+  function chooseRentalCell(row){
+    const aldCell = row.cells[3];
+    const arvalCell = row.cells[4];
+    const source = vehicleRentalSource(row);
+
+    if (source === "ALD") return aldCell;
+    if (source === "ARVAL") return arvalCell;
+
+    const aldCount = countFromCell(aldCell);
+    const arvalCount = countFromCell(arvalCell);
+    if (aldCount !== arvalCount) return aldCount > arvalCount ? aldCell : arvalCell;
+
+    return currencyMagnitude(aldCell) >= currencyMagnitude(arvalCell) ? aldCell : arvalCell;
+  }
+
+  function updateHeading(){
+    const visual = document.getElementById("fleetMeasurementByPlateDashboard");
+    const title = visual?.querySelector(".visual-title-row h3");
+    const description = visual?.querySelector(".visual-title-row p");
+
+    if (title && title.textContent.trim() !== "Medições por veículo e locadora") {
+      title.textContent = "Medições por veículo e locadora";
+    }
+    if (description) {
+      description.textContent = "Valores das medições vinculados pela placa e apresentados na locadora correspondente de cada veículo.";
+    }
+  }
+
+  function updateHeader(){
+    const table = document.getElementById("fleetMeasurementByPlateTable")?.closest("table");
+    const headerRow = table?.querySelector("thead tr");
+    if (!headerRow) return;
+
+    const expected = ["Placa", "Veículo", "Obra atual", "Locadora / Medição", "Total medido", "Última competência"];
+    if (headerRow.cells.length !== expected.length || [...headerRow.cells].some((cell, index) => cell.textContent.trim() !== expected[index])) {
+      headerRow.innerHTML = expected.map(label => \`<th>\${label}</th>\`).join("");
+    }
+  }
+
+  function unifyRows(){
+    const tbody = document.getElementById("fleetMeasurementByPlateTable");
+    if (!tbody) return;
+
+    [...tbody.rows].forEach(row => {
+      if (row.cells.length === 1) {
+        row.cells[0].colSpan = 6;
+        return;
+      }
+      if (row.cells.length !== 7) return;
+
+      const selected = chooseRentalCell(row);
+      const unifiedCell = row.cells[3];
+      unifiedCell.className = "platform-value-cell rental-linked-measurement-cell";
+      unifiedCell.innerHTML = selected?.innerHTML || '<span class="platform-chip">-</span><strong>R$ 0,00</strong><small>0 item(ns) · 0 fatura(s)</small>';
+      row.deleteCell(4);
+    });
+  }
+
+  function applySingleRentalColumn(){
+    if (transforming) return;
+    transforming = true;
+    try {
+      updateHeading();
+      updateHeader();
+      unifyRows();
+    } finally {
+      transforming = false;
+    }
+  }
+
+  const tbody = document.getElementById("fleetMeasurementByPlateTable");
+  if (tbody) {
+    const observer = new MutationObserver(() => setTimeout(applySingleRentalColumn, 0));
+    observer.observe(tbody, { childList: true, subtree: true });
+  }
+
+  const visual = document.getElementById("fleetMeasurementByPlateDashboard");
+  if (visual) {
+    const visualObserver = new MutationObserver(() => setTimeout(applySingleRentalColumn, 0));
+    visualObserver.observe(visual, { childList: true, subtree: true });
+  }
+
+  document.addEventListener("DOMContentLoaded", applySingleRentalColumn, { once: true });
+  setTimeout(applySingleRentalColumn, 0);
+  setTimeout(applySingleRentalColumn, 250);
+  setTimeout(applySingleRentalColumn, 700);
+})();
+<\/script>
+
+
+<style id="measurement-top-vehicles-chart-style">
+  #medicoesTab .dashboard-visual-billing-platform .dashboard-chart-stage {
+    min-height: 340px !important;
+    max-height: 430px !important;
+  }
+  #medicoesTab .dashboard-visual-billing-platform {
+    overflow: hidden !important;
+  }
+</style>
+
+<script id="measurement-top-vehicles-chart-script">
+(function(){
+  "use strict";
+
+  let monthlyMeasuredValueChart = null;
+
+  function monthlyNumber(value) {
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    const text = String(value ?? "").trim();
+    if (!text) return 0;
+    if (/^-?\\d+(?:\\.\\d+)?$/.test(text)) return Number(text) || 0;
+    const normalized = text
+      .replace(/R\\$/gi, "")
+      .replace(/\\s/g, "")
+      .replace(/\\.(?=\\d{3}(?:\\D|$))/g, "")
+      .replace(",", ".")
+      .replace(/[^0-9.-]/g, "");
+    return Number(normalized) || 0;
+  }
+
+  function monthlyValue(record) {
+    return monthlyNumber(record?.value ?? record?.valor ?? record?.amount ?? record?.totalValue ?? record?.billingValue ?? 0);
+  }
+
+  function monthKeyFromText(value) {
+    const raw = String(value ?? "").trim();
+    if (!raw) return "";
+
+    let match = raw.match(/\\b(20\\d{2})[-\\/.](0?[1-9]|1[0-2])(?:[-\\/.]\\d{1,2})?\\b/);
+    if (match) return \`\${match[1]}-\${String(Number(match[2])).padStart(2, "0")}\`;
+
+    match = raw.match(/\\b(0?[1-9]|1[0-2])[-\\/.](20\\d{2}|\\d{2})\\b/);
+    if (match) {
+      let year = Number(match[2]);
+      if (year < 100) year += 2000;
+      return \`\${year}-\${String(Number(match[1])).padStart(2, "0")}\`;
+    }
+
+    const normalized = raw.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+    const monthNames = {
+      jan: 1, janeiro: 1, fev: 2, fevereiro: 2, mar: 3, marco: 3,
+      abr: 4, abril: 4, mai: 5, maio: 5, jun: 6, junho: 6,
+      jul: 7, julho: 7, ago: 8, agosto: 8, set: 9, setembro: 9,
+      out: 10, outubro: 10, nov: 11, novembro: 11, dez: 12, dezembro: 12
+    };
+
+    for (const [name, month] of Object.entries(monthNames)) {
+      const named = normalized.match(new RegExp(\`\\\\b\${name}\\\\b[^0-9]*(20\\\\d{2}|\\\\d{2})\`));
+      if (named) {
+        let year = Number(named[1]);
+        if (year < 100) year += 2000;
+        return \`\${year}-\${String(month).padStart(2, "0")}\`;
+      }
+    }
+    return "";
+  }
+
+  function parseRecordMonth(record) {
+    const competenceCandidates = [record?.competence, record?.period, record?.eventCompetence, record?.competenceDate, record?.reference, record?.referencia];
+    for (const candidate of competenceCandidates) {
+      const key = monthKeyFromText(candidate);
+      if (key) return key;
+    }
+
+    const dateCandidates = [record?.invoiceDate, record?.eventDate, record?.dataEvento, record?.date, record?.dueDate, record?.importedAt, record?.syncedAt];
+    for (const candidate of dateCandidates) {
+      const key = monthKeyFromText(candidate);
+      if (key) return key;
+      if (candidate instanceof Date && !Number.isNaN(candidate.getTime())) {
+        return \`\${candidate.getFullYear()}-\${String(candidate.getMonth() + 1).padStart(2, "0")}\`;
+      }
+      const parsed = new Date(candidate);
+      if (!Number.isNaN(parsed.getTime())) {
+        return \`\${parsed.getFullYear()}-\${String(parsed.getMonth() + 1).padStart(2, "0")}\`;
+      }
+    }
+    return "";
+  }
+
+  function monthlyLabel(key) {
+    const [year, month] = key.split("-").map(Number);
+    if (!year || !month) return key;
+    return new Intl.DateTimeFormat("pt-BR", { month: "short", year: "numeric", timeZone: "UTC" })
+      .format(new Date(Date.UTC(year, month - 1, 1)))
+      .replace(" de ", "/");
+  }
+
+  function fillMonthlyRange(grouped) {
+    const keys = [...grouped.keys()].sort();
+    if (!keys.length) return [];
+    const [startYear, startMonth] = keys[0].split("-").map(Number);
+    const [endYear, endMonth] = keys[keys.length - 1].split("-").map(Number);
+    const result = [];
+    let cursor = new Date(Date.UTC(startYear, startMonth - 1, 1));
+    const end = new Date(Date.UTC(endYear, endMonth - 1, 1));
+    let guard = 0;
+    while (cursor <= end && guard < 60) {
+      const key = \`\${cursor.getUTCFullYear()}-\${String(cursor.getUTCMonth() + 1).padStart(2, "0")}\`;
+      result.push({ key, value: grouped.get(key) || 0 });
+      cursor = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 1));
+      guard += 1;
+    }
+    return result;
+  }
+
+  function updateMonthlyChartTitle() {
+    const visual = document.querySelector("#medicoesTab .dashboard-visual-billing-platform");
+    if (!visual) return;
+    const badge = visual.querySelector(".visual-badge");
+    const title = visual.querySelector(".visual-title-row h3");
+    const description = visual.querySelector(".visual-title-row p");
+    if (badge) badge.textContent = "📈";
+    if (title) title.textContent = "Evolução mensal do valor medido";
+    if (description) description.textContent = "Valor total das medições por competência ou mês da fatura, conforme os filtros aplicados.";
+  }
+
+  function releaseMonthlyChartCanvas() {
+    const canvas = document.getElementById("billingPlatformChart");
+    try { if (monthlyMeasuredValueChart?.destroy) monthlyMeasuredValueChart.destroy(); } catch (error) {}
+    monthlyMeasuredValueChart = null;
+    try {
+      if (window.Chart?.getChart && canvas) {
+        const existing = window.Chart.getChart(canvas);
+        if (existing?.destroy) existing.destroy();
+      }
+    } catch (error) {}
+    try {
+      if (typeof billingPlatformChart !== "undefined" && billingPlatformChart?.destroy) billingPlatformChart.destroy();
+      billingPlatformChart = null;
+    } catch (error) {}
+  }
+
+  function renderMonthlyMeasuredValue(records) {
+    updateMonthlyChartTitle();
+    const grouped = new Map();
+    (Array.isArray(records) ? records : []).forEach(record => {
+      const monthKey = parseRecordMonth(record);
+      if (!monthKey) return;
+      grouped.set(monthKey, (grouped.get(monthKey) || 0) + monthlyValue(record));
+    });
+
+    const series = fillMonthlyRange(grouped);
+    const labels = series.length ? series.map(item => monthlyLabel(item.key)) : ["Sem dados"];
+    const values = series.length ? series.map(item => item.value) : [0];
+    const canvas = document.getElementById("billingPlatformChart");
+    if (!canvas || !window.Chart) return;
+
+    releaseMonthlyChartCanvas();
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.parentElement?.clientHeight || 340);
+    gradient.addColorStop(0, "rgba(0, 105, 180, .28)");
+    gradient.addColorStop(1, "rgba(0, 105, 180, .02)");
+    const plugins = [];
+    try { if (typeof seelDataLabelsPlugin !== "undefined") plugins.push(seelDataLabelsPlugin); } catch (error) {}
+
+    monthlyMeasuredValueChart = new Chart(canvas, {
+      type: "line",
+      plugins,
+      data: {
+        labels,
+        datasets: [{
+          label: "Valor medido",
+          data: values,
+          borderColor: "#0069b4",
+          backgroundColor: gradient,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: "#ffd900",
+          pointBorderColor: "#00518f",
+          pointBorderWidth: 2,
+          tension: .32,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 80,
+        interaction: { mode: "index", intersect: false },
+        layout: { padding: { top: 30, right: 18, bottom: 8, left: 8 } },
+        plugins: {
+          legend: { display: false },
+          seelDataLabels: { display: true, format: "currency", fontSize: 10, hideZero: true },
+          tooltip: {
+            backgroundColor: "#ffffff",
+            titleColor: "#17365d",
+            bodyColor: "#17365d",
+            borderColor: "#d8dee7",
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+            callbacks: {
+              label(context) {
+                return \` \${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(context.raw || 0))}\`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: "#5a6f85", font: { weight: "bold", size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: "#edf2f7" },
+            ticks: {
+              color: "#5a6f85",
+              font: { weight: "bold", size: 11 },
+              callback(value) {
+                return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: 1 }).format(Number(value || 0));
+              }
+            }
+          }
+        }
+      }
+    });
+    try { billingPlatformChart = monthlyMeasuredValueChart; } catch (error) {}
+  }
+
+  const previousRenderMeasurementCharts = typeof renderMeasurementCharts === "function" ? renderMeasurementCharts : null;
+  if (previousRenderMeasurementCharts && !previousRenderMeasurementCharts.__monthlyMeasuredValueWrapped) {
+    const wrappedRenderMeasurementCharts = function(records) {
+      const result = previousRenderMeasurementCharts.apply(this, arguments);
+      renderMonthlyMeasuredValue(records);
+      return result;
+    };
+    wrappedRenderMeasurementCharts.__monthlyMeasuredValueWrapped = true;
+    renderMeasurementCharts = wrappedRenderMeasurementCharts;
+    window.renderMeasurementCharts = wrappedRenderMeasurementCharts;
+  }
+
+  function refreshMonthlyMeasuredValueChart() {
+    let records = [];
+    try {
+      if (typeof finalFilteredMeasurements === "function") records = finalFilteredMeasurements();
+      else if (typeof billingFilteredMeasurements === "function") records = billingFilteredMeasurements();
+      else if (Array.isArray(window.measurements)) records = window.measurements;
+      else if (typeof measurements !== "undefined" && Array.isArray(measurements)) records = measurements;
+    } catch (error) {
+      console.warn("Não foi possível obter as medições filtradas para o gráfico mensal.", error);
+    }
+    renderMonthlyMeasuredValue(records);
+  }
+
+  const measurementButton = [...document.querySelectorAll(".tab-button")].find(button => (button.getAttribute("onclick") || "").includes("medicoesTab"));
+  if (measurementButton && !measurementButton.dataset.monthlyMeasuredChartBound) {
+    measurementButton.addEventListener("click", () => setTimeout(refreshMonthlyMeasuredValueChart, 80));
+    measurementButton.dataset.monthlyMeasuredChartBound = "true";
+  }
+
+  updateMonthlyChartTitle();
+  setTimeout(refreshMonthlyMeasuredValueChart, 250);
+})();
+<\/script>
+
+
+<style id="dashboard-status-executive-style">
+  #dashboardTab .dashboard-visual-status .visual-title-row h3 {
+    color: #17365d;
+  }
+
+  #dashboardTab .dashboard-status-summary {
+    display: none !important;
+  }
+
+  #dashboardTab .dashboard-status-summary-item {
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #dbe5ef;
+    border-radius: 12px;
+    background: #f8fbfe;
+  }
+
+  #dashboardTab .dashboard-status-summary-item small {
+    display: block;
+    margin-bottom: 3px;
+    color: #71859a;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  #dashboardTab .dashboard-status-summary-item strong {
+    display: block;
+    color: #17365d;
+    font-size: 17px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardTab .dashboard-visual-status .dashboard-chart-stage {
+    min-height: 270px !important;
+  }
+
+  @media (max-width: 680px) {
+    #dashboardTab .dashboard-status-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script id="dashboard-status-executive-script">
+(function(){
+  "use strict";
+
+  const STATUS_ORDER = ["Alugado", "Disponível", "Em Manutenção", "Devolvido", "Não informado"];
+  const STATUS_COLORS = {
+    "Alugado": "#0069b4",
+    "Disponível": "#2a9d8f",
+    "Em Manutenção": "#f5c600",
+    "Devolvido": "#7a8ea5",
+    "Em uso": "#0069b4",
+    "Manutenção": "#f5c600",
+    "Não informado": "#d92d20"
+  };
+
+  function ensureStatusVisualHeader() {
+    const visual = document.querySelector("#dashboardTab .dashboard-visual-status");
+    if (!visual) return null;
+
+    const badge = visual.querySelector(".visual-badge");
+    const title = visual.querySelector(".visual-title-row h3");
+    const description = visual.querySelector(".visual-title-row p");
+    if (badge) badge.textContent = "📊";
+    if (title) title.textContent = "Distribuição operacional da frota";
+    if (description) description.textContent = "Quantidade e participação percentual dos veículos em cada status operacional.";
+
+    const summary = visual.querySelector(".dashboard-status-summary");
+    if (summary) summary.remove();
+    return null;
+  }
+
+  function releaseStatusChart() {
+    const canvas = document.getElementById("statusChart");
+    try {
+      if (typeof statusChartInstance !== "undefined" && statusChartInstance?.destroy) {
+        statusChartInstance.destroy();
+      }
+    } catch (error) {}
+    try {
+      const existing = window.Chart?.getChart?.(canvas);
+      if (existing?.destroy) existing.destroy();
+    } catch (error) {}
+    try { statusChartInstance = null; } catch (error) {}
+  }
+
+  function statusLabel(value, total) {
+    const percent = total ? Math.round((Number(value || 0) / total) * 100) : 0;
+    return \`\${new Intl.NumberFormat("pt-BR").format(Number(value || 0))} | \${percent}%\`;
+  }
+
+  function renderExecutiveStatusChart(items) {
+    const list = Array.isArray(items) ? items : [];
+    ensureStatusVisualHeader();
+    const grouped = new Map();
+
+    list.forEach(vehicle => {
+      const raw = String(vehicle?.statusCarro || "").trim();
+      const status = raw || "Não informado";
+      grouped.set(status, (grouped.get(status) || 0) + 1);
+    });
+
+    const entries = [];
+    STATUS_ORDER.forEach(status => {
+      if (grouped.has(status)) entries.push([status, grouped.get(status)]);
+    });
+    [...grouped.entries()]
+      .filter(([status]) => !STATUS_ORDER.includes(status))
+      .sort((a, b) => b[1] - a[1])
+      .forEach(entry => entries.push(entry));
+
+    const total = list.length;
+
+    const labels = entries.length ? entries.map(([status]) => status) : ["Sem dados"];
+    const values = entries.length ? entries.map(([, value]) => value) : [0];
+    const colors = entries.length
+      ? entries.map(([status], index) => STATUS_COLORS[status] || ["#0069b4", "#2f80ed", "#8ec5ff", "#6c8297"][index % 4])
+      : ["#cbd5e1"];
+
+    const canvas = document.getElementById("statusChart");
+    if (!canvas || !window.Chart) return;
+
+    releaseStatusChart();
+    const plugins = [];
+    try { if (typeof seelDataLabelsPlugin !== "undefined") plugins.push(seelDataLabelsPlugin); } catch (error) {}
+
+    const chart = new Chart(canvas, {
+      type: "bar",
+      plugins,
+      data: {
+        labels,
+        datasets: [{
+          label: "Veículos",
+          data: values,
+          backgroundColor: colors,
+          borderRadius: 10,
+          borderSkipped: false,
+          barThickness: 28,
+          maxBarThickness: 32
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 80,
+        animation: { duration: 420 },
+        layout: { padding: { top: 8, right: 72, bottom: 6, left: 4 } },
+        plugins: {
+          legend: { display: false },
+          seelDataLabels: {
+            display: true,
+            format: "value-percent",
+            fontSize: 11,
+            fontWeight: 900,
+            hideZero: true
+          },
+          tooltip: {
+            backgroundColor: "#ffffff",
+            titleColor: "#17365d",
+            bodyColor: "#17365d",
+            borderColor: "#d8dee7",
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+            callbacks: {
+              label(context) {
+                return \` \${statusLabel(context.raw, total)} da frota filtrada\`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: "#edf2f7" },
+            ticks: {
+              precision: 0,
+              color: "#5a6f85",
+              font: { weight: "bold", size: 11 }
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: {
+              color: "#17365d",
+              font: { weight: "bold", size: 11 }
+            }
+          }
+        }
+      }
+    });
+
+    try { statusChartInstance = chart; } catch (error) {}
+  }
+
+  const previousRenderDashboardIndicators = typeof renderDashboardIndicators === "function"
+    ? renderDashboardIndicators
+    : null;
+
+  if (previousRenderDashboardIndicators && !previousRenderDashboardIndicators.__executiveStatusWrapped) {
+    const wrappedRenderDashboardIndicators = function() {
+      const result = previousRenderDashboardIndicators.apply(this, arguments);
+      let filtered = [];
+      try {
+        filtered = typeof getDashboardFilteredVehicles === "function"
+          ? getDashboardFilteredVehicles()
+          : (Array.isArray(window.vehicles) ? window.vehicles : []);
+      } catch (error) {}
+      renderExecutiveStatusChart(filtered);
+      return result;
+    };
+    wrappedRenderDashboardIndicators.__executiveStatusWrapped = true;
+    renderDashboardIndicators = wrappedRenderDashboardIndicators;
+    window.renderDashboardIndicators = wrappedRenderDashboardIndicators;
+  }
+
+  function refreshStatusChart() {
+    let filtered = [];
+    try {
+      filtered = typeof getDashboardFilteredVehicles === "function"
+        ? getDashboardFilteredVehicles()
+        : (Array.isArray(window.vehicles) ? window.vehicles : []);
+    } catch (error) {}
+    renderExecutiveStatusChart(filtered);
+  }
+
+  const dashboardButton = [...document.querySelectorAll(".tab-button")].find(button =>
+    (button.getAttribute("onclick") || "").includes("dashboardTab")
+  );
+  if (dashboardButton && !dashboardButton.dataset.executiveStatusBound) {
+    dashboardButton.addEventListener("click", () => setTimeout(refreshStatusChart, 80));
+    dashboardButton.dataset.executiveStatusBound = "true";
+  }
+
+  ensureStatusVisualHeader();
+  setTimeout(refreshStatusChart, 250);
+})();
+<\/script>
+
+
+<style id="fleet-unified-card-pattern-style">
+  /* Todos os cards seguem exatamente o mesmo padrão estrutural. */
+  #frotaTab .fleet-grid {
+    align-items: stretch !important;
+    grid-auto-rows: 1fr !important;
+  }
+
+  #frotaTab .vehicle-card {
+    --card-status-color: #0b5cab;
+    --card-status-soft: #eaf3ff;
+    --card-status-border: #b9d3ef;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    align-self: stretch !important;
+    height: 100% !important;
+    min-height: 548px !important;
+    border: 1px solid #d6e1ea !important;
+    border-left: 6px solid var(--card-status-color) !important;
+    border-top: 1px solid #d6e1ea !important;
+    border-radius: 18px !important;
+    background: #ffffff !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 24px rgba(0, 61, 99, .09) !important;
+  }
+
+  #frotaTab .vehicle-card.vehicle-card-status-alugado {
+    --card-status-color: #0b5cab;
+    --card-status-soft: #eaf3ff;
+    --card-status-border: #b9d3ef;
+  }
+
+  #frotaTab .vehicle-card.vehicle-card-status-disponivel,
+  #frotaTab .vehicle-card.vehicle-card-status-ativo {
+    --card-status-color: #23865f;
+    --card-status-soft: #eaf8f1;
+    --card-status-border: #b8e2cf;
+  }
+
+  #frotaTab .vehicle-card.vehicle-card-status-manutencao {
+    --card-status-color: #c58a00;
+    --card-status-soft: #fff6dd;
+    --card-status-border: #eed18b;
+  }
+
+  #frotaTab .vehicle-card.vehicle-card-status-devolvido {
+    --card-status-color: #708196;
+    --card-status-soft: #eef2f6;
+    --card-status-border: #cbd4de;
+  }
+
+  #frotaTab .vehicle-card-top {
+    min-height: 42px !important;
+    padding: 8px 11px !important;
+    background: linear-gradient(90deg, var(--card-status-soft), #f7fafc) !important;
+    border-bottom: 1px solid var(--card-status-border) !important;
+    color: #063e68 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+  }
+
+  #frotaTab .vehicle-card-top .vehicle-top-icon,
+  #frotaTab .vehicle-card .vehicle-mini-icon,
+  #frotaTab .vehicle-meta.vehicle-meta-summary .meta-icon-box {
+    background-color: var(--card-status-soft) !important;
+    border-color: var(--card-status-border) !important;
+  }
+
+  #frotaTab .vehicle-content {
+    display: grid !important;
+    grid-template-rows: 34px 25px 104px 28px 30px minmax(166px, 1fr) !important;
+    gap: 7px !important;
+    align-content: start !important;
+    padding: 11px 11px 8px !important;
+    min-height: 0 !important;
+  }
+
+  #frotaTab .vehicle-title-line {
+    min-height: 34px !important;
+    align-items: center !important;
+    margin: 0 !important;
+  }
+
+  #frotaTab .vehicle-title-line h3 {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+    max-height: 34px !important;
+    font-size: 14px !important;
+    line-height: 1.18 !important;
+  }
+
+  #frotaTab .vehicle-content .subtitle {
+    align-self: start !important;
+    min-height: 24px !important;
+    height: 24px !important;
+    margin: 0 !important;
+    padding: 4px 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #frotaTab .vehicle-image-wrap {
+    width: 100% !important;
+    min-height: 104px !important;
+    height: 104px !important;
+    margin: 0 !important;
+    padding: 5px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  #frotaTab .vehicle-image,
+  #frotaTab .image-placeholder {
+    width: 100% !important;
+    height: 94px !important;
+    min-height: 94px !important;
+    max-height: 94px !important;
+    object-fit: contain !important;
+  }
+
+  #frotaTab .vehicle-card .plate {
+    width: 100% !important;
+    min-height: 28px !important;
+    height: 28px !important;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    background: var(--card-status-color) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--card-status-color) !important;
+    border-radius: 11px !important;
+    box-shadow: 0 6px 14px rgba(0, 61, 99, .12) !important;
+  }
+
+  #frotaTab .vehicle-card .status {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 30px !important;
+    height: 30px !important;
+    margin: 0 !important;
+    padding: 5px 10px !important;
+    border: 1px solid var(--card-status-border) !important;
+    border-radius: 12px !important;
+    background: var(--card-status-soft) !important;
+    color: var(--card-status-color) !important;
+    font-size: 10px !important;
+    font-weight: 950 !important;
+  }
+
+  #frotaTab .vehicle-card .status::before {
+    background-image: none !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: var(--card-status-color) !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary {
+    display: grid !important;
+    grid-template-rows: repeat(3, minmax(50px, 1fr)) !important;
+    align-self: stretch !important;
+    gap: 7px !important;
+    min-height: 166px !important;
+    margin: 0 !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary .vehicle-summary-line {
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-height: 50px !important;
+    height: 100% !important;
+    padding: 7px 9px !important;
+    border: 1px solid #dbe5ed !important;
+    border-radius: 13px !important;
+    background: #f8fbfd !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary .meta-icon-box {
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 !important;
+    border-radius: 9px !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary .meta-copy {
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary .meta-copy strong {
+    font-size: 8.5px !important;
+    line-height: 1.12 !important;
+  }
+
+  #frotaTab .vehicle-meta.vehicle-meta-summary .meta-copy span {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    max-height: 25px !important;
+    font-size: 10px !important;
+    line-height: 1.22 !important;
+  }
+
+  #frotaTab .vehicle-card-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 8px 11px 11px !important;
+    background: #ffffff !important;
+  }
+
+  #frotaTab .vehicle-card-actions button {
+    width: 100% !important;
+    min-height: 33px !important;
+    height: 33px !important;
+    padding: 0 8px !important;
+    border-radius: 11px !important;
+    font-size: 9px !important;
+  }
+
+  @media (max-width: 760px) {
+    #frotaTab .vehicle-card {
+      min-height: 520px !important;
+    }
+  }
+</style>
+
+<style id="supply-flow-frota-shell-fixes">
+  html[data-theme="dark"] {
+    --app-blue: #1b6d8e;
+    --app-blue-dark: #e4edf0;
+    --app-blue-soft: rgba(27, 109, 142, .18);
+    --app-yellow: #fcc800;
+    --app-bg: #07111f;
+    --app-card: #0d1b2e;
+    --app-text: #e5edf7;
+    --app-muted: #b7c6d9;
+    --app-border: #1f3350;
+    --app-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+    color-scheme: dark;
+  }
+
+  html[data-theme="dark"] body,
+  html[data-theme="dark"] main {
+    background: var(--app-bg) !important;
+    color: var(--app-text) !important;
+  }
+
+  html[data-theme="dark"] .topbar {
+    background: linear-gradient(135deg, #051920, #0a2e3d 72%) !important;
+    border-bottom-color: var(--app-yellow) !important;
+  }
+
+  html[data-theme="dark"] .panel-card,
+  html[data-theme="dark"] .import-panel,
+  html[data-theme="dark"] .api-card,
+  html[data-theme="dark"] .powerbi-dashboard,
+  html[data-theme="dark"] .fleet-manager-card,
+  html[data-theme="dark"] .dashboard-filter-panel,
+  html[data-theme="dark"] .measure-filter-panel,
+  html[data-theme="dark"] .section-title-row,
+  html[data-theme="dark"] .table-wrap,
+  html[data-theme="dark"] .powerbi-visual,
+  html[data-theme="dark"] .vehicle-card,
+  html[data-theme="dark"] .vehicle-card-actions,
+  html[data-theme="dark"] .vehicle-image-wrap,
+  html[data-theme="dark"] .vehicle-meta-summary .vehicle-summary-line,
+  html[data-theme="dark"] .api-note,
+  html[data-theme="dark"] .tab-heading,
+  html[data-theme="dark"] .central-import-hero-card,
+  html[data-theme="dark"] .central-import-block,
+  html[data-theme="dark"] .metric-card,
+  html[data-theme="dark"] .stat,
+  html[data-theme="dark"] .status,
+  html[data-theme="dark"] .modal-content,
+  html[data-theme="dark"] .vehicle-detail-section {
+    background: var(--app-card) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text) !important;
+    box-shadow: var(--app-shadow) !important;
+  }
+
+  html[data-theme="dark"] .vehicle-card-top,
+  html[data-theme="dark"] .dashboard-filter-panel.powerbi-filters,
+  html[data-theme="dark"] .billing-multiple-hint,
+  html[data-theme="dark"] .operational-import-card,
+  html[data-theme="dark"] .measurement-source,
+  html[data-theme="dark"] .vehicle-measurement-platform {
+    background: #10233f !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text) !important;
+  }
+
+  html[data-theme="dark"] input,
+  html[data-theme="dark"] select,
+  html[data-theme="dark"] textarea {
+    background: #10233f !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text) !important;
+  }
+
+  html[data-theme="dark"] input::placeholder,
+  html[data-theme="dark"] textarea::placeholder {
+    color: #8fa3ba !important;
+  }
+
+  html[data-theme="dark"] h1,
+  html[data-theme="dark"] h2,
+  html[data-theme="dark"] h3,
+  html[data-theme="dark"] h4,
+  html[data-theme="dark"] strong,
+  html[data-theme="dark"] b,
+  html[data-theme="dark"] .brand-title,
+  html[data-theme="dark"] .powerbi-kpi strong,
+  html[data-theme="dark"] .vehicle-title-line h3 {
+    color: #f6f9fd !important;
+  }
+
+  html[data-theme="dark"] p,
+  html[data-theme="dark"] span,
+  html[data-theme="dark"] small,
+  html[data-theme="dark"] label,
+  html[data-theme="dark"] td,
+  html[data-theme="dark"] th,
+  html[data-theme="dark"] .subtitle,
+  html[data-theme="dark"] .muted,
+  html[data-theme="dark"] .visual-badge,
+  html[data-theme="dark"] .powerbi-badge {
+    color: var(--app-muted) !important;
+  }
+
+  html[data-theme="dark"] .reserve-btn,
+  html[data-theme="dark"] .save-manager-btn,
+  html[data-theme="dark"] .booking-button,
+  html[data-theme="dark"] .tab-button.active {
+    background: var(--app-yellow) !important;
+    color: #07111f !important;
+    border-color: var(--app-yellow) !important;
+  }
+
+  html[data-theme="dark"] .outline-btn,
+  html[data-theme="dark"] .secondary-btn,
+  html[data-theme="dark"] .topbar .tab-button {
+    background: #10233f !important;
+    color: #dbe7f4 !important;
+    border-color: var(--app-border) !important;
+  }
+
+  html[data-theme="dark"] #frotaTab .vehicle-card-top,
+  html[data-theme="dark"] #frotaTab .vehicle-card .status,
+  html[data-theme="dark"] #frotaTab .vehicle-meta.vehicle-meta-summary .vehicle-summary-line {
+    background: #10233f !important;
+    border-color: var(--app-border) !important;
+  }
+
+  html[data-theme="dark"] #frotaTab .vehicle-card .plate {
+    background: #1b6d8e !important;
+    color: #ffffff !important;
+    border-color: #2385a8 !important;
+  }
+
+  @media (max-width: 760px) {
+    main {
+      width: min(100%, calc(100% - 16px)) !important;
+      padding-top: 12px !important;
+    }
+
+    .topbar-content {
+      width: min(100%, calc(100% - 16px)) !important;
+      grid-template-columns: 1fr !important;
+    }
+
+    .topbar .tabs-nav {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+    }
+
+    .fleet-grid,
+    .dashboard-bi-grid,
+    .powerbi-kpi-grid,
+    .measure-kpi-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+</body>
+</html>
+`;export{e as default};

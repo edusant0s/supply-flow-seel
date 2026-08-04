@@ -1,0 +1,1392 @@
+var e=`<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEEL | Cadastro e Homologação de Fornecedores</title>
+<style>
+:root{--blue:#005383;--blue2:#003d63;--yellow:#ffdd00;--bg:#eaf1f5;--card:#fff;--text:#102333;--muted:#667b88;--border:#d5e2e9;--red:#dc2626;--green:#059669;--orange:#ea580c;--shadow:0 12px 28px rgba(0,62,95,.12);--r:18px;--purple:#7c3aed}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}header{background:linear-gradient(135deg,var(--blue2),var(--blue));border-bottom:6px solid var(--yellow);position:sticky;top:0;z-index:10;box-shadow:0 8px 22px rgba(0,0,0,.22)}.container{width:min(1320px,calc(100% - 28px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 0}.brand{display:flex;align-items:center;gap:16px;color:#fff}.logo{width:145px;height:70px;border-radius:12px;background:#00324f;border:2px solid rgba(255,221,0,.7);display:grid;place-items:center;padding:8px}.logo .mark{font-size:31px;font-weight:900;letter-spacing:-1px;color:#fff}.logo .mark span{color:var(--yellow)}h1,h2,h3,p{margin:0}h1{font-size:clamp(22px,3vw,31px)}.sub{color:#dceef7;margin-top:4px}.tabs{display:flex;gap:8px;background:rgba(255,255,255,.12);padding:5px;border-radius:18px}.tab{border:0;border-radius:14px;padding:11px 15px;background:transparent;color:#dceef7;font-weight:700;cursor:pointer}.tab.active{background:var(--yellow);color:var(--blue2)}main{padding:24px 0 46px}.panel,.section,.stat,.card,.toolbar-panel,.analytics-card,.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:20px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}h2{font-size:25px;color:var(--blue2)}.hint{color:var(--muted);margin-top:5px;line-height:1.4}.pill{background:var(--blue);border-bottom:4px solid var(--yellow);color:#fff;border-radius:14px;padding:10px 13px;font-size:13px}.stats,.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.stat,.kpi-card{padding:14px;border-top:5px solid var(--yellow)}.stat small,.kpi-card small{display:block;color:var(--muted);font-weight:700;font-size:12px}.stat strong,.kpi-card strong{display:block;margin-top:4px;font-size:24px;color:var(--blue2)}.section{margin-bottom:14px;overflow:hidden;box-shadow:none}.section-title{background:var(--blue);color:#fff;padding:14px 18px;font-weight:900;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;gap:10px}.section-body{padding:18px}.desc{font-size:14px;color:var(--muted);margin-bottom:15px;line-height:1.4}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.field.full{grid-column:1/-1}.field.two{grid-column:span 2}label{display:block;font-size:14px;font-weight:800;color:#263d4b}.req{color:var(--red)}input,select,textarea{width:100%;margin-top:7px;border:1px solid var(--border);border-radius:10px;padding:11px;font:inherit;background:#fff;outline:none}textarea{min-height:90px;resize:vertical}input[readonly]{background:#f1f7fa;color:var(--muted);cursor:not-allowed}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,83,131,.14)}.note{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.35;background:#f7fbfd;border-left:3px solid var(--yellow);padding:6px 8px;border-radius:8px}.file{display:flex;align-items:center;gap:8px;margin-top:7px;border:1px dashed #99b5c3;background:#f2f8fb;border-radius:10px;padding:11px;color:var(--muted);cursor:pointer;font-weight:700}.file input{display:none}.file-list{display:grid;gap:6px;margin-top:8px}.file-chip{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#eef7fb;border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:#315466;font-size:12px}.checkwrap{display:grid;gap:8px;margin-top:8px}.check{display:flex;align-items:center;gap:8px;background:#f6fafc;border:1px solid var(--border);padding:9px;border-radius:10px}.check input{width:auto;margin:0}.actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}button{border:0;cursor:pointer;font:inherit;font-weight:800;border-radius:12px;min-height:40px;padding:0 16px;background:var(--blue);color:#fff}.secondary{background:#fff;color:var(--blue2);border:1px solid var(--border)}.danger{background:var(--red)}.success{background:var(--green)}.primary{border-bottom:4px solid var(--yellow)}.hidden{display:none!important}.toast{position:fixed;right:18px;bottom:18px;background:var(--blue);color:#fff;border-bottom:4px solid var(--yellow);border-radius:12px;padding:12px 14px;font-weight:700;box-shadow:var(--shadow);z-index:999;display:none}.toast.show{display:block}.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.analytics-card,.toolbar-panel{border-top:5px solid var(--yellow);border-radius:24px;padding:18px 20px}.analytics-card h3,.toolbar-copy h3{margin:0 0 8px;color:var(--blue2);font-size:20px}.analytics-card p,.toolbar-copy p{margin:0;color:#688091}.bar-list{display:grid;gap:12px;margin-top:12px}.bar-row{display:grid;grid-template-columns:180px 1fr 110px;gap:14px;align-items:center}.bar-row label{font-weight:800;color:var(--blue2)}.bar-track{height:14px;border-radius:999px;background:#dfeaf0;overflow:hidden;border:1px solid #c8d9e2}.bar-fill{height:100%;border-radius:999px;background:var(--blue)}.bar-fill.green{background:var(--green)}.bar-fill.orange{background:var(--orange)}.bar-fill.red{background:var(--red)}.bar-fill.purple{background:var(--purple)}.bar-metric{text-align:right;font-weight:800;color:var(--blue2)}.toolbar-panel{display:grid;grid-template-columns:1.1fr 1.9fr;gap:22px;align-items:center;margin-bottom:18px}.toolbar-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.toolbar-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.process-board{margin-top:18px}.process-head{display:flex;align-items:flex-start;gap:14px;margin:18px 0 10px}.process-icon{width:44px;height:44px;border-radius:14px;background:var(--blue);color:var(--yellow);display:grid;place-items:center;font-size:18px;font-weight:900;border:3px solid var(--yellow);box-shadow:0 8px 18px rgba(0,83,131,.18)}.process-head h3{margin:0;color:var(--blue2);font-size:22px}.process-head p{margin:4px 0 0;color:#688091;font-size:15px}.kanban{display:grid;gap:12px;align-items:start;overflow-x:auto}.kanban.process1{grid-template-columns:repeat(7,minmax(225px,1fr))}.kanban.process2{grid-template-columns:repeat(2,minmax(280px,1fr))}.col{background:#eef5f9;border:1px solid #c9d8e2;border-radius:24px;padding:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}.col-head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;margin-bottom:12px}.col-icon{width:38px;height:38px;border-radius:14px;background:var(--blue);color:var(--yellow);display:grid;place-items:center;border:2px solid var(--yellow);font-size:18px}.col-title{margin:0;color:var(--blue2);font-size:17px;line-height:1.08;font-weight:900}.col-subtitle{margin:2px 0 0;color:#688091;font-size:12px;line-height:1.15}.col-count{min-width:34px;height:52px;border-radius:16px;background:#f3f1eb;color:var(--blue2);display:grid;place-items:center;font-weight:900;font-size:18px;padding:0 8px}.sla-box{background:#fff;border:1px solid #d6e2ea;border-radius:18px;padding:12px 12px 10px;display:grid;gap:6px;margin-bottom:12px;box-shadow:none}.sla-row,.timer-row{display:flex;justify-content:space-between;gap:12px;color:#5f7888;font-size:12px}.sla-row strong,.timer-row strong{color:var(--blue2);font-weight:900;font-size:12px}.empty-col{border:1px dashed #9eb8c7;border-radius:18px;padding:26px 16px;text-align:center;color:#6d8797;background:rgba(255,255,255,.45);font-size:14px;min-height:148px;display:grid;place-items:center}.card{background:#fff;border:1px solid #d7e1e8;border-left:6px solid var(--blue);border-radius:22px;padding:12px 12px 10px;box-shadow:0 10px 24px rgba(0,83,131,.1);margin-bottom:12px;cursor:pointer;transition:.12s}.card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,83,131,.16)}.card.late{border-left-color:var(--red)}.card.warn{border-left-color:#facc15}.card.ok{border-left-color:var(--green)}.card-top{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.card-id{font-size:11px;color:#7a95a8;font-weight:900;margin-bottom:2px}.card-title{font-size:15px;color:var(--blue2);font-weight:900;line-height:1.15;text-transform:uppercase}.priority-pill{min-width:40px;height:40px;border-radius:16px;display:grid;place-items:center;font-size:13px;font-weight:900}.priority-pill.p1{background:#f9e8cf;color:#f97316}.priority-pill.p2{background:#dce9fb;color:#2563eb}.card-lines{display:grid;gap:4px;margin-top:10px}.card-line{display:flex;gap:8px;align-items:flex-start;color:#5f7888;font-size:12px;line-height:1.25}.card-line .ic{width:14px;display:inline-block;text-align:center}.card-desc{font-size:12px;line-height:1.28;margin-top:10px;color:#173248;min-height:32px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.badge{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;line-height:1}.badge.orange{background:#ffe3cf;color:#f97316}.badge.green{background:#ddf7e5;color:#14905b}.badge.blue{background:#dbeafe;color:#2563eb}.badge.red{background:#ffe1e1;color:#ef4444}.badge.purple{background:#ede9fe;color:#7c3aed}.badge.yellow{background:#fef9c3;color:#a16207}.badge.sem-late{background:#fee2e2;color:var(--red)}.badge.sem-warn{background:#fef3c7;color:#b45309}.badge.sem-ok{background:#dcfce7;color:var(--green)}.card-meta{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;font-size:12px;color:#5f7888}.card-meta strong{color:var(--blue2)}.timer{background:#f3f7fa;border:1px solid #cfdde7;border-radius:16px;padding:10px 12px;display:grid;gap:5px;margin-top:10px}.stage-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.stage-actions button{min-height:34px;border-radius:14px;font-size:13px}.editor-toolbar-full{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.editor-layout{display:grid;grid-template-columns:340px 1fr;gap:14px;align-items:start}.editor-side,.editor-main{background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}.editor-side h3,.editor-main h3{color:var(--blue2);margin:0 0 10px}.editor-section-list{display:grid;gap:8px;max-height:620px;overflow:auto;padding-right:4px}.editor-section-card{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbfd;cursor:pointer}.editor-section-card.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,83,131,.14);background:#eef7fb}.editor-section-card b{display:block;color:var(--blue2);font-size:13px}.editor-section-card small{display:block;color:var(--muted);margin-top:4px;line-height:1.35}.editor-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.editor-form-grid .full{grid-column:1/-1}.editor-question-list{display:grid;gap:9px;margin-top:12px}.editor-question-card{display:grid;grid-template-columns:1fr 115px 250px;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;background:#f8fbfd;padding:10px}.editor-question-card b{color:var(--blue2);display:block}.editor-question-card small{color:var(--muted);display:block;margin-top:3px}.editor-actions-mini{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.editor-actions-mini button{min-height:28px;padding:0 8px;font-size:11px}.editor-badge{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;background:#dbeafe;color:#1d4ed8;margin-right:4px}.editor-badge.required{background:#ffedd5;color:#c2410c}.editor-help{background:#eef7fb;border:1px solid var(--border);border-left:4px solid var(--yellow);border-radius:12px;padding:12px;color:#315466;margin-bottom:14px;font-size:13px;line-height:1.4}.detail-modal{position:fixed;inset:0;background:rgba(0,32,50,.58);z-index:1000;display:none;align-items:center;justify-content:center;padding:24px}.detail-modal.show{display:flex}.detail-box{width:min(1050px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:26px;box-shadow:0 24px 70px rgba(0,0,0,.32);border-top:7px solid var(--yellow)}.detail-header{position:sticky;top:0;z-index:2;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;padding:18px 22px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.detail-header h2{color:#fff;margin:0;font-size:24px}.detail-header p{color:#dceef7;margin-top:5px}.detail-close{background:var(--yellow);color:var(--blue2);min-width:42px;height:42px;padding:0;border-radius:14px;font-size:20px}.detail-body{padding:18px 22px 24px}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}.detail-kv{background:#f4f9fb;border:1px solid var(--border);border-radius:14px;padding:10px}.detail-kv small{display:block;color:var(--muted);font-weight:800;margin-bottom:5px}.detail-kv strong{color:var(--blue2);font-size:14px;word-break:break-word}.detail-section{border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;background:#fff}.detail-section-title{background:#edf6fa;border-bottom:1px solid var(--border);padding:12px 14px;color:var(--blue2);font-weight:900;display:flex;justify-content:space-between;gap:10px}.detail-section-content{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px}.detail-answer{background:#fbfdfe;border:1px solid #dce8ef;border-radius:14px;padding:10px}.detail-answer.full{grid-column:1/-1}.detail-answer small{display:block;color:#5c7888;font-weight:900;margin-bottom:6px;line-height:1.25}.detail-answer div{color:#122f42;line-height:1.35;white-space:pre-wrap;word-break:break-word}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:18px;background:#fff}.data-table{width:100%;border-collapse:collapse;min-width:900px}.data-table th,.data-table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}.data-table th{background:#edf6fa;color:var(--blue2);font-weight:900}.data-table tr:hover td{background:#f8fbfd}@media(max-width:1280px){.kpi-grid,.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics-grid{grid-template-columns:1fr}.toolbar-panel{grid-template-columns:1fr}.toolbar-controls{grid-template-columns:repeat(2,1fr)}.bar-row{grid-template-columns:150px 1fr 95px}}@media(max-width:980px){.top,.head{flex-direction:column;align-items:stretch}.tabs{flex-wrap:wrap}.grid,.editor-layout,.editor-form-grid{grid-template-columns:1fr}.field.two,.field.full,.editor-form-grid .full{grid-column:auto}.kanban.process1,.kanban.process2{grid-template-columns:1fr}.editor-question-card{grid-template-columns:1fr}.detail-grid{grid-template-columns:repeat(2,1fr)}.detail-section-content{grid-template-columns:1fr}.detail-answer.full{grid-column:auto}.bar-row{grid-template-columns:1fr}.bar-metric{text-align:left}}@media(max-width:650px){.container{width:calc(100% - 18px)}.stats,.kpi-grid,.toolbar-controls{grid-template-columns:1fr}.tabs,button{width:100%}.detail-grid{grid-template-columns:1fr}.detail-modal{padding:10px}}
+
+.userbar{display:flex;align-items:center;gap:8px;color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:8px 10px}.userbar span{font-size:12px;line-height:1.2;color:#eaf7fd}.userbar strong{display:block;color:#fff;font-size:13px}.userbar button{min-height:32px;padding:0 10px;border-radius:10px;background:var(--yellow);color:var(--blue2);font-size:12px}.login-modal{position:fixed;inset:0;background:rgba(0,32,50,.62);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}.login-modal.show{display:flex}.login-box{width:min(480px,94vw);background:#fff;border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.32);border-top:7px solid var(--yellow);padding:22px}.login-box h2{color:var(--blue2);margin-bottom:6px}.login-box p{color:var(--muted);line-height:1.4;margin-bottom:14px}.login-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}.readonly-note{font-size:12px;color:#5f7888;margin-top:6px}
+
+
+.detail-overview{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-bottom:12px}.detail-summary{background:#f4f9fb;border:1px solid var(--border);border-radius:18px;padding:14px}.detail-summary h3{color:var(--blue2);margin:0 0 8px;font-size:18px}.detail-summary p{color:#315466;line-height:1.45;margin:0}.responsible-panel{border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;background:#fff}.responsible-panel-title{background:#fff8c7;border-bottom:1px solid #facc15;padding:12px 14px;color:#6b4e00;font-weight:900}.responsible-panel-body{padding:14px;display:grid;gap:12px}.responsible-panel textarea{min-height:110px}.responsible-actions{display:flex;gap:10px;flex-wrap:wrap}.attachment-list{display:grid;gap:8px}.attachment-item{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f4f9fb;border:1px solid var(--border);border-radius:12px;padding:9px 10px;font-size:13px}.attachment-item a{color:var(--blue2);font-weight:900;text-decoration:none}.attachment-item small{color:var(--muted)}.attachment-item button{min-height:28px;padding:0 9px;font-size:11px}.card-resp-note{margin-top:9px;background:#fff8c7;border:1px solid #facc15;border-radius:12px;padding:8px;color:#6b4e00;font-size:11px;line-height:1.3}.card-resp-note b{display:block;margin-bottom:3px}.badge.yellow{background:#fff8c7;color:#8a6500}.mini-action{min-height:30px;padding:0 10px;font-size:12px}@media(max-width:900px){.detail-overview{grid-template-columns:1fr}.responsible-actions{display:grid}.attachment-item{align-items:flex-start;flex-direction:column}}
+
+/* Ajuste solicitado: cards do Kanban mais compactos */
+.kanban.process1{grid-template-columns:repeat(7,minmax(190px,1fr));gap:9px}
+.col{padding:9px;border-radius:18px}
+.col-head{gap:7px;margin-bottom:8px}
+.col-icon{width:30px;height:30px;border-radius:10px;font-size:14px}
+.col-title{font-size:14px;line-height:1.05}
+.col-subtitle{font-size:10px;line-height:1.1}
+.col-count{min-width:28px;height:38px;border-radius:12px;font-size:14px}
+.sla-box{padding:8px;border-radius:13px;gap:4px;margin-bottom:8px}
+.sla-row,.timer-row{font-size:10px;gap:6px}
+.sla-row strong,.timer-row strong{font-size:10px}
+.card{border-left-width:5px;border-radius:15px;padding:8px 8px 7px;margin-bottom:8px;box-shadow:0 6px 14px rgba(0,83,131,.09)}
+.card:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(0,83,131,.13)}
+.card-top{gap:5px}
+.card-id{font-size:9px;margin-bottom:1px}
+.card-title{font-size:12px;line-height:1.12}
+.priority-pill{min-width:30px;height:30px;border-radius:11px;font-size:10px}
+.card-lines{gap:2px;margin-top:6px}
+.card-line{gap:5px;font-size:10px;line-height:1.15}
+.card-line .ic{width:11px}
+.card-desc{font-size:10px;line-height:1.18;margin-top:6px;min-height:24px;-webkit-line-clamp:2}
+.badges{gap:5px;margin-top:6px}
+.badge{padding:3px 6px;font-size:9px}
+.card-meta{gap:5px;margin-top:6px;font-size:10px}
+.timer{border-radius:12px;padding:6px 7px;gap:3px;margin-top:6px}
+.stage-actions{gap:5px;margin-top:6px}
+.stage-actions button{min-height:27px;border-radius:10px;font-size:11px;padding:0 7px}
+.card-resp-note{margin-top:6px;border-radius:10px;padding:6px;font-size:9px;line-height:1.2}
+@media(max-width:980px){.kanban.process1{grid-template-columns:1fr}}
+
+
+
+/* Ajuste extra: cards do Kanban mais compactos */
+.kanban.process1{grid-template-columns:repeat(7,minmax(185px,1fr));gap:8px}
+.col{padding:8px;border-radius:18px}
+.col-head{gap:6px;margin-bottom:7px}
+.col-icon{width:25px;height:25px;border-radius:8px;font-size:12px}
+.col-title{font-size:12px;line-height:1.03}
+.col-subtitle{font-size:9px;line-height:1.05}
+.col-count{min-width:24px;height:30px;border-radius:9px;font-size:12px;padding:0 5px}
+.sla-box{padding:6px 7px;border-radius:10px;gap:3px;margin-bottom:6px}
+.sla-row,.timer-row{font-size:9px;gap:4px}
+.sla-row strong,.timer-row strong{font-size:9px}
+.empty-col{min-height:80px;padding:12px 8px;border-radius:12px;font-size:11px}
+.card{border-left-width:4px;border-radius:12px;padding:6px 6px 5px;margin-bottom:6px;box-shadow:0 4px 10px rgba(0,83,131,.08)}
+.card:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(0,83,131,.12)}
+.card-top{gap:4px;grid-template-columns:1fr auto}
+.card-id{font-size:8px;margin-bottom:1px}
+.card-title{font-size:10.5px;line-height:1.08;letter-spacing:-.1px}
+.priority-pill{min-width:24px;height:24px;border-radius:8px;font-size:8.5px}
+.card-lines{gap:1px;margin-top:4px}
+.card-line{gap:4px;font-size:8.8px;line-height:1.1}
+.card-line .ic{width:9px}
+.card-desc{font-size:8.8px;line-height:1.12;margin-top:4px;min-height:18px;max-height:22px;overflow:hidden;-webkit-line-clamp:2}
+.badges{gap:3px;margin-top:4px}
+.badge{padding:2px 5px;font-size:8px}
+.card-meta{gap:3px;margin-top:4px;font-size:8.8px}
+.timer{border-radius:10px;padding:5px 6px;gap:2px;margin-top:4px}
+.stage-actions{gap:4px;margin-top:4px}
+.stage-actions button{min-height:23px;border-radius:8px;font-size:9.5px;padding:0 5px}
+.card-resp-note{margin-top:4px;border-radius:8px;padding:5px;font-size:8px;line-height:1.1;max-height:34px;overflow:hidden}
+
+
+
+/* Supply Flow SEEL — estrutura visual do modulo de Fornecedores */
+:root{
+  --sf-navy:#0b3553;--sf-navy-2:#072a43;--sf-blue:#075985;--sf-blue-2:#0a6d9d;
+  --sf-yellow:#f5c400;--sf-bg:#f3f6f8;--sf-line:#d9e3e8;--sf-text:#173248;
+  --sf-muted:#6d8290;--sf-shadow:0 10px 30px rgba(15,53,80,.08);
+  --blue:var(--sf-blue);--blue2:var(--sf-navy);--yellow:var(--sf-yellow);--bg:var(--sf-bg);
+  --border:var(--sf-line);--text:var(--sf-text);--muted:var(--sf-muted);--shadow:var(--sf-shadow);--r:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--sf-bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--sf-text);min-height:100vh}
+button,input,select,textarea{font-family:inherit}
+.sf-app{min-height:100vh}.sf-workspace{width:100%;min-height:100vh}
+.sf-topbar{height:68px;background:#fff;border-bottom:1px solid var(--sf-line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,3vw,38px);position:sticky;top:0;z-index:45;box-shadow:0 3px 16px rgba(15,53,80,.04)}
+.sf-topbar-left,.sf-topbar-actions,.sf-user-chip{display:flex;align-items:center}.sf-topbar-left{gap:14px}.sf-topbar-actions{gap:11px}.sf-breadcrumb{display:flex;align-items:center;gap:9px;font-size:13px}.sf-breadcrumb span{color:var(--sf-muted)}.sf-breadcrumb b{color:#b8c6cf}.sf-breadcrumb strong{color:var(--sf-navy)}
+.sf-module-brand{display:flex;align-items:center;gap:10px;padding-right:18px;margin-right:4px;border-right:1px solid var(--sf-line)}
+.sf-module-mark{width:36px;height:36px;border-radius:10px;background:var(--sf-navy);color:var(--sf-yellow);display:grid;place-items:center;border:2px solid var(--sf-yellow)}
+.sf-module-mark svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sf-module-brand>div{display:grid;line-height:1.05}.sf-module-brand strong{font-size:12px;letter-spacing:.08em;color:var(--sf-navy)}.sf-module-brand small{font-size:10px;color:#69808e;margin-top:3px}
+.sf-global-search{height:40px;min-width:270px;border:1px solid var(--sf-line);border-radius:12px;background:#f7f9fb;display:flex;align-items:center;gap:9px;padding:0 12px}
+.sf-global-search svg{width:18px;height:18px;fill:none;stroke:#7b909e;stroke-width:2}.sf-global-search input{border:0;background:transparent;padding:0;margin:0;box-shadow:none;font-size:13px}.sf-global-search input:focus{box-shadow:none}
+.sf-icon-btn{width:40px;height:40px;min-height:40px;padding:0;border-radius:12px;background:#f5f8fa;color:var(--sf-navy);border:1px solid var(--sf-line);display:grid;place-items:center}.sf-icon-btn svg,.sf-primary-action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.sf-notification{position:relative}.sf-notification span{position:absolute;right:8px;top:7px;width:7px;height:7px;background:#ef4444;border:2px solid #fff;border-radius:50%}
+.sf-user-chip{gap:9px}.sf-user-avatar{width:38px;height:38px;background:var(--sf-navy);color:#fff;font-size:12px;display:grid;place-items:center;border-radius:50%;font-weight:900}.sf-user-chip>div:last-child{display:grid;gap:1px}.sf-user-chip strong{font-size:12px;color:var(--sf-navy)}.sf-user-chip span{font-size:10px;color:var(--sf-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sf-page-head{padding:30px 34px 24px;display:flex;justify-content:space-between;gap:24px;align-items:flex-start;max-width:1600px;margin:auto}.sf-eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--sf-blue-2);margin-bottom:7px}.sf-page-head h1{font-size:30px;color:var(--sf-navy);letter-spacing:-.025em}.sf-page-head p{color:var(--sf-muted);font-size:14px;margin-top:7px;line-height:1.45}.sf-primary-action{min-height:44px;padding:0 17px;background:var(--sf-navy);border-radius:12px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 20px rgba(11,53,83,.18);border-bottom:3px solid var(--sf-yellow)}
+.sf-module-tabs{max-width:calc(1600px - 68px);margin:0 auto;background:#fff;border:1px solid var(--sf-line);border-radius:14px;padding:5px;display:flex;gap:4px;box-shadow:0 6px 20px rgba(15,53,80,.05);overflow-x:auto}
+.sf-module-tabs .tab{min-height:40px;border-radius:10px;color:#617989;padding:0 16px;background:transparent;display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap}.sf-module-tabs .tab:hover{background:#f4f7f9;color:var(--sf-navy)}.sf-module-tabs .tab.active{background:#eaf3f8;color:var(--sf-blue);box-shadow:inset 0 -2px 0 var(--sf-blue)}.sf-tab-dot{width:7px;height:7px;border-radius:50%;background:#b7c6cf}.sf-module-tabs .tab.active .sf-tab-dot{background:var(--sf-yellow);box-shadow:0 0 0 3px rgba(245,196,0,.2)}
+.sf-workspace>main.container{width:auto;max-width:1600px;margin:0 auto;padding:22px 34px 46px}
+.panel,.analytics-card,.toolbar-panel,.kpi-card{border:1px solid var(--sf-line);box-shadow:var(--sf-shadow)}.panel{padding:24px;border-radius:18px}.head{padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--sf-line);align-items:center}.head h2{font-size:22px}.head .hint{font-size:13px}.pill{background:#eef5f8;color:var(--sf-blue);border:1px solid #d8e8f0;border-bottom:0;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
+.section{border-radius:15px;border:1px solid var(--sf-line);box-shadow:none;margin-bottom:16px}.section-title{background:#f0f5f8;color:var(--sf-navy);border-bottom:1px solid var(--sf-line);padding:13px 16px;font-size:14px;letter-spacing:.01em}.section-title:before{content:"";display:inline-block;width:4px;height:16px;background:var(--sf-yellow);border-radius:3px;vertical-align:-3px;margin-right:9px}.section-body{padding:18px 18px 20px}
+label{font-size:12px;color:#365166}.grid{gap:15px 16px}input,select,textarea{border-radius:10px;border-color:#cedbe3;background:#fff;padding:10px 11px;font-size:13px}input:hover,select:hover,textarea:hover{border-color:#aebfca}input:focus,select:focus,textarea:focus{border-color:var(--sf-blue);box-shadow:0 0 0 3px rgba(7,89,133,.1)}.note{background:#f8fafb;border-left-color:var(--sf-yellow)}
+.actions{padding-top:16px;border-top:1px solid var(--sf-line)}button{border-radius:10px;font-size:13px}.primary{background:var(--sf-navy);border-bottom:3px solid var(--sf-yellow)}.secondary{color:var(--sf-navy);background:#fff}
+.kpi-grid{gap:12px}.kpi-card{border-top:0;border-left:4px solid var(--sf-yellow);border-radius:16px;padding:16px}.kpi-card small{font-size:11px;text-transform:uppercase;letter-spacing:.04em}.kpi-card strong{font-size:23px}.analytics-grid{gap:14px}.analytics-card,.toolbar-panel{border-top:0;border-radius:16px;padding:18px}.analytics-card h3,.toolbar-copy h3{font-size:17px}.analytics-card p,.toolbar-copy p{font-size:13px}
+.toolbar-panel{grid-template-columns:1fr 2fr}.toolbar-controls{grid-template-columns:repeat(5,minmax(150px,1fr));align-items:end}.toolbar-actions{flex-wrap:nowrap}.toolbar-actions button{min-width:auto;white-space:nowrap}.process-icon{background:var(--sf-navy);width:40px;height:40px;border-radius:11px;border:0;box-shadow:none}.process-head h3{font-size:18px}.process-head p{font-size:12px}
+.detail-modal{background:rgba(4,29,46,.62);backdrop-filter:blur(3px)}.detail-box{border-radius:18px;border-top:0}.detail-header{background:var(--sf-navy);padding:17px 20px}.detail-header:after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--sf-yellow)}.detail-close{background:#fff;color:var(--sf-navy);border:0}.toast{background:var(--sf-navy);border-bottom-color:var(--sf-yellow)}
+
+/* Importacao da base antiga de fornecedores */
+.import-layout{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(0,1.65fr);gap:18px;align-items:start}.import-card{background:#fff;border:1px solid var(--sf-line);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(15,53,80,.05)}.import-card h3{font-size:16px;color:var(--sf-navy);margin:0 0 6px}.import-card>p{font-size:12px;color:var(--sf-muted);line-height:1.5;margin:0 0 14px}
+.import-drop{min-height:168px;border:2px dashed #aac0cc;border-radius:15px;background:#f7fafb;display:grid;place-items:center;text-align:center;padding:22px;cursor:pointer;transition:.18s ease}.import-drop:hover,.import-drop.dragover{border-color:var(--sf-blue);background:#eef6fa}.import-drop input{display:none}.import-drop-icon{width:48px;height:48px;border-radius:14px;background:var(--sf-navy);color:var(--sf-yellow);display:grid;place-items:center;margin:0 auto 10px;font-size:23px}.import-drop strong{display:block;color:var(--sf-navy);font-size:14px}.import-drop span{display:block;color:var(--sf-muted);font-size:11px;margin-top:5px}
+.import-file-meta{display:none;margin-top:12px;padding:11px 12px;border:1px solid #d9e5eb;background:#f6fafc;border-radius:12px}.import-file-meta.show{display:flex;justify-content:space-between;gap:10px;align-items:center}.import-file-meta strong{font-size:12px;color:var(--sf-navy);display:block;word-break:break-all}.import-file-meta span{font-size:10px;color:var(--sf-muted)}.import-options{display:grid;gap:12px;margin-top:14px}.import-options label,.mapping-field label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#617989;font-weight:900}.import-options select,.mapping-field select{margin-top:6px}
+.import-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.import-summary div{background:#f5f8fa;border:1px solid var(--sf-line);border-radius:12px;padding:10px}.import-summary small{display:block;color:var(--sf-muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.05em}.import-summary strong{display:block;color:var(--sf-navy);font-size:19px;margin-top:3px}.import-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.import-actions button{flex:1;min-width:135px}.import-actions button:disabled{opacity:.45;cursor:not-allowed}.import-note{margin-top:12px;background:#fff9d9;border:1px solid #f2d86d;border-left:4px solid var(--sf-yellow);border-radius:11px;padding:10px 12px;color:#6b5900;font-size:11px;line-height:1.45}
+.mapping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mapping-field{background:#f8fafb;border:1px solid var(--sf-line);border-radius:12px;padding:10px}.mapping-field small{display:block;color:#8296a3;font-size:9px;margin-top:4px;line-height:1.35}.mapping-required:after{content:' *';color:#dc2626}.preview-wrap{margin-top:18px;border:1px solid var(--sf-line);border-radius:15px;overflow:hidden;background:#fff}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:#f1f6f8;border-bottom:1px solid var(--sf-line)}.preview-head h3{font-size:14px;color:var(--sf-navy);margin:0}.preview-head span{font-size:10px;color:var(--sf-muted)}.preview-scroll{overflow:auto;max-height:360px}.import-preview{width:100%;border-collapse:collapse;min-width:820px;font-size:11px}.import-preview th{position:sticky;top:0;background:#f8fafb;color:#526c7c;text-align:left;padding:9px 10px;border-bottom:1px solid var(--sf-line);white-space:nowrap;z-index:1}.import-preview td{padding:9px 10px;border-bottom:1px solid #edf2f5;color:#29465a;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.import-preview tr:hover td{background:#fbfdfe}.import-empty{padding:42px 18px;text-align:center;color:var(--sf-muted);font-size:12px}.import-result{display:none;margin-top:14px;border-radius:13px;padding:12px 14px;font-size:12px;line-height:1.5}.import-result.show{display:block}.import-result.success{background:#eaf8ef;border:1px solid #b9e5c7;color:#12683a}.import-result.warning{background:#fff7df;border:1px solid #edd58a;color:#735c00}.import-result.error{background:#fff0f0;border:1px solid #f0c4c4;color:#a52020}
+@media(max-width:1180px){.sf-global-search{display:none}.toolbar-controls{grid-template-columns:1fr 1fr}.sf-user-chip>div:last-child{display:none}}
+@media(max-width:1050px){.import-layout{grid-template-columns:1fr}.mapping-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:920px){.sf-page-head,.sf-workspace>main.container{padding-left:18px;padding-right:18px}.sf-module-tabs{margin-left:18px;margin-right:18px}.sf-page-head{padding-top:22px}.toolbar-panel{grid-template-columns:1fr}.toolbar-controls{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.sf-module-brand>div{display:none}.sf-module-brand{padding-right:10px}.sf-breadcrumb span,.sf-breadcrumb b{display:none}.sf-page-head{flex-direction:column}.sf-primary-action{width:100%;justify-content:center}.sf-page-head h1{font-size:25px}.sf-user-chip{display:none}.panel{padding:15px}.head{align-items:flex-start}.pill{align-self:flex-start}.toolbar-controls{grid-template-columns:1fr}.mapping-grid{grid-template-columns:1fr}.import-summary{grid-template-columns:1fr 1fr 1fr}.import-actions{display:grid;grid-template-columns:1fr}.import-actions button{width:100%}}
+
+
+#view-dashboard #kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){#view-dashboard #kpis{grid-template-columns:1fr}}
+</style>
+
+<style id="supplier-code-tag-style">
+  #view-kanban .supplier-flow-card .card-id{
+    display:inline-flex !important;
+    align-items:center !important;
+    width:max-content !important;
+    min-height:22px !important;
+    padding:3px 8px !important;
+    margin:0 0 5px !important;
+    border:1px solid #bfd5e3 !important;
+    border-radius:999px !important;
+    background:#eaf3f8 !important;
+    color:#075985 !important;
+    font-size:9px !important;
+    font-weight:900 !important;
+    letter-spacing:.05em !important;
+    line-height:1 !important;
+  }
+</style>
+</head>
+<body>
+<div class="sf-app" id="sfApp"><div class="sf-workspace">
+<header class="sf-topbar">
+  <div class="sf-topbar-left">
+    <div class="sf-module-brand"><span class="sf-module-mark"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20v-9l8-5 8 5v9"></path><path d="M9 20v-6h6v6M8 9V5h8v4"></path></svg></span><div><strong>SUPPLY FLOW</strong><small>Cadastro de Fornecedores</small></div></div>
+    <div class="sf-breadcrumb"><span>Supply Flow</span><b>/</b><strong>Fornecedores</strong></div>
+  </div>
+  <div class="sf-topbar-actions">
+    <label class="sf-global-search"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input id="sfGlobalSearch" aria-label="Buscar fornecedor" placeholder="Buscar fornecedor" type="search"></label>
+    <button aria-label="Notificações" class="sf-icon-btn sf-notification" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg><span></span></button>
+    <div class="sf-user-chip"><div class="sf-user-avatar" id="sfUserAvatar">US</div><div><strong id="sfUserName">Usuário</strong><span id="sfUserMeta">Fornecedores</span></div></div>
+    <button id="btnLogin" class="sf-icon-btn" aria-label="Sincronizar usuário" title="Sincronizar usuário" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
+  </div>
+</header>
+<section class="sf-page-head"><div><div class="sf-eyebrow">CADASTRO E HOMOLOGAÇÃO</div><h1>Gestão de fornecedores</h1><p>Centralize solicitações, documentos, prazos, homologação e acompanhamento do cadastro de fornecedores.</p></div><button class="sf-primary-action" onclick="switchTab('form');window.scrollTo({top:0,behavior:'smooth'})" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg><span>Novo fornecedor</span></button></section>
+<nav aria-label="Navegação do módulo" class="tabs sf-module-tabs">
+  <button class="tab active" data-tab="form"><span class="tab-icon">📝</span>Nova solicitação</button>
+  <button class="tab" data-tab="kanban"><span class="tab-icon">🗂️</span>Kanban</button>
+  <button class="tab" data-tab="dashboard"><span class="tab-icon">📊</span>Dashboard</button>
+  <button class="tab" data-tab="base"><span class="tab-icon">🗃️</span>Base geral</button>
+  <button class="tab" data-tab="import"><span class="tab-icon">📥</span>Importar base antiga</button>
+  <button class="tab" data-tab="editor"><span class="tab-icon">⚙️</span>Configuração do formulário</button>
+</nav>
+<main class="container">
+<section id="view-form" class="panel"><div class="head"><div><h2>Solicitação de Cadastro de Fornecedor</h2><p class="hint">Preencha as informações do fornecedor. A solicitação será enviada para o Kanban com cronômetro, SLA e detalhe completo ao clicar no card.</p></div><div class="pill">SLA: Emergencial 3 dias úteis | Normal 7 dias úteis</div></div><form id="supplierForm"></form><div class="actions"><div><button class="secondary" id="btnDemo">Carregar exemplo</button><button class="secondary" id="btnResetForm">Limpar formulário</button></div><button class="primary" id="btnSaveSupplier">Salvar e enviar para Kanban</button></div></section>
+<section id="view-kanban" class="panel hidden"><div class="head"><div><h2>Kanban de Fornecedores</h2><p class="hint">Controle por fase com SLA, cronômetro por etapa, avanço/retorno de fase e detalhes completos do cadastro.</p></div><div class="pill" id="clockNow">Atualizando...</div></div><div class="toolbar-panel filters-only"><div class="toolbar-copy"><h3>Filtros</h3><p>Filtre as solicitações por obra, nome do fornecedor, tipo de cadastro, tipo de fornecedor e status.</p></div><div class="toolbar-controls"><label>Obra<select id="filterWork"><option value="">Todas</option></select></label><label>Nome do fornecedor<input id="filterSupplierName" placeholder="Digite o nome do fornecedor..."></label><label>Tipo de cadastro<select id="filterPriority"><option value="">Todos</option><option>EMERGENCIAL (3 DIAS)</option><option>NORMAL (7 DIAS)</option></select></label><label>Tipo fornecedor<select id="filterCategory"><option value="">Todos</option></select></label><label>Status<select id="filterStatus"><option value="">Todos</option></select></label></div><input id="jsonImport" type="file" accept="application/json" class="hidden"></div><div class="process-board"><div class="process-head"><div class="process-icon">1</div><div><h3>Fluxo de Cadastro de Fornecedores</h3><p>Fluxo completo da solicitação recebida ao cadastro no SAP, envio para Controladoria ou encerramento.</p></div></div><div class="kanban process1" id="kanban1"></div><div class="kanban process2 hidden" id="kanban2"></div></div><section class="panel supplier-kanban-table-panel"><div class="head"><div><h3>Fornecedores filtrados</h3><p class="hint">Mesma lista do Kanban acima, em formato de tabela.</p></div><div class="pill" id="supplierKanbanTableCount">0 registros</div></div><div class="table-wrap supplier-kanban-table-scroll"><table class="data-table"><thead><tr><th>ID</th><th>Fornecedor</th><th>CNPJ/CPF</th><th>Categoria</th><th>Fase</th><th>Tipo</th><th>Prazo</th><th>Semáforo</th><th>Na fase</th><th>Ações</th></tr></thead><tbody id="supplierKanbanTableRows"></tbody></table></div></section></section>
+<section id="view-dashboard" class="panel hidden"><div class="head"><div><h2>Dashboard Executivo de Fornecedores</h2><p class="hint">Visão consolidada das solicitações, cadastros realizados e itens ainda em aberto no processo.</p></div><div class="pill">Painel automático</div></div><div class="kpi-grid" id="kpis"></div><div class="analytics-grid"><div class="analytics-card"><h3>Status por fase</h3><p>Distribuição atual das solicitações no fluxo.</p><div class="bar-list" id="chartStatus"></div></div><div class="analytics-card"><h3>Fornecedores por tipo</h3><p>Concentração da base entre matriz e filial.</p><div class="bar-list" id="chartCategory"></div></div><div class="analytics-card"><h3>Semáforo de filas</h3><p>Quantidade de solicitações em atraso, em alerta e no prazo, calculadas em dias úteis.</p><div class="bar-list" id="chartSla"></div></div><div class="analytics-card"><h3>Tipo de cadastro</h3><p>Cadastro emergencial ou normal.</p><div class="bar-list" id="chartType"></div></div><div class="analytics-card"><h3>Média de tempo por fase</h3><p>Média acumulada considerando os tempos salvos em cada fase, incluindo retornos.</p><div class="bar-list" id="chartAvgStage"></div></div></div></section>
+<section id="view-base" class="panel hidden"><div class="head"><div><h2>Base Geral de Fornecedores</h2><p class="hint">Lista consolidada com todos os fornecedores cadastrados, filtros e acesso rápido aos detalhes.</p></div><div class="pill" id="baseCount">0 registros</div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Data</th><th>Fornecedor</th><th>CNPJ</th><th>Tipo fornecedor</th><th>Tipo cadastro</th><th>Fase</th><th>SLA</th><th>Ações</th></tr></thead><tbody id="baseRows"></tbody></table></div></section>
+
+<section id="view-import" class="panel hidden">
+  <div class="head"><div><h2>Importar base antiga de fornecedores</h2><p class="hint">Carregue a planilha anterior em Excel ou CSV e inclua os registros no Kanban sem apagar os cadastros atuais.</p></div><div class="pill">Excel, XLS ou CSV</div></div>
+  <div class="import-layout">
+    <article class="import-card">
+      <h3>1. Selecionar arquivo</h3><p>O arquivo é processado localmente no navegador. Revise os campos antes de concluir a importação.</p>
+      <label class="import-drop" id="supplierImportDrop"><input accept=".xlsx,.xls,.csv" id="supplierLegacyFile" type="file"><div><span class="import-drop-icon">⇧</span><strong>Clique ou arraste a planilha aqui</strong><span>Formatos aceitos: .xlsx, .xls e .csv</span></div></label>
+      <div class="import-file-meta" id="supplierImportMeta"><div><strong id="supplierImportName"></strong><span id="supplierImportSize"></span></div><button class="secondary" id="supplierImportRemove" type="button">Remover</button></div>
+      <div class="import-options">
+        <label>Planilha / aba<select id="supplierImportSheet" disabled><option value="">Selecione um arquivo</option></select></label>
+        <label>Fase quando estiver vazia<select id="supplierDefaultStage"><option>Solicitação Recebida</option><option>Enviado ao Fornecedor</option><option>Aguardando Retorno do Fornecedor</option><option>Análise da Documentação</option><option>Cadastro no SAP</option><option>Enviado para Controladoria</option><option>Declinado/Encerrado</option></select></label>
+        <label>Tipo de cadastro quando estiver vazio<select id="supplierDefaultPriority"><option value="NORMAL (7 DIAS)">Normal (7 dias)</option><option value="EMERGENCIAL (3 DIAS)">Emergencial (3 dias)</option></select></label>
+        <label>Tipo de fornecedor quando estiver vazio<select id="supplierDefaultCategory"><option value="MATRIZ">Matriz</option><option value="FILIAL">Filial</option></select></label>
+        <label>Tratamento de registros repetidos<select id="supplierDuplicatePolicy"><option value="skip">Ignorar registros já existentes</option><option value="new">Importar com um novo código</option></select></label>
+      </div>
+      <div class="import-summary"><div><small>Linhas lidas</small><strong id="supplierRowsCount">0</strong></div><div><small>Prontas</small><strong id="supplierReadyCount">0</strong></div><div><small>Repetidas</small><strong id="supplierDuplicateCount">0</strong></div></div>
+      <div class="import-actions"><button class="primary" disabled id="supplierRunImport" type="button">Importar para o Kanban</button><button class="secondary" id="supplierResetImport" type="button">Limpar seleção</button></div>
+      <div class="import-note">A fase, o prazo e o tipo de fornecedor podem ser lidos da planilha. Quando não forem reconhecidos, o aplicativo usará os padrões selecionados acima.</div>
+      <div class="import-result" id="supplierImportResult"></div>
+    </article>
+    <article class="import-card"><h3>2. Relacionar colunas</h3><p>O aplicativo identifica títulos semelhantes automaticamente. Ajuste os relacionamentos antes de importar.</p><div class="mapping-grid" id="supplierMappingGrid"></div><div class="preview-wrap"><div class="preview-head"><h3>Pré-visualização</h3><span id="supplierPreviewLabel">Nenhum arquivo carregado</span></div><div class="preview-scroll" id="supplierPreview"><div class="import-empty">Selecione uma planilha para visualizar os primeiros registros.</div></div></div></article>
+  </div>
+</section>
+
+<section id="view-editor" class="panel hidden"><div class="head"><div><h2>Edição do Formulário</h2><p class="hint">Edite perguntas, seções, tipos, obrigatoriedade e observações. As alterações passam a valer para os novos cadastros.</p></div><div class="pill">Editor funcional</div></div><div class="editor-help">Use este painel para ajustar o formulário sem mexer no código: crie seções, reorganize perguntas, marque campos obrigatórios e adicione observações. Campos automáticos do sistema continuam protegidos.</div><div class="editor-toolbar-full"><button id="btnNewSection">Nova seção</button><button id="btnNewQuestion">Nova pergunta</button><button id="btnRestoreForm" class="secondary">Restaurar padrão</button><button id="btnSaveSchema" class="primary">Salvar alterações</button></div><div class="editor-layout"><aside class="editor-side"><h3>Seções</h3><div class="editor-section-list" id="editorSections"></div></aside><div class="editor-main"><h3 id="editorTitle">Selecione uma seção</h3><div class="editor-form-grid"><label>Título da seção<input id="secTitle"></label><label>Ordem<input id="secOrder" type="number" min="1"></label><label class="full">Descrição<textarea id="secDesc"></textarea></label></div><div class="actions"><button id="btnApplySection" class="secondary">Aplicar seção</button><button id="btnDeleteSection" class="danger">Excluir seção</button></div><div class="editor-question-list" id="editorQuestions"></div></div></div></section>
+</main></div></div>
+<div class="detail-modal" id="detailModal"><div class="detail-box"><div class="detail-header"><div><h2 id="detailTitle">Fornecedor</h2><p id="detailSub">Detalhes completos</p></div><button class="detail-close" id="closeDetail">×</button></div><div class="detail-body" id="detailBody"></div></div></div><div class="login-modal" id="loginModal"><div class="login-box"><h2>Usuário da plataforma</h2><p>Este aplicativo está preparado para receber automaticamente o usuário autenticado da plataforma. Para testes fora da plataforma, é possível informar nome e e-mail manualmente.</p><div class="note"><b>Integração:</b> a plataforma pode enviar <code>window.SEEL_USER</code>, <code>window.PLATFORM_USER</code>, <code>window.currentUser</code> ou chamar <code>window.setPlatformUser({name,email,login})</code>.</div><label>Nome do solicitante<input id="loginName" placeholder="Ex.: Thiago Moraes"></label><label style="margin-top:10px">E-mail/login do solicitante<input id="loginEmail" type="email" placeholder="nome@seel.com.br"></label><div class="login-actions"><button id="btnCloseLogin" class="secondary" type="button">Cancelar</button><button id="btnSaveLogin" type="button">Usar somente para teste</button></div></div></div><div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>
+<script>
+const LS_ITEMS='seel_fornecedores_items_v1';
+const LS_SCHEMA='seel_fornecedores_schema_v2';
+const LS_USER='seel_fornecedores_usuario_logado_v1';
+const LS_PHASE_AVG='seel_fornecedores_phase_averages_v1';
+const LS_QUADRANT_AVG='seel_fornecedores_quadrant_averages_v1';
+const stages1=['Solicitação Recebida','Enviado ao Fornecedor','Aguardando Retorno do Fornecedor','Análise da Documentação','Cadastro no SAP','Enviado para Controladoria','Declinado/Encerrado'];
+const stages2=[];
+const allStages=[...stages1,...stages2];
+const defaultSchema=[
+ {id:'sys',title:'Informações automáticas',desc:'Campos gerados automaticamente no momento da solicitação e vinculados ao login do usuário.',order:1,questions:[
+  {id:'requestId',label:'Código da solicitação',type:'text',required:false,readonly:true,note:'Gerado no padrão CD-NÚMERO-MÊS. Ex.: CD-01-07 para o primeiro cadastro de julho.'},
+  {id:'requestDate',label:'Data da solicitação',type:'date',required:false,readonly:true,note:'Preenchida automaticamente.'},
+  {id:'deadline',label:'Data limite de atendimento',type:'date',required:false,readonly:true,note:'Calculada de acordo com o tipo de cadastro.'},
+  {id:'requesterName',label:'Nome do solicitante',type:'text',required:false,readonly:true,note:'Preenchido automaticamente conforme login.'},
+  {id:'requesterEmail',label:'E-mail do solicitante',type:'email',required:false,readonly:true,note:'Preenchido automaticamente conforme login.'}
+ ]},
+ {id:'cadastroFornecedor',title:'CADASTRO DE FORNECEDOR',desc:'Classificação do prazo da solicitação de cadastro do fornecedor.',order:2,questions:[
+  {id:'priority',label:'1. TIPO DE CADASTRO',type:'select',required:true,options:['EMERGENCIAL (3 DIAS)','NORMAL (7 DIAS)'],note:'Emergencial calcula 3 dias úteis. Normal calcula 7 dias úteis.'}
+ ]},
+ {id:'escolherFornecedor',title:'ESCOLHER UM FORNECEDOR',desc:'Informe se o cadastro solicitado é de matriz, filial ou todos. A seleção abre automaticamente as seções correspondentes.',order:3,questions:[
+  {id:'supplierCategory',label:'2. TIPO DE FORNECEDOR',type:'select',required:true,options:['MATRIZ','FILIAL']}
+ ]},
+ {id:'cadastroMatriz',title:'CADASTRO DE MATRIZ',desc:'Dados principais para cadastro de fornecedor matriz.',order:4,questions:[
+  {id:'supplierName',label:'4. NOME DO FORNECEDOR',type:'text',required:true,placeholder:'Insira sua resposta'},
+  {id:'scope',label:'5. DESCRIÇÃO DO SERVIÇO',type:'select',required:true,options:["Aço/Cimento/Concreto (Fabricação)", "Água – Caminhão Pipa", "Água – Galão ou Garrafa de Água Potável / Gelo", "Alimentação (Cozinha Industrial)", "Alimentação (Quentinha)", "Alojamento", "Ambulância / Remoção", "Análise do Concreto", "Andaimes e Formas (Locação)", "Ar-Condicionado – Central de Equipamentos Individuais (Manutenção)", "Asfalto e Pavimentação", "Auditoria do SGI (9k, 14k e 45k)", "Balsas e Equipamentos Marítimos", "Banheiro Químico (Transporte / Tratamento / Destinação Final)", "Calibração", "Coleta / Refinadora de Óleo Lubrificante (Rerrefino - Venda)", "Container (Locação)", "Descarte de Resíduos e Efluentes (Transporte / Destinação Final)", "Desmonte de Rocha com Explosivos", "Desmonte de Rocha sem Explosivos", "Etiloteste", "Extintores e Mangueiras", "Gases (Acetileno, Argônio, Oxigênio e Dióxido de Carbono) / Produtos Químicos Perigosos", "Hidrossemeadura (Sementes / Gramas / Mudas)", "Instalação de SPDA (Para-raios)", "Lavanderia", "Madeireira (de Lei)", "Mão de Obra Terceirizada", "Medicina do Trabalho – Programas, Exames Ocupacionais e Medições Ambientais", "Motosserra e Motopoda", "Pedreira / Areia / Brita (Fornecedores de Extração)", "Poda de Árvores / Supressão Vegetal", "Posto de Combustível / Transportador Revendedor Retalhista (TRR) / Melosa (Comboio)", "Pragas e Vetores (Controle)", "Serviços de Engenharia (Construção Civil / Manutenção Predial / Impermeabilização / Manutenção Elétrica)", "Terraplanagem / Projeto", "Topografia", "Transporte de Passageiros", "Treinamento e Consultorias", "Veículos (Locação)", "Máquinas Pesadas (Movimentação e Transporte de Carga) – Locação sem Operador", "Máquinas Pesadas (Movimentação e Transporte de Carga) – Locação com Operador", "Caminhão Guindauto (Munck)", "Compressores", "Gerador"],wide:true,note:'Selecione a categoria de serviço aplicável ao fornecedor.'},
+  {id:'taxId',label:'6. CNPJ',type:'text',required:true,placeholder:'Insira sua resposta'},
+  {id:'contactEmail',label:'7. E-MAIL DO FORNECEDOR',type:'email',required:true,placeholder:'Insira sua resposta'},
+  {id:'contactPhone',label:'8. TELEFONE (WHATSAPP)',type:'text',required:true,placeholder:'Insira sua resposta'}
+ ]},
+ {id:'cadastroFilial',title:'CADASTRO DE FILIAL',desc:'Dados necessários quando o fornecedor solicitado for filial.',order:5,questions:[
+  {id:'cnpjMatriz',label:'9. CNPJ MATRIZ',type:'text',required:true,placeholder:'Insira sua resposta'},
+  {id:'cnpjFilial',label:'10. CNPJ FILIAL',type:'text',required:true,placeholder:'Insira sua resposta'},
+  {id:'matrizPossuiCadastro',label:'11. A MATRIZ POSSUI CADASTRO?',type:'select',required:true,options:['SIM','NÃO']}
+ ]},
+ {id:'dadosServico',title:'DADOS DO SERVIÇO',desc:'Informações complementares sobre a prestação de serviço e vínculo contratual.',order:6,questions:[
+  {id:'vaiPrestarServico',label:'12. O FORNECEDOR VAI PRESTAR SERVIÇO?',type:'select',required:true,options:['SIM','NÃO']},
+  {id:'teraContrato',label:'13. O FORNECEDOR TERÁ CONTRATO?',type:'select',required:true,options:['SIM','NÃO']},
+  {id:'costCenter',label:'14. OBRA / CENTRO DE CUSTO',type:'select',required:true,options:["922", "949", "951", "960", "963", "967 - ARTERIS LITORAL"],note:'Selecione a obra ou centro de custo vinculado à solicitação.'}
+ ]},
+ {id:'anexos',title:'ANEXOS',desc:'Campo adicional do aplicativo para manter os documentos recebidos junto ao card do Kanban.',order:7,questions:[
+  {id:'attachments',label:'Anexos do fornecedor',type:'file',required:false,note:'Use para anexar documentos enviados pelo fornecedor quando houver.'}
+ ]}
+]
+let items=[];let schema=[];let quadrantAverages={};let selectedSectionId=null;let editQuestionId=null;let currentDetailId=null;
+const $=s=>document.querySelector(s);const $$=s=>Array.from(document.querySelectorAll(s));
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function requestCode(){const now=new Date();const mm=String(now.getMonth()+1).padStart(2,'0');const yy=now.getFullYear();let max=0;items.forEach(i=>{const d=i.requestDate?new Date(i.requestDate+'T12:00:00'):new Date(i.createdAt||0);if(d.getFullYear()===yy&&d.getMonth()===now.getMonth()){const m=String(i.id||i.requestId||'').trim().match(/^(?:CD-)?(\\d{2})-(\\d{2})$/i);if(m&&m[2]===mm)max=Math.max(max,Number(m[1]));}});return \`CD-\${String(max+1).padStart(2,'0')}-\${mm}\`}
+function migrateCadastroCodes(){let changed=false;items.forEach(i=>{const raw=String(i.id||i.requestId||'').trim();const m=raw.match(/^(?:CD-)?(\\d{2})-(\\d{2})$/i);if(!m)return;const code=\`CD-\${m[1]}-\${m[2]}\`;if(i.id!==code){i.id=code;changed=true}if(i.requestId!==undefined&&i.requestId!==code){i.requestId=code;changed=true}if(i.values&&i.values.requestId!==code){i.values.requestId=code;changed=true}});if(changed)localStorage.setItem(LS_ITEMS,JSON.stringify(items))}
+function uid(){return requestCode()}
+function load(){items=JSON.parse(localStorage.getItem(LS_ITEMS)||'[]');schema=JSON.parse(localStorage.getItem(LS_SCHEMA)||JSON.stringify(defaultSchema));quadrantAverages=JSON.parse(localStorage.getItem(LS_QUADRANT_AVG)||'{}');allStages.forEach(st=>{if(!quadrantAverages[st])quadrantAverages[st]={ms:0,count:0,updatedAt:null}});migrateSchema();enforceServiceDescriptionOptions();migrateStages();migrateCadastroCodes();if(!selectedSectionId&&schema[0])selectedSectionId=schema[0].id}
+const SERVICE_DESCRIPTION_OPTIONS=["Aço/Cimento/Concreto (Fabricação)", "Água – Caminhão Pipa", "Água – Galão ou Garrafa de Água Potável / Gelo", "Alimentação (Cozinha Industrial)", "Alimentação (Quentinha)", "Alojamento", "Ambulância / Remoção", "Análise do Concreto", "Andaimes e Formas (Locação)", "Ar-Condicionado – Central de Equipamentos Individuais (Manutenção)", "Asfalto e Pavimentação", "Auditoria do SGI (9k, 14k e 45k)", "Balsas e Equipamentos Marítimos", "Banheiro Químico (Transporte / Tratamento / Destinação Final)", "Calibração", "Coleta / Refinadora de Óleo Lubrificante (Rerrefino - Venda)", "Container (Locação)", "Descarte de Resíduos e Efluentes (Transporte / Destinação Final)", "Desmonte de Rocha com Explosivos", "Desmonte de Rocha sem Explosivos", "Etiloteste", "Extintores e Mangueiras", "Gases (Acetileno, Argônio, Oxigênio e Dióxido de Carbono) / Produtos Químicos Perigosos", "Hidrossemeadura (Sementes / Gramas / Mudas)", "Instalação de SPDA (Para-raios)", "Lavanderia", "Madeireira (de Lei)", "Mão de Obra Terceirizada", "Medicina do Trabalho – Programas, Exames Ocupacionais e Medições Ambientais", "Motosserra e Motopoda", "Pedreira / Areia / Brita (Fornecedores de Extração)", "Poda de Árvores / Supressão Vegetal", "Posto de Combustível / Transportador Revendedor Retalhista (TRR) / Melosa (Comboio)", "Pragas e Vetores (Controle)", "Serviços de Engenharia (Construção Civil / Manutenção Predial / Impermeabilização / Manutenção Elétrica)", "Terraplanagem / Projeto", "Topografia", "Transporte de Passageiros", "Treinamento e Consultorias", "Veículos (Locação)", "Máquinas Pesadas (Movimentação e Transporte de Carga) – Locação sem Operador", "Máquinas Pesadas (Movimentação e Transporte de Carga) – Locação com Operador", "Caminhão Guindauto (Munck)", "Compressores", "Gerador"];
+function enforceServiceDescriptionOptions(){
+  let changed=false;
+  for(const sec of schema){
+    const q=(sec.questions||[]).find(question=>question.id==='scope');
+    if(!q)continue;
+    if(q.manualOptions===true && Array.isArray(q.options) && q.options.length){
+      if(q.type!=='select'){q.type='select';changed=true;}
+      continue;
+    }
+    const same=Array.isArray(q.options)&&q.options.length===SERVICE_DESCRIPTION_OPTIONS.length&&q.options.every((value,index)=>value===SERVICE_DESCRIPTION_OPTIONS[index]);
+    if(q.type!=='select'||!same||q.required!==true||q.wide!==true){
+      q.type='select';
+      q.required=true;
+      q.wide=true;
+      q.options=[...SERVICE_DESCRIPTION_OPTIONS];
+      q.placeholder='';
+      q.note='Selecione a categoria de serviço aplicável ao fornecedor.';
+      changed=true;
+    }
+  }
+  if(changed)localStorage.setItem(LS_SCHEMA,JSON.stringify(schema));
+}
+function migrateSchema(){let changed=false;schema.forEach(sec=>(sec.questions||[]).forEach(q=>{if(q.type==='select'&&Array.isArray(q.options)){const before=q.options.length;q.options=q.options.map(x=>String(x).trim()).filter(x=>x&&x.toUpperCase()!=='TODOS'&&x.toUpperCase()!=='SELECIONE'&&x.toUpperCase()!=='SELECIONE...');if(q.options.length!==before)changed=true}}));const sys=schema.find(s=>s.id==='sys');if(sys){sys.desc='Campos gerados automaticamente no momento da solicitação e vinculados ao login do usuário.';sys.questions=(sys.questions||[]).filter(q=>q.id!=='stage');const ensure=(q,pos)=>{if(!sys.questions.some(x=>x.id===q.id)){sys.questions.splice(pos,0,q);changed=true}};ensure({id:'requesterName',label:'Nome do solicitante',type:'text',required:false,readonly:true,note:'Preenchido automaticamente conforme login.'},3);ensure({id:'requesterEmail',label:'E-mail do solicitante',type:'email',required:false,readonly:true,note:'Preenchido automaticamente conforme login.'},4);const req=sys.questions.find(q=>q.id==='requestId');if(req){req.label='Código da solicitação';req.note='Gerado no padrão CD-NÚMERO-MÊS. Ex.: CD-01-07 para o primeiro cadastro de julho.'}}const mat=schema.find(s=>s.id==='cadastroMatriz');if(mat){const before=(mat.questions||[]).length;mat.questions=(mat.questions||[]).filter(q=>q.id!=='requesterName'&&q.id!=='requesterEmail');if(mat.questions.length!==before)changed=true}if(changed)localStorage.setItem(LS_SCHEMA,JSON.stringify(schema))}
+function migrateStages(){const map={'Análise Documental':'Análise da Documentação','Validação Compliance':'Análise da Documentação','Validação Técnica':'Análise da Documentação','Aguardando Aprovação':'Cadastro no SAP','Homologado':'Cadastro no SAP','Cadastro no SAP / ERP':'Cadastro no SAP','Ativo para Compras':'Enviado para Controladoria'};let changed=false;items.forEach(i=>{if(map[i.stage]){i.stage=map[i.stage];changed=true}if(!allStages.includes(i.stage)){i.stage='Solicitação Recebida';changed=true}i.process=1;if(!Array.isArray(i.files)){i.files=[];changed=true}if(i.responsibleNote===undefined)i.responsibleNote=''});if(changed)saveItems()}
+function saveItems(){localStorage.setItem(LS_ITEMS,JSON.stringify(items));savePhaseAverages();saveQuadrantAverages()}
+function saveSchema(){localStorage.setItem(LS_SCHEMA,JSON.stringify(schema));toast('Formulário salvo com sucesso.');renderAll()}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+function workdayAdd(dateStr,days){let d=new Date(dateStr+'T12:00:00');let added=0;while(added<days){d.setDate(d.getDate()+1);const day=d.getDay();if(day!==0&&day!==6)added++}return d.toISOString().slice(0,10)}
+function isBusinessDay(d){const day=d.getDay();return day!==0&&day!==6}
+function daysDiff(a,b){
+  const A=new Date(a+'T12:00:00'),B=new Date(b+'T12:00:00');
+  if(A.toDateString()===B.toDateString())return 0;
+  const sign=B>A?1:-1;
+  let d=new Date(A);let count=0;
+  while((sign===1&&d<B)||(sign===-1&&d>B)){
+    d.setDate(d.getDate()+sign);
+    if(isBusinessDay(d))count+=sign;
+  }
+  return count;
+}
+function fmtDate(s){if(!s)return '-';const [y,m,d]=s.split('-');return \`\${d}/\${m}/\${y}\`}
+function formatDuration(ms){ms=Math.max(0,ms||0);const sec=Math.floor(ms/1000);const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),s=sec%60;return \`\${d}d \${String(h).padStart(2,'0')}h \${String(m).padStart(2,'0')}m \${String(s).padStart(2,'0')}s\`}
+function formatDurationShort(ms){return formatDuration(ms).replace(/ \\d+s$/,'')}
+function elapsedInStage(item){if(!item)return 0;return Math.max(0,Date.now()-(item.stageStartedAt||item.updatedAt||item.createdAt||Date.now()))}
+function stageTimeMs(item,stage){
+  item=item||{};
+  const saved=(item.timers&&item.timers[stage])?Number(item.timers[stage]):0;
+  const running=item.stage===stage?elapsedInStage(item):0;
+  return Math.max(0,saved+running);
+}
+function totalElapsed(item){return allStages.reduce((sum,stage)=>sum+stageTimeMs(item,stage),0)}
+function stageVisited(item,stage){return item?.stage===stage || stageTimeMs(item,stage)>0 || (item?.history||[]).some(h=>h.stage===stage||h.from===stage||h.to===stage)}
+function avgStageAll(stage){const visited=items.filter(i=>stageVisited(i,stage));if(!visited.length)return 0;return visited.reduce((s,i)=>s+stageTimeMs(i,stage),0)/visited.length}
+function phaseAverageObject(){return allStages.reduce((obj,stage)=>{obj[stage]=avgStageAll(stage);return obj},{})}
+function savePhaseAverages(){try{localStorage.setItem(LS_PHASE_AVG,JSON.stringify({updatedAt:Date.now(),averages:phaseAverageObject()}))}catch(e){}}
+function saveQuadrantAverages(){try{localStorage.setItem(LS_QUADRANT_AVG,JSON.stringify(quadrantAverages||{}))}catch(e){}}
+function quadrantAverageInfo(stageItems,stage){
+  const base=(stageItems||[]).filter(i=>i.stage===stage);
+  quadrantAverages=quadrantAverages||{};
+  const saved=quadrantAverages[stage]||{ms:0,count:0,updatedAt:null};
+  if(base.length){
+    const avg=base.reduce((s,i)=>s+stageTimeMs(i,stage),0)/base.length;
+    const changed=Math.abs((saved.ms||0)-avg)>500 || saved.count!==base.length;
+    quadrantAverages[stage]={ms:avg,count:base.length,updatedAt:Date.now()};
+    if(changed)saveQuadrantAverages();
+    return {ms:avg,count:base.length,stored:false,label:formatDuration(avg)};
+  }
+  return {ms:Number(saved.ms)||0,count:Number(saved.count)||0,stored:true,label:formatDuration(Number(saved.ms)||0)};
+}
+function avgQuadrantStage(stageItems,stage){return quadrantAverageInfo(stageItems,stage).label}
+function renderStageTimes(item){
+  const rows=allStages.map(stage=>{
+    const ms=stageTimeMs(item,stage);
+    const atual=item.stage===stage;
+    const media=avgStageAll(stage);
+    return \`<div class="detail-answer"><small>\${escapeHtml(stage)}\${atual?' • fase atual':''}</small><div>Tempo salvo: <b>\${formatDuration(ms)}</b><br><span style="color:#667b88">Média geral da fase: \${formatDurationShort(media)}</span></div></div>\`;
+  }).join('');
+  return \`<div class="detail-section"><div class="detail-section-title">Tempos salvos por fase <span>\${escapeHtml(item.stage||'')}</span></div><div class="detail-section-content">\${rows}</div></div>\`;
+}
+function slaStatus(item){if(['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage))return {txt:item.stage==='Declinado/Encerrado'?'Encerrado':'Concluído',cls:'ok',rank:3,diff:0,label:'Encerrado'};const diff=daysDiff(todayISO(),item.deadline);if(diff<0)return {txt:'Atrasado',cls:'late',rank:0,diff,label:\`Vencido há \${Math.abs(diff)} dia(s) útil(is)\`};if(diff<=1)return {txt:'Em alerta',cls:'warn',rank:1,diff,label:diff===0?'Vence hoje':'Vence em 1 dia útil'};return {txt:'No prazo',cls:'ok',rank:2,diff,label:\`Vence em \${diff} dias úteis\`}}
+function deadlineTime(item){return item.deadline?new Date(item.deadline+'T00:00:00').getTime():Number.MAX_SAFE_INTEGER}
+function queueSemaphoreLabel(st){if(st.cls==='late')return '🔴 Atraso';if(st.cls==='warn')return '🟡 Alerta';return '🟢 No prazo'}
+function orderedSections(){return [...schema].sort((a,b)=>(+a.order||0)-(+b.order||0))}
+function getQuestion(id){for(const s of schema){const q=(s.questions||[]).find(x=>x.id===id);if(q)return q}return null}
+function selectOptions(q){return (q.options||[]).map(x=>String(x).trim()).filter(x=>x&&x.toUpperCase()!=='TODOS'&&x.toUpperCase()!=='SELECIONE'&&x.toUpperCase()!=='SELECIONE...')}
+function currentView(){return $('.tab.active')?.dataset.tab||'form'}
+function switchTab(tab){$$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['form','kanban','dashboard','base','import','editor'].forEach(v=>$('#view-'+v)?.classList.toggle('hidden',v!==tab));if(tab==='import')bindSupplierLegacyImport();renderAll()}
+function initTabs(){$$('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab))}
+function renderForm(){const form=$('#supplierForm');form.innerHTML='';for(const sec of orderedSections()){const wrap=document.createElement('div');wrap.className='section';wrap.dataset.section=sec.id;wrap.innerHTML=\`<div class="section-title"><span>\${escapeHtml(sec.title)}</span><small>\${(sec.questions||[]).length} campos</small></div><div class="section-body"><p class="desc">\${escapeHtml(sec.desc||'')}</p><div class="grid"></div></div>\`;const grid=wrap.querySelector('.grid');for(const q of sec.questions||[]){const field=document.createElement('div');field.className='field '+(q.wide?'full':'');field.innerHTML=fieldHtml(q);grid.appendChild(field)}form.appendChild(wrap)}setAutoFields();form.querySelector('[name=priority]')?.addEventListener('change',setAutoFields);form.querySelector('[name=supplierCategory]')?.addEventListener('change',updateConditionalSections);form.querySelector('[name=matrizPossuiCadastro]')?.addEventListener('change',updateConditionalSections);form.querySelectorAll('input[type=file]').forEach(inp=>inp.addEventListener('change',handleFilePreview));updateConditionalSections()}
+function fieldHtml(q){const req=q.required?'<span class="req">*</span>':'';const ro=q.readonly?'readonly':'';let control='';const common=\`name="\${q.id}" \${q.required?'required':''} \${ro} placeholder="\${escapeAttr(q.placeholder||'')}"\`;
+ if(q.type==='textarea')control=\`<textarea \${common}></textarea>\`;
+ else if(q.type==='select')control=\`<select \${common}><option value="" selected>Selecione...</option>\${selectOptions(q).map(o=>\`<option value="\${escapeAttr(o)}">\${escapeHtml(o)}</option>\`).join('')}</select>\`;
+ else if(q.type==='file')control=\`<label class="file">📎 Selecionar anexos<input type="file" name="\${q.id}" multiple></label><div class="file-list" id="files-\${q.id}"></div>\`;
+ else control=\`<input type="\${q.type||'text'}" \${common}>\`;
+ return \`<label>\${escapeHtml(q.label)} \${req}\${control}</label>\${q.note?\`<div class="note">\${escapeHtml(q.note)}</div>\`:''}\`}
+function normalizePlatformUser(raw){if(!raw||typeof raw!=='object')return {};const name=raw.name||raw.displayName||raw.fullName||raw.nome||raw.userName||raw.username||raw.loginName||'';const email=raw.email||raw.mail||raw.userPrincipalName||raw.upn||raw.login||raw.usuario||raw.preferred_username||'';const login=raw.login||raw.username||raw.userName||raw.matricula||raw.id||email;return {name:String(name||'').trim(),email:String(email||'').trim(),login:String(login||'').trim(),source:raw.source||'platform'} }
+function readPlatformUser(){const candidates=[window.SEEL_USER,window.PLATFORM_USER,window.currentUser,window.authUser,window.user,window.__USER__,window.__APP_USER__];for(const c of candidates){const u=normalizePlatformUser(c);if(u.name&&(u.email||u.login))return u}try{if(window.parent&&window.parent!==window){const parentCandidates=[window.parent.SEEL_USER,window.parent.PLATFORM_USER,window.parent.currentUser,window.parent.authUser,window.parent.user];for(const c of parentCandidates){const u=normalizePlatformUser(c);if(u.name&&(u.email||u.login))return u}}}catch(e){}return {}}
+function setPlatformUser(user){const u=normalizePlatformUser(user);if(!u.name||(!u.email&&!u.login))return false;window.SEEL_USER=u;localStorage.setItem(LS_USER,JSON.stringify({...u,source:'platform',syncedAt:Date.now()}));renderUserLogin();return true}
+window.setPlatformUser=setPlatformUser;
+function getCurrentUser(){const platformUser=readPlatformUser();if(platformUser.name&&(platformUser.email||platformUser.login)){localStorage.setItem(LS_USER,JSON.stringify({...platformUser,source:'platform',syncedAt:Date.now()}));return platformUser}try{return JSON.parse(localStorage.getItem(LS_USER)||'{}')}catch(e){return {}}}
+function syncPlatformUser(showMessage=true){const platformUser=readPlatformUser();if(platformUser.name&&(platformUser.email||platformUser.login)){setPlatformUser(platformUser);if(showMessage)toast('Usuário sincronizado com a plataforma.');return true}if(showMessage){openLogin();toast('Usuário da plataforma ainda não recebido. Use o modo de teste ou conecte o objeto de usuário.')}return false}
+function renderUserLogin(){const u=getCurrentUser();const badge=$('#userBadge');if(badge)badge.innerHTML=u.name&&(u.email||u.login)?\`<strong>\${escapeHtml(u.name)}</strong>\${escapeHtml(u.email||u.login)}\${u.source==='platform'?' • Plataforma':' • Teste local'}\`:'<strong>Aguardando usuário da plataforma</strong>Nome/e-mail serão puxados do login';const sfName=$('#sfUserName'),sfMeta=$('#sfUserMeta'),sfAvatar=$('#sfUserAvatar');if(sfName)sfName.textContent=u.name||'Usuário';if(sfMeta)sfMeta.textContent=u.email||u.login||'Fornecedores';if(sfAvatar){const parts=String(u.name||'US').trim().split(/\\s+/).filter(Boolean);sfAvatar.textContent=(parts.length>1?(parts[0][0]+parts.at(-1)[0]):String(parts[0]||'US').slice(0,2)).toUpperCase()}setAutoFields()}
+function openLogin(){syncPlatformUser(false);const u=getCurrentUser();$('#loginName').value=u.name||'';$('#loginEmail').value=u.email||u.login||'';$('#loginModal').classList.add('show')}
+function closeLogin(){$('#loginModal').classList.remove('show')}
+function saveLogin(){const name=$('#loginName').value.trim();const email=$('#loginEmail').value.trim();if(!name||!email){toast('Informe nome e e-mail apenas para teste local.');return}localStorage.setItem(LS_USER,JSON.stringify({name,email,login:email,source:'teste-local',loggedAt:Date.now()}));$('#loginModal').classList.remove('show');renderUserLogin();toast('Usuário de teste registrado localmente.')}
+window.addEventListener('message',ev=>{const data=ev.data||{};if(data.type==='SEEL_USER'||data.type==='PLATFORM_USER'||data.user||data.currentUser){setPlatformUser(data.user||data.currentUser||data)}});
+window.addEventListener('platform:user',ev=>setPlatformUser(ev.detail||{}));
+function setAutoFields(){const f=$('#supplierForm');if(!f)return;const data=new FormData(f);const pr=String(data.get('priority')||'NORMAL (7 DIAS)').toUpperCase();const start=todayISO();const deadline=workdayAdd(start,pr.includes('EMERGENCIAL')?3:7);const u=getCurrentUser();const vals={requestId:requestCode(),requestDate:start,deadline,requesterName:u.name||'',requesterEmail:u.email||u.login||''};Object.entries(vals).forEach(([k,v])=>{const el=f.querySelector(\`[name=\${k}]\`);if(!el)return;if(k==='requestId'){if(!el.value)el.value=v}else el.value=v})}
+function updateConditionalSections(){const f=$('#supplierForm');if(!f)return;const tipo=String(f.querySelector('[name=supplierCategory]')?.value||'').trim().toUpperCase();const matrizPossui=String(f.querySelector('[name=matrizPossuiCadastro]')?.value||'').trim().toUpperCase();const matrix=f.querySelector('[data-section=cadastroMatriz]');const branch=f.querySelector('[data-section=cadastroFilial]');const service=f.querySelector('[data-section=dadosServico]');const anexos=f.querySelector('[data-section=anexos]');const setSection=(sec,show)=>{if(!sec)return;sec.classList.toggle('hidden',!show);sec.querySelectorAll('input,select,textarea').forEach(el=>{el.disabled=!show;const q=getQuestion(el.name);if(q)el.required=!!q.required&&show;if(!show&&!el.readOnly){if(el.type==='file'){el.value='';const box=$('#files-'+el.name);if(box)box.innerHTML=''}else if(el.tagName==='SELECT'){el.selectedIndex=0}else{el.value=''}}})};const supplierSelected=tipo==='MATRIZ'||tipo==='FILIAL';const showBranch=tipo==='FILIAL';const filialAnswered=matrizPossui==='SIM'||matrizPossui==='NÃO';const showMatrix=tipo==='MATRIZ'||(tipo==='FILIAL'&&matrizPossui==='NÃO');const showService=tipo==='MATRIZ'||(tipo==='FILIAL'&&filialAnswered);setSection(matrix,showMatrix);setSection(branch,showBranch);setSection(service,showService);setSection(anexos,showService);if(!supplierSelected){setSection(matrix,false);setSection(branch,false);setSection(service,false);setSection(anexos,false)}}
+
+function handleFilePreview(e){const box=$('#files-'+e.target.name);if(!box)return;box.innerHTML='';Array.from(e.target.files||[]).forEach(file=>{const div=document.createElement('div');div.className='file-chip';div.innerHTML=\`<span>📄 \${escapeHtml(file.name)}</span><small>\${Math.round(file.size/1024)} KB</small>\`;box.appendChild(div)})}
+async function collectForm(){const f=$('#supplierForm');if(!f.reportValidity())return null;const u=getCurrentUser();if(!u.name||(!u.email&&!u.login)){syncPlatformUser(true);return null}setAutoFields();const data=new FormData(f);const values={};for(const sec of orderedSections())for(const q of sec.questions||[]){if(q.type!=='file')values[q.id]=data.get(q.id)||''}
+ const files=[];for(const inp of f.querySelectorAll('input[type=file]')){for(const file of Array.from(inp.files||[])){files.push(await readFile(file,inp.name))}}
+ values.supplierName=values.supplierName||values.cnpjFilial||values.cnpjMatriz||'Fornecedor sem nome';values.taxId=values.taxId||values.cnpjFilial||values.cnpjMatriz||'';values.contactName=values.requesterName||'';values.requestType=values.priority||'';values.supplierCategory=values.supplierCategory||'';values.scope=values.scope||'';return {id:values.requestId||uid(),createdAt:Date.now(),updatedAt:Date.now(),stageStartedAt:Date.now(),stage:'Solicitação Recebida',process:1,history:[{stage:'Solicitação Recebida',at:Date.now(),action:'Criação'}],timers:{},files,values,...values}
+}
+function readFile(file,field){return new Promise(res=>{const r=new FileReader();r.onload=()=>res({field,name:file.name,type:file.type,size:file.size,data:r.result});r.readAsDataURL(file)})}
+function saveSupplier(item){items.unshift(item);saveItems();toast('Fornecedor enviado para o Kanban.');$('#supplierForm').reset();renderAll();switchTab('kanban')}
+function renderKanban(){fillFilterOptions();const filtered=getFilteredItems();renderBoard('#kanban1',stages1,filtered);renderBoard('#kanban2',stages2,filtered)}
+function fillFilterOptions(){const cat=$('#filterCategory'),st=$('#filterStatus'),work=$('#filterWork');const currentCat=cat?.value||'',currentSt=st?.value||'',currentWork=work?.value||'';if(cat)cat.innerHTML='<option value="">Todos</option>'+unique(items.map(i=>i.supplierCategory).filter(Boolean)).map(x=>\`<option \${x===currentCat?'selected':''}>\${escapeHtml(x)}</option>\`).join('');if(st)st.innerHTML='<option value="">Todos</option>'+allStages.map(x=>\`<option \${x===currentSt?'selected':''}>\${escapeHtml(x)}</option>\`).join('');if(work)work.innerHTML='<option value="">Todas</option>'+unique(items.map(i=>i.costCenter||i.values?.costCenter).filter(Boolean)).map(x=>\`<option \${x===currentWork?'selected':''}>\${escapeHtml(x)}</option>\`).join('')}
+function getFilteredItems(){const supplier=($('#filterSupplierName')?.value||'').toLowerCase().trim(),work=$('#filterWork')?.value||'',pr=$('#filterPriority')?.value||'',cat=$('#filterCategory')?.value||'',st=$('#filterStatus')?.value||'';return items.filter(i=>{const supplierName=String(i.supplierName||i.values?.supplierName||'').toLowerCase();const itemWork=i.costCenter||i.values?.costCenter||'';return (!supplier||supplierName.includes(supplier))&&(!work||itemWork===work)&&(!pr||i.priority===pr)&&(!cat||i.supplierCategory===cat)&&(!st||i.stage===st)})}
+function renderBoard(sel,stages,list){
+  const board=$(sel);
+  board.innerHTML='';
+  for(const stage of stages){
+    const stageItems=list.filter(i=>i.stage===stage).sort(sortCards);
+    const avgInfo=quadrantAverageInfo(stageItems,stage);
+    const avgLabel=avgInfo.stored?'Tempo médio salvo':'Tempo médio dos cards';
+    const col=document.createElement('div');
+    col.className='col';
+    col.style.setProperty('--phase-accent',stageAccent(stage));
+    col.innerHTML=\`<div class="col-head"><div class="col-icon">\${iconFor(stage)}</div><div><div class="col-title">\${escapeHtml(stage)}</div><p class="col-subtitle">\${subtitleFor(stage)}</p></div><div class="col-count">\${stageItems.length}</div></div><div class="sla-box"><div class="sla-row"><span>Fila</span><strong>🔴 → 🟡 → 🟢</strong></div><div class="sla-row"><span>\${avgLabel}</span><strong>\${avgInfo.label}</strong></div><div class="timer-row"><span>Total em aberto</span><strong>\${stageItems.filter(i=>!['Enviado para Controladoria','Declinado/Encerrado'].includes(i.stage)).length}</strong></div></div>\`;
+    col.ondragover=event=>event.preventDefault();
+    col.ondrop=event=>{
+      event.preventDefault();
+      const id=event.dataTransfer.getData('text/plain');
+      if(id&&typeof changeSupplierPhase==='function')changeSupplierPhase(id,stage);
+      col.classList.remove('drag-over');
+    };
+    col.ondragenter=()=>col.classList.add('drag-over');
+    col.ondragleave=()=>col.classList.remove('drag-over');
+    if(!stageItems.length){const e=document.createElement('div');e.className='empty-col';e.textContent='Nenhum fornecedor nesta fase';col.appendChild(e)}
+    else stageItems.forEach(item=>col.appendChild(cardEl(item)));
+    board.appendChild(col);
+  }
+  if(typeof renderKanbanTable==='function')renderKanbanTable();
+}
+
+function stageAccent(stage){
+  const map={
+    'Solicitação Recebida':'#1b6d8e',
+    'Enviado ao Fornecedor':'#1b6d8e',
+    'Aguardando Retorno do Fornecedor':'#f5c400',
+    'Análise da Documentação':'#1b6d8e',
+    'Cadastro no SAP':'#1b6d8e',
+    'Enviado para Controladoria':'#059669',
+    'Declinado/Encerrado':'#dc2626'
+  };
+  return map[stage]||'#1b6d8e';
+}
+function sortCards(a,b){const sa=slaStatus(a),sb=slaStatus(b);return (sa.rank-sb.rank)||(deadlineTime(a)-deadlineTime(b))||((isEmergency(a)?0:1)-(isEmergency(b)?0:1))||((a.createdAt||0)-(b.createdAt||0))}
+function cardEl(item){const st=slaStatus(item);const el=document.createElement('div');el.className='card '+st.cls;el.onclick=()=>openDetail(item.id);const respFiles=(item.files||[]).filter(f=>f.field==='responsavelCadastro');const obs=(item.responsibleNote||'').trim();el.innerHTML=\`<div class="card-top"><div><div class="card-id">\${escapeHtml(item.id)}</div><div class="card-title">\${escapeHtml(item.supplierName||'Fornecedor sem nome')}</div></div><div class="priority-pill \${isEmergency(item)?'p1':'p2'}">\${isEmergency(item)?'EME':'NOR'}</div></div><div class="card-lines"><div class="card-line"><span class="ic">🏢</span><span>\${escapeHtml(item.taxId||'-')}</span></div><div class="card-line"><span class="ic">📦</span><span>\${escapeHtml(item.supplierCategory||'-')}</span></div><div class="card-line"><span class="ic">👤</span><span>\${escapeHtml(item.contactName||'-')} | \${escapeHtml(item.contactPhone||'-')}</span></div></div><div class="card-desc">\${escapeHtml(item.scope||item.notes||'Sem descrição informada.')}</div>\${obs?\`<div class="card-resp-note"><b>Obs. Responsável</b>\${escapeHtml(obs).slice(0,160)}\${obs.length>160?'...':''}</div>\`:''}<div class="badges"><span class="badge \${isEmergency(item)?'orange':'blue'}">\${escapeHtml(item.priority||'NORMAL (7 DIAS)')}</span><span class="badge \${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">\${queueSemaphoreLabel(st)}</span><span class="badge \${st.cls==='late'?'red':st.cls==='warn'?'orange':'green'}">\${st.label}</span><span class="badge purple">\${escapeHtml(item.criticality||'-')}</span>\${item.files?.length?\`<span class="badge green">\${item.files.length} anexo(s)</span>\`:''}\${respFiles.length?\`<span class="badge yellow">\${respFiles.length} doc. resp.</span>\`:''}\${obs?\`<span class="badge yellow">Obs.</span>\`:''}</div><div class="card-meta"><span>Data limite: <strong>\${fmtDate(item.deadline)}</strong></span><span>\${st.txt}</span></div><div class="timer"><div class="timer-row"><span>Na fase agora</span><strong>\${formatDuration(elapsedInStage(item))}</strong></div><div class="timer-row"><span>Acumulado fase</span><strong>\${formatDuration(stageTimeMs(item,item.stage))}</strong></div><div class="timer-row"><span>Total acumulado</span><strong>\${formatDuration(totalElapsed(item))}</strong></div></div><div class="stage-actions"><button class="secondary" data-act="back">Voltar</button><button data-act="next">Avançar</button></div>\`;el.querySelectorAll('button').forEach(b=>b.onclick=(ev)=>{ev.stopPropagation();moveStage(item.id,b.dataset.act)});return el}
+function moveStage(id,dir){
+  const item=items.find(x=>x.id===id);if(!item)return;
+  const idx=allStages.indexOf(item.stage);let ni=dir==='next'?idx+1:idx-1;
+  if(ni<0||ni>=allStages.length){toast(dir==='next'?'Fornecedor já está na última fase.':'Fornecedor já está na primeira fase.');return}
+  const now=Date.now();
+  const fromStage=item.stage;
+  const durationMs=Math.max(0,now-(item.stageStartedAt||item.updatedAt||item.createdAt||now));
+  item.timers=item.timers||{};
+  item.timers[fromStage]=(item.timers[fromStage]||0)+durationMs;
+  item.history=item.history||[];
+  item.history.push({from:fromStage,to:allStages[ni],at:now,action:dir==='next'?'Avançou':'Voltou',durationMs});
+  item.stage=allStages[ni];item.process=stages2.includes(item.stage)?2:1;item.stageStartedAt=now;item.updatedAt=now;
+  saveItems();renderAll();toast('Fase atualizada e tempo da fase salvo.')
+}
+function openDetail(id){currentDetailId=id;const item=items.find(x=>x.id===id);if(!item)return;item.files=item.files||[];$('#detailTitle').textContent=item.supplierName||'Fornecedor';$('#detailSub').textContent=\`\${item.id} • \${item.stage} • \${slaStatus(item).txt}\`;const body=$('#detailBody');const st=slaStatus(item);const respFiles=item.files.filter(f=>f.field==='responsavelCadastro');const formFiles=item.files.filter(f=>f.field!=='responsavelCadastro');const resumo=\`\${item.supplierName||'Fornecedor sem nome'} • \${item.supplierCategory||'-'} • \${item.taxId||'-'}\`;body.innerHTML=\`<div class="detail-overview"><div class="detail-summary"><h3>Visão geral do cadastro</h3><p><b>\${escapeHtml(resumo)}</b><br>Solicitante: \${escapeHtml(item.requesterName||item.contactName||'-')} | \${escapeHtml(item.requesterEmail||'-')}<br>Serviço/escopo: \${escapeHtml(item.scope||'-')}<br>Obra: \${escapeHtml(item.costCenter||'-')}</p></div><div class="detail-summary"><h3>Status operacional</h3><p>Fase atual: <b>\${escapeHtml(item.stage)}</b><br>Semáforo: <b>\${queueSemaphoreLabel(st)}</b> • \${st.label}<br>SLA: <b>\${st.txt}</b> até \${fmtDate(item.deadline)}<br>Anexos totais: <b>\${item.files.length}</b> | Documentos do responsável: <b>\${respFiles.length}</b></p></div></div><div class="detail-grid"><div class="detail-kv"><small>CNPJ/CPF</small><strong>\${escapeHtml(item.taxId||'-')}</strong></div><div class="detail-kv"><small>Categoria</small><strong>\${escapeHtml(item.supplierCategory||'-')}</strong></div><div class="detail-kv"><small>Prioridade</small><strong>\${escapeHtml(item.priority||'-')}</strong></div><div class="detail-kv"><small>SLA</small><strong>\${st.txt} - \${fmtDate(item.deadline)}</strong></div><div class="detail-kv"><small>Fase atual</small><strong>\${escapeHtml(item.stage)}</strong></div><div class="detail-kv"><small>Tempo na fase agora</small><strong>\${formatDuration(elapsedInStage(item))}</strong></div><div class="detail-kv"><small>Acumulado da fase atual</small><strong>\${formatDuration(stageTimeMs(item,item.stage))}</strong></div><div class="detail-kv"><small>Tempo total acumulado</small><strong>\${formatDuration(totalElapsed(item))}</strong></div><div class="detail-kv"><small>Anexos</small><strong>\${item.files.length}</strong></div></div>\${renderStageTimes(item)}<div class="modal-actions"><button onclick="moveStage('\${item.id}','back')" class="secondary">Voltar fase</button><button onclick="moveStage('\${item.id}','next')">Avançar fase</button><button onclick="resetTimer('\${item.id}')" class="secondary">Zerar cronômetro da fase</button><button onclick="editDeadline('\${item.id}')" class="secondary">Alterar data limite</button><button onclick="deleteItem('\${item.id}')" class="danger">Excluir cadastro</button></div><div class="responsible-panel"><div class="responsible-panel-title">Acompanhamento do Responsável do Cadastro</div><div class="responsible-panel-body"><label>Observação interna do responsável<textarea id="responsibleNote" placeholder="Registre pendências, retorno do fornecedor, validações, documentação faltante ou qualquer observação necessária.">\${escapeHtml(item.responsibleNote||'')}</textarea></label><div class="responsible-actions"><button type="button" onclick="saveResponsibleNote('\${item.id}')">Salvar observação</button><label class="file" style="margin:0">📎 Anexar documentação do responsável<input id="responsibleFiles" type="file" multiple onchange="handleResponsibleFiles(event,'\${item.id}')"></label></div><div class="attachment-list" id="responsibleAttachmentList">\${renderResponsibleFiles(item)}</div></div></div>\`;
+ for(const sec of orderedSections()){let html=\`<div class="detail-section"><div class="detail-section-title"><span>\${escapeHtml(sec.title)}</span><small>\${(sec.questions||[]).length} campos</small></div><div class="detail-section-content">\`;for(const q of sec.questions||[]){let val='';if(q.type==='file'){const files=(item.files||[]).filter(f=>f.field===q.id);val=files.length?files.map((f,idx)=>\`<a href="\${f.data}" download="\${escapeAttr(f.name)}">📎 \${escapeHtml(f.name)}</a>\`).join('<br>'):'-'}else val=escapeHtml((item.values||{})[q.id]||item[q.id]||'-');html+=\`<div class="detail-answer \${q.type==='textarea'||q.wide?'full':''}"><small>\${escapeHtml(q.label)}</small><div>\${val}</div></div>\`}html+='</div></div>';body.insertAdjacentHTML('beforeend',html)}
+ if(item.importedData){body.insertAdjacentHTML('beforeend',\`<div class="detail-section"><div class="detail-section-title"><span>Dados originais importados</span><small>\${Object.keys(item.importedData).length} coluna(s)</small></div><div class="detail-section-content">\${Object.entries(item.importedData).filter(([,v])=>String(v??'').trim()).map(([k,v])=>\`<div class="detail-answer \${String(v).length>90?'full':''}"><small>\${escapeHtml(k)}</small><div>\${escapeHtml(v)}</div></div>\`).join('')}</div></div>\`)}
+ if(formFiles.length){body.insertAdjacentHTML('beforeend',\`<div class="detail-section"><div class="detail-section-title">Todos os anexos do formulário</div><div class="detail-section-content"><div class="detail-answer full"><div>\${formFiles.map(f=>\`<a href="\${f.data}" download="\${escapeAttr(f.name)}">📎 \${escapeHtml(f.name)}</a> <small>(\${Math.round((f.size||0)/1024)} KB)</small>\`).join('<br>')}</div></div></div></div>\`)}
+ const hist=(item.history||[]).map(h=>\`<div class="detail-answer"><small>\${new Date(h.at).toLocaleString('pt-BR')}\${h.durationMs?' • tempo salvo: '+formatDuration(h.durationMs):''}</small><div>\${escapeHtml(h.action||'Movimentação')} \${h.from?escapeHtml(h.from)+' → ':''}\${escapeHtml(h.to||h.stage||'')}</div></div>\`).join('');body.insertAdjacentHTML('beforeend',\`<div class="detail-section"><div class="detail-section-title">Histórico de movimentações</div><div class="detail-section-content">\${hist||'<div class="detail-answer"><div>Sem histórico.</div></div>'}</div></div>\`);$('#detailModal').classList.add('show')}
+function renderResponsibleFiles(item){const files=(item.files||[]).filter(f=>f.field==='responsavelCadastro');if(!files.length)return '<div class="empty-col" style="min-height:70px">Nenhuma documentação anexada pelo responsável.</div>';return files.map((f,idx)=>\`<div class="attachment-item"><div><a href="\${f.data}" download="\${escapeAttr(f.name)}">📎 \${escapeHtml(f.name)}</a><br><small>\${Math.round((f.size||0)/1024)} KB • \${f.uploadedAt?new Date(f.uploadedAt).toLocaleString('pt-BR'):'sem data'}</small></div><button class="danger" type="button" onclick="removeResponsibleFile('\${item.id}',\${idx})">Remover</button></div>\`).join('')}
+function saveResponsibleNote(id){const item=items.find(x=>x.id===id);if(!item)return;const note=$('#responsibleNote')?.value||'';item.responsibleNote=note;item.updatedAt=Date.now();item.history=item.history||[];item.history.push({stage:item.stage,at:Date.now(),action:'Observação do responsável atualizada'});saveItems();renderKanban();renderBase();toast('Observação salva no card.')}
+async function handleResponsibleFiles(ev,id){const item=items.find(x=>x.id===id);if(!item)return;item.files=item.files||[];const files=Array.from(ev.target.files||[]);for(const file of files){const f=await readFile(file,'responsavelCadastro');f.uploadedAt=Date.now();f.uploadedBy=(getCurrentUser().email||getCurrentUser().login||getCurrentUser().name||'Responsável');item.files.push(f)}item.updatedAt=Date.now();item.history=item.history||[];item.history.push({stage:item.stage,at:Date.now(),action:\`\${files.length} anexo(s) incluído(s) pelo responsável\`});saveItems();openDetail(id);renderKanban();renderBase();toast('Documentação anexada ao card.')}
+function removeResponsibleFile(id,idx){const item=items.find(x=>x.id===id);if(!item)return;const resp=(item.files||[]).filter(f=>f.field==='responsavelCadastro');const target=resp[idx];if(!target)return;if(!confirm('Remover este anexo do responsável?'))return;const realIdx=item.files.indexOf(target);if(realIdx>=0)item.files.splice(realIdx,1);item.updatedAt=Date.now();item.history=item.history||[];item.history.push({stage:item.stage,at:Date.now(),action:'Anexo do responsável removido'});saveItems();openDetail(id);renderKanban();renderBase();toast('Anexo removido.')}
+function resetTimer(id){const item=items.find(x=>x.id===id);if(!item)return;item.timers=item.timers||{};item.timers[item.stage]=0;item.stageStartedAt=Date.now();item.history=item.history||[];item.history.push({stage:item.stage,at:Date.now(),action:'Cronômetro da fase zerado'});saveItems();renderAll();openDetail(id);toast('Cronômetro da fase zerado.')}
+function editDeadline(id){const item=items.find(x=>x.id===id);const d=prompt('Nova data limite (AAAA-MM-DD):',item.deadline);if(!d)return;if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)){toast('Data inválida.');return}item.deadline=d;item.updatedAt=Date.now();saveItems();renderAll();openDetail(id);toast('Data limite alterada.')}
+function deleteItem(id){if(!confirm('Excluir este cadastro de fornecedor?'))return;items=items.filter(x=>x.id!==id);saveItems();$('#detailModal').classList.remove('show');renderAll();toast('Cadastro excluído.')}
+function renderDashboard(){const total=items.length;const pct=v=>total?Math.round((v/total)*100):0;const open=items.filter(i=>!['Enviado para Controladoria','Declinado/Encerrado'].includes(i.stage)).length;const semaphoreItems=items.filter(i=>!['Enviado para Controladoria','Declinado/Encerrado'].includes(i.stage));const late=semaphoreItems.filter(i=>slaStatus(i).cls==='late').length;const alert=semaphoreItems.filter(i=>slaStatus(i).cls==='warn').length;const onTime=semaphoreItems.filter(i=>slaStatus(i).cls==='ok').length;const urgent=items.filter(isEmergency).length;const normal=items.filter(isNormal).length;const approved=items.filter(i=>i.stage==='Enviado para Controladoria').length;const closed=items.filter(i=>i.stage==='Declinado/Encerrado').length;$('#kpis').innerHTML=[['Quantidade de Solicitações',total],['Cadastros Realizados',approved],['Em aberto',open],['Declinado/Encerrado',closed]].map(x=>\`<div class="kpi-card"><small>\${x[0]}</small><strong>\${x[1]}</strong></div>\`).join('');renderBars('#chartStatus',countBy(items,'stage'));renderBars('#chartCategory',countBy(items,'supplierCategory'));const typeCounts={'Urgente / Emergencial':urgent,'Normal':normal};renderBars('#chartType',typeCounts);const slaCounts={'🔴 Em atraso':late,'🟡 Em alerta':alert,'🟢 No prazo':onTime};renderBars('#chartSla',slaCounts);renderDurationBars('#chartAvgStage',phaseAverageObject());savePhaseAverages()}
+function renderBars(sel,obj){const el=$(sel);const entries=Object.entries(obj).filter(([k])=>k).sort((a,b)=>b[1]-a[1]);const max=Math.max(1,...entries.map(e=>e[1]));if(!entries.length){el.innerHTML='<div class="empty-col">Sem dados para exibir</div>';return}el.innerHTML=entries.map(([k,v],idx)=>\`<div class="bar-row"><label>\${escapeHtml(k)}</label><div class="bar-track"><div class="bar-fill \${['','green','orange','red','purple'][idx%5]}" style="width:\${Math.round(v/max*100)}%"></div></div><div class="bar-metric">\${v} (\${Math.round(v/(items.length||1)*100)}%)</div></div>\`).join('')}
+function renderDurationBars(sel,obj){const el=$(sel);if(!el)return;const entries=Object.entries(obj).filter(([stage,ms])=>ms>0);const max=Math.max(1,...entries.map(e=>e[1]));if(!entries.length){el.innerHTML='<div class="empty-col">Sem tempo registrado ainda</div>';return}el.innerHTML=entries.map(([stage,ms],idx)=>\`<div class="bar-row"><label>\${escapeHtml(stage)}</label><div class="bar-track"><div class="bar-fill \${['','green','orange','red','purple'][idx%5]}" style="width:\${Math.max(4,Math.round(ms/max*100))}%"></div></div><div class="bar-metric">\${formatDurationShort(ms)}</div></div>\`).join('')}
+function renderBase(){const rows=getFilteredItems();$('#baseCount').textContent=\`\${rows.length} registros\`;$('#baseRows').innerHTML=rows.map(i=>\`<tr><td>\${escapeHtml(i.id)}</td><td>\${fmtDate(i.requestDate)}</td><td>\${escapeHtml(i.supplierName||'-')}</td><td>\${escapeHtml(i.taxId||'-')}</td><td>\${escapeHtml(i.supplierCategory||'-')}</td><td>\${escapeHtml(i.priority||'-')}</td><td>\${escapeHtml(i.stage)}</td><td>\${slaStatus(i).txt}</td><td><button onclick="openDetail('\${i.id}')" class="secondary">Abrir</button></td></tr>\`).join('')||'<tr><td colspan="9">Nenhum registro encontrado.</td></tr>'}
+function renderEditor(){const list=$('#editorSections');list.innerHTML='';for(const sec of orderedSections()){const div=document.createElement('div');div.className='editor-section-card '+(sec.id===selectedSectionId?'active':'');div.innerHTML=\`<b>\${escapeHtml(sec.title)}</b><small>Ordem \${sec.order} • \${(sec.questions||[]).length} perguntas</small>\`;div.onclick=()=>{selectedSectionId=sec.id;editQuestionId=null;renderEditor()};list.appendChild(div)}const sec=schema.find(s=>s.id===selectedSectionId);if(!sec)return;$('#editorTitle').textContent='Editar: '+sec.title;$('#secTitle').value=sec.title;$('#secOrder').value=sec.order;$('#secDesc').value=sec.desc||'';const qs=$('#editorQuestions');qs.innerHTML='<h3>Perguntas da seção</h3>'+(sec.questions||[]).map(q=>\`<div class="editor-question-card"><div><b>\${escapeHtml(q.label)}</b><small><span class="editor-badge">\${escapeHtml(q.type||'text')}</span>\${q.required?'<span class="editor-badge required">Obrigatório</span>':''}\${q.readonly?'<span class="editor-badge">Sistema</span>':''} ID: \${escapeHtml(q.id)}</small><small>\${escapeHtml(q.note||'')}</small></div><div>Ordem \${(sec.questions||[]).indexOf(q)+1}</div><div class="editor-actions-mini"><button onclick="moveQuestion('\${q.id}',-1)" class="secondary">↑</button><button onclick="moveQuestion('\${q.id}',1)" class="secondary">↓</button><button onclick="editQuestion('\${q.id}')">Editar</button><button onclick="removeQuestion('\${q.id}')" class="danger">Excluir</button></div></div>\`).join('')}
+function editQuestion(id){editQuestionId=id;const q=getQuestion(id);if(!q)return;const label=prompt('Texto da pergunta:',q.label);if(label===null)return;q.label=label;const type=prompt('Tipo (text, email, date, number, select, textarea, file):',q.type||'text');if(type)q.type=type;const req=confirm('Marcar como obrigatório? OK = Sim | Cancelar = Não');q.required=req;if(q.type==='select'){const opts=prompt('Opções separadas por ponto e vírgula:',(q.options||[]).join('; '));if(opts!==null){q.options=opts.split(';').map(x=>x.trim()).filter(x=>x&&x.toUpperCase()!=='TODOS'&&x.toUpperCase()!=='SELECIONE'&&x.toUpperCase()!=='SELECIONE...')}}const note=prompt('Observação da pergunta:',q.note||'');if(note!==null)q.note=note;renderEditor()}
+function removeQuestion(id){const q=getQuestion(id);if(q?.readonly){toast('Campo de sistema não pode ser excluído.');return}if(!confirm('Excluir pergunta?'))return;for(const sec of schema){sec.questions=(sec.questions||[]).filter(q=>q.id!==id)}renderEditor()}
+function moveQuestion(id,delta){const sec=schema.find(s=>(s.questions||[]).some(q=>q.id===id));if(!sec)return;const arr=sec.questions;const idx=arr.findIndex(q=>q.id===id);const ni=idx+delta;if(ni<0||ni>=arr.length)return;[arr[idx],arr[ni]]=[arr[ni],arr[idx]];renderEditor()}
+function addQuestion(){const sec=schema.find(s=>s.id===selectedSectionId);if(!sec)return;const label=prompt('Nome da nova pergunta:','Nova pergunta');if(!label)return;const id='q_'+Date.now();const type=prompt('Tipo (text, select, textarea, date, email, number, file):','text')||'text';const q={id,label,type,required:false};if(type==='select'){const opts=prompt('Opções separadas por ponto e vírgula:','Sim; Não');q.options=(opts||'Sim;Não').split(';').map(x=>x.trim()).filter(x=>x&&x.toUpperCase()!=='TODOS'&&x.toUpperCase()!=='SELECIONE'&&x.toUpperCase()!=='SELECIONE...')}sec.questions.push(q);renderEditor()}
+function addSection(){const title=prompt('Nome da nova seção:','Nova seção');if(!title)return;const id='sec_'+Date.now();schema.push({id,title,desc:'',order:schema.length+1,questions:[]});selectedSectionId=id;renderEditor()}
+function applySection(){const sec=schema.find(s=>s.id===selectedSectionId);if(!sec)return;sec.title=$('#secTitle').value||sec.title;sec.order=Number($('#secOrder').value)||sec.order;sec.desc=$('#secDesc').value||'';renderEditor()}
+function deleteSection(){const sec=schema.find(s=>s.id===selectedSectionId);if(!sec)return;if(sec.id==='sys'){toast('Seção automática não pode ser excluída.');return}if(!confirm('Excluir seção e perguntas?'))return;schema=schema.filter(s=>s.id!==selectedSectionId);selectedSectionId=schema[0]?.id;renderEditor()}
+function exportCsv(){const headers=['ID','Data','Tipo Cadastro','Tipo Fornecedor','Solicitante','Email Solicitante','Nome Fornecedor','Descricao Servico','CNPJ','Email Fornecedor','Telefone WhatsApp','CNPJ Matriz','CNPJ Filial','Matriz Possui Cadastro','Vai Prestar Servico','Tera Contrato','Obra','Fase','Data Limite','SLA','Tempos por Fase','Médias por Fase'];const rows=items.map(i=>[i.id,i.requestDate,i.priority,i.supplierCategory,i.requesterName,i.requesterEmail,i.supplierName,i.scope,i.taxId,i.contactEmail,i.contactPhone,i.cnpjMatriz,i.cnpjFilial,i.matrizPossuiCadastro,i.vaiPrestarServico,i.teraContrato,i.costCenter,i.stage,i.deadline,slaStatus(i).txt,allStages.map(st=>st+': '+formatDuration(stageTimeMs(i,st))).join(' | '),allStages.map(st=>st+': '+formatDuration(avgStageAll(st))).join(' | ')]);downloadText('fornecedores_seel.csv',[headers,...rows].map(r=>r.map(v=>\`"\${String(v||'').replaceAll('"','""')}"\`).join(';')).join('\\n'),'text/csv;charset=utf-8')}
+function exportJson(){downloadText('backup_fornecedores_seel.json',JSON.stringify({items,schema,quadrantAverages},null,2),'application/json')}
+function importJsonFile(file){const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);if(obj.items)items=obj.items;if(obj.schema)schema=obj.schema;if(obj.quadrantAverages)quadrantAverages=obj.quadrantAverages;saveItems();localStorage.setItem(LS_SCHEMA,JSON.stringify(schema));saveQuadrantAverages();renderAll();toast('Backup importado com sucesso.')}catch(e){toast('Arquivo JSON inválido.')}};r.readAsText(file)}
+function downloadText(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function demo(){const f=$('#supplierForm');if(!getCurrentUser().name)localStorage.setItem(LS_USER,JSON.stringify({name:'Thiago Moraes',email:'thiago.moraes@seel.com.br',loggedAt:Date.now()}));renderUserLogin();const vals={costCenter:'OBRA 967 - ARTERIS LITORAL',priority:'EMERGENCIAL (3 DIAS)',supplierCategory:'MATRIZ',supplierName:'Fornecedor Exemplo Engenharia Ltda',scope:'Prestação de serviço para apoio operacional da obra.',taxId:'12.345.678/0001-90',contactEmail:'comercial@fornecedorexemplo.com.br',contactPhone:'(11) 99999-9999',cnpjMatriz:'12.345.678/0001-90',cnpjFilial:'',matrizPossuiCadastro:'SIM',vaiPrestarServico:'SIM',teraContrato:'SIM'};Object.entries(vals).forEach(([k,v])=>{const el=f.querySelector(\`[name=\${k}]\`);if(el)el.value=v});setAutoFields();toast('Exemplo carregado.')}
+function clearAll(){if(!confirm('Limpar todos os cadastros de fornecedores?'))return;items=[];quadrantAverages={};allStages.forEach(st=>quadrantAverages[st]={ms:0,count:0,updatedAt:null});saveItems();saveQuadrantAverages();renderAll();toast('Base limpa.')}
+function renderAll(){renderForm();renderKanban();renderDashboard();renderBase();renderEditor()}
+function countBy(arr,key){return arr.reduce((a,i)=>{const k=i[key]||'Não informado';a[k]=(a[k]||0)+1;return a},{})}
+function unique(a){return [...new Set(a.filter(Boolean))]}
+function avgStage(arr,stage){const base=stage?arr.filter(i=>stageVisited(i,stage)):arr;if(!base.length)return '0d 00h 00m 00s';const total=base.reduce((s,i)=>s+(stage?stageTimeMs(i,stage):elapsedInStage(i)),0)/base.length;return formatDuration(total)}
+function iconFor(s){return {'Solicitação Recebida':'📥','Enviado ao Fornecedor':'📨','Aguardando Retorno do Fornecedor':'⏳','Análise da Documentação':'📄','Cadastro no SAP':'🖥️','Enviado para Controladoria':'🏛️','Declinado/Encerrado':'🚫'}[s]||'•'}
+function subtitleFor(s){return {'Solicitação Recebida':'Entrada da demanda','Enviado ao Fornecedor':'Solicitação enviada','Aguardando Retorno do Fornecedor':'Pendência de retorno','Análise da Documentação':'Conferência documental','Cadastro no SAP':'Cadastro sistêmico','Enviado para Controladoria':'Envio final','Declinado/Encerrado':'Solicitação declinada ou encerrada'}[s]||''}
+function isEmergency(item){return String(item?.priority||'').toUpperCase().includes('EMERGENCIAL')||String(item?.priority||'').toUpperCase().includes('URGENTE')}
+function isNormal(item){return String(item?.priority||item?.requestType||'').toUpperCase().includes('NORMAL')}
+function escapeHtml(v){return String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function escapeAttr(v){return escapeHtml(v).replace(/'/g,'&#39;')}
+
+
+/* Importação da base antiga de fornecedores */
+let supplierImportWorkbook=null,supplierImportRows=[],supplierImportHeaders=[],supplierImportFile=null;
+const supplierImportMappings=[
+ {key:'id',label:'Código da solicitação',aliases:['codigo','id','numero','solicitacao','protocolo'],hint:'Código ou identificador do registro.'},
+ {key:'supplier',label:'Nome do fornecedor',aliases:['nome fornecedor','fornecedor','razao social','empresa'],hint:'Obrigatório para identificar o fornecedor.',required:true},
+ {key:'taxId',label:'CNPJ / CPF',aliases:['cnpj','cpf','documento','cnpj cpf'],hint:'Documento principal do fornecedor.'},
+ {key:'category',label:'Tipo de fornecedor',aliases:['tipo fornecedor','matriz filial','categoria fornecedor','categoria'],hint:'Matriz ou filial.'},
+ {key:'priority',label:'Tipo de cadastro',aliases:['tipo cadastro','prioridade','urgencia','prazo'],hint:'Normal ou emergencial.'},
+ {key:'stage',label:'Fase / status',aliases:['fase','status','etapa','situacao'],hint:'Fase atual do processo.'},
+ {key:'requestDate',label:'Data da solicitação',aliases:['data solicitacao','data cadastro','data entrada','data'],hint:'Data de abertura do registro.'},
+ {key:'deadline',label:'Data limite',aliases:['data limite','prazo final','vencimento','deadline'],hint:'Data limite de atendimento.'},
+ {key:'work',label:'Obra / centro de custo',aliases:['obra','centro custo','cc','centro de custo'],hint:'Obra ou departamento vinculado.'},
+ {key:'scope',label:'Descrição do serviço',aliases:['descricao servico','servico','escopo','objeto','descricao'],hint:'Descrição do serviço ou fornecimento.'},
+ {key:'supplierEmail',label:'E-mail do fornecedor',aliases:['email fornecedor','e mail fornecedor','email contato'],hint:'Contato principal do fornecedor.'},
+ {key:'supplierPhone',label:'Telefone / WhatsApp',aliases:['telefone','whatsapp','celular','telefone fornecedor'],hint:'Telefone de contato.'},
+ {key:'requester',label:'Solicitante',aliases:['solicitante','requisitante','responsavel','nome solicitante'],hint:'Pessoa que iniciou a solicitação.'},
+ {key:'requesterEmail',label:'E-mail do solicitante',aliases:['email solicitante','e mail solicitante','login solicitante'],hint:'E-mail do solicitante.'}
+];
+function supplierNorm(v){return String(v??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+function supplierImportCell(row,key){const el=$(\`#supplierMap_\${key}\`);return el?.value?row[el.value]:''}
+function supplierDetectHeader(m){const normalized=supplierImportHeaders.map(h=>({raw:h,n:supplierNorm(h)}));for(const alias of m.aliases){const a=supplierNorm(alias);const exact=normalized.find(x=>x.n===a);if(exact)return exact.raw}for(const alias of m.aliases){const a=supplierNorm(alias);const partial=normalized.find(x=>x.n.includes(a)||a.includes(x.n));if(partial)return partial.raw}return ''}
+function supplierMappingHtml(m){const detected=supplierDetectHeader(m);return \`<div class="mapping-field"><label class="\${m.required?'mapping-required':''}">\${escapeHtml(m.label)}</label><select id="supplierMap_\${m.key}" data-supplier-map="\${m.key}"><option value="">Não importar</option>\${supplierImportHeaders.map(h=>\`<option value="\${escapeAttr(h)}" \${h===detected?'selected':''}>\${escapeHtml(h)}</option>\`).join('')}</select><small>\${escapeHtml(m.hint)}</small></div>\`}
+function renderSupplierMappings(){const grid=$('#supplierMappingGrid');if(!grid)return;if(!supplierImportHeaders.length){grid.innerHTML='<div class="import-empty" style="grid-column:1/-1">As colunas aparecerão após o carregamento do arquivo.</div>';return}grid.innerHTML=supplierImportMappings.map(supplierMappingHtml).join('');grid.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>{supplierUpdateSummary();supplierRenderPreview()}))}
+function supplierParseDate(v){if(v===null||v===undefined||v==='')return '';if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);if(typeof v==='number'&&window.XLSX){const d=XLSX.SSF.parse_date_code(v);if(d)return \`\${d.y}-\${String(d.m).padStart(2,'0')}-\${String(d.d).padStart(2,'0')}\`}const s=String(v).trim();let m=s.match(/^(\\d{4})[-\\/.](\\d{1,2})[-\\/.](\\d{1,2})/);if(m)return \`\${m[1]}-\${m[2].padStart(2,'0')}-\${m[3].padStart(2,'0')}\`;m=s.match(/^(\\d{1,2})[-\\/.](\\d{1,2})[-\\/.](\\d{2,4})/);if(m){const y=m[3].length===2?'20'+m[3]:m[3];return \`\${y}-\${m[2].padStart(2,'0')}-\${m[1].padStart(2,'0')}\`}const d=new Date(s);return isNaN(d)?'':d.toISOString().slice(0,10)}
+function supplierNormalizeStage(v){const s=supplierNorm(v),fallback=$('#supplierDefaultStage')?.value||stages1[0];if(!s)return fallback;const rules=[['Solicitação Recebida',['solicitacao recebida','recebida','nao iniciado','novo']],['Enviado ao Fornecedor',['enviado ao fornecedor','enviado fornecedor','enviado']],['Aguardando Retorno do Fornecedor',['aguardando retorno','retorno fornecedor','pendente fornecedor']],['Análise da Documentação',['analise documentacao','analise documental','validacao documental','compliance']],['Cadastro no SAP',['cadastro sap','sap','cadastro erp','erp']],['Enviado para Controladoria',['enviado controladoria','controladoria','finalizado','concluido']],['Declinado/Encerrado',['declinado','encerrado','cancelado','reprovado']]];for(const [stage,aliases] of rules)if(aliases.some(a=>s.includes(supplierNorm(a))))return stage;return fallback}
+function supplierNormalizePriority(v){const s=supplierNorm(v);if(s.includes('emerg')||s.includes('urgent')||s==='p1'||s.includes('3 dia'))return 'EMERGENCIAL (3 DIAS)';if(s.includes('normal')||s==='p2'||s.includes('7 dia'))return 'NORMAL (7 DIAS)';return $('#supplierDefaultPriority')?.value||'NORMAL (7 DIAS)'}
+function supplierNormalizeCategory(v){const s=supplierNorm(v);if(s.includes('filial'))return 'FILIAL';if(s.includes('matriz'))return 'MATRIZ';return $('#supplierDefaultCategory')?.value||'MATRIZ'}
+function supplierRowReady(row){return Boolean(String(supplierImportCell(row,'supplier')??'').trim()||String(supplierImportCell(row,'taxId')??'').trim()||String(supplierImportCell(row,'id')??'').trim())}
+function supplierRowDuplicate(row){const rawId=String(supplierImportCell(row,'id')??'').trim().toLowerCase(),tax=String(supplierImportCell(row,'taxId')??'').replace(/\\D/g,'');return items.some(i=>(rawId&&String(i.id||'').trim().toLowerCase()===rawId)||(tax&&String(i.taxId||'').replace(/\\D/g,'')===tax))}
+function supplierUpdateSummary(){const ready=supplierImportRows.filter(supplierRowReady).length,dups=supplierImportRows.filter(supplierRowReady).filter(supplierRowDuplicate).length;$('#supplierRowsCount').textContent=supplierImportRows.length;$('#supplierReadyCount').textContent=ready;$('#supplierDuplicateCount').textContent=dups;const hasName=$('#supplierMap_supplier')?.value;$('#supplierRunImport').disabled=!supplierImportRows.length||!ready||!hasName}
+function supplierPreviewValue(row,key){const v=supplierImportCell(row,key);return String(v??'').trim()||'—'}
+function supplierRenderPreview(){const target=$('#supplierPreview'),label=$('#supplierPreviewLabel');if(!target)return;if(!supplierImportRows.length){target.innerHTML='<div class="import-empty">Selecione uma planilha para visualizar os primeiros registros.</div>';if(label)label.textContent='Nenhum arquivo carregado';return}const valid=supplierImportRows.filter(supplierRowReady),rows=valid.slice(0,10);if(label)label.textContent=\`Mostrando \${rows.length} de \${valid.length} registro(s) válido(s)\`;target.innerHTML=\`<table class="import-preview"><thead><tr><th>Código</th><th>Fornecedor</th><th>CNPJ/CPF</th><th>Tipo</th><th>Cadastro</th><th>Fase</th><th>Obra</th><th>Data</th></tr></thead><tbody>\${rows.map(r=>\`<tr><td>\${escapeHtml(supplierPreviewValue(r,'id'))}</td><td>\${escapeHtml(supplierPreviewValue(r,'supplier'))}</td><td>\${escapeHtml(supplierPreviewValue(r,'taxId'))}</td><td>\${escapeHtml(supplierNormalizeCategory(supplierImportCell(r,'category')))}</td><td>\${escapeHtml(supplierNormalizePriority(supplierImportCell(r,'priority')))}</td><td>\${escapeHtml(supplierNormalizeStage(supplierImportCell(r,'stage')))}</td><td>\${escapeHtml(supplierPreviewValue(r,'work'))}</td><td>\${escapeHtml(supplierParseDate(supplierImportCell(r,'requestDate'))||'—')}</td></tr>\`).join('')}</tbody></table>\`}
+function supplierImportResult(message,type='success'){const el=$('#supplierImportResult');if(!el)return;el.className=\`import-result show \${type}\`;el.innerHTML=message}
+function supplierLoadSheet(name){if(!supplierImportWorkbook||!name)return;try{const sheet=supplierImportWorkbook.Sheets[name];supplierImportRows=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:false,dateNF:'dd/mm/yyyy'}).filter(r=>Object.values(r).some(v=>String(v??'').trim()));supplierImportHeaders=[...new Set(supplierImportRows.flatMap(r=>Object.keys(r)))];renderSupplierMappings();supplierUpdateSummary();supplierRenderPreview();supplierImportResult(\`\${supplierImportRows.length} linha(s) lida(s) na aba <strong>\${escapeHtml(name)}</strong>. Revise o relacionamento das colunas.\`,'warning')}catch(e){supplierImportResult('Não foi possível ler a aba selecionada.','error')}}
+function supplierFormatSize(n){if(!n)return '0 KB';return n<1048576?\`\${Math.max(1,Math.round(n/1024))} KB\`:\`\${(n/1048576).toFixed(1)} MB\`}
+async function supplierHandleFile(file){if(!file)return;if(!window.XLSX){supplierImportResult('A biblioteca de leitura de Excel não foi carregada. Verifique a conexão e tente novamente.','error');return}supplierImportFile=file;$('#supplierImportName').textContent=file.name;$('#supplierImportSize').textContent=supplierFormatSize(file.size);$('#supplierImportMeta').classList.add('show');try{const buffer=await file.arrayBuffer();supplierImportWorkbook=XLSX.read(buffer,{type:'array',cellDates:true});const select=$('#supplierImportSheet');select.disabled=false;select.innerHTML=supplierImportWorkbook.SheetNames.map(n=>\`<option value="\${escapeAttr(n)}">\${escapeHtml(n)}</option>\`).join('');supplierLoadSheet(supplierImportWorkbook.SheetNames[0])}catch(e){supplierImportResult('Arquivo inválido ou não reconhecido. Utilize Excel, XLS ou CSV.','error')}}
+function supplierResetLegacyImport(){supplierImportWorkbook=null;supplierImportRows=[];supplierImportHeaders=[];supplierImportFile=null;const input=$('#supplierLegacyFile');if(input)input.value='';const select=$('#supplierImportSheet');if(select){select.disabled=true;select.innerHTML='<option value="">Selecione um arquivo</option>'}$('#supplierImportMeta')?.classList.remove('show');const result=$('#supplierImportResult');if(result){result.className='import-result';result.innerHTML=''}renderSupplierMappings();supplierUpdateSummary();supplierRenderPreview()}
+function supplierNextImportId(used){const mm=String(new Date().getMonth()+1).padStart(2,'0');let n=1,id='';do{id=\`CD-\${String(n++).padStart(2,'0')}-\${mm}\`}while(used.has(id.toLowerCase()));return id}
+function supplierRunLegacyImport(){const policy=$('#supplierDuplicatePolicy')?.value||'skip',used=new Set(items.map(i=>String(i.id||'').toLowerCase()));let imported=0,skipped=0,renamed=0;const now=Date.now();for(const row of supplierImportRows.filter(supplierRowReady)){const duplicate=supplierRowDuplicate(row);if(duplicate&&policy==='skip'){skipped++;continue}let id=String(supplierImportCell(row,'id')??'').trim();if(!id||used.has(id.toLowerCase())){id=supplierNextImportId(used);if(duplicate)renamed++}used.add(id.toLowerCase());const supplier=String(supplierImportCell(row,'supplier')??'').trim()||'Fornecedor sem nome';const taxId=String(supplierImportCell(row,'taxId')??'').trim();const priority=supplierNormalizePriority(supplierImportCell(row,'priority')),category=supplierNormalizeCategory(supplierImportCell(row,'category')),stage=supplierNormalizeStage(supplierImportCell(row,'stage'));const requestDate=supplierParseDate(supplierImportCell(row,'requestDate'))||todayISO();let deadline=supplierParseDate(supplierImportCell(row,'deadline'));if(!deadline)deadline=workdayAdd(requestDate,priority.includes('EMERGENCIAL')?3:7);const values={requestId:id,requestDate,deadline,requesterName:String(supplierImportCell(row,'requester')??'').trim(),requesterEmail:String(supplierImportCell(row,'requesterEmail')??'').trim(),priority,supplierCategory:category,supplierName:supplier,scope:String(supplierImportCell(row,'scope')??'').trim(),taxId,contactEmail:String(supplierImportCell(row,'supplierEmail')??'').trim(),contactPhone:String(supplierImportCell(row,'supplierPhone')??'').trim(),costCenter:String(supplierImportCell(row,'work')??'').trim()};items.push({id,createdAt:now,updatedAt:now,stageStartedAt:now,stage,process:1,history:[{stage,at:now,action:'Importado da base antiga'}],timers:{},files:[],responsibleNote:'',values,...values,imported:true,importedAt:now,importedSource:supplierImportFile?.name||'',importedData:{...row}});imported++}saveItems();renderAll();supplierUpdateSummary();const parts=[\`<strong>\${imported}</strong> registro(s) importado(s)\`];if(skipped)parts.push(\`\${skipped} repetido(s) ignorado(s)\`);if(renamed)parts.push(\`\${renamed} código(s) substituído(s)\`);supplierImportResult(\`\${parts.join(' • ')}. Os fornecedores já estão disponíveis no Kanban e na Base Geral.\`,'success');toast(\`\${imported} fornecedor(es) importado(s).\`)}
+function bindSupplierLegacyImport(){const input=$('#supplierLegacyFile');if(input&&!input.dataset.bound){input.addEventListener('change',e=>supplierHandleFile(e.target.files?.[0]));input.dataset.bound='1'}const drop=$('#supplierImportDrop');if(drop&&!drop.dataset.bound){['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.add('dragover')}));['dragleave','drop'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.remove('dragover')}));drop.addEventListener('drop',e=>supplierHandleFile(e.dataTransfer?.files?.[0]));drop.dataset.bound='1'}const sheet=$('#supplierImportSheet');if(sheet&&!sheet.dataset.bound){sheet.addEventListener('change',e=>supplierLoadSheet(e.target.value));sheet.dataset.bound='1'}['supplierDefaultStage','supplierDefaultPriority','supplierDefaultCategory','supplierDuplicatePolicy'].forEach(id=>{const el=$('#'+id);if(el&&!el.dataset.bound){el.addEventListener('change',()=>{supplierUpdateSummary();supplierRenderPreview()});el.dataset.bound='1'}});const run=$('#supplierRunImport');if(run&&!run.dataset.bound){run.addEventListener('click',supplierRunLegacyImport);run.dataset.bound='1'}const reset=$('#supplierResetImport');if(reset&&!reset.dataset.bound){reset.addEventListener('click',supplierResetLegacyImport);reset.dataset.bound='1'}const remove=$('#supplierImportRemove');if(remove&&!remove.dataset.bound){remove.addEventListener('click',supplierResetLegacyImport);remove.dataset.bound='1'}renderSupplierMappings()}
+function bindSupplyFlowSearch(){const search=$('#sfGlobalSearch');if(!search||search.dataset.bound)return;search.addEventListener('input',()=>{const filter=$('#filterSupplierName');if(filter)filter.value=search.value;switchTab('kanban');renderKanban();renderBase()});search.dataset.bound='1'}
+
+function bind(){initTabs();bindSupplyFlowSearch();$('#btnLogin').onclick=()=>syncPlatformUser(true);$('#btnSaveLogin').onclick=saveLogin;$('#btnCloseLogin').onclick=closeLogin;$('#loginModal').addEventListener('click',e=>{if(e.target.id==='loginModal')closeLogin()});syncPlatformUser(false);renderUserLogin();$('#btnSaveSupplier').onclick=async e=>{e.preventDefault();const item=await collectForm();if(item)saveSupplier(item)};$('#btnResetForm').onclick=e=>{e.preventDefault();$('#supplierForm').reset();setAutoFields()};$('#btnDemo').onclick=e=>{e.preventDefault();demo()};['filterWork','filterSupplierName','filterPriority','filterCategory','filterStatus'].forEach(id=>{const el=$('#'+id);if(el)el.addEventListener('input',()=>{renderKanban();renderBase()})});if($('#btnExportCsv'))$('#btnExportCsv').onclick=exportCsv;if($('#btnExportJson'))$('#btnExportJson').onclick=exportJson;if($('#btnImportJson'))$('#btnImportJson').onclick=()=>$('#jsonImport').click();if($('#jsonImport'))$('#jsonImport').onchange=e=>e.target.files[0]&&importJsonFile(e.target.files[0]);if($('#btnClearAll'))$('#btnClearAll').onclick=clearAll;$('#closeDetail').onclick=()=>$('#detailModal').classList.remove('show');$('#detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')$('#detailModal').classList.remove('show')});$('#btnNewSection').onclick=addSection;$('#btnNewQuestion').onclick=addQuestion;$('#btnRestoreForm').onclick=()=>{if(confirm('Restaurar formulário padrão?')){schema=JSON.parse(JSON.stringify(defaultSchema));selectedSectionId='sys';saveSchema()}};$('#btnSaveSchema').onclick=saveSchema;$('#btnApplySection').onclick=applySection;$('#btnDeleteSection').onclick=deleteSection;setInterval(()=>{const c=$('#clockNow');if(c)c.textContent=new Date().toLocaleString('pt-BR');if(currentView()==='kanban')updateSupplierKanbanTimers();if($('#detailModal').classList.contains('show')){const active=document.activeElement;const editing=active&&$('#detailModal').contains(active)&&['INPUT','TEXTAREA','SELECT','BUTTON','A'].includes(active.tagName);if(currentDetailId&&!editing)openDetail(currentDetailId)}},1000)}
+load();bind();renderAll();
+<\/script>
+
+<style id="supplier-v3-complete-flow-style">
+  /* Cabeçalho no mesmo padrão dos módulos de Contratos e Fretes */
+  .sf-topbar,
+  .sf-page-head{display:none !important;}
+  .sf-workspace{width:100% !important;margin-left:0 !important;min-height:100vh !important;}
+  .sf-workspace > main,
+  .sf-workspace > main.container{
+    width:min(100%,calc(100% - 68px)) !important;
+    max-width:1800px !important;
+    margin:0 auto !important;
+    padding:0 0 46px !important;
+  }
+  .tabs.sf-module-tabs,
+  .sf-module-tabs{
+    position:static !important;
+    width:min(100%,calc(100% - 68px)) !important;
+    max-width:1800px !important;
+    margin:24px auto 18px !important;
+    padding:5px !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:4px !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    background:#fff !important;
+    border:1px solid var(--sf-line) !important;
+    border-radius:14px !important;
+    box-shadow:0 6px 20px rgba(15,53,80,.05) !important;
+    overflow-x:auto !important;
+  }
+  .tabs.sf-module-tabs .tab,
+  .sf-module-tabs .tab{
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    min-height:43px !important;
+    padding:0 13px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    border-radius:10px !important;
+    border:0 !important;
+    background:transparent !important;
+    color:#5f7380 !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+    box-shadow:none !important;
+  }
+  .tabs.sf-module-tabs .tab:hover,
+  .sf-module-tabs .tab:hover{background:#eef5f9 !important;color:#003d63 !important;transform:none !important;}
+  .tabs.sf-module-tabs .tab.active,
+  .sf-module-tabs .tab.active{background:#ffdd00 !important;color:#003d63 !important;box-shadow:none !important;}
+  .tabs.sf-module-tabs .tab-icon,
+  .sf-module-tabs .tab-icon{font-size:14px !important;line-height:1 !important;flex:0 0 auto !important;}
+  .sf-module-tabs .sf-tab-dot{display:none !important;}
+
+  /* Fluxo horizontal completo com sete fases fixas */
+  #view-kanban{overflow:hidden !important;}
+  #view-kanban .process-board{overflow-x:auto !important;overflow-y:hidden !important;padding-bottom:10px !important;scrollbar-gutter:stable;}
+  #view-kanban .process-head{position:sticky;left:0;z-index:3;width:max-content;min-width:100%;background:#fff;padding-bottom:4px;}
+  #view-kanban .kanban.process1{
+    display:grid !important;
+    grid-template-columns:repeat(7,236px) !important;
+    width:max-content !important;
+    min-width:100% !important;
+    gap:14px !important;
+    align-items:start !important;
+    overflow:visible !important;
+    padding:0 2px 8px !important;
+  }
+  #view-kanban .kanban.process2,
+  #view-kanban #kanban2{display:none !important;}
+  #view-kanban .col{
+    width:236px !important;
+    min-width:236px !important;
+    min-height:510px !important;
+    padding:10px !important;
+    border-radius:20px !important;
+    background:#eef4f7 !important;
+    border:1px solid #d0dde5 !important;
+  }
+  #view-kanban .col-head{min-height:58px !important;gap:8px !important;margin-bottom:8px !important;align-items:center !important;}
+  #view-kanban .col-icon{
+    width:34px !important;height:34px !important;border-radius:10px !important;
+    background:#e8f1f6 !important;color:#075985 !important;border:1px solid #cadbe5 !important;font-size:0 !important;
+  }
+  #view-kanban .col-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  #view-kanban .col-title{font-size:14px !important;line-height:1.03 !important;color:#072f4b !important;}
+  #view-kanban .col-subtitle{font-size:10px !important;line-height:1.1 !important;margin-top:3px !important;}
+  #view-kanban .col-count{min-width:38px !important;width:38px !important;height:46px !important;border-radius:13px !important;font-size:14px !important;background:#fff !important;border:1px solid #d0dde5 !important;}
+  #view-kanban .sla-box{min-height:96px !important;padding:9px 10px !important;border-radius:14px !important;margin-bottom:8px !important;background:#fff !important;}
+  #view-kanban .sla-row,
+  #view-kanban .timer-row{font-size:10px !important;gap:6px !important;}
+  #view-kanban .sla-row strong,
+  #view-kanban .timer-row strong{font-size:10px !important;}
+  #view-kanban .empty-col{min-height:100px !important;padding:16px 8px !important;border-radius:14px !important;font-size:11px !important;background:rgba(255,255,255,.58) !important;}
+
+  /* Cards compactos no padrão visual de Fretes */
+  #view-kanban .supplier-flow-card{
+    --sla-color:#0b5cab;
+    --sla-soft:#eaf3ff;
+    --sla-border:#b9d3ef;
+    display:grid !important;
+    gap:6px !important;
+    min-height:0 !important;
+    padding:9px !important;
+    margin-bottom:8px !important;
+    border:1px solid #d8e2e9 !important;
+    border-left:5px solid var(--sla-color) !important;
+    border-right:2px solid #f0b33f !important;
+    border-radius:18px !important;
+    background:#fff !important;
+    box-shadow:0 6px 16px rgba(11,53,83,.08) !important;
+    cursor:pointer !important;
+  }
+  #view-kanban .supplier-flow-card.late{--sla-color:#dc2626;--sla-soft:#fff0ef;--sla-border:#efc1bd;}
+  #view-kanban .supplier-flow-card.warn{--sla-color:#d79b00;--sla-soft:#fff7df;--sla-border:#edd28a;}
+  #view-kanban .supplier-flow-card.ok{--sla-color:#23865f;--sla-soft:#eaf8f1;--sla-border:#b8e2cf;}
+  #view-kanban .supplier-flow-card:hover{transform:translateY(-1px) !important;box-shadow:0 10px 22px rgba(11,53,83,.12) !important;}
+  #view-kanban .supplier-flow-card .card-top{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;gap:7px !important;align-items:start !important;}
+  #view-kanban .supplier-flow-card .card-id{font-size:8px !important;letter-spacing:.07em !important;margin-bottom:2px !important;}
+  #view-kanban .supplier-flow-card .card-title{font-size:11.5px !important;line-height:1.08 !important;max-height:27px !important;overflow:hidden !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;}
+  #view-kanban .supplier-flow-card .priority-pill{min-width:34px !important;width:34px !important;height:34px !important;border-radius:11px !important;font-size:9px !important;}
+  #view-kanban .supplier-flow-card .card-lines{display:grid !important;gap:4px !important;margin:0 !important;}
+  #view-kanban .supplier-flow-card .card-line{
+    display:grid !important;grid-template-columns:23px minmax(0,1fr) !important;align-items:center !important;gap:6px !important;
+    min-height:29px !important;padding:4px 6px !important;border:1px solid #dfe8ed !important;border-radius:10px !important;background:#f9fbfc !important;
+    color:#4f6d7f !important;font-size:9px !important;line-height:1.15 !important;
+  }
+  #view-kanban .supplier-flow-card .card-line .ic{width:23px !important;height:23px !important;border-radius:8px !important;display:grid !important;place-items:center !important;background:#edf4f8 !important;border:1px solid #d0dfe8 !important;color:#075985 !important;}
+  #view-kanban .supplier-flow-card .card-line .ic svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  #view-kanban .supplier-flow-card .supplier-stage-chip{display:flex !important;align-items:center !important;gap:7px !important;min-height:38px !important;padding:7px 9px !important;border:1px solid #dce6ec !important;border-radius:11px !important;background:#f6f9fb !important;color:#123750 !important;font-size:10px !important;font-weight:900 !important;text-transform:uppercase !important;}
+  #view-kanban .supplier-flow-card .supplier-stage-chip .ic{width:22px;height:22px;border-radius:8px;display:grid;place-items:center;background:#fff;border:1px solid #d5e1e8;color:#075985;flex:0 0 22px;}
+  #view-kanban .supplier-flow-card .supplier-stage-chip .ic svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  #view-kanban .supplier-flow-card .badges{gap:4px !important;margin:0 !important;min-height:0 !important;}
+  #view-kanban .supplier-flow-card .badge{padding:3px 6px !important;font-size:8px !important;}
+  #view-kanban .supplier-flow-card .card-meta{margin:0 !important;padding:6px 7px !important;border:1px solid var(--sla-border) !important;border-radius:10px !important;background:var(--sla-soft) !important;font-size:9px !important;}
+  #view-kanban .supplier-flow-card .card-meta strong{color:var(--sla-color) !important;}
+  #view-kanban .supplier-flow-card .timer{margin:0 !important;padding:6px 7px !important;border-radius:10px !important;background:#f5f8fa !important;border:1px solid #d4e0e8 !important;gap:3px !important;}
+  #view-kanban .supplier-flow-card .timer-row,
+  #view-kanban .supplier-flow-card .timer-row strong{font-size:8.5px !important;line-height:1.12 !important;}
+  #view-kanban .supplier-phase-selector-wrap{display:grid !important;gap:4px !important;margin:0 !important;padding:6px !important;border:1px solid #d8e4ea !important;border-radius:10px !important;background:#fbfdfe !important;}
+  #view-kanban .supplier-phase-selector-wrap label{margin:0 !important;color:#607887 !important;font-size:8px !important;font-weight:900 !important;letter-spacing:.04em !important;text-transform:uppercase !important;}
+  #view-kanban .supplier-phase-selector-wrap .phase-select{width:100% !important;height:31px !important;min-height:31px !important;margin:0 !important;padding:4px 24px 4px 7px !important;border:1px solid #c9d9e3 !important;border-radius:8px !important;background:#fff !important;color:#0b3553 !important;font-size:9px !important;font-weight:800 !important;}
+  #view-kanban .supplier-card-actions{display:grid !important;grid-template-columns:1fr 1fr !important;gap:6px !important;}
+  #view-kanban .supplier-card-actions button{min-height:29px !important;padding:0 6px !important;border-radius:9px !important;font-size:9.5px !important;}
+  #view-kanban .supplier-card-actions .secondary{background:#fff !important;color:#0b3553 !important;border:1px solid #d5e2e9 !important;}
+  #view-kanban .card-resp-note,
+  #view-kanban .card-desc,
+  #view-kanban .stage-actions{display:none !important;}
+
+  /* Visual alinhado ao Kanban de Orçamentos: coluna com destaque por fase,
+     chip de status no card, faixa de prazo e feedback de arrastar-e-soltar. */
+  #view-kanban .col{border-top:3px solid var(--phase-accent, #1b6d8e) !important;transition:box-shadow .12s !important;}
+  #view-kanban .col.drag-over{box-shadow:0 0 0 2px var(--phase-accent, #1b6d8e) inset !important;background:#e4f0f6 !important;}
+  #view-kanban .supplier-flow-card{cursor:grab !important;}
+  #view-kanban .supplier-flow-card.dragging{opacity:.45 !important;}
+  #view-kanban .supplier-status-chip-row{margin-top:5px !important;}
+  #view-kanban .supplier-status-chip{display:inline-flex !important;align-items:center !important;max-width:100% !important;min-height:18px !important;padding:2px 7px !important;border-radius:999px !important;font-size:7.5px !important;font-weight:900 !important;text-transform:uppercase !important;letter-spacing:.03em !important;line-height:1.3 !important;white-space:normal !important;background:rgba(11,92,171,.12) !important;color:#0b5cab !important;}
+  #view-kanban .supplier-status-chip--late{background:rgba(220,38,38,.12) !important;color:#dc2626 !important;}
+  #view-kanban .supplier-status-chip--warn{background:rgba(215,155,0,.14) !important;color:#a15c00 !important;}
+  #view-kanban .supplier-status-chip--ok{background:rgba(35,134,95,.14) !important;color:#1c6e4c !important;}
+  #view-kanban .supplier-deadline-strip{display:flex !important;justify-content:space-between !important;align-items:center !important;gap:8px !important;margin-top:8px !important;padding:5px 8px !important;border-radius:9px !important;font-size:9px !important;font-weight:800 !important;background:#eaf3ff !important;color:#0b5cab !important;}
+  #view-kanban .supplier-deadline-strip strong{color:inherit !important;font-size:9px !important;font-weight:900 !important;}
+  #view-kanban .supplier-deadline-strip--late{background:#fff0ef !important;color:#dc2626 !important;}
+  #view-kanban .supplier-deadline-strip--warn{background:#fff7df !important;color:#a15c00 !important;}
+  #view-kanban .supplier-deadline-strip--ok{background:#eaf8f1 !important;color:#1c6e4c !important;}
+  .supplier-kanban-table-panel{margin-top:18px;}
+  .supplier-kanban-table-scroll{max-height:480px;overflow:auto;}
+  .supplier-kanban-table-scroll thead th{position:sticky;top:0;z-index:1;}
+
+  /* Edição completa dentro da janela de detalhes */
+  .supplier-detail-phase-selector{flex:1 1 100%;display:grid;grid-template-columns:150px minmax(220px,1fr);align-items:center;gap:10px;padding:10px 12px;border:1px solid #d5e2e9;border-radius:12px;background:#f5f9fb;}
+  .supplier-detail-phase-selector label{margin:0;color:#0b3553;font-size:11px;font-weight:900;}
+  .supplier-detail-phase-selector select{margin:0;min-height:38px;padding:7px 10px;font-size:12px;font-weight:800;}
+  .supplier-edit-toolbar{position:sticky;top:73px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin-bottom:12px;background:#f2f7f9;border:1px solid #d7e3e9;border-radius:13px;}
+  .supplier-edit-toolbar strong{color:#0b3553;}
+  .supplier-edit-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .supplier-edit-section{border:1px solid #d8e4ea;border-radius:14px;overflow:hidden;margin-bottom:12px;background:#fff;}
+  .supplier-edit-section h3{margin:0;padding:11px 13px;background:#f0f5f8;color:#0b3553;font-size:13px;border-bottom:1px solid #d8e4ea;}
+  .supplier-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:13px;}
+  .supplier-edit-field.full{grid-column:1/-1;}
+
+  @media(max-width:760px){
+    .sf-workspace > main,.sf-workspace > main.container,.tabs.sf-module-tabs,.sf-module-tabs{width:min(100%,calc(100% - 20px)) !important;}
+    .tabs.sf-module-tabs,.sf-module-tabs{margin-top:16px !important;flex-wrap:nowrap !important;}
+    .supplier-detail-phase-selector,.supplier-edit-grid{grid-template-columns:1fr !important;}
+  }
+</style>
+<script id="supplier-v3-complete-flow-script">
+(function(){
+  'use strict';
+
+  const COMPLETE_SUPPLIER_STAGES = [
+    'Solicitação Recebida',
+    'Enviado ao Fornecedor',
+    'Aguardando Retorno do Fornecedor',
+    'Análise da Documentação',
+    'Cadastro no SAP',
+    'Enviado para Controladoria',
+    'Declinado/Encerrado'
+  ];
+
+  function flowIcon(name){
+    const icons={
+      inbox:'<svg viewBox="0 0 24 24"><path d="M4 4h16v13H4z"></path><path d="M4 13h5l2 3h2l2-3h5"></path></svg>',
+      send:'<svg viewBox="0 0 24 24"><path d="m3 11 18-8-8 18-2-8z"></path><path d="m11 13 4-4"></path></svg>',
+      clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
+      document:'<svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M15 3v4h4M9 11h6M9 15h6"></path></svg>',
+      monitor:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>',
+      building:'<svg viewBox="0 0 24 24"><path d="M5 21V4h10v17M15 9h4v12M8 8h0M12 8h0M8 12h0M12 12h0M8 16h0M12 16h0"></path></svg>',
+      close:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>',
+      id:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8" cy="11" r="2"></circle><path d="M5.5 16c.8-1.5 1.7-2 2.5-2s1.7.5 2.5 2M13 10h5M13 14h5"></path></svg>',
+      box:'<svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>',
+      user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"></circle><path d="M5.5 19a6.5 6.5 0 0 1 13 0"></path></svg>',
+      map:'<svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"></path><path d="M9 3v15M15 6v15"></path></svg>'
+    };
+    return icons[name]||icons.document;
+  }
+
+  function flowStageIcon(stage){
+    const map={
+      'Solicitação Recebida':'inbox',
+      'Enviado ao Fornecedor':'send',
+      'Aguardando Retorno do Fornecedor':'clock',
+      'Análise da Documentação':'document',
+      'Cadastro no SAP':'monitor',
+      'Enviado para Controladoria':'building',
+      'Declinado/Encerrado':'close'
+    };
+    return flowIcon(map[stage]||'document');
+  }
+
+  function normalizeSavedStages(){
+    const aliases={
+      'Análise Documental':'Análise da Documentação',
+      'Validação Compliance':'Análise da Documentação',
+      'Validação Técnica':'Análise da Documentação',
+      'Aguardando Aprovação':'Cadastro no SAP',
+      'Homologado':'Cadastro no SAP',
+      'Cadastro no SAP / ERP':'Cadastro no SAP',
+      'Ativo para Compras':'Enviado para Controladoria',
+      'Finalizado':'Enviado para Controladoria',
+      'Concluído':'Enviado para Controladoria',
+      'Cancelado':'Declinado/Encerrado'
+    };
+    let changed=false;
+    items.forEach(item=>{
+      const mapped=aliases[item.stage]||item.stage;
+      if(mapped!==item.stage){item.stage=mapped;changed=true;}
+      if(!COMPLETE_SUPPLIER_STAGES.includes(item.stage)){item.stage='Solicitação Recebida';changed=true;}
+      item.process=1;
+    });
+    if(changed) saveItems();
+  }
+
+  window.iconFor = flowStageIcon;
+
+  window.changeSupplierPhase = function(id, selectedPhase){
+    const item=items.find(record=>record.id===id);
+    if(!item||!COMPLETE_SUPPLIER_STAGES.includes(selectedPhase)||item.stage===selectedPhase) return;
+    const now=Date.now();
+    const fromStage=item.stage;
+    const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(fromStage);
+    const durationMs=terminal?0:Math.max(0,now-(item.stageStartedAt||item.updatedAt||item.createdAt||now));
+    item.timers=item.timers||{};
+    item.timers[fromStage]=(item.timers[fromStage]||0)+durationMs;
+    item.history=item.history||[];
+    item.history.push({from:fromStage,to:selectedPhase,at:now,action:'Fase selecionada manualmente',durationMs});
+    item.stage=selectedPhase;
+    item.process=1;
+    item.stageStartedAt=now;
+    item.updatedAt=now;
+    saveItems();
+    renderAll();
+    if(currentDetailId===id&&document.querySelector('#detailModal.show')) openDetail(id);
+    toast('Fase atualizada e tempo da etapa anterior salvo.');
+  };
+
+  window.renderKanban = function(){
+    normalizeSavedStages();
+    fillFilterOptions();
+    const filtered=getFilteredItems();
+    renderBoard('#kanban1',COMPLETE_SUPPLIER_STAGES,filtered);
+    const second=document.querySelector('#kanban2');
+    if(second){second.innerHTML='';second.classList.add('hidden');}
+  };
+
+  const baseRenderBoard=window.renderBoard;
+  window.renderBoard=function(selector,stageList,list){
+    baseRenderBoard(selector,stageList,list);
+    document.querySelectorAll(\`\${selector} .col\`).forEach(col=>{
+      const title=col.querySelector('.col-title')?.textContent?.trim()||'';
+      const icon=col.querySelector('.col-icon');
+      if(icon) icon.innerHTML=flowStageIcon(title);
+    });
+  };
+
+  // Atualiza somente o texto dos cronometros dos cards, sem recriar o DOM.
+  // Recriar o board a cada segundo (renderKanban) destruia o <select> de fase
+  // sempre que o usuario tentava abrir o dropdown para escolher uma opcao.
+  window.updateSupplierKanbanTimers = function(){
+    if(currentView()!=='kanban') return;
+    const byId=new Map(items.map(record=>[String(record.id),record]));
+    document.querySelectorAll('[data-supplier-phase-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-phase-timer'));
+      if(!item) return;
+      const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage);
+      el.textContent=terminal?'Encerrado':formatDuration(elapsedInStage(item));
+    });
+    document.querySelectorAll('[data-supplier-stage-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-stage-timer'));
+      if(item) el.textContent=formatDuration(stageTimeMs(item,item.stage));
+    });
+    document.querySelectorAll('[data-supplier-total-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-total-timer'));
+      if(item) el.textContent=formatDuration(totalElapsed(item));
+    });
+  };
+
+  window.renderKanbanTable = function(){
+    const rows=getFilteredItems();
+    const body=document.getElementById('supplierKanbanTableRows');
+    if(!body) return;
+    body.innerHTML=rows.length?rows.map(item=>{
+      const st=slaStatus(item);
+      const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage);
+      return \`<tr>
+        <td>\${escapeHtml(item.id)}</td>
+        <td>\${escapeHtml(item.supplierName||'-')}</td>
+        <td>\${escapeHtml(item.taxId||'-')}</td>
+        <td>\${escapeHtml(item.supplierCategory||'-')}</td>
+        <td>\${escapeHtml(item.stage)}</td>
+        <td>\${escapeHtml(item.priority||'-')}</td>
+        <td>\${fmtDate(item.deadline)}</td>
+        <td><span class="badge \${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">\${st.txt}</span></td>
+        <td>\${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</td>
+        <td><button type="button" class="secondary" onclick="openDetail('\${escapeAttr(item.id)}')">Ver detalhes</button></td>
+      </tr>\`;
+    }).join(''):'<tr><td colspan="10">Nenhum fornecedor encontrado com os filtros atuais.</td></tr>';
+    const count=document.getElementById('supplierKanbanTableCount');
+    if(count) count.textContent=\`\${rows.length} registro(s)\`;
+  };
+
+  window.cardEl=function(item){
+    const st=slaStatus(item);
+    const el=document.createElement('div');
+    el.className='card supplier-flow-card '+st.cls;
+    el.onclick=()=>openDetail(item.id);
+    el.draggable=true;
+    el.addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain',item.id);el.classList.add('dragging')});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    const requester=item.requesterName||item.values?.requesterName||item.contactName||'-';
+    const phone=item.contactPhone||item.values?.contactPhone||'';
+    const work=item.costCenter||item.values?.costCenter||'-';
+    const category=item.supplierCategory||item.values?.supplierCategory||'-';
+    const service=item.scope||item.values?.scope||item.notes||'-';
+    const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage);
+    const phaseOptions=COMPLETE_SUPPLIER_STAGES.map(stage=>\`<option value="\${escapeAttr(stage)}" \${stage===item.stage?'selected':''}>\${escapeHtml(stage)}</option>\`).join('');
+
+    el.innerHTML=\`
+      <div class="card-top">
+        <div><div class="card-id">\${escapeHtml(item.id)}</div><div class="card-title">\${escapeHtml(item.supplierName||'Fornecedor sem nome')}</div></div>
+        <div class="priority-pill \${isEmergency(item)?'p1':'p2'}">\${isEmergency(item)?'EME':'NOR'}</div>
+      </div>
+      <div class="supplier-status-chip-row">
+        <span class="supplier-status-chip supplier-status-chip--\${st.cls}">\${escapeHtml(item.stage)}</span>
+      </div>
+      <div class="card-lines">
+        <div class="card-line"><span class="ic">\${flowIcon('user')}</span><span><b>Solicitante</b><br>\${escapeHtml(requester)}\${phone?' • '+escapeHtml(phone):''}</span></div>
+        <div class="card-line"><span class="ic">\${flowIcon('map')}</span><span><b>Obra / Centro de Custo</b><br>\${escapeHtml(work)}</span></div>
+        <div class="card-line supplier-service-line"><span class="ic">\${flowIcon('box')}</span><span><b>Descrição do Serviço</b><br>\${escapeHtml(service)}</span></div>
+      </div>
+      <div class="badges">
+        <span class="badge \${isEmergency(item)?'orange':'blue'}">\${isEmergency(item)?'Emergencial':'Normal'}</span>
+        <span class="badge \${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">\${queueSemaphoreLabel(st)}</span>
+        \${item.files?.length?\`<span class="badge green">\${item.files.length} anexo(s)</span>\`:''}
+      </div>
+      <div class="supplier-deadline-strip supplier-deadline-strip--\${st.cls}">
+        <span>Prazo: \${fmtDate(item.deadline)}</span>
+        <strong>\${st.label}</strong>
+      </div>
+      <div class="timer">
+        <div class="timer-row"><span>Na fase agora</span><strong data-supplier-phase-timer="\${escapeAttr(item.id)}">\${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</strong></div>
+        <div class="timer-row"><span>Acumulado fase</span><strong data-supplier-stage-timer="\${escapeAttr(item.id)}">\${formatDuration(stageTimeMs(item,item.stage))}</strong></div>
+        <div class="timer-row"><span>Total acumulado</span><strong data-supplier-total-timer="\${escapeAttr(item.id)}">\${formatDuration(totalElapsed(item))}</strong></div>
+      </div>
+      <div class="supplier-phase-selector-wrap">
+        <label>Selecionar fase</label>
+        <select class="phase-select" aria-label="Selecionar fase do fornecedor \${escapeAttr(item.id)}">\${phaseOptions}</select>
+      </div>
+      <div class="supplier-card-actions">
+        <button type="button" class="secondary" data-action="details">Ver detalhes</button>
+        <button type="button" data-action="edit">Editar</button>
+      </div>\`;
+
+    const select=el.querySelector('.phase-select');
+    ['pointerdown','mousedown','click'].forEach(type=>select.addEventListener(type,event=>event.stopPropagation()));
+    select.addEventListener('change',event=>{event.stopPropagation();changeSupplierPhase(item.id,event.target.value);});
+    const details=el.querySelector('[data-action="details"]');
+    const edit=el.querySelector('[data-action="edit"]');
+    [details,edit].forEach(button=>['pointerdown','mousedown','click'].forEach(type=>button.addEventListener(type,event=>event.stopPropagation())));
+    details.addEventListener('click',()=>openDetail(item.id));
+    edit.addEventListener('click',()=>openEditSupplier(item.id));
+    return el;
+  };
+
+  function editControl(question,value){
+    const id=\`edit_supplier_\${question.id}\`;
+    if(question.type==='textarea') return \`<textarea id="\${id}" name="\${escapeAttr(question.id)}">\${escapeHtml(value||'')}</textarea>\`;
+    if(question.type==='select') return \`<select id="\${id}" name="\${escapeAttr(question.id)}"><option value="">Selecione...</option>\${selectOptions(question).map(option=>\`<option value="\${escapeAttr(option)}" \${String(option)===String(value)?'selected':''}>\${escapeHtml(option)}</option>\`).join('')}</select>\`;
+    if(question.type==='file') return '<div class="note">Os anexos existentes serão mantidos. Novos documentos podem ser incluídos na área de acompanhamento.</div>';
+    const type=['email','date','number'].includes(question.type)?question.type:'text';
+    return \`<input id="\${id}" name="\${escapeAttr(question.id)}" type="\${type}" value="\${escapeAttr(value||'')}" \${question.readonly?'readonly':''}>\`;
+  }
+
+  let supplierEditModeId=null;
+  window.openEditSupplier=function(id){
+    const item=items.find(record=>record.id===id);
+    if(!item) return;
+    currentDetailId=id;
+    supplierEditModeId=id;
+    document.querySelector('#detailTitle').textContent='Editar cadastro de fornecedor';
+    document.querySelector('#detailSub').textContent=\`\${item.id} • \${item.supplierName||'Fornecedor'}\`;
+    const sections=orderedSections().map(section=>{
+      const fields=(section.questions||[]).map(question=>{
+        const value=item.values?.[question.id]??item[question.id]??'';
+        return \`<div class="supplier-edit-field \${question.type==='textarea'||question.wide?'full':''}"><label>\${escapeHtml(question.label)}\${question.required?' <span class="req">*</span>':''}\${editControl(question,value)}</label>\${question.note?\`<div class="note">\${escapeHtml(question.note)}</div>\`:''}</div>\`;
+      }).join('');
+      return \`<section class="supplier-edit-section"><h3>\${escapeHtml(section.title)}</h3><div class="supplier-edit-grid">\${fields}</div></section>\`;
+    }).join('');
+    document.querySelector('#detailBody').innerHTML=\`<div class="supplier-edit-toolbar"><strong>Edição completa do cadastro</strong><div class="supplier-edit-actions"><button type="button" class="secondary" onclick="cancelSupplierEdit('\${escapeAttr(item.id)}')">Cancelar</button><button type="button" onclick="saveEditSupplier('\${escapeAttr(item.id)}')">Salvar alterações</button></div></div>\${sections}\`;
+    document.querySelector('#detailModal').classList.add('show');
+  };
+
+  window.cancelSupplierEdit=function(id){supplierEditModeId=null;openDetail(id);};
+  window.saveEditSupplier=function(id){
+    const item=items.find(record=>record.id===id);
+    if(!item) return;
+    item.values=item.values||{};
+    for(const section of orderedSections()){
+      for(const question of section.questions||[]){
+        if(question.type==='file'||question.readonly) continue;
+        const field=document.getElementById(\`edit_supplier_\${question.id}\`);
+        if(!field) continue;
+        item.values[question.id]=field.value||'';
+        item[question.id]=field.value||'';
+      }
+    }
+    item.supplierName=item.values.supplierName||item.supplierName||'Fornecedor sem nome';
+    item.taxId=item.values.taxId||item.values.cnpjFilial||item.values.cnpjMatriz||item.taxId||'';
+    item.supplierCategory=item.values.supplierCategory||item.supplierCategory||'';
+    item.priority=item.values.priority||item.priority||'NORMAL (7 DIAS)';
+    item.scope=item.values.scope||item.scope||'';
+    item.costCenter=item.values.costCenter||item.costCenter||'';
+    item.contactEmail=item.values.contactEmail||item.contactEmail||'';
+    item.contactPhone=item.values.contactPhone||item.contactPhone||'';
+    item.updatedAt=Date.now();
+    item.history=item.history||[];
+    item.history.push({stage:item.stage,at:Date.now(),action:'Cadastro completo editado'});
+    saveItems();renderAll();supplierEditModeId=null;openDetail(id);toast('Cadastro atualizado com sucesso.');
+  };
+
+  const baseOpenDetail=window.openDetail;
+  window.openDetail=function(id){
+    if(supplierEditModeId===id) return;
+    baseOpenDetail(id);
+    const item=items.find(record=>record.id===id);
+    const actions=document.querySelector('#detailBody .modal-actions');
+    if(!item||!actions) return;
+    Array.from(actions.querySelectorAll('button')).forEach(button=>{
+      const action=button.getAttribute('onclick')||'';
+      if(action.includes('moveStage')) button.remove();
+    });
+    if(!actions.querySelector('[data-edit-supplier]')){
+      const editButton=document.createElement('button');
+      editButton.type='button';editButton.className='secondary';editButton.dataset.editSupplier='1';editButton.textContent='Editar cadastro completo';editButton.onclick=()=>openEditSupplier(id);actions.insertBefore(editButton,actions.firstChild);
+    }
+    let phaseBox=actions.querySelector('.supplier-detail-phase-selector');
+    if(!phaseBox){
+      phaseBox=document.createElement('div');phaseBox.className='supplier-detail-phase-selector';
+      phaseBox.innerHTML=\`<label>Selecionar fase do processo</label><select aria-label="Selecionar fase do fornecedor \${escapeAttr(item.id)}">\${COMPLETE_SUPPLIER_STAGES.map(stage=>\`<option value="\${escapeAttr(stage)}">\${escapeHtml(stage)}</option>\`).join('')}</select>\`;
+      actions.insertBefore(phaseBox,actions.firstChild);
+    }
+    const phaseSelect=phaseBox.querySelector('select');phaseSelect.value=item.stage;phaseSelect.onchange=event=>changeSupplierPhase(item.id,event.target.value);
+  };
+
+  document.getElementById('closeDetail')?.addEventListener('click',()=>{supplierEditModeId=null;});
+  document.getElementById('detailModal')?.addEventListener('click',event=>{if(event.target?.id==='detailModal') supplierEditModeId=null;});
+
+  normalizeSavedStages();
+  setTimeout(()=>renderAll(),0);
+})();
+<\/script>
+
+
+<script id="supplier-work-center-options-script">
+(function(){
+  "use strict";
+
+  const SUPPLIER_DEFAULT_WORK_CENTERS = [
+    "922",
+    "949",
+    "951",
+    "960",
+    "963",
+    "967 - ARTERIS LITORAL"
+  ];
+
+  const SUPPLIER_WORK_CENTER_FIELDS = [
+    "centroCusto",
+    "centroDeCusto",
+    "costCenter",
+    "numeroObra",
+    "obra",
+    "obraDepto",
+    "obraDepartamento",
+    "centro_custo",
+    "cc",
+    "work"
+  ];
+
+  function normalizeWorkCenterValue(value){
+    const text = String(value ?? "").trim().replace(/\\s+/g," ");
+    if(!text) return "";
+    const normalized = text.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();
+    if([
+      "-","todos","todas","selecione","selecione...","sem obra","sem centro de custo",
+      "nao informado","não informado","obra/depto","obra / departamento"
+    ].includes(normalized)) return "";
+    if(/^obra\\s*\\/\\s*depto\\s+\\d+$/i.test(text)) return text.replace(/^obra\\s*\\/\\s*depto\\s+/i,"").trim();
+    return text;
+  }
+
+  function addWorkCenter(target,value){
+    const cleaned = normalizeWorkCenterValue(value);
+    if(cleaned) target.add(cleaned);
+  }
+
+  function collectFromRecord(target,record){
+    if(!record || typeof record !== "object") return;
+    SUPPLIER_WORK_CENTER_FIELDS.forEach(field => addWorkCenter(target,record[field]));
+    if(record.values && typeof record.values === "object"){
+      SUPPLIER_WORK_CENTER_FIELDS.forEach(field => addWorkCenter(target,record.values[field]));
+    }
+    if(record.formData && typeof record.formData === "object"){
+      SUPPLIER_WORK_CENTER_FIELDS.forEach(field => {
+        const entry=record.formData[field];
+        addWorkCenter(target,entry && typeof entry === "object" ? entry.value : entry);
+      });
+    }
+  }
+
+  function collectStoredWorkCenters(){
+    const values=new Set(SUPPLIER_DEFAULT_WORK_CENTERS);
+    const preferredKeys=[
+      "frota_veiculos_v4_importacao_inicial",
+      "gestao_fretes_solicitacoes_v1",
+      "seel_fornecedores_items_v1"
+    ];
+    const keys=new Set(preferredKeys);
+    try{
+      for(let index=0;index<localStorage.length;index++){
+        const key=localStorage.key(index);
+        if(key && /(frota|frete|fornecedor|cadastro)/i.test(key)) keys.add(key);
+      }
+    }catch(e){}
+
+    keys.forEach(key=>{
+      try{
+        const parsed=JSON.parse(localStorage.getItem(key)||"null");
+        const rows=Array.isArray(parsed) ? parsed : Array.isArray(parsed?.items) ? parsed.items : Array.isArray(parsed?.records) ? parsed.records : [];
+        rows.forEach(record=>collectFromRecord(values,record));
+      }catch(e){}
+    });
+
+    try{ (items||[]).forEach(record=>collectFromRecord(values,record)); }catch(e){}
+
+    return [...values].sort((a,b)=>String(a).localeCompare(String(b),"pt-BR",{numeric:true,sensitivity:"base"}));
+  }
+
+  function ensureWorkCenterQuestion(){
+    const automaticOptions=collectStoredWorkCenters();
+    let finalOptions=automaticOptions;
+    let changed=false;
+    for(const section of schema||[]){
+      const question=(section.questions||[]).find(item=>item.id==="costCenter");
+      if(!question) continue;
+      if(question.type!=="select"){question.type="select";changed=true;}
+      if(question.placeholder){delete question.placeholder;changed=true;}
+      if(question.manualOptions===true && Array.isArray(question.options) && question.options.length){
+        finalOptions=[...question.options];
+      }else{
+        if(question.label!=="14. OBRA / CENTRO DE CUSTO"){question.label="14. OBRA / CENTRO DE CUSTO";changed=true;}
+        const existing=Array.isArray(question.options)?question.options:[];
+        finalOptions=[...new Set([...existing,...automaticOptions])].sort((a,b)=>String(a).localeCompare(String(b),"pt-BR",{numeric:true,sensitivity:"base"}));
+        const same=Array.isArray(question.options)&&question.options.length===finalOptions.length&&question.options.every((value,index)=>value===finalOptions[index]);
+        if(!same){question.options=finalOptions;changed=true;}
+        const note="Selecione a obra ou centro de custo vinculado à solicitação. A lista reúne os dados dos aplicativos de Frota, Fretes e Cadastro.";
+        if(question.note!==note){question.note=note;changed=true;}
+      }
+      break;
+    }
+    if(changed){
+      try{localStorage.setItem(LS_SCHEMA,JSON.stringify(schema));}catch(e){}
+    }
+    return finalOptions;
+  }
+
+  window.refreshSupplierWorkCenters=function(){
+    const options=ensureWorkCenterQuestion();
+    renderAll();
+    return options;
+  };
+
+  ensureWorkCenterQuestion();
+  setTimeout(()=>renderAll(),0);
+})();
+<\/script>
+
+
+<style id="enhanced-dropdown-editor-style">
+  .question-editor-modal{
+    position:fixed;inset:0;z-index:3200;display:none;align-items:center;justify-content:center;
+    padding:20px;background:rgba(4,29,46,.66);backdrop-filter:blur(3px);
+  }
+  .question-editor-modal.show{display:flex}
+  .question-editor-box{
+    width:min(820px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;
+    box-shadow:0 28px 80px rgba(0,0,0,.34);border-top:5px solid var(--sf-yellow,#f5c400);
+  }
+  .question-editor-head{
+    position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+    padding:17px 20px;background:var(--sf-navy,#0b3553);color:#fff;
+  }
+  .question-editor-head h2{margin:0;color:#fff;font-size:20px}
+  .question-editor-head p{margin:4px 0 0;color:#cfe0ea;font-size:12px}
+  .question-editor-close{width:38px;height:38px;min-height:38px;padding:0;border-radius:11px;background:#fff;color:#0b3553;font-size:20px}
+  .question-editor-body{padding:18px 20px 20px;display:grid;gap:15px}
+  .question-editor-grid{display:grid;grid-template-columns:1fr 210px;gap:14px}
+  .question-editor-field.full{grid-column:1/-1}
+  .question-editor-check{display:flex;align-items:center;gap:9px;min-height:42px;margin-top:7px;padding:9px 11px;border:1px solid #d6e2e9;border-radius:10px;background:#f7fafb;color:#29465a;font-size:12px;font-weight:800}
+  .question-editor-check input{width:auto;margin:0}
+  .dropdown-options-panel{border:1px solid #d5e2e9;border-radius:16px;background:#f7fafb;overflow:hidden}
+  .dropdown-options-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:#edf4f7;border-bottom:1px solid #d5e2e9}
+  .dropdown-options-head h3{margin:0;color:#0b3553;font-size:15px}
+  .dropdown-options-head span{font-size:10px;color:#6d8290}
+  .dropdown-options-list{display:grid;gap:8px;padding:12px;max-height:360px;overflow:auto}
+  .dropdown-option-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid #dbe5eb;border-radius:12px;background:#fff}
+  .dropdown-option-index{width:30px;height:30px;border-radius:9px;background:#eaf2f6;color:#0b5b8e;display:grid;place-items:center;font-size:10px;font-weight:900}
+  .dropdown-option-row input{margin:0;min-height:36px;padding:7px 9px;font-size:12px}
+  .dropdown-option-actions{display:flex;gap:5px}
+  .dropdown-option-actions button{width:30px;height:30px;min-height:30px;padding:0;border-radius:8px;font-size:12px}
+  .dropdown-option-actions .secondary{background:#fff;color:#0b3553;border:1px solid #d5e2e9}
+  .dropdown-add-wrap{padding:0 12px 12px}
+  .dropdown-add-wrap button{width:100%;min-height:38px;background:#fff;color:#0b3553;border:1px dashed #8facbc}
+  .question-editor-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;padding-top:14px;border-top:1px solid #e0e8ed}
+  .editor-option-summary{display:inline-flex;margin-top:5px;padding:3px 7px;border-radius:999px;background:#eaf3f8;color:#075985;font-size:9px;font-weight:900}
+  @media(max-width:700px){
+    .question-editor-grid{grid-template-columns:1fr}
+    .question-editor-field.full{grid-column:auto}
+    .dropdown-option-row{grid-template-columns:28px minmax(0,1fr)}
+    .dropdown-option-actions{grid-column:1/-1;justify-content:flex-end}
+  }
+</style>
+<script id="enhanced-dropdown-editor-script">
+(function(){
+  "use strict";
+  let enhancedQuestionId=null;
+
+  function ensureQuestionEditorModal(){
+    let modal=document.getElementById('enhancedQuestionEditorModal');
+    if(modal)return modal;
+    modal=document.createElement('div');
+    modal.id='enhancedQuestionEditorModal';
+    modal.className='question-editor-modal';
+    modal.innerHTML=\`
+      <div class="question-editor-box" role="dialog" aria-modal="true" aria-labelledby="enhancedQuestionEditorTitle">
+        <div class="question-editor-head">
+          <div><h2 id="enhancedQuestionEditorTitle">Editar pergunta</h2><p>Altere o campo e gerencie individualmente os itens das listas suspensas.</p></div>
+          <button type="button" class="question-editor-close" data-qe-close aria-label="Fechar">×</button>
+        </div>
+        <div class="question-editor-body">
+          <div class="question-editor-grid">
+            <label class="question-editor-field">Texto da pergunta<input id="qeLabel" type="text"></label>
+            <label class="question-editor-field">Tipo do campo<select id="qeType"><option value="text">Texto</option><option value="email">E-mail</option><option value="date">Data</option><option value="number">Número</option><option value="select">Lista suspensa</option><option value="textarea">Texto longo</option><option value="file">Anexo</option></select></label>
+            <label class="question-editor-field full">Observação<textarea id="qeNote" placeholder="Orientação exibida abaixo da pergunta"></textarea></label>
+            <div class="question-editor-field full"><label class="question-editor-check"><input id="qeRequired" type="checkbox"> Pergunta obrigatória</label></div>
+          </div>
+          <section class="dropdown-options-panel" id="qeOptionsPanel">
+            <div class="dropdown-options-head"><div><h3>Itens da lista suspensa</h3><span>Edite, exclua, inclua ou altere a ordem das opções.</span></div><span id="qeOptionsCount">0 itens</span></div>
+            <div class="dropdown-options-list" id="qeOptionsList"></div>
+            <div class="dropdown-add-wrap"><button type="button" id="qeAddOption">＋ Incluir novo item</button></div>
+          </section>
+          <div class="question-editor-actions"><button type="button" class="secondary" data-qe-close>Cancelar</button><button type="button" id="qeSaveQuestion">Salvar pergunta e lista</button></div>
+        </div>
+      </div>\`;
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('[data-qe-close]').forEach(button=>button.addEventListener('click',closeQuestionEditor));
+    modal.addEventListener('click',event=>{if(event.target===modal)closeQuestionEditor();});
+    modal.querySelector('#qeType').addEventListener('change',toggleOptionsPanel);
+    modal.querySelector('#qeAddOption').addEventListener('click',()=>appendOptionRow(''));
+    modal.querySelector('#qeSaveQuestion').addEventListener('click',saveEnhancedQuestion);
+    modal.querySelector('#qeOptionsList').addEventListener('click',event=>{
+      const button=event.target.closest('button[data-option-action]');
+      if(!button)return;
+      const row=button.closest('.dropdown-option-row');
+      const list=modal.querySelector('#qeOptionsList');
+      if(button.dataset.optionAction==='remove')row.remove();
+      if(button.dataset.optionAction==='up'&&row.previousElementSibling)list.insertBefore(row,row.previousElementSibling);
+      if(button.dataset.optionAction==='down'&&row.nextElementSibling)list.insertBefore(row.nextElementSibling,row);
+      refreshOptionIndexes();
+    });
+    modal.querySelector('#qeOptionsList').addEventListener('input',refreshOptionIndexes);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('show'))closeQuestionEditor();});
+    return modal;
+  }
+
+  function optionRows(){return Array.from(document.querySelectorAll('#qeOptionsList .dropdown-option-row'));}
+
+  function appendOptionRow(value){
+    const modal=ensureQuestionEditorModal();
+    const list=modal.querySelector('#qeOptionsList');
+    const row=document.createElement('div');
+    row.className='dropdown-option-row';
+    row.innerHTML=\`<span class="dropdown-option-index"></span><input type="text" class="dropdown-option-input" placeholder="Digite o item da lista" value="\${escapeAttr(value||'')}"><div class="dropdown-option-actions"><button type="button" class="secondary" data-option-action="up" title="Mover para cima">↑</button><button type="button" class="secondary" data-option-action="down" title="Mover para baixo">↓</button><button type="button" class="danger" data-option-action="remove" title="Excluir item">×</button></div>\`;
+    list.appendChild(row);
+    refreshOptionIndexes();
+    if(!value)row.querySelector('input').focus();
+  }
+
+  function refreshOptionIndexes(){
+    const rows=optionRows();
+    rows.forEach((row,index)=>row.querySelector('.dropdown-option-index').textContent=index+1);
+    const count=document.getElementById('qeOptionsCount');
+    if(count)count.textContent=\`\${rows.length} \${rows.length===1?'item':'itens'}\`;
+  }
+
+  function renderOptions(options){
+    const list=ensureQuestionEditorModal().querySelector('#qeOptionsList');
+    list.innerHTML='';
+    (options||[]).forEach(appendOptionRow);
+    if(!(options||[]).length)appendOptionRow('');
+    refreshOptionIndexes();
+  }
+
+  function toggleOptionsPanel(){
+    const modal=ensureQuestionEditorModal();
+    const isSelect=modal.querySelector('#qeType').value==='select';
+    modal.querySelector('#qeOptionsPanel').classList.toggle('hidden',!isSelect);
+    if(isSelect&&!optionRows().length)appendOptionRow('');
+  }
+
+  function cleanOptions(){
+    const seen=new Set();
+    const result=[];
+    optionRows().forEach(row=>{
+      const value=String(row.querySelector('input').value||'').trim();
+      const normalized=value.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+      if(!value||['todos','todas','selecione','selecione...'].includes(normalized)||seen.has(normalized))return;
+      seen.add(normalized);result.push(value);
+    });
+    return result;
+  }
+
+  function closeQuestionEditor(){
+    const modal=document.getElementById('enhancedQuestionEditorModal');
+    if(modal)modal.classList.remove('show');
+    enhancedQuestionId=null;
+  }
+
+  function saveEnhancedQuestion(){
+    const modal=ensureQuestionEditorModal();
+    const question=getQuestion(enhancedQuestionId);
+    if(!question)return closeQuestionEditor();
+    const label=modal.querySelector('#qeLabel').value.trim();
+    const type=modal.querySelector('#qeType').value;
+    if(!label){toast('Informe o texto da pergunta.');return;}
+    if(type==='select'){
+      const options=cleanOptions();
+      if(!options.length){toast('Inclua pelo menos um item na lista suspensa.');return;}
+      question.options=options;
+      question.manualOptions=true;
+    }else{
+      delete question.options;
+      delete question.manualOptions;
+    }
+    question.label=label;
+    question.type=type;
+    question.required=modal.querySelector('#qeRequired').checked;
+    question.note=modal.querySelector('#qeNote').value.trim();
+    try{localStorage.setItem(LS_SCHEMA,JSON.stringify(schema));}catch(e){}
+    closeQuestionEditor();
+    renderAll();
+    toast('Pergunta e opções atualizadas com sucesso.');
+  }
+
+  window.editQuestion=function(id){
+    const question=getQuestion(id);
+    if(!question)return;
+    enhancedQuestionId=id;
+    const modal=ensureQuestionEditorModal();
+    modal.querySelector('#qeLabel').value=question.label||'';
+    modal.querySelector('#qeType').value=question.type||'text';
+    modal.querySelector('#qeType').disabled=!!question.readonly;
+    modal.querySelector('#qeRequired').checked=!!question.required;
+    modal.querySelector('#qeRequired').disabled=!!question.readonly;
+    modal.querySelector('#qeNote').value=question.note||'';
+    renderOptions(question.type==='select'?(question.options||[]):[]);
+    toggleOptionsPanel();
+    modal.classList.add('show');
+    setTimeout(()=>modal.querySelector('#qeLabel').focus(),0);
+  };
+
+  window.renderEditor=function(){
+    const list=document.querySelector('#editorSections');
+    if(!list)return;
+    list.innerHTML='';
+    for(const section of orderedSections()){
+      const div=document.createElement('div');
+      div.className='editor-section-card '+(section.id===selectedSectionId?'active':'');
+      div.innerHTML=\`<b>\${escapeHtml(section.title)}</b><small>Ordem \${section.order} • \${(section.questions||[]).length} perguntas</small>\`;
+      div.onclick=()=>{selectedSectionId=section.id;editQuestionId=null;renderEditor();};
+      list.appendChild(div);
+    }
+    const section=schema.find(item=>item.id===selectedSectionId);
+    if(!section)return;
+    document.querySelector('#editorTitle').textContent='Editar: '+section.title;
+    document.querySelector('#secTitle').value=section.title;
+    document.querySelector('#secOrder').value=section.order;
+    document.querySelector('#secDesc').value=section.desc||'';
+    const questions=document.querySelector('#editorQuestions');
+    questions.innerHTML='<h3>Perguntas da seção</h3>'+(section.questions||[]).map((question,index)=>{
+      const optionsCount=question.type==='select'?(question.options||[]).length:0;
+      return \`<div class="editor-question-card"><div><b>\${escapeHtml(question.label)}</b><small><span class="editor-badge">\${escapeHtml(question.type||'text')}</span>\${question.required?'<span class="editor-badge required">Obrigatório</span>':''}\${question.readonly?'<span class="editor-badge">Sistema</span>':''} ID: \${escapeHtml(question.id)}</small>\${question.type==='select'?\`<span class="editor-option-summary">\${optionsCount} \${optionsCount===1?'item na lista':'itens na lista'}</span>\`:''}<small>\${escapeHtml(question.note||'')}</small></div><div>Ordem \${index+1}</div><div class="editor-actions-mini"><button onclick="moveQuestion('\${escapeAttr(question.id)}',-1)" class="secondary">↑</button><button onclick="moveQuestion('\${escapeAttr(question.id)}',1)" class="secondary">↓</button><button onclick="editQuestion('\${escapeAttr(question.id)}')">\${question.type==='select'?'Editar lista':'Editar'}</button><button onclick="removeQuestion('\${escapeAttr(question.id)}')" class="danger">Excluir</button></div></div>\`;
+    }).join('');
+  };
+
+  setTimeout(()=>renderEditor(),0);
+})();
+<\/script>
+
+
+<style id="supplier-card-main-data-style">
+  #view-kanban .supplier-flow-card .card-line span:last-child{
+    min-width:0 !important;
+    overflow-wrap:anywhere !important;
+  }
+  #view-kanban .supplier-flow-card .card-line b{
+    color:#163a52 !important;
+    font-size:8px !important;
+    letter-spacing:.025em !important;
+    text-transform:uppercase !important;
+  }
+  #view-kanban .supplier-flow-card .supplier-service-line{
+    align-items:start !important;
+    min-height:43px !important;
+  }
+  #view-kanban .supplier-flow-card .supplier-service-line span:last-child{
+    display:-webkit-box !important;
+    -webkit-line-clamp:3 !important;
+    -webkit-box-orient:vertical !important;
+    overflow:hidden !important;
+    line-height:1.22 !important;
+  }
+</style>
+
+</body>
+</html>
+`;export{e as default};

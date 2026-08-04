@@ -1,0 +1,1 @@
+import{o as e,s as t}from"./supabase-BTP2KvF4.js";import{t as n}from"./index-lbeaqrJY.js";var r=t(),i=()=>e(()=>import(`./mapa-fornecedores-Ccu3LMAA.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`Mapa de fornecedores`,moduleKey:`fornecedores`,loadHtml:i,loadSupplierMapBase:!0})}export{a as FornecedoresPage};

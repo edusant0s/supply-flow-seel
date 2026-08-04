@@ -1,0 +1,1 @@
+import{o as e,s as t}from"./supabase-BTP2KvF4.js";import{t as n}from"./index-lbeaqrJY.js";var r=t(),i=()=>e(()=>import(`./gestao-fretes-Bo0AYjbV.js`).then(e=>e.default),[]);function a(){return(0,r.jsx)(n,{title:`Gestao de fretes`,moduleKey:`fretes`,loadHtml:i})}export{a as FretesPage};

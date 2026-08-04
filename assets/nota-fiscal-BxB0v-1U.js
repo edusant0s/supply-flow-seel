@@ -1,0 +1,728 @@
+var e=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEEL | Supply Flow - Emissão de Nota Fiscal</title>
+<style>
+:root{
+  --navy:#0b3553;--navy2:#072a43;--blue:#075985;--blue2:#0a6d9d;--yellow:#f5c400;
+  --bg:#f3f6f8;--surface:#fff;--line:#d9e3e8;--text:#173248;--muted:#6d8290;
+  --green:#159a67;--orange:#ea7a19;--red:#dc3545;--slate:#64748b;--shadow:0 10px 30px rgba(15,53,80,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif;min-height:100vh}
+button,input,select,textarea{font-family:inherit}
+button{border:0;cursor:pointer;font-weight:800}
+.hidden{display:none!important}
+.sf-app{min-height:100vh;display:block}
+.sidebar{position:fixed;inset:0 auto 0 0;width:248px;background:linear-gradient(180deg,var(--navy2),var(--navy));color:#fff;padding:20px 14px 16px;display:flex;flex-direction:column;z-index:60;box-shadow:12px 0 32px rgba(3,28,45,.12);transition:.25s}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand-logo{width:48px;height:48px;border-radius:13px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:950;font-size:14px;letter-spacing:.08em;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.brand-copy{display:grid;gap:2px}.brand-copy strong{font-size:15px;letter-spacing:.08em}.brand-copy span{font-size:10px;color:#b9d1df}
+.nav-label{font-size:10px;letter-spacing:.15em;color:#82a6ba;font-weight:900;padding:22px 14px 10px}
+.side-nav{display:grid;gap:6px}.side-link{width:100%;min-height:46px;padding:0 13px;border-radius:12px;color:#cbdce6;background:transparent;display:flex;align-items:center;gap:12px;font-size:13px;text-align:left;position:relative}.side-link svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.side-link:hover{background:rgba(255,255,255,.08);color:#fff}.side-link.active{background:linear-gradient(90deg,rgba(245,196,0,.2),rgba(245,196,0,.07));color:#fff}.side-link.active:before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--yellow)}
+.sidebar-spacer{flex:1}.sidebar-footer{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px}.avatar{width:36px;height:36px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;border-radius:50%;font-size:11px;font-weight:900}.sidebar-footer div:last-child{display:grid;gap:2px}.sidebar-footer strong{font-size:11px}.sidebar-footer span{font-size:9px;color:#adc6d4}
+.workspace{width:100%;margin-left:0;min-height:100vh}
+.tabs{max-width:calc(1600px - 68px);margin:24px auto 0;position:sticky;top:0;z-index:40;background:#fff;backdrop-filter:blur(12px);border:1px solid #d6e1e7;border-radius:22px;padding:10px 12px;display:flex;gap:10px;box-shadow:0 8px 22px rgba(15,53,80,.06);overflow-x:auto}.tab{min-height:54px;border-radius:16px;color:#5f7889;padding:0 18px;background:transparent;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:900;white-space:nowrap;flex:none;transition:all .18s ease}.tab:hover{background:#f6f9fb;color:var(--navy)}.tab.active{background:var(--yellow);color:var(--navy);box-shadow:0 8px 20px rgba(245,196,0,.28)}.tab-icon{display:inline-flex;align-items:center;justify-content:center;font-size:16px;line-height:1}.tab-dot{display:none}
+main{max-width:1600px;margin:0 auto;padding:22px 34px 46px}.view{display:none}.view.active{display:block;animation:fadeUp .24s ease both}@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.panel,.section,.kpi,.chart-card,.toolbar{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.panel{padding:24px}.panel-head{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--line)}.panel-head h2{margin:0;color:var(--navy);font-size:22px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.45}.pill{background:#eef5f8;color:var(--blue);border:1px solid #d8e8f0;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:900;white-space:nowrap}
+.section{margin-bottom:16px;overflow:hidden;box-shadow:none;border-radius:15px}.section-title{background:#f0f5f8;color:var(--navy);border-bottom:1px solid var(--line);padding:13px 16px;font-size:14px;font-weight:900}.section-title:before{content:"";display:inline-block;width:4px;height:16px;background:var(--yellow);border-radius:3px;vertical-align:-3px;margin-right:9px}.section-body{padding:18px 18px 20px}.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 16px}.field.full{grid-column:1/-1}.field.span2{grid-column:span 2}label{display:block;font-size:12px;font-weight:850;color:#365166}.req{color:var(--red)}input,select,textarea{width:100%;margin-top:7px;border:1px solid #cedbe3;border-radius:10px;background:#fff;padding:10px 11px;color:var(--text);font-size:13px;outline:0;transition:.15s}input:hover,select:hover,textarea:hover{border-color:#aebfca}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(7,89,133,.1)}input[readonly]{background:#f3f7f9;color:#667f8e;cursor:not-allowed}textarea{min-height:90px;resize:vertical}.help{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.35}.rule-box{background:#fff9d9;border:1px solid #f2d86d;border-left:4px solid var(--yellow);border-radius:12px;padding:11px 13px;color:#6b5900;font-size:11px;line-height:1.45;margin-top:12px}
+.actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);margin-top:16px}.action-group{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:40px;padding:0 15px;border-radius:10px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}.btn-primary{background:var(--navy);color:#fff;border-bottom:3px solid var(--yellow)}.btn-secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}.btn-soft{background:#edf6fa;color:var(--blue);border:1px solid #d5e5ed}.btn-danger{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}.btn-success{background:#e7f8ef;color:#08734b;border:1px solid #b7e8cf}.btn-small{min-height:31px;padding:0 10px;font-size:11px;border-radius:9px}
+.products-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.products-table{width:100%;border-collapse:collapse;min-width:880px}.products-table th{background:#edf4f7;color:#496676;padding:10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.products-table td{padding:8px;border-top:1px solid var(--line);vertical-align:middle}.products-table input{margin:0}.products-table .num{width:42px;text-align:center;font-weight:900;color:var(--muted)}.products-table .money,.products-table .total{white-space:nowrap;text-align:right}.products-table .total{font-weight:900;color:var(--navy);font-size:12px}.table-scroll{overflow:auto}.products-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:#f8fafb;border-top:1px solid var(--line)}.products-summary{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:11px}.products-summary strong{display:block;color:var(--navy);font-size:17px;margin-top:2px;text-align:right}
+.toolbar{padding:16px 18px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1.8fr;gap:20px;align-items:end}.toolbar-copy h3{margin:0;color:var(--navy);font-size:17px}.toolbar-copy p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.4}.toolbar-controls{display:grid;grid-template-columns:1.2fr repeat(3,minmax(140px,.8fr)) auto;gap:10px;align-items:end}.toolbar-controls input,.toolbar-controls select{margin-top:5px}.toolbar-controls label{font-size:10px;text-transform:uppercase;letter-spacing:.04em}.kanban-toolbar .toolbar-controls,.dashboard-toolbar .toolbar-controls{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}.dashboard-toolbar{grid-template-columns:1fr}.dashboard-toolbar .toolbar-copy{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.dashboard-filter-summary{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap;padding-top:4px}
+.kanban{display:grid;grid-template-columns:repeat(3,minmax(300px,1fr));gap:12px;align-items:start;overflow-x:auto;padding-bottom:10px}.column{background:#edf4f7;border:1px solid #cad9e2;border-radius:18px;padding:10px;min-height:360px;transition:.15s}.column.drag-over{outline:3px solid rgba(7,89,133,.18);background:#e6f1f6}.column-head{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;margin-bottom:9px}.column-icon{width:34px;height:34px;border-radius:11px;background:var(--navy);color:var(--yellow);display:grid;place-items:center}.column-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}.column-title{margin:0;color:var(--navy);font-size:14px;font-weight:950}.column-sub{font-size:9px;color:var(--muted);margin-top:2px}.column-count{min-width:32px;height:36px;border-radius:11px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:13px;border:1px solid var(--line)}.column-metrics{display:flex;justify-content:space-between;gap:8px;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:11px;padding:7px 9px;margin-bottom:8px;font-size:9px;color:var(--muted)}.column-metrics strong{color:var(--navy)}.empty{border:1px dashed #9eb8c7;border-radius:12px;padding:24px 12px;text-align:center;color:#718997;background:rgba(255,255,255,.45);font-size:11px;min-height:100px;display:grid;place-items:center}
+.nf-card{background:#fff;border:1px solid #d7e1e8;border-left:5px solid var(--slate);border-radius:14px;padding:9px;margin-bottom:8px;box-shadow:0 6px 16px rgba(0,83,131,.08);cursor:pointer;transition:.14s}.nf-card:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,83,131,.13)}.nf-card.status-new{border-left-color:var(--orange)}.nf-card.status-progress{border-left-color:var(--blue)}.nf-card.status-done{border-left-color:var(--green)}.nf-card.dragging{opacity:.45}.nf-card.freight-linked{border-top:3px solid var(--yellow);background:linear-gradient(180deg,#fffdf2 0,#fff 42%)}.card-top{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.card-code{font-size:9px;color:#7b93a2;font-weight:900}.card-title{font-size:12px;color:var(--navy);font-weight:950;line-height:1.15;text-transform:uppercase;margin-top:2px}.status-chip{padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900;white-space:nowrap}.status-chip.new{background:#fff0dc;color:#b45309}.status-chip.progress{background:#dceef8;color:#075985}.status-chip.done{background:#ddf7e8;color:#08734b}.card-lines{display:grid;gap:3px;margin-top:7px}.card-line{display:grid;grid-template-columns:15px 1fr;gap:5px;color:#607887;font-size:9.5px;line-height:1.2}.card-line svg{width:13px;height:13px;fill:none;stroke:#6b8291;stroke-width:2}.card-route{margin-top:7px;padding:7px;background:#f6f9fb;border:1px solid #e0e9ee;border-radius:10px;font-size:9px;color:#607887;line-height:1.3}.card-route strong{color:var(--navy)}.card-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}.mini-badge{padding:3px 6px;border-radius:999px;font-size:8px;font-weight:900;background:#edf4f7;color:#526d7d}.mini-badge.money{background:#e7f8ef;color:#08734b}.mini-badge.urgent{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}.mini-badge.normal{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}.mini-badge.freight-origin{background:#fff7cc;color:#075985;border:1px solid #facc15}.login-context-note{margin-top:10px;padding:9px 11px;border:1px solid #cfe0e8;border-left:4px solid var(--blue);border-radius:10px;background:#f3f8fb;color:#526d7d;font-size:11px;line-height:1.4}.login-context-note.waiting{border-left-color:var(--orange);background:#fff8ed;color:#8a5a18}.card-timer{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding:6px 7px;background:#f3f7fa;border:1px solid #d4e0e7;border-radius:10px;font-size:8.5px;color:#607887}.card-timer strong{color:var(--navy)}.card-actions{display:grid;gap:6px;margin-top:8px}.phase-control-label{font-size:8px;font-weight:900;color:#6b8291;text-transform:uppercase;letter-spacing:.04em}.phase-select-wrap{position:relative}.phase-select{width:100%;height:34px;margin:0;padding:0 34px 0 10px;border:1px solid #cbd9e1;border-radius:10px;background:#f7fafb;color:var(--navy);font-size:9.5px;font-weight:900;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;box-shadow:none}.phase-select:hover{border-color:#95adba;background:#fff}.phase-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(7,89,133,.10)}.phase-select-wrap:after{content:"⌄";position:absolute;right:11px;top:50%;transform:translateY(-54%);color:var(--navy);font-size:16px;font-weight:900;pointer-events:none}.card-actions>.detail-btn{width:100%;min-height:27px;border-radius:8px;padding:0 7px;font-size:8.5px}.move-back{background:#fff;color:var(--navy);border:1px solid var(--line)}.move-next{background:var(--navy);color:#fff}.detail-btn{background:#eef5f8;color:var(--blue);border:1px solid #d4e4eb}
+
+/* Semáforo e cronômetros no padrão dos módulos de Fretes, Contratos e Cadastro */
+.nf-card{--sla-color:var(--green);--sla-soft:#eefaf4;--sla-border:#b9e6d0;border-left-color:var(--sla-color)!important}
+.nf-card.sla-late{--sla-color:#dc2626;--sla-soft:#fff0ef;--sla-border:#efc1bd}
+.nf-card.sla-warn{--sla-color:#d79b00;--sla-soft:#fff7df;--sla-border:#edd28a}
+.nf-card.sla-ok{--sla-color:#23865f;--sla-soft:#eaf8f1;--sla-border:#b8e2cf}
+.semaphore-badge{padding:3px 7px;border-radius:999px;font-size:8px;font-weight:950;white-space:nowrap;border:1px solid transparent}
+.semaphore-badge.late{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+.semaphore-badge.warn{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.semaphore-badge.ok{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.deadline-row{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;margin-top:7px;padding:7px 8px;border:1px solid var(--sla-border);border-radius:10px;background:var(--sla-soft);font-size:8.5px;color:#607887}
+.deadline-row strong{color:var(--sla-color);font-size:8.5px;text-align:right}
+.timer-panel{display:grid;gap:4px;margin-top:7px;padding:7px 8px;background:#f3f7fa;border:1px solid #d4e0e7;border-radius:10px}
+.timer-row{display:flex;justify-content:space-between;gap:8px;color:#607887;font-size:8.5px}
+.timer-row strong{color:var(--navy);font-variant-numeric:tabular-nums;text-align:right}
+.stage-time-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.stage-time-card{background:#f7fafb;border:1px solid var(--line);border-radius:11px;padding:10px}
+.stage-time-card.current{border-color:var(--yellow);box-shadow:inset 0 0 0 1px var(--yellow)}
+.stage-time-card small{display:block;color:var(--muted);font-size:9px;font-weight:900;margin-bottom:5px}
+.stage-time-card strong{color:var(--navy);font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.stage-time-grid{grid-template-columns:1fr}}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:15px}.kpi{padding:16px;border-left:4px solid var(--yellow)}.kpi small{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.kpi strong{display:block;color:var(--navy);font-size:23px;margin-top:5px;line-height:1}.kpi span{display:block;color:#8a9ca7;font-size:9px;margin-top:6px}.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart-card{padding:18px}.chart-card h3{margin:0;color:var(--navy);font-size:17px}.chart-card>p{margin:5px 0 0;color:var(--muted);font-size:12px}.bar-list{display:grid;gap:11px;margin-top:15px}.bar-row{display:grid;grid-template-columns:150px 1fr 112px;gap:10px;align-items:center}.bar-label{font-size:11px;font-weight:800;color:#405e70;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar-track{height:11px;border-radius:999px;background:#e1eaef;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:var(--blue)}.bar-fill.orange{background:var(--orange)}.bar-fill.green{background:var(--green)}.bar-fill.yellow{background:var(--yellow)}.bar-value{text-align:right;color:var(--navy);font-size:10px;font-weight:900;line-height:1.15}.bar-value b{display:inline;font-size:12px}.bar-value span{display:inline;color:#607988;font-size:9px;font-weight:800}.bar-value small{display:block;color:#7d929e;font-size:8px;font-weight:800;margin-top:3px}.month-chart{display:flex;align-items:end;gap:10px;height:220px;margin-top:15px;padding:10px 6px 0;border-bottom:1px solid var(--line)}.month-col{flex:1;min-width:38px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}.month-value{font-size:9px;font-weight:900;color:var(--navy)}.month-bar{width:min(44px,75%);min-height:3px;background:linear-gradient(180deg,var(--blue2),var(--navy));border-radius:8px 8px 2px 2px;position:relative}.month-label{font-size:9px;color:var(--muted);font-weight:800;white-space:nowrap}
+.data-wrap{max-height:520px;overflow-x:auto;overflow-y:auto;scrollbar-gutter:stable both-edges;border:1px solid var(--line);border-radius:14px;background:#fff}.data-wrap::-webkit-scrollbar{width:12px;height:12px}.data-wrap::-webkit-scrollbar-track{background:#eef3f6;border-radius:999px}.data-wrap::-webkit-scrollbar-thumb{background:#9fb4c1;border:3px solid #eef3f6;border-radius:999px}.data-wrap::-webkit-scrollbar-thumb:hover{background:#6f8c9d}.data-table{width:100%;border-collapse:collapse;min-width:1350px}.data-table th{background:#edf4f7;color:#496676;padding:10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0}.data-table td{padding:10px;border-top:1px solid var(--line);font-size:11px;color:#4f6979;vertical-align:middle}.data-table tr:hover td{background:#f8fafb}.data-table strong{color:var(--navy)}.table-actions{display:flex;gap:5px}.table-actions button{min-height:28px;padding:0 8px;border-radius:8px;font-size:9px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,29,46,.62);backdrop-filter:blur(3px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{width:min(1080px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 28px 80px rgba(0,0,0,.32)}.modal-header{position:sticky;top:0;z-index:3;background:var(--navy);color:#fff;padding:18px 20px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start;border-top:4px solid var(--yellow)}.modal-header h2{margin:0;color:#fff;font-size:22px}.modal-header p{margin:5px 0 0;color:#c9dce7;font-size:12px}.close-btn{width:40px;height:40px;border-radius:11px;background:#fff;color:var(--navy);font-size:20px}.modal-body{padding:18px 20px 24px}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}.detail-kv{background:#f4f9fb;border:1px solid var(--line);border-radius:12px;padding:10px}.detail-kv small{display:block;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;margin-bottom:5px}.detail-kv strong{color:var(--navy);font-size:12px;word-break:break-word}.detail-section{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px}.detail-section-title{background:#edf4f7;border-bottom:1px solid var(--line);padding:11px 13px;color:var(--navy);font-weight:900;font-size:12px}.detail-content{padding:13px}.detail-products{width:100%;border-collapse:collapse;min-width:680px}.detail-products th,.detail-products td{padding:8px;border-bottom:1px solid var(--line);font-size:10px;text-align:left}.detail-products th{background:#f7fafb;color:#5c7483}.detail-products td:last-child,.detail-products th:last-child{text-align:right}.history-list{display:grid;gap:8px}.history-item{display:grid;grid-template-columns:115px 1fr;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fafcfd}.history-item time{font-size:9px;color:var(--muted)}.history-item div{font-size:10px;color:#4a6575}.history-item strong{color:var(--navy)}.internal-note{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}.internal-note textarea{margin:0;min-height:76px}.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:#fff;border-bottom:4px solid var(--yellow);border-radius:12px;padding:12px 14px;font-size:12px;font-weight:800;box-shadow:0 16px 40px rgba(0,0,0,.22);z-index:2000;display:none;max-width:360px}.toast.show{display:block;animation:toastIn .2s ease}@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:55}
+@media(max-width:1320px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.toolbar{grid-template-columns:1fr}.toolbar-controls{grid-template-columns:1.2fr repeat(3,1fr) auto}.charts{grid-template-columns:1fr}.form-grid{grid-template-columns:repeat(2,1fr)}.field.span2{grid-column:auto}.detail-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:980px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.overlay.show{display:block}.workspace{width:100%;margin-left:0}.menu-btn{display:none}.tabs{margin:14px 18px 0}.toolbar-controls{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:repeat(3,minmax(280px,1fr))}main{padding:18px}}
+@media(max-width:650px){.form-grid,.kpi-grid,.detail-grid{grid-template-columns:1fr}.field.full,.field.span2{grid-column:auto}.panel{padding:15px}.panel-head{align-items:flex-start;flex-direction:column}.toolbar-controls{grid-template-columns:1fr}.products-footer,.actions{align-items:stretch;flex-direction:column}.action-group,.action-group .btn,.actions>.btn{width:100%}.internal-note{grid-template-columns:1fr}.bar-row{grid-template-columns:100px 1fr 92px}}
+
+.form-field-hidden{display:none!important}
+.form-editor-panel{padding:24px}.editor-info-box{display:flex;gap:14px;align-items:flex-start;background:#fff9d9;border:1px solid #efd56a;border-left:5px solid var(--yellow);border-radius:14px;padding:13px 15px;margin-bottom:16px;color:#6a5900;font-size:12px;line-height:1.5}.editor-info-box strong{white-space:nowrap;color:var(--navy)}
+.form-editor-layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}.form-editor-sidebar,.form-editor-main{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(15,53,80,.05)}.form-editor-sidebar{padding:14px;position:sticky;top:90px}.form-editor-main{padding:18px}.editor-side-head{display:grid;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line)}.editor-side-head h3,.editor-main-head h3{margin:0;color:var(--navy)}.editor-side-head h3{font-size:16px}.editor-side-head p{margin:4px 0 0;color:var(--muted);font-size:10px}.editor-side-head input{margin:0}.editor-question-list{display:grid;gap:7px;margin-top:12px;max-height:620px;overflow:auto;padding-right:3px}.editor-question-item{width:100%;text-align:left;background:#f8fafb;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 11px;display:grid;gap:5px}.editor-question-item:hover{background:#eef5f8}.editor-question-item.active{background:#eaf3f8;border-color:#9cc3d5;box-shadow:0 0 0 3px rgba(7,89,133,.08)}.editor-question-item b{color:var(--navy);font-size:11px;line-height:1.3}.editor-question-item span{display:flex;gap:5px;flex-wrap:wrap}.editor-mini-badge{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;padding:3px 6px;border-radius:999px;background:#e7eef2;color:#587180}.editor-mini-badge.select{background:#dcfce7;color:#08734b}.editor-mini-badge.required{background:#ffedd5;color:#b45309}.editor-mini-badge.hidden-field{background:#fee2e2;color:#b91c1c}
+.editor-main-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding-bottom:15px;border-bottom:1px solid var(--line);margin-bottom:16px}.editor-section-tag{display:inline-flex;background:#eef5f8;color:var(--blue);border-radius:999px;padding:5px 9px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}.editor-field-type{background:var(--navy);color:#fff;border-bottom:3px solid var(--yellow);padding:7px 10px;border-radius:10px;font-size:9px;font-weight:900;text-transform:uppercase}.editor-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.editor-form-grid .full{grid-column:1/-1}.editor-toggle{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#f8fafb;cursor:pointer}.editor-toggle input{width:18px;height:18px;margin:1px 0 0}.editor-toggle span{display:grid;gap:3px}.editor-toggle b{color:var(--navy);font-size:12px}.editor-toggle small{color:var(--muted);font-size:10px;line-height:1.35}.editor-options-box{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden}.editor-options-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:13px 14px;background:#edf4f7;border-bottom:1px solid var(--line)}.editor-options-head h4{margin:0;color:var(--navy);font-size:13px}.editor-options-head p{margin:4px 0 0;color:var(--muted);font-size:10px}.editor-options-head span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:var(--blue);font-size:9px;font-weight:900;white-space:nowrap}.editor-options-textarea{margin:0;border:0;border-radius:0;min-height:300px;font-family:Consolas,"Courier New",monospace;font-size:11px;line-height:1.55;resize:vertical}.editor-options-textarea:focus{box-shadow:inset 0 0 0 3px rgba(7,89,133,.1)}.editor-list-note{padding:10px 13px;background:#fff9d9;border-top:1px solid #efd56a;color:#6a5900;font-size:10px;line-height:1.45}.editor-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+@media(max-width:1050px){.form-editor-layout{grid-template-columns:1fr}.form-editor-sidebar{position:static}.editor-question-list{max-height:320px}}@media(max-width:650px){.editor-form-grid{grid-template-columns:1fr}.editor-form-grid .full{grid-column:auto}.editor-actions .btn{width:100%}.editor-info-box{flex-direction:column}}
+
+</style>
+</head>
+<body>
+<div class="sf-app">
+  <div class="workspace">
+
+
+    <nav class="tabs" aria-label="Navegacao do módulo">
+      <button class="tab active" data-view="form"><span class="tab-icon">📝</span>Nova solicitação</button>
+      <button class="tab" data-view="kanban"><span class="tab-icon">🗂️</span>Kanban</button>
+      <button class="tab" data-view="dashboard"><span class="tab-icon">📊</span>Dashboard</button>
+      <button class="tab" data-view="base"><span class="tab-icon">🗄️</span>Base geral</button>
+      <button class="tab" data-view="editor"><span class="tab-icon">⚙️</span>Editor do formulário</button>
+    </nav>
+
+    <main>
+      <section class="view active" id="view-form">
+        <div class="panel">
+          <div class="panel-head"><div><h2 id="formTitle">Nova solicitação de Nota Fiscal</h2><p id="formSubtitle">Preencha os dados do solicitante, origem, destino, frete e produtos. A solicitação entrara em "Não Iniciado".</p></div><div class="pill" id="formModePill">NOVO CADASTRO</div></div>
+          <form id="requestForm" novalidate>
+            <input type="hidden" id="editId">
+            <div class="section"><div class="section-title">Identificacao da solicitação</div><div class="section-body"><div class="form-grid">
+              <div class="field"><label>Código da solicitação</label><input id="requestCode" readonly></div>
+              <div class="field"><label>Data da solicitação</label><input id="requestDate" readonly></div>
+              <div class="field"><label>Status inicial</label><input value="Não Iniciado" readonly></div>
+              <div class="field"><label for="priority">Prioridade da solicitação <span class="req">*</span></label><select id="priority" required><option value="Normal" selected>Normal - 7 dias úteis</option><option value="Urgente">Urgente - 3 dias úteis</option></select><div class="help">A prioridade define automaticamente a data limite.</div></div>
+              <div class="field"><label for="deadline">Data limite de atendimento <span class="req">*</span></label><input id="deadline" type="date" required readonly><div class="help" id="deadlineHelp">Normal: atendimento em até 7 dias úteis.</div></div>
+            </div></div></div>
+
+            <div class="section"><div class="section-title">1. Dados do solicitante</div><div class="section-body"><div class="form-grid">
+              <div class="field"><label for="requesterName">Nome do solicitante <span class="req">*</span></label><input id="requesterName" required autocomplete="name" placeholder="Carregado pelo login" readonly></div>
+              <div class="field span2"><label for="requesterEmail">E-mail para envio da Nota Fiscal <span class="req">*</span></label><input id="requesterEmail" type="email" required autocomplete="email" placeholder="Carregado pelo login" readonly></div>
+            </div><div class="login-context-note waiting" id="loginUserStatus">Aguardando a identificação do usuário conectado no aplicativo principal.</div></div></div>
+
+            <div class="section"><div class="section-title">2. Dados do emitente</div><div class="section-body"><div class="form-grid">
+              <div class="field span2"><label for="issuerCnpj">CNPJ emitente <span class="req">*</span></label><select id="issuerCnpj" required><option value="">Selecione</option><option value="72.030.927/0005-09">72.030.927/0005-09 - Caxias (Sede)</option><option value="72.030.927/0001-85">72.030.927/0001-85 - Obras RJ</option><option value="72.030.927/0007-70">72.030.927/0007-70 - Obras MG</option><option value="72.030.927/0006-90">72.030.927/0006-90 - Obras SC</option></select></div>
+              <div class="field"><label for="issuerDepartment">Obra / Departamento do emitente <span class="req">*</span></label><select id="issuerDepartment" required><option value="">Selecione a obra ou departamento</option></select><div class="help" data-form-help="issuerDepartment">Lista integrada aos módulos de Fretes, Cadastro e Contratos.</div></div>
+              <div class="field full"><label for="issuerAddress">Endereço de origem / saída da carga <span class="req">*</span></label><textarea id="issuerAddress" required placeholder="Endereço completo de onde a carga está saindo"></textarea></div>
+            </div></div></div>
+
+            <div class="section"><div class="section-title">3. Dados do destinatário</div><div class="section-body"><div class="form-grid">
+              <div class="field span2"><label for="recipientCnpj">CNPJ destinatário <span class="req">*</span></label><select id="recipientCnpj" required><option value="">Selecione</option><option value="72.030.927/0005-09">72.030.927/0005-09 - Caxias (Sede)</option><option value="72.030.927/0001-85">72.030.927/0001-85 - Rio de Janeiro</option><option value="72.030.927/0007-70">72.030.927/0007-70 - Minas Gerais</option><option value="72.030.927/0006-90">72.030.927/0006-90 - Sul</option></select></div>
+              <div class="field"><label for="recipientDepartment">Obra / Departamento do destinatário <span class="req">*</span></label><select id="recipientDepartment" required><option value="">Selecione a obra ou departamento</option></select><div class="help" data-form-help="recipientDepartment">Lista integrada aos módulos de Fretes, Cadastro e Contratos.</div></div>
+              <div class="field full"><label for="recipientAddress">Endereço completo do destinatário <span class="req">*</span></label><textarea id="recipientAddress" required placeholder="Logradouro, numero, complemento, bairro, cidade, UF e CEP"></textarea></div>
+            </div></div></div>
+
+            <div class="section"><div class="section-title">4. Responsavel pelo frete</div><div class="section-body"><div class="form-grid">
+              <div class="field"><label for="freightResponsible">Responsavel pelo frete <span class="req">*</span></label><select id="freightResponsible" required><option value="">Selecione</option><option value="Veículo SEEL">Veículo SEEL</option><option value="Transportadora">Transportadora</option></select></div>
+              <div class="field"><label for="carrierName">Nome da transportadora <span class="req">*</span></label><input id="carrierName" required placeholder="Informe a transportadora"></div>
+              <div class="field"><label for="carrierCnpj">CNPJ da transportadora <span class="req">*</span></label><input id="carrierCnpj" required inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00"></div>
+            </div><div class="rule-box" id="freightRule">Selecione o responsavel pelo frete. Para Veículo SEEL, os dados da transportadora seráo preenchidos e bloqueados automaticamente.</div></div></div>
+
+            <div class="section"><div class="section-title">5. Produtos</div><div class="section-body">
+              <div class="products-wrap"><div class="table-scroll"><table class="products-table"><thead><tr><th>#</th><th style="min-width:300px">Descrição do produto</th><th style="width:120px">Quantidade</th><th style="width:150px">Valor unitário</th><th style="width:140px">NCM</th><th style="width:140px;text-align:right">Valor total</th><th style="width:55px"></th></tr></thead><tbody id="productsBody"></tbody></table></div>
+              <div class="products-footer"><button type="button" class="btn btn-soft btn-small" id="addProduct">+ Adicionar produto</button><div class="products-summary"><div>Itens<strong id="productsCount">0</strong></div><div>Valor total<strong id="productsGrandTotal">R$ 0,00</strong></div></div></div></div>
+              <div class="help">Inclua quantas linhas forem necessárias. Descrição, quantidade, valor unitário e NCM são obrigatórios.</div>
+            </div></div>
+
+            <div class="actions"><button type="button" class="btn btn-secondary" id="clearForm">Limpar formulário</button><div class="action-group"><button type="button" class="btn btn-secondary hidden" id="cancelEdit">Cancelar edição</button><button type="submit" class="btn btn-primary" id="saveRequest">Salvar e enviar para o Kanban</button></div></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="view-kanban">
+        <div class="toolbar kanban-toolbar"><div class="toolbar-copy"><h3>Kanban de emissão de Nota Fiscal</h3><p>Arraste os cards entre as fases ou selecione a fase no campo suspenso de cada card. O cronômetro é salvo por etapa e para ao finalizar.</p></div><div class="toolbar-controls">
+          <div><label>Buscar</label><input id="filterSearch" placeholder="Código, solicitante ou obra"></div>
+          <div><label>Emitente</label><select id="filterIssuer"><option value="">Todos</option></select></div>
+          <div><label>Destinatário</label><select id="filterRecipient"><option value="">Todos</option></select></div>
+          <div><label>Frete</label><select id="filterFreight"><option value="">Todos</option><option>Veículo SEEL</option><option>Transportadora</option></select></div>
+          <div><label>Prioridade</label><select id="filterPriority"><option value="">Todas</option><option>Urgente</option><option>Normal</option></select></div>
+          <div><label>Semáforo</label><select id="filterSemaphore"><option value="">Todos</option><option value="late">Em atraso</option><option value="warn">Em alerta</option><option value="ok">No prazo</option></select></div>
+          <button class="btn btn-secondary" id="clearFilters">Limpar filtros</button>
+        </div></div>
+        <div class="kanban" id="kanbanBoard"></div>
+      </section>
+
+      <section class="view" id="view-dashboard">
+        <div class="toolbar dashboard-toolbar">
+          <div class="toolbar-copy"><div><h3>Filtros do Dashboard</h3><p>Os cartões e todos os gráficos abaixo são recalculados conforme os filtros selecionados.</p></div><span class="dashboard-filter-summary" id="dashboardFilterSummary">Exibindo toda a base</span></div>
+          <div class="toolbar-controls">
+            <div><label>Buscar</label><input id="dashboardFilterSearch" placeholder="Código, solicitante ou obra"></div>
+            <div><label>Data inicial</label><input id="dashboardFilterStart" type="date"></div>
+            <div><label>Data final</label><input id="dashboardFilterEnd" type="date"></div>
+            <div><label>Fase</label><select id="dashboardFilterPhase"><option value="">Todas</option><option>Não Iniciado</option><option>Em Tratativa</option><option>Finalizado</option></select></div>
+            <div><label>Prioridade</label><select id="dashboardFilterPriority"><option value="">Todas</option><option>Urgente</option><option>Normal</option></select></div>
+            <div><label>Semáforo</label><select id="dashboardFilterSemaphore"><option value="">Todos</option><option value="late">Em atraso</option><option value="warn">Em alerta</option><option value="ok">No prazo</option></select></div>
+            <div><label>Frete</label><select id="dashboardFilterFreight"><option value="">Todos</option><option>Veículo SEEL</option><option>Transportadora</option></select></div>
+            <div><label>Emitente</label><select id="dashboardFilterIssuer"><option value="">Todos</option></select></div>
+            <button class="btn btn-secondary" id="clearDashboardFilters">Limpar filtros</button>
+          </div>
+        </div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="charts">
+          <article class="chart-card"><h3>Solicitações por fase</h3><p>Quantidade e percentual das solicitações em cada fase.</p><div class="bar-list" id="stageChart"></div></article>
+          <article class="chart-card"><h3>Semáforo de filas</h3><p>Quantidade e percentual das solicitações abertas por situação do prazo.</p><div class="bar-list" id="semaphoreChart"></div></article>
+          <article class="chart-card"><h3>Prioridade das solicitações</h3><p>Quantidade e percentual das solicitações normais e urgentes.</p><div class="bar-list" id="priorityChart"></div></article>
+          <article class="chart-card"><h3>Responsavel pelo frete</h3><p>Quantidade e percentual por responsável pelo frete.</p><div class="bar-list" id="freightChart"></div></article>
+          <article class="chart-card"><h3>Volume por CNPJ emitente</h3><p>Quantidade, percentual e valor total das solicitações por unidade emitente.</p><div class="bar-list" id="issuerChart"></div></article>
+          <article class="chart-card"><h3>SLA médio por fase</h3><p>Tempo médio acumulado em cada etapa. Em Finalizado, considera o ciclo total encerrado.</p><div class="bar-list" id="slaPhaseChart"></div></article>
+        </div>
+      </section>
+
+
+      <section class="view" id="view-editor">
+        <div class="panel form-editor-panel">
+          <div class="panel-head">
+            <div><h2>Editor do formulário</h2><p>Edite o texto das perguntas, obrigatoriedade, exibição e as respostas disponíveis nas listas suspensas.</p></div>
+            <div class="action-group"><button class="btn btn-secondary" id="refreshIntegratedWorks">Sincronizar obras dos módulos</button><button class="btn btn-danger" id="resetAllFormEditor">Restaurar formulário padrão</button></div>
+          </div>
+          <div class="editor-info-box"><strong>Como funciona</strong><span>Selecione uma pergunta à esquerda. Para campos de lista suspensa, edite uma opção por linha usando <b>valor | rótulo</b>. Para organizar opções em grupos, use <b>Grupo :: valor | rótulo</b>. As alterações ficam salvas neste navegador.</span></div>
+          <div class="form-editor-layout">
+            <aside class="form-editor-sidebar">
+              <div class="editor-side-head"><div><h3>Perguntas do formulário</h3><p id="editorQuestionCount"></p></div><input id="editorQuestionSearch" type="search" placeholder="Buscar pergunta"></div>
+              <div class="editor-question-list" id="editorQuestionList"></div>
+            </aside>
+            <section class="form-editor-main">
+              <div class="editor-main-head"><div><span class="editor-section-tag" id="editorSectionTag">Seção</span><h3 id="editorQuestionTitle">Selecione uma pergunta</h3></div><span class="editor-field-type" id="editorFieldType">Campo</span></div>
+              <div class="editor-form-grid">
+                <div class="field full"><label for="editorQuestionLabel">Texto da pergunta</label><input id="editorQuestionLabel" placeholder="Digite o texto exibido no formulário"></div>
+                <div class="field full"><label for="editorQuestionHelp">Texto de apoio</label><textarea id="editorQuestionHelp" placeholder="Orientação opcional exibida abaixo do campo"></textarea></div>
+                <label class="editor-toggle"><input id="editorQuestionRequired" type="checkbox"><span><b>Campo obrigatório</b><small>Exige resposta antes de salvar a solicitação.</small></span></label>
+                <label class="editor-toggle"><input id="editorQuestionVisible" type="checkbox"><span><b>Exibir no formulário</b><small>Oculta ou mostra a pergunta sem apagar sua configuração.</small></span></label>
+              </div>
+              <div class="editor-options-box hidden" id="editorOptionsBox">
+                <div class="editor-options-head"><div><h4>Respostas da lista suspensa</h4><p>Uma opção por linha. O valor antes de “|” é usado nas regras do aplicativo.</p></div><span id="editorOptionCount">0 opções</span></div>
+                <textarea id="editorQuestionOptions" class="editor-options-textarea" spellcheck="false"></textarea>
+                <div class="editor-list-note" id="editorListNote"></div>
+              </div>
+              <div class="editor-actions">
+                <button class="btn btn-secondary" id="resetCurrentQuestion">Restaurar esta pergunta</button>
+                <button class="btn btn-soft hidden" id="syncCurrentWorkList">Usar lista automática de obras</button>
+                <button class="btn btn-primary" id="saveCurrentQuestion">Salvar alteração</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-base">
+        <div class="panel"><div class="panel-head"><div><h2>Base de solicitações</h2><p>Consulta consolidada, edição, exportação e exclusao dos registros.</p></div><div class="action-group"><button class="btn btn-secondary" id="exportCsv">Exportar CSV</button><button class="btn btn-primary" id="baseNew">Nova solicitação</button></div></div>
+          <div class="data-wrap"><table class="data-table"><thead><tr><th>Código</th><th>Data</th><th>Solicitante</th><th>Emitente</th><th>Destino</th><th>Frete</th><th>Itens</th><th>Valor</th><th>Prioridade</th><th>Status</th><th>Data limite</th><th>Semáforo</th><th>Tempo total</th><th>Ações</th></tr></thead><tbody id="baseTableBody"></tbody></table></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="detailModal"><div class="modal"><div class="modal-header"><div><h2 id="detailTitle">Detalhes da solicitação</h2><p id="detailSubtitle"></p></div><button class="close-btn" id="closeDetail">x</button></div><div class="modal-body" id="detailBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const STORAGE_KEY = 'seel_nf_simples_remessa_v1';
+const PHASES = ['Não Iniciado','Em Tratativa','Finalizado'];
+const PRIORITY_SLA_DAYS={Urgente:3,Normal:7};
+const DEFAULT_PRIORITY='Normal';
+const LOGIN_CACHE_KEY='seel_supply_flow_login_user_v1';
+const PHASE_META = {
+  'Não Iniciado': {css:'new', icon:'clock', subtitle:'Solicitações recebidas e ainda não tratadas'},
+  'Em Tratativa': {css:'progress', icon:'tool', subtitle:'Análise, ajustes e emissão em andamento'},
+  'Finalizado': {css:'done', icon:'check', subtitle:'Nota Fiscal emitida e processo concluído'}
+};
+const CNPJ_LABELS = {
+  '72.030.927/0005-09':'Caxias (Sede)',
+  '72.030.927/0001-85':'Rio de Janeiro / Obras RJ',
+  '72.030.927/0007-70':'Minas Gerais / Obras MG',
+  '72.030.927/0006-90':'Sul / Obras SC'
+};
+let requests = loadRequests();
+const FORM_EDITOR_STORAGE_KEY='seel_nf_formulario_editor_v1';
+const CONTRACT_WORK_CENTERS=["CIC UN ENERGIA", "793 - LAMSA", "827 - PETROBRAS TRANSPORTE S.A - TRANSPETRO - SC", "852 - POCO FUNDO ENERGIA S/A", "857 - ENGETEC CONSTRUCOES E MONTAGENS SA - SP", "862 - HOSPITAL NAVAL MARCILIO DIAS - RJ", "866 - MJRE CONSTRUTORA LTDA - RJ", "868 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO", "869 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO", "871 - CEMIG GERACAO SUL S.A - MG", "874 - CEMIG GERACAO SUL S.A.", "875 - AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ", "877 - 1 ASSOCIACAO INSTITUTO NACIONAL DE MATEMATICA PURA - RJ", "878 - FUND. INST. DE GEOTECNIA DO MUN. DO R.J - GEORIO - RJ", "881 - PETRÓLEO BRASILEIRO S/A - PETROBRÁS - RJ", "882 - MRS LOGISTICA S/A - RJ", "883 - AUTOPISTA LITORAL SUL S.A - SC", "884 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO", "885 - EMPRESA MUNICIPAL DE MORADIA URBANIZACAO E SANEAME - RJ", "886 - EMPRESA MUNICIPAL DE MORADIA URBANIZACAO E SANEAME - RJ", "887 - LIGHT - ENERGIA S/A - RJ", "889 - DNIT-DEPARTAMENTO NACIONAL DE INFRAEST DE TRANSPOR - SP", "890 - GERDAU - MG", "891 - SANTA FE ENERGIA S/A - ES", "892 - 1 MRS LOGISTICA S/A", "892-2 MRS LOGISTICA S/A", "892-3 MRS LOGISTICA S/A", "892-4 MRS LOGISTICA S/A", "892-6 MRS LOGISTICA S/A", "892-7 MRS LOGISTICA S/A", "892-8 MRS LOGISTICA S/A", "892-9 MRS LOGISTICA S/A", "892-10 MRS LOGISTICA S/A", "892-11 MRS LOGISTICA S/A", "892-12 MRS LOGISTICA S/A", "893 - AUTOPISTA PLANALTO SUL S.A - SC", "894 - PREFEITURA DA CIDADE DO RIO DE JANEIRO", "895-1 - AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ", "895-2 AESAN ENGENHARIA E PARTICIPACOES LTDA - RJ", "896 - CEMIG GERACAO E TRANSMISSAO S.A", "897 - CONSORCIO CANDONGA", "898 - CONCESSIONARIA DO SISTEMA ANHANGUERA-BANDEIRANTES", "900 - FURNAS CENTRAIS ELÉTRICAS S/A", "901 - AUTOPISTA LITORAL SUL S.A.", "902 - CONCESSIONARIA DAS RODOVIAS INTEGRADAS DO SUL S.A.", "903 - AESAN ENGENHARIA E PARTICIPACOES LTDA", "904 - MRS LOGISTICA S/A", "905 - EMPRESA DE TECNOLOGIA E INFORMACOES DA PREVIDENCIA", "906 - AUTOPISTA LITORAL SUL S.A.", "907 - MRS LOGISTICA S/A", "908 - CEMIG DISTRIBUICAO S.A", "909 - CEMIG DISTRIBUICAO S.A", "910 - PETROBRAS TRANSPORTE S.A. -TRANSPETRO", "911 - ENGIE SOLUCOES DE OPERACAO E MANUTENCAO LTDA.", "912 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAULO", "913 - AUTOPISTA LITORAL SUL S.A.", "914 - CONCESSIONARIA DO SISTEMA RODOVIARIO RIO - SAO PAU", "915 - AUTOPISTA PLANALTO SUL S.A", "916 - GERDAU ACOS LONGOS S.A", "917 - PETROBRAS TRANSPORTE S.A. -TRANSPETRO", "918 - MRS", "919 - GEORIO", "920 - CCR VIACOSTEIRA", "921 - SEIC", "922 - CEMIG", "923 - CCR VIA SUL", "924 - CEMIG", "925 - ARTERIS", "926 - CEEE-G", "927 - DNIT-DEPARTAMENTO NACIONAL DE INFRAEST DE TRANSPOR - SP", "928 - ARTERIS", "929 - ARTERIS", "930 - SEIOP", "931 - GERDAU", "932 - ECORIOMINAS", "933 - AEGEA", "934 - IGUÁ - RJ", "935 - ENGIE - RN", "936 - ARTERIS", "937 - CCR", "938 - AEGEA", "939 - AEGEA", "940 - CCR", "941 - ECORIOMINAS", "942 - RUMO", "943 - ARTERIS", "944 - STATE", "945 - CCR", "946 - CCR", "947 - CCR", "948 - G5 ENGENHARIA", "949 - DNIT", "950 - CSG", "951 - ECORIOMINAS", "952 - CCR", "953 - BRASFELS", "954 - AUTOPISTA PLANALTO SUL", "955 - RUMO", "956 - CORSAN", "957 - EPR", "958 - AGUAS DO RIO 4 SPE", "959 - CCR", "960 - VLI", "961 - METRO BH", "962 - ION EMUSA", "OBRA 963 - CSG", "OBRA 964 - AUTOPISTA L SUL", "966 - SABESP", "967 - ARTERIS", "968 - RUMO", "971 - EMAE"];
+const ADMIN_DEPARTMENTS=["SUPPLY CHAIN", "EQUIPAMENTOS", "COMERCIAL", "PESSOAS (RH/DP)", "MARKETING", "DIRETORIA", "FINANÇAS (CONTABILIDADE/FINANCEIRO)", "CADASTRO", "PLANEJAMENTO & CONTROLE", "TI", "ENGENHARIA", "PLANEJAMENTO ESTRATÉGICO", "QSMS", "SEDE"];
+const WORK_CENTER_RECORD_FIELDS=['centroCusto','centroDeCusto','costCenter','numeroObra','obra','obraDepto','obraDepartamento','centro_obra','centro_departamento','centro_custo','cc','work','issuerDepartment','recipientDepartment'];
+let formEditorConfig=null;
+let selectedEditorFieldId='priority';
+let currentDetailId = null;
+let toastTimer = null;
+let activeLoginUser = null;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function icon(name){
+  const icons={
+    clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    tool:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5-5L12 4 4 12l-2 5 5-2 8-8Z"/><path d="m14 10 7 7-4 4-7-7"/></svg>',
+    check:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>',
+    user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    building:'<svg viewBox="0 0 24 24"><path d="M4 21V5l8-3 8 3v16"/><path d="M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1"/></svg>',
+    truck:'<svg viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+    box:'<svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v8l9 5 9-5V8M12 13v8"/></svg>',
+    pin:'<svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>'
+  }; return icons[name]||icons.box;
+}
+function loadRequests(){try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');return Array.isArray(raw)?raw:[]}catch(e){return []}}
+function saveRequests(){localStorage.setItem(STORAGE_KEY,JSON.stringify(requests))}
+function nowIso(){return new Date().toISOString()}
+function escapeHtml(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function normalizeWorkCenterValue(value){
+  const txt=String(value??'').trim().replace(/\\s+/g,' ');if(!txt)return '';
+  const normalized=txt.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+  if(['-','todos','todas','selecione','selecione...','sem obra','sem centro de custo','nao informado','obra/depto','obra / departamento'].includes(normalized))return '';
+  return txt.replace(/^obra\\s*\\/\\s*depto\\s+/i,'').trim();
+}
+function collectWorkCenterRecord(target,record){
+  if(!record||typeof record!=='object')return;
+  WORK_CENTER_RECORD_FIELDS.forEach(key=>{const value=record[key];if(value&&typeof value!=='object'){const clean=normalizeWorkCenterValue(value);if(clean)target.add(clean)}});
+  ['values','data','formData'].forEach(container=>{const source=record[container];if(!source||typeof source!=='object')return;WORK_CENTER_RECORD_FIELDS.forEach(key=>{const entry=source[key];const value=entry&&typeof entry==='object'&&'value' in entry?entry.value:entry;const clean=normalizeWorkCenterValue(value);if(clean)target.add(clean)})});
+}
+function collectIntegratedWorkCenterOptions(){
+  const workSet=new Set(CONTRACT_WORK_CENTERS.map(normalizeWorkCenterValue).filter(Boolean));
+  const departmentSet=new Set(ADMIN_DEPARTMENTS.map(normalizeWorkCenterValue).filter(Boolean));
+  const integrated=new Set();
+  const preferred=['gestao_fretes_solicitacoes_v1','seel_fornecedores_items_v1','seel_requests_google_forms_exato_v1','frota_veiculos_v4_importacao_inicial'];
+  const keys=new Set(preferred);
+  try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&/(frete|fornecedor|contrato|cadastro|frota)/i.test(key))keys.add(key)}}catch(e){}
+  keys.forEach(key=>{try{const parsed=JSON.parse(localStorage.getItem(key)||'null');const rows=Array.isArray(parsed)?parsed:Array.isArray(parsed?.items)?parsed.items:Array.isArray(parsed?.records)?parsed.records:Array.isArray(parsed?.requests)?parsed.requests:[];rows.forEach(row=>collectWorkCenterRecord(integrated,row))}catch(e){}});
+  try{requests.forEach(row=>{[row.issuerDepartment,row.recipientDepartment].forEach(value=>{const clean=normalizeWorkCenterValue(value);if(clean)integrated.add(clean)})})}catch(e){}
+  const options=[];
+  [...workSet].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true,sensitivity:'base'})).forEach(value=>options.push({group:'Obras',value,label:value}));
+  [...departmentSet].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true,sensitivity:'base'})).forEach(value=>options.push({group:'Departamentos administrativos',value,label:value}));
+  [...integrated].filter(value=>!workSet.has(value)&&!departmentSet.has(value)).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true,sensitivity:'base'})).forEach(value=>options.push({group:'Dados integrados dos módulos',value,label:value}));
+  return options;
+}
+function normalizedEditorOptions(options){return (Array.isArray(options)?options:[]).map(item=>typeof item==='string'?{value:item,label:item}:{value:String(item?.value??item?.label??''),label:String(item?.label??item?.value??''),group:String(item?.group||'')}).filter(item=>item.value)}
+function defaultFormFieldDefinitions(){
+  const cnpjIssuer=[{value:'72.030.927/0005-09',label:'72.030.927/0005-09 - Caxias (Sede)'},{value:'72.030.927/0001-85',label:'72.030.927/0001-85 - Obras RJ'},{value:'72.030.927/0007-70',label:'72.030.927/0007-70 - Obras MG'},{value:'72.030.927/0006-90',label:'72.030.927/0006-90 - Obras SC'}];
+  const cnpjRecipient=[{value:'72.030.927/0005-09',label:'72.030.927/0005-09 - Caxias (Sede)'},{value:'72.030.927/0001-85',label:'72.030.927/0001-85 - Rio de Janeiro'},{value:'72.030.927/0007-70',label:'72.030.927/0007-70 - Minas Gerais'},{value:'72.030.927/0006-90',label:'72.030.927/0006-90 - Sul'}];
+  const works=collectIntegratedWorkCenterOptions();
+  return [
+    {id:'priority',section:'Identificação da solicitação',label:'Prioridade da solicitação',type:'select',required:true,visible:true,help:'A prioridade define automaticamente a data limite.',options:[{value:'Normal',label:'Normal - 7 dias úteis'},{value:'Urgente',label:'Urgente - 3 dias úteis'}],systemValues:['Normal','Urgente']},
+    {id:'requesterName',section:'1. Dados do solicitante',label:'Nome do solicitante',type:'text',required:true,visible:true,help:'Preenchido automaticamente pelo login do aplicativo principal.',readonly:true},
+    {id:'requesterEmail',section:'1. Dados do solicitante',label:'E-mail para envio da Nota Fiscal',type:'email',required:true,visible:true,help:'Preenchido automaticamente pelo login do aplicativo principal.',readonly:true},
+    {id:'issuerCnpj',section:'2. Dados do emitente',label:'CNPJ emitente',type:'select',required:true,visible:true,help:'Selecione a unidade responsável pela emissão.',options:cnpjIssuer},
+    {id:'issuerDepartment',section:'2. Dados do emitente',label:'Obra / Departamento do emitente',type:'select',required:true,visible:true,help:'Lista integrada aos módulos de Fretes, Cadastro e Contratos.',options:works,integratedList:true},
+    {id:'issuerAddress',section:'2. Dados do emitente',label:'Endereço de origem / saída da carga',type:'textarea',required:true,visible:true,help:'Informe o endereço completo de onde a carga está saindo.'},
+    {id:'recipientCnpj',section:'3. Dados do destinatário',label:'CNPJ destinatário',type:'select',required:true,visible:true,help:'Selecione a unidade destinatária.',options:cnpjRecipient},
+    {id:'recipientDepartment',section:'3. Dados do destinatário',label:'Obra / Departamento do destinatário',type:'select',required:true,visible:true,help:'Lista integrada aos módulos de Fretes, Cadastro e Contratos.',options:works,integratedList:true},
+    {id:'recipientAddress',section:'3. Dados do destinatário',label:'Endereço completo do destinatário',type:'textarea',required:true,visible:true,help:'Informe logradouro, número, complemento, bairro, cidade, UF e CEP.'},
+    {id:'freightResponsible',section:'4. Responsável pelo frete',label:'Responsável pelo frete',type:'select',required:true,visible:true,help:'A opção Veículo SEEL preenche automaticamente os dados da transportadora.',options:[{value:'Veículo SEEL',label:'Veículo SEEL'},{value:'Transportadora',label:'Transportadora'}],systemValues:['Veículo SEEL','Transportadora']},
+    {id:'carrierName',section:'4. Responsável pelo frete',label:'Nome da transportadora',type:'text',required:true,visible:true,help:'Preenchido automaticamente para Veículo SEEL ou informado para transportadora externa.'},
+    {id:'carrierCnpj',section:'4. Responsável pelo frete',label:'CNPJ da transportadora',type:'text',required:true,visible:true,help:'Use o formato 00.000.000/0000-00.'}
+  ];
+}
+function loadFormEditorConfig(){
+  const defaults=defaultFormFieldDefinitions();let stored=null;try{stored=JSON.parse(localStorage.getItem(FORM_EDITOR_STORAGE_KEY)||'null')}catch(e){}
+  const storedFields=stored?.fields&&typeof stored.fields==='object'?stored.fields:{};const fields={};
+  defaults.forEach(def=>{const saved=storedFields[def.id]||{};const merged={...def,...saved};merged.required=saved.required===undefined?def.required:!!saved.required;merged.visible=saved.visible===undefined?def.visible:!!saved.visible;merged.options=normalizedEditorOptions(def.integratedList&&saved.manualOptions!==true?def.options:(saved.options||def.options));fields[def.id]=merged});
+  return {version:1,fields};
+}
+function saveFormEditorConfig(){try{localStorage.setItem(FORM_EDITOR_STORAGE_KEY,JSON.stringify(formEditorConfig))}catch(e){showToast('Não foi possível salvar a configuração do formulário.')}}
+function ensureSelectValue(select,value){if(!select||value===undefined||value===null)return;const text=String(value);if(text&&!Array.from(select.options).some(option=>option.value===text)){const option=document.createElement('option');option.value=text;option.textContent=text+' (registro atual)';select.appendChild(option)}select.value=text}
+function populateConfiguredSelect(select,field){
+  if(!select)return;const current=select.value;select.innerHTML='';const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecione';select.appendChild(placeholder);
+  const options=normalizedEditorOptions(field.options);const grouped=new Map();const plain=[];options.forEach(option=>{if(option.group){if(!grouped.has(option.group))grouped.set(option.group,[]);grouped.get(option.group).push(option)}else plain.push(option)});
+  plain.forEach(item=>{const option=document.createElement('option');option.value=item.value;option.textContent=item.label;select.appendChild(option)});
+  grouped.forEach((items,group)=>{const optgroup=document.createElement('optgroup');optgroup.label=group;items.forEach(item=>{const option=document.createElement('option');option.value=item.value;option.textContent=item.label;optgroup.appendChild(option)});select.appendChild(optgroup)});
+  if(current)ensureSelectValue(select,current);
+}
+function applyFormEditorConfig(){
+  if(!formEditorConfig)formEditorConfig=loadFormEditorConfig();
+  Object.values(formEditorConfig.fields).forEach(field=>{const control=document.getElementById(field.id);if(!control)return;const wrapper=control.closest('.field');if(wrapper)wrapper.classList.toggle('form-field-hidden',field.visible===false);control.disabled=field.visible===false;control.required=!!field.required&&field.visible!==false;
+    const label=wrapper?.querySelector(\`label[for="\${field.id}"]\`);if(label)label.innerHTML=\`\${escapeHtml(field.label)}\${field.required?' <span class="req">*</span>':''}\`;
+    let help=wrapper?.querySelector(\`[data-form-help="\${field.id}"]\`)||wrapper?.querySelector('.help');if(help&&!help.dataset.formHelp)help.dataset.formHelp=field.id;if(!help&&field.help){help=document.createElement('div');help.className='help';help.dataset.formHelp=field.id;control.insertAdjacentElement('afterend',help)}if(help){help.textContent=field.help||'';help.classList.toggle('hidden',!field.help)}
+    if(field.type==='select'&&control.tagName==='SELECT')populateConfiguredSelect(control,field);
+  });
+  ['issuerCnpj','recipientCnpj'].forEach(id=>normalizedEditorOptions(formEditorConfig.fields[id]?.options).forEach(option=>{CNPJ_LABELS[option.value]=option.label.replace(option.value,'').replace(/^\\s*-\\s*/,'')||option.label}));
+}
+function optionToEditorLine(option){const prefix=option.group?\`\${option.group} :: \`:'';return \`\${prefix}\${option.value}\${option.label!==option.value?\` | \${option.label}\`:''}\`}
+function parseEditorOptionLines(value){
+  const result=[];const seen=new Set();String(value||'').split(/\\r?\\n/).map(line=>line.trim()).filter(Boolean).forEach(line=>{let group='';let payload=line;const groupIndex=line.indexOf('::');if(groupIndex>=0){group=line.slice(0,groupIndex).trim();payload=line.slice(groupIndex+2).trim()}const separator=payload.indexOf('|');const optionValue=(separator>=0?payload.slice(0,separator):payload).trim();const label=(separator>=0?payload.slice(separator+1):payload).trim()||optionValue;if(optionValue&&!seen.has(optionValue)){seen.add(optionValue);result.push({group,value:optionValue,label})}});return result;
+}
+function editorFieldList(){return Object.values(formEditorConfig?.fields||{})}
+function renderFormEditor(){
+  if(!formEditorConfig)formEditorConfig=loadFormEditorConfig();const query=($('#editorQuestionSearch')?.value||'').trim().toLowerCase();const fields=editorFieldList();const visible=fields.filter(field=>!query||[field.label,field.section,field.id].join(' ').toLowerCase().includes(query));
+  $('#editorQuestionCount').textContent=\`\${fields.length} perguntas configuráveis\`;
+  $('#editorQuestionList').innerHTML=visible.length?visible.map(field=>\`<button type="button" class="editor-question-item \${field.id===selectedEditorFieldId?'active':''}" data-editor-field="\${escapeHtml(field.id)}"><b>\${escapeHtml(field.label)}</b><span><i class="editor-mini-badge \${field.type==='select'?'select':''}">\${field.type==='select'?'Lista suspensa':field.type}</i>\${field.required?'<i class="editor-mini-badge required">Obrigatória</i>':''}\${field.visible===false?'<i class="editor-mini-badge hidden-field">Oculta</i>':''}</span></button>\`).join(''):'<div class="empty">Nenhuma pergunta encontrada.</div>';
+  $$('[data-editor-field]').forEach(button=>button.addEventListener('click',()=>{selectedEditorFieldId=button.dataset.editorField;renderFormEditor()}));
+  const field=formEditorConfig.fields[selectedEditorFieldId]||fields[0];if(!field)return;selectedEditorFieldId=field.id;$('#editorSectionTag').textContent=field.section;$('#editorQuestionTitle').textContent=field.label;$('#editorFieldType').textContent=field.type==='select'?'Lista suspensa':field.type;$('#editorQuestionLabel').value=field.label;$('#editorQuestionHelp').value=field.help||'';$('#editorQuestionRequired').checked=!!field.required;$('#editorQuestionVisible').checked=field.visible!==false;
+  const options=normalizedEditorOptions(field.options);$('#editorOptionsBox').classList.toggle('hidden',field.type!=='select');$('#editorQuestionOptions').value=options.map(optionToEditorLine).join('\\n');$('#editorOptionCount').textContent=\`\${options.length} opção(ões)\`;$('#syncCurrentWorkList').classList.toggle('hidden',!field.integratedList);$('#editorListNote').textContent=field.integratedList?(field.manualOptions===true?'Lista personalizada. Use “Usar lista automática de obras” para voltar à integração com os outros módulos.':'Lista automática integrada aos dados de Fretes, Cadastro e Contratos.'):(field.systemValues?.length?'Os valores usados nas regras devem ser preservados: '+field.systemValues.join(', ')+'.':'Você pode alterar, adicionar, remover e reorganizar as opções.');
+}
+function saveCurrentEditorField(){
+  const field=formEditorConfig.fields[selectedEditorFieldId];if(!field)return;const label=$('#editorQuestionLabel').value.trim();if(!label){showToast('Informe o texto da pergunta.');return}field.label=label;field.help=$('#editorQuestionHelp').value.trim();field.required=$('#editorQuestionRequired').checked;field.visible=$('#editorQuestionVisible').checked;
+  if(field.type==='select'){const options=parseEditorOptionLines($('#editorQuestionOptions').value);if(!options.length){showToast('A lista suspensa precisa ter ao menos uma opção.');return}if(field.systemValues?.length){const values=new Set(options.map(option=>option.value));const missing=field.systemValues.filter(value=>!values.has(value));if(missing.length){showToast('Mantenha os valores obrigatórios da regra: '+missing.join(', ')+'.');return}}field.options=options;if(field.integratedList)field.manualOptions=true}
+  saveFormEditorConfig();applyFormEditorConfig();renderFormEditor();updateFreightRule();showToast('Pergunta atualizada com sucesso.');
+}
+function resetCurrentEditorField(){const defaults=defaultFormFieldDefinitions();const standard=defaults.find(field=>field.id===selectedEditorFieldId);if(!standard)return;if(!confirm('Restaurar esta pergunta para a configuração padrão?'))return;formEditorConfig.fields[selectedEditorFieldId]=standard;saveFormEditorConfig();applyFormEditorConfig();renderFormEditor();updateFreightRule();showToast('Pergunta restaurada.');}
+function resetAllEditorFields(){if(!confirm('Restaurar todas as perguntas e listas suspensas para o padrão?'))return;try{localStorage.removeItem(FORM_EDITOR_STORAGE_KEY)}catch(e){}formEditorConfig=loadFormEditorConfig();applyFormEditorConfig();renderFormEditor();resetForm();showToast('Formulário padrão restaurado.');}
+function syncIntegratedWorkLists(){const options=collectIntegratedWorkCenterOptions();['issuerDepartment','recipientDepartment'].forEach(id=>{const field=formEditorConfig.fields[id];if(field){field.options=options;field.manualOptions=false}});saveFormEditorConfig();applyFormEditorConfig();renderFormEditor();showToast(\`\${options.length} obras e departamentos sincronizados.\`)}
+function initializeFormEditor(){
+  formEditorConfig=loadFormEditorConfig();applyFormEditorConfig();
+  $('#editorQuestionSearch')?.addEventListener('input',renderFormEditor);$('#saveCurrentQuestion')?.addEventListener('click',saveCurrentEditorField);$('#resetCurrentQuestion')?.addEventListener('click',resetCurrentEditorField);$('#resetAllFormEditor')?.addEventListener('click',resetAllEditorFields);$('#refreshIntegratedWorks')?.addEventListener('click',syncIntegratedWorkLists);$('#syncCurrentWorkList')?.addEventListener('click',syncIntegratedWorkLists);
+  renderFormEditor();
+}
+
+function formatDate(v,withTime=false){if(!v)return '-';const d=new Date(v);if(Number.isNaN(d.getTime()))return '-';return new Intl.DateTimeFormat('pt-BR',withTime?{dateStyle:'short',timeStyle:'short'}:{dateStyle:'short'}).format(d)}
+function formatMoney(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0)}
+function formatDuration(ms){ms=Math.max(0,Number(ms)||0);const sec=Math.floor(ms/1000);const days=Math.floor(sec/86400);const hours=Math.floor((sec%86400)/3600);const mins=Math.floor((sec%3600)/60);const secs=sec%60;return \`\${days}d \${String(hours).padStart(2,'0')}h \${String(mins).padStart(2,'0')}m \${String(secs).padStart(2,'0')}s\`}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function isBusinessDay(d){const day=d.getDay();return day!==0&&day!==6}
+function workdayAdd(dateStr,days){let d=new Date(String(dateStr).slice(0,10)+'T12:00:00');let added=0;while(added<days){d.setDate(d.getDate()+1);if(isBusinessDay(d))added++}return d.toISOString().slice(0,10)}
+function slaDaysFor(priority){return PRIORITY_SLA_DAYS[priority]||PRIORITY_SLA_DAYS[DEFAULT_PRIORITY]}
+function deadlineFor(priority,dateStr=todayISO()){return workdayAdd(dateStr,slaDaysFor(priority))}
+function businessDaysDiff(a,b){const A=new Date(String(a).slice(0,10)+'T12:00:00'),B=new Date(String(b).slice(0,10)+'T12:00:00');if(Number.isNaN(A.getTime())||Number.isNaN(B.getTime()))return 0;if(A.toDateString()===B.toDateString())return 0;const sign=B>A?1:-1;let d=new Date(A),count=0;while((sign===1&&d<B)||(sign===-1&&d>B)){d.setDate(d.getDate()+sign);if(isBusinessDay(d))count+=sign}return count}
+function slaStatus(r){if(r.status==='Finalizado')return {txt:'Concluído',cls:'ok',rank:3,diff:0,label:'Processo encerrado'};const deadline=r.deadline||deadlineFor(r.priority||DEFAULT_PRIORITY,String(r.createdAt||nowIso()).slice(0,10));const diff=businessDaysDiff(todayISO(),deadline);if(diff<0)return {txt:'Em atraso',cls:'late',rank:0,diff,label:\`Vencido há \${Math.abs(diff)} dia(s) útil(is)\`};if(diff<=1)return {txt:'Em alerta',cls:'warn',rank:1,diff,label:diff===0?'Vence hoje':'Vence em 1 dia útil'};return {txt:'No prazo',cls:'ok',rank:2,diff,label:\`Vence em \${diff} dias úteis\`}}
+function semaphoreLabel(st){if(st.cls==='late')return '🔴 Atraso';if(st.cls==='warn')return '🟡 Alerta';return '🟢 No prazo'}
+function deadlineTime(r){return r.deadline?new Date(r.deadline+'T12:00:00').getTime():Number.MAX_SAFE_INTEGER}
+function sumProduct(p){return (Number(p.quantity)||0)*(Number(p.unitValue)||0)}
+function requestTotal(r){return (r.products||[]).reduce((s,p)=>s+sumProduct(p),0)}
+function getPhaseElapsed(r,phase){let ms=Number(r.phaseDurations?.[phase])||0;if(r.status===phase&&phase!=='Finalizado'&&r.phaseStartedAt)ms+=Date.now()-new Date(r.phaseStartedAt).getTime();return Math.max(0,ms)}
+function getTotalElapsed(r){return PHASES.reduce((s,p)=>s+getPhaseElapsed(r,p),0)}
+function getCurrentRunElapsed(r){if(!r||r.status==='Finalizado'||!r.phaseStartedAt)return 0;return Math.max(0,Date.now()-new Date(r.phaseStartedAt).getTime())}
+function renderStageTimes(r){return \`<div class="detail-section"><div class="detail-section-title">Tempos salvos por fase</div><div class="detail-content"><div class="stage-time-grid">\${PHASES.map(phase=>\`<div class="stage-time-card \${r.status===phase?'current':''}"><small>\${escapeHtml(phase)}\${r.status===phase?' • fase atual':''}</small><strong>\${formatDuration(getPhaseElapsed(r,phase))}</strong></div>\`).join('')}</div></div></div>\`}
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
+function cnpjMask(value){const d=String(value||'').replace(/\\D/g,'').slice(0,14);return d.replace(/^(\\d{2})(\\d)/,'$1.$2').replace(/^(\\d{2})\\.(\\d{3})(\\d)/,'$1.$2.$3').replace(/\\.(\\d{3})(\\d)/,'.$1/$2').replace(/(\\d{4})(\\d)/,'$1-$2')}
+function normalizeLoginUser(payload){
+  if(!payload||typeof payload!=='object')return null;
+  let source=payload.user||payload.usuario||payload.currentUser||payload.loggedUser||payload.authUser||payload.payload||payload.detail||payload;
+  if(source&&source.user&&typeof source.user==='object')source=source.user;
+  const name=String(source?.name||source?.nome||source?.fullName||source?.displayName||source?.userName||source?.username||'').trim();
+  const email=String(source?.email||source?.mail||source?.userEmail||source?.loginEmail||'').trim().toLowerCase();
+  const id=String(source?.id||source?.userId||source?.uid||source?.codigo||'').trim();
+  if(!name||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return null;
+  return {name,email,id};
+}
+function readJsonStorage(storage,key){try{const raw=storage?.getItem(key);if(!raw)return null;return normalizeLoginUser(JSON.parse(raw))||normalizeLoginUser({name:storage.getItem('userName')||storage.getItem('nomeUsuario'),email:storage.getItem('userEmail')||storage.getItem('emailUsuario')})}catch(e){return null}}
+function resolveLoginUser(){
+  const params=new URLSearchParams(location.search);const fromQuery=normalizeLoginUser({name:params.get('userName')||params.get('name')||params.get('nome'),email:params.get('userEmail')||params.get('email'),id:params.get('userId')||params.get('uid')});if(fromQuery)return fromQuery;
+  const globals=[window.SUPPLY_FLOW_USER,window.currentUser,window.loggedUser,window.authUser];for(const item of globals){const user=normalizeLoginUser(item);if(user)return user}
+  const keys=['supplyFlowUser','supply_flow_user','supplyFlowAuthUser','loggedUser','currentUser','authUser','usuarioLogado','usuario','user'];
+  const stores=[];try{stores.push(localStorage,sessionStorage)}catch(e){}
+  try{if(window.parent&&window.parent!==window){stores.push(window.parent.localStorage,window.parent.sessionStorage);const parentGlobals=[window.parent.SUPPLY_FLOW_USER,window.parent.currentUser,window.parent.loggedUser,window.parent.authUser];for(const item of parentGlobals){const user=normalizeLoginUser(item);if(user)return user}}}catch(e){}
+  for(const storage of stores){for(const key of keys){const user=readJsonStorage(storage,key);if(user)return user}}
+  try{const cached=normalizeLoginUser(JSON.parse(sessionStorage.getItem(LOGIN_CACHE_KEY)||'null'));if(cached)return cached}catch(e){}
+  return null;
+}
+function applyLoginUser(user,{persist=false,statusText='Dados preenchidos automaticamente pelo login do aplicativo principal.'}={}){
+  const normalized=normalizeLoginUser(user);if(!normalized)return false;activeLoginUser=normalized;
+  const name=$('#requesterName'),email=$('#requesterEmail'),status=$('#loginUserStatus');if(name)name.value=normalized.name;if(email)email.value=normalized.email;if(status){status.textContent=statusText;status.classList.remove('waiting')}
+  if(persist){try{sessionStorage.setItem(LOGIN_CACHE_KEY,JSON.stringify(normalized))}catch(e){}}
+  return true;
+}
+function setWaitingForLogin(){activeLoginUser=null;const name=$('#requesterName'),email=$('#requesterEmail'),status=$('#loginUserStatus');if(name)name.value='';if(email)email.value='';if(status){status.textContent='Aguardando a identificação do usuário conectado no aplicativo principal.';status.classList.add('waiting')}}
+function requestLoginContext(){try{if(window.parent&&window.parent!==window)window.parent.postMessage({type:'SUPPLY_FLOW_REQUEST_USER_CONTEXT',module:'nota-fiscal'},'*')}catch(e){}}
+function loadRequesterFromLogin(){const user=resolveLoginUser();if(user)applyLoginUser(user);else{setWaitingForLogin();requestLoginContext()}}
+window.addEventListener('message',event=>{if(window.parent!==window&&event.source!==window.parent&&event.source!==window.top)return;const data=event.data||{};const acceptedTypes=['SUPPLY_FLOW_USER_CONTEXT','SUPPLY_FLOW_USER','AUTH_USER','CURRENT_USER','USER_CONTEXT'];if(data.type&&!acceptedTypes.includes(data.type)&&!data.user&&!data.usuario)return;const user=normalizeLoginUser(data);if(user)applyLoginUser(user)});
+function showToast(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200)}
+function codeForNext(){const d=new Date();const yy=String(d.getFullYear()).slice(-2);const mm=String(d.getMonth()+1).padStart(2,'0');const prefix=\`NF-\${mm}\${yy}-\`;const nums=requests.filter(r=>String(r.code).startsWith(prefix)).map(r=>Number(String(r.code).split('-').pop())||0);return prefix+String(Math.max(0,...nums)+1).padStart(3,'0')}
+function productId(){return 'P'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function requestId(){return 'NF'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function migrateRequests(){let changed=false;requests.forEach(r=>{r.phaseDurations=r.phaseDurations||{'Não Iniciado':0,'Em Tratativa':0,'Finalizado':0};PHASES.forEach(p=>{if(r.phaseDurations[p]===undefined){r.phaseDurations[p]=0;changed=true}});if(!r.priority){const base=String(r.createdAt||nowIso()).slice(0,10);const days=r.deadline?businessDaysDiff(base,r.deadline):7;r.priority=days<=3?'Urgente':'Normal';changed=true}if(!r.deadline){r.deadline=deadlineFor(r.priority,String(r.createdAt||nowIso()).slice(0,10));changed=true}if(r.status!=='Finalizado'&&!r.phaseStartedAt){r.phaseStartedAt=r.updatedAt||r.createdAt||nowIso();changed=true}if(r.status==='Finalizado'&&r.phaseStartedAt){r.phaseStartedAt=null;changed=true}});if(changed)saveRequests()}
+
+function showView(name){
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id===\`view-\${name}\`));
+  $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
+  if(name==='kanban')renderKanban();if(name==='dashboard')renderDashboard();if(name==='editor')renderFormEditor();if(name==='base')renderBase();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+$('#baseNew').addEventListener('click',()=>{resetForm();showView('form')});
+
+function addProductRow(data={}){
+  const tr=document.createElement('tr');tr.dataset.productId=data.id||productId();
+  tr.innerHTML=\`<td class="num"></td><td><input class="p-desc" placeholder="Descrição do produto" value="\${escapeHtml(data.description||'')}"></td><td><input class="p-qty" type="number" min="0.0001" step="0.0001" placeholder="0" value="\${data.quantity??''}"></td><td><input class="p-value" type="number" min="0" step="0.01" placeholder="0,00" value="\${data.unitValue??''}"></td><td><input class="p-ncm" inputmode="numeric" maxlength="8" placeholder="8 dígitos" value="\${escapeHtml(data.ncm||'')}"></td><td class="total">R$ 0,00</td><td><button type="button" class="btn btn-danger btn-small remove-product" title="Excluir">x</button></td>\`;
+  $('#productsBody').appendChild(tr);
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',updateProductsSummary));
+  tr.querySelector('.p-ncm').addEventListener('input',e=>e.target.value=e.target.value.replace(/\\D/g,'').slice(0,8));
+  tr.querySelector('.remove-product').addEventListener('click',()=>{if($('#productsBody').children.length===1){showToast('A solicitação precisa ter ao menos um produto.');return}tr.remove();updateProductsSummary()});
+  updateProductsSummary();
+}
+function updateProductsSummary(){
+  let total=0;$$('#productsBody tr').forEach((tr,i)=>{tr.querySelector('.num').textContent=i+1;const row=(Number(tr.querySelector('.p-qty').value)||0)*(Number(tr.querySelector('.p-value').value)||0);tr.querySelector('.total').textContent=formatMoney(row);total+=row});
+  $('#productsCount').textContent=$$('#productsBody tr').length;$('#productsGrandTotal').textContent=formatMoney(total);
+}
+$('#addProduct').addEventListener('click',()=>addProductRow());
+function collectProducts(){return $$('#productsBody tr').map(tr=>({id:tr.dataset.productId,description:tr.querySelector('.p-desc').value.trim(),quantity:Number(tr.querySelector('.p-qty').value),unitValue:Number(tr.querySelector('.p-value').value),ncm:tr.querySelector('.p-ncm').value.trim()}))}
+function validateProducts(products){for(let i=0;i<products.length;i++){const p=products[i];if(!p.description||!(p.quantity>0)||p.unitValue<0||!/^\\d{8}$/.test(p.ncm)){showToast(\`Revise o produto \${i+1}: preencha descrição, quantidade, valor e NCM com 8 dígitos.\`);return false}}return true}
+
+function updateFreightRule(){
+  const type=$('#freightResponsible').value;const name=$('#carrierName'),cnpj=$('#carrierCnpj');
+  if(type==='Veículo SEEL'){name.value='SEEL Serviços Especiais de Engenharia Ltda.';cnpj.value='72.030.927/0005-09';name.readOnly=true;cnpj.readOnly=true;$('#freightRule').textContent='Veículo SEEL selecionado: nome e CNPJ da transportadora foram preenchidos automaticamente e estão bloqueados para edição.'}
+  else if(type==='Transportadora'){if(name.readOnly)name.value='';if(cnpj.readOnly)cnpj.value='';name.readOnly=false;cnpj.readOnly=false;$('#freightRule').textContent='Transportadora selecionada: informe obrigatoriamente o nome e o CNPJ da empresa responsavel pelo frete.'}
+  else{name.value='';cnpj.value='';name.readOnly=false;cnpj.readOnly=false;$('#freightRule').textContent='Selecione o responsavel pelo frete. Para Veículo SEEL, os dados da transportadora seráo preenchidos e bloqueados automaticamente.'}
+}
+$('#freightResponsible').addEventListener('change',updateFreightRule);
+$('#carrierCnpj').addEventListener('input',e=>{if(!e.target.readOnly)e.target.value=cnpjMask(e.target.value)});
+function updateDeadlineFromPriority(){const priority=$('#priority').value||DEFAULT_PRIORITY;$('#deadline').value=deadlineFor(priority,todayISO());$('#deadlineHelp').textContent=priority==='Urgente'?'Urgente: atendimento em até 3 dias úteis.':'Normal: atendimento em até 7 dias úteis.'}
+$('#priority').addEventListener('change',updateDeadlineFromPriority);
+function resetForm(){
+  $('#requestForm').reset();$('#editId').value='';$('#requestCode').value=codeForNext();$('#requestDate').value=formatDate(nowIso());$('#priority').value=DEFAULT_PRIORITY;updateDeadlineFromPriority();loadRequesterFromLogin();$('#productsBody').innerHTML='';addProductRow();updateFreightRule();
+  $('#formTitle').textContent='Nova solicitação de Nota Fiscal';$('#formSubtitle').textContent='Preencha os dados do solicitante, origem, destino, frete e produtos. A solicitação entrara em "Não Iniciado".';$('#formModePill').textContent='NOVO CADASTRO';$('#cancelEdit').classList.add('hidden');$('#saveRequest').textContent='Salvar e enviar para o Kanban';
+}
+$('#clearForm').addEventListener('click',()=>{if(confirm('Limpar todos os campos do formulário?'))resetForm()});
+$('#cancelEdit').addEventListener('click',resetForm);
+
+$('#requestForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.currentTarget;
+  if(!$('#requesterName').value||!$('#requesterEmail').value){showToast('Não foi possível identificar o solicitante. Acesse este módulo pelo aplicativo principal com o login ativo.');requestLoginContext();return}
+  if(!form.checkValidity()){form.reportValidity();showToast('Preencha todos os campos obrigatórios.');return}
+  const products=collectProducts();if(!validateProducts(products))return;
+  if($('#freightResponsible').value==='Transportadora' && !/^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}-\\d{2}$/.test($('#carrierCnpj').value)){showToast('Informe um CNPJ válido no formato 00.000.000/0000-00.');$('#carrierCnpj').focus();return}
+  const editId=$('#editId').value;const existing=requests.find(r=>r.id===editId);const data={
+    id:existing?.id||requestId(),code:existing?.code||$('#requestCode').value,createdAt:existing?.createdAt||nowIso(),updatedAt:nowIso(),
+    priority:$('#priority').value||DEFAULT_PRIORITY,deadline:$('#deadline').value||existing?.deadline||deadlineFor($('#priority').value||DEFAULT_PRIORITY),requesterName:$('#requesterName').value.trim(),requesterEmail:$('#requesterEmail').value.trim(),requesterUserId:existing?.requesterUserId||activeLoginUser?.id||'',issuerCnpj:$('#issuerCnpj').value,issuerDepartment:$('#issuerDepartment').value.trim(),issuerAddress:$('#issuerAddress')?.value.trim()||'',recipientCnpj:$('#recipientCnpj').value,recipientDepartment:$('#recipientDepartment').value.trim(),recipientAddress:$('#recipientAddress').value.trim(),freightResponsible:$('#freightResponsible').value,carrierName:$('#carrierName').value.trim(),carrierCnpj:$('#carrierCnpj').value.trim(),products,
+    status:existing?.status||'Não Iniciado',phaseStartedAt:existing?.phaseStartedAt||nowIso(),phaseDurations:existing?.phaseDurations||{'Não Iniciado':0,'Em Tratativa':0,'Finalizado':0},history:existing?.history||[{at:nowIso(),text:'Solicitação criada e enviada para Não Iniciado.'}],completedAt:existing?.completedAt||null,internalNote:existing?.internalNote||''
+  };
+  if(existing){data.history=[...data.history,{at:nowIso(),text:'Dados da solicitação atualizados.'}];requests=requests.map(r=>r.id===editId?data:r)}else requests.unshift(data);
+  saveRequests();showToast(existing?'Solicitação atualizada com sucesso.':'Solicitação criada e enviada para o Kanban.');resetForm();renderAll();showView('kanban');
+});
+
+function editRequest(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  $('#editId').value=r.id;$('#requestCode').value=r.code;$('#requestDate').value=formatDate(r.createdAt);$('#priority').value=r.priority||DEFAULT_PRIORITY;$('#deadline').value=r.deadline||deadlineFor(r.priority||DEFAULT_PRIORITY,String(r.createdAt).slice(0,10));$('#deadlineHelp').textContent=(r.priority||DEFAULT_PRIORITY)==='Urgente'?'Urgente: atendimento em até 3 dias úteis.':'Normal: atendimento em até 7 dias úteis.';$('#requesterName').value=r.requesterName;$('#requesterEmail').value=r.requesterEmail;const loginStatus=$('#loginUserStatus');if(loginStatus){loginStatus.textContent='Solicitante registrado na criação desta solicitação.';loginStatus.classList.remove('waiting')}ensureSelectValue($('#issuerCnpj'),r.issuerCnpj);ensureSelectValue($('#issuerDepartment'),r.issuerDepartment);$('#issuerAddress').value=r.issuerAddress||r.freightIntegration?.coleta||'';ensureSelectValue($('#recipientCnpj'),r.recipientCnpj);ensureSelectValue($('#recipientDepartment'),r.recipientDepartment);$('#recipientAddress').value=r.recipientAddress||r.freightIntegration?.entrega||'';$('#freightResponsible').value=r.freightResponsible;updateFreightRule();$('#carrierName').value=r.carrierName;$('#carrierCnpj').value=r.carrierCnpj;
+  $('#productsBody').innerHTML='';(r.products||[]).forEach(addProductRow);if(!(r.products||[]).length)addProductRow();
+  $('#formTitle').textContent=\`Editar solicitação \${r.code}\`;$('#formSubtitle').textContent='Altere os dados necessarios. A fase e os cronômetros atuais seráo preservados.';$('#formModePill').textContent='MODO EDICAO';$('#cancelEdit').classList.remove('hidden');$('#saveRequest').textContent='Salvar alterações';closeDetail();showView('form');
+}
+function deleteRequest(id){const r=requests.find(x=>x.id===id);if(!r)return;if(!confirm(\`Excluir definitivamente a solicitação \${r.code}?\`))return;requests=requests.filter(x=>x.id!==id);saveRequests();closeDetail();renderAll();showToast('Solicitação excluida.')}
+function changePhase(id,newPhase){
+  const r=requests.find(x=>x.id===id);if(!r||!PHASES.includes(newPhase)||r.status===newPhase)return;
+  const old=r.status;const now=Date.now();r.phaseDurations=r.phaseDurations||{};
+  if(old!=='Finalizado'&&r.phaseStartedAt){r.phaseDurations[old]=(Number(r.phaseDurations[old])||0)+Math.max(0,now-new Date(r.phaseStartedAt).getTime())}
+  r.status=newPhase;r.updatedAt=new Date(now).toISOString();r.phaseStartedAt=newPhase==='Finalizado'?null:new Date(now).toISOString();r.completedAt=newPhase==='Finalizado'?new Date(now).toISOString():null;r.history=r.history||[];r.history.push({at:new Date(now).toISOString(),text:\`Fase alterada de \${old} para \${newPhase}.\`});saveRequests();renderAll();if(currentDetailId===id)openDetail(id);showToast(\`\${r.code} movida para \${newPhase}.\`)
+}
+function moveRelative(id,delta){const r=requests.find(x=>x.id===id);if(!r)return;const idx=PHASES.indexOf(r.status);const next=PHASES[idx+delta];if(next)changePhase(id,next)}
+
+function filteredRequests(){
+  const q=($('#filterSearch')?.value||$('#globalSearch')?.value||'').trim().toLowerCase();
+  const issuer=$('#filterIssuer')?.value||'';
+  const recipient=$('#filterRecipient')?.value||'';
+  const freight=$('#filterFreight')?.value||'';
+  const priority=$('#filterPriority')?.value||'';
+  const semaphore=$('#filterSemaphore')?.value||'';
+  return requests.filter(r=>{
+    const hay=[r.code,r.requesterName,r.requesterEmail,r.issuerDepartment,r.issuerAddress,r.recipientDepartment,r.recipientAddress,r.carrierName].join(' ').toLowerCase();
+    const semaphoreMatch=!semaphore||(r.status!=='Finalizado'&&slaStatus(r).cls===semaphore);
+    return(!q||hay.includes(q))&&(!issuer||r.issuerCnpj===issuer)&&(!recipient||r.recipientCnpj===recipient)&&(!freight||r.freightResponsible===freight)&&(!priority||(r.priority||DEFAULT_PRIORITY)===priority)&&semaphoreMatch;
+  });
+}
+function dashboardFilteredRequests(){
+  const q=($('#dashboardFilterSearch')?.value||'').trim().toLowerCase();
+  const start=$('#dashboardFilterStart')?.value||'';
+  const end=$('#dashboardFilterEnd')?.value||'';
+  const phase=$('#dashboardFilterPhase')?.value||'';
+  const priority=$('#dashboardFilterPriority')?.value||'';
+  const semaphore=$('#dashboardFilterSemaphore')?.value||'';
+  const freight=$('#dashboardFilterFreight')?.value||'';
+  const issuer=$('#dashboardFilterIssuer')?.value||'';
+  return requests.filter(r=>{
+    const hay=[r.code,r.requesterName,r.requesterEmail,r.issuerDepartment,r.issuerAddress,r.recipientDepartment,r.recipientAddress,r.carrierName].join(' ').toLowerCase();
+    const created=String(r.createdAt||'').slice(0,10);
+    const semaphoreMatch=!semaphore||(r.status!=='Finalizado'&&slaStatus(r).cls===semaphore);
+    return(!q||hay.includes(q))&&(!start||created>=start)&&(!end||created<=end)&&(!phase||r.status===phase)&&(!priority||(r.priority||DEFAULT_PRIORITY)===priority)&&semaphoreMatch&&(!freight||r.freightResponsible===freight)&&(!issuer||r.issuerCnpj===issuer);
+  });
+}
+function fillFilters(){
+  const fill=(sel,values,emptyLabel='Todos')=>{if(!sel)return;const current=sel.value;sel.innerHTML=\`<option value="">\${emptyLabel}</option>\`+values.map(v=>\`<option value="\${escapeHtml(v)}">\${escapeHtml(CNPJ_LABELS[v]||v)}</option>\`).join('');sel.value=current};
+  const issuers=[...new Set(requests.map(r=>r.issuerCnpj).filter(Boolean))];
+  const recipients=[...new Set(requests.map(r=>r.recipientCnpj).filter(Boolean))];
+  fill($('#filterIssuer'),issuers);
+  fill($('#filterRecipient'),recipients);
+  fill($('#dashboardFilterIssuer'),issuers);
+}
+function isFreightLinkedRequest(r){
+  return Boolean(r?.linkedFreightId||r?.sourceModule==='fretes'||r?.freightIntegration?.sourceFreightId);
+}
+function freightLinkedCode(r){
+  return String(r?.freightIntegration?.sourceFreightCode||r?.linkedFreightId||r?.freightIntegration?.sourceFreightId||'').trim();
+}
+function cardHtml(r){
+  const meta=PHASE_META[r.status],total=requestTotal(r),st=slaStatus(r),terminal=r.status==='Finalizado',freightLinked=isFreightLinkedRequest(r),freightCode=freightLinkedCode(r);return \`<article class="nf-card status-\${meta.css} sla-\${st.cls} \${freightLinked?'freight-linked':''}" draggable="true" data-id="\${r.id}">
+    <div class="card-top"><div><div class="card-code">\${escapeHtml(r.code)}</div><div class="card-title">\${escapeHtml(r.requesterName)}</div></div><span class="status-chip \${meta.css}">\${escapeHtml(r.status)}</span></div>
+    <div class="card-lines"><div class="card-line">\${icon('building')}<span><b>Emitente:</b> \${escapeHtml(r.issuerDepartment)} - \${escapeHtml(CNPJ_LABELS[r.issuerCnpj]||r.issuerCnpj)}</span></div><div class="card-line">\${icon('pin')}<span><b>Destino:</b> \${escapeHtml(r.recipientDepartment)} - \${escapeHtml(CNPJ_LABELS[r.recipientCnpj]||r.recipientCnpj)}</span></div><div class="card-line">\${icon('truck')}<span><b>Frete:</b> \${escapeHtml(r.freightResponsible)}</span></div></div>
+    <div class="card-route"><strong>\${r.products.length} item(ns)</strong> | \${escapeHtml(r.products[0]?.description||'Sem produto')}\${r.products.length>1?\` +\${r.products.length-1}\`:''}</div>
+    <div class="card-badges"><span class="mini-badge money">\${formatMoney(total)}</span><span class="mini-badge \${(r.priority||DEFAULT_PRIORITY).toLowerCase()}">\${escapeHtml(r.priority||DEFAULT_PRIORITY)}</span><span class="semaphore-badge \${st.cls}">\${semaphoreLabel(st)}</span>\${freightLinked?\`<span class="mini-badge freight-origin">Vinculada ao frete \${escapeHtml(freightCode||'-')}</span>\`:''}\${r.internalNote?'<span class="mini-badge">Com observação</span>':''}</div>
+    <div class="deadline-row"><span>Prazo: <b>\${formatDate(r.deadline)}</b></span><strong>\${escapeHtml(st.label)}</strong></div>
+    <div class="timer-panel">
+      <div class="timer-row"><span>Na fase agora</span><strong data-live-timer="current" data-timer-id="\${r.id}">\${terminal?'Encerrado':formatDuration(getCurrentRunElapsed(r))}</strong></div>
+      <div class="timer-row"><span>Acumulado da fase</span><strong data-live-timer="phase" data-timer-id="\${r.id}">\${formatDuration(getPhaseElapsed(r,r.status))}</strong></div>
+      <div class="timer-row"><span>Tempo total</span><strong data-live-timer="total" data-timer-id="\${r.id}">\${formatDuration(getTotalElapsed(r))}</strong></div>
+    </div>
+    <div class="card-actions"><div class="phase-control-label">Fase da solicitação</div><div class="phase-select-wrap"><select class="phase-select" aria-label="Selecionar fase da solicitação">\${PHASES.map(phase=>\`<option value="\${escapeHtml(phase)}" \${r.status===phase?'selected':''}>\${escapeHtml(phase)}</option>\`).join('')}</select></div><button class="detail-btn" data-action="detail">Ver detalhes</button></div>
+  </article>\`}
+function renderKanban(){
+  fillFilters();const list=filteredRequests();const board=$('#kanbanBoard');board.innerHTML='';PHASES.forEach(phase=>{const items=list.filter(r=>r.status===phase).sort((a,b)=>slaStatus(a).rank-slaStatus(b).rank||deadlineTime(a)-deadlineTime(b)||new Date(a.createdAt)-new Date(b.createdAt));const avgPhase=phase==='Finalizado'?avg(items.map(r=>getTotalElapsed(r))):avg(items.map(r=>getPhaseElapsed(r,phase)));const col=document.createElement('section');col.className='column';col.dataset.phase=phase;col.innerHTML=\`<div class="column-head"><div class="column-icon">\${icon(PHASE_META[phase].icon)}</div><div><div class="column-title">\${phase}</div><div class="column-sub">\${PHASE_META[phase].subtitle}</div></div><div class="column-count">\${items.length}</div></div><div class="column-metrics"><span>Tempo medio na fase</span><strong>\${formatDuration(avgPhase)}</strong></div><div class="column-cards">\${items.length?items.map(cardHtml).join(''):'<div class="empty">Nenhuma solicitação nestá fase.</div>'}</div>\`;board.appendChild(col)});
+  $$('.nf-card').forEach(card=>{const id=card.dataset.id;const phaseSelect=card.querySelector('.phase-select');phaseSelect?.addEventListener('click',e=>e.stopPropagation());phaseSelect?.addEventListener('change',e=>{e.stopPropagation();changePhase(id,e.target.value)});card.addEventListener('click',e=>{const button=e.target.closest('button');const action=button?.dataset.action;if(action){e.stopPropagation();if(action==='detail')openDetail(id)}else if(!e.target.closest('select'))openDetail(id)});card.addEventListener('dragstart',e=>{if(e.target.closest('button,select')){e.preventDefault();return}card.classList.add('dragging');e.dataTransfer.setData('text/plain',id)});card.addEventListener('dragend',()=>card.classList.remove('dragging'))});
+  $$('.column').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drag-over')});col.addEventListener('dragleave',()=>col.classList.remove('drag-over'));col.addEventListener('drop',e=>{e.preventDefault();col.classList.remove('drag-over');changePhase(e.dataTransfer.getData('text/plain'),col.dataset.phase)})});
+}
+['filterSearch','filterIssuer','filterRecipient','filterFreight','filterPriority','filterSemaphore'].forEach(id=>$('#'+id).addEventListener(id==='filterSearch'?'input':'change',renderKanban));
+$('#clearFilters').addEventListener('click',()=>{['filterSearch','filterIssuer','filterRecipient','filterFreight','filterPriority','filterSemaphore'].forEach(id=>{$('#'+id).value=''});const gs=$('#globalSearch');if(gs)gs.value='';renderKanban()});
+const dashboardFilterIds=['dashboardFilterSearch','dashboardFilterStart','dashboardFilterEnd','dashboardFilterPhase','dashboardFilterPriority','dashboardFilterSemaphore','dashboardFilterFreight','dashboardFilterIssuer'];
+dashboardFilterIds.forEach(id=>$('#'+id).addEventListener(id==='dashboardFilterSearch'?'input':'change',renderDashboard));
+$('#clearDashboardFilters').addEventListener('click',()=>{dashboardFilterIds.forEach(id=>{$('#'+id).value=''});renderDashboard()});
+const globalSearch=$('#globalSearch');if(globalSearch)globalSearch.addEventListener('input',()=>{if($('#view-kanban').classList.contains('active')){$('#filterSearch').value=globalSearch.value;renderKanban()}else if($('#view-base').classList.contains('active'))renderBase()});
+
+function renderDashboard(){
+  fillFilters();
+  const list=dashboardFilteredRequests();
+  const total=list.length;
+  const totalProducts=list.reduce((sum,r)=>sum+(Array.isArray(r.products)?r.products.length:0),0);
+  const totalValue=list.reduce((sum,r)=>sum+requestTotal(r),0);
+  const averageTicket=total?totalValue/total:0;
+  const averageItems=total?totalProducts/total:0;
+  const finalized=list.filter(r=>r.status==='Finalizado');
+  const totalSlaAvg=avg(finalized.map(getTotalElapsed));
+
+  const open=list.filter(r=>r.status!=='Finalizado');
+  const openTotal=open.length;
+  const late=open.filter(r=>slaStatus(r).cls==='late').length;
+  const alert=open.filter(r=>slaStatus(r).cls==='warn').length;
+  const onTime=open.filter(r=>slaStatus(r).cls==='ok').length;
+  const urgent=list.filter(r=>(r.priority||DEFAULT_PRIORITY)==='Urgente').length;
+  const normal=list.filter(r=>(r.priority||DEFAULT_PRIORITY)==='Normal').length;
+
+  const kpis=[
+    ['Total de solicitações',total,\`\${total} de \${requests.length} registro(s) na seleção\`],
+    ['Total de produtos',totalProducts,'Itens incluídos nas solicitações filtradas'],
+    ['Valor total solicitado',formatMoney(totalValue),'Somatório da seleção atual'],
+    ['Ticket médio',formatMoney(averageTicket),'Valor médio por solicitação'],
+    ['Média de itens',averageItems.toFixed(1).replace('.',','),'Produtos por solicitação'],
+    ['SLA total médio',formatDuration(totalSlaAvg),\`\${finalized.length} processo(s) finalizado(s) na seleção\`]
+  ];
+  $('#kpiGrid').innerHTML=kpis.map(k=>\`<article class="kpi"><small>\${k[0]}</small><strong>\${k[1]}</strong><span>\${k[2]}</span></article>\`).join('');
+  const summary=$('#dashboardFilterSummary');if(summary)summary.textContent=total===requests.length?'Exibindo toda a base':\`Exibindo \${total} de \${requests.length} solicitação(ões)\`;
+
+  renderBarChart('#stageChart',PHASES.map((p,i)=>({
+    label:p,
+    count:list.filter(r=>r.status===p).length,
+    cls:['orange','', 'green'][i]
+  })),total);
+
+  renderBarChart('#semaphoreChart',[
+    {label:'🔴 Em atraso',count:late,cls:'orange'},
+    {label:'🟡 Em alerta',count:alert,cls:'yellow'},
+    {label:'🟢 No prazo',count:onTime,cls:'green'}
+  ],openTotal);
+
+  renderBarChart('#priorityChart',[
+    {label:'Urgente - 3 dias úteis',count:urgent,cls:'orange'},
+    {label:'Normal - 7 dias úteis',count:normal,cls:''}
+  ],total);
+
+  renderBarChart('#freightChart',['Veículo SEEL','Transportadora'].map((p,i)=>({
+    label:p,
+    count:list.filter(r=>r.freightResponsible===p).length,
+    cls:i?'orange':'green'
+  })),total);
+
+  const issuers=Object.keys(CNPJ_LABELS).map(c=>{
+    const issuerRequests=list.filter(r=>r.issuerCnpj===c);
+    return {
+      label:CNPJ_LABELS[c],
+      count:issuerRequests.length,
+      extra:formatMoney(issuerRequests.reduce((s,r)=>s+requestTotal(r),0)),
+      cls:''
+    };
+  });
+  renderBarChart('#issuerChart',issuers,total);
+  renderSlaPhaseChart(list);
+}
+
+function formatPct(value){
+  return \`\${Number(value||0).toFixed(1).replace('.',',')}%\`;
+}
+
+function renderBarChart(selector,data,baseTotal){
+  const max=Math.max(1,...data.map(x=>x.count));
+  $(selector).innerHTML=data.map(x=>{
+    const denominator=Number.isFinite(Number(x.base))?Number(x.base):Number(baseTotal)||0;
+    const pct=denominator?x.count/denominator*100:0;
+    return \`<div class="bar-row">
+      <div class="bar-label" title="\${escapeHtml(x.label)}">\${escapeHtml(x.label)}</div>
+      <div class="bar-track"><div class="bar-fill \${x.cls||''}" style="width:\${x.count/max*100}%"></div></div>
+      <div class="bar-value"><b>\${x.count}</b> <span>| \${formatPct(pct)}</span>\${x.extra?\`<small>\${escapeHtml(x.extra)}</small>\`:''}</div>
+    </div>\`;
+  }).join('')||'<div class="empty">Sem dados.</div>';
+}
+
+function renderSlaPhaseChart(list){
+  const data=PHASES.map((phase,index)=>{
+    let values=[];
+    let label=phase;
+    if(phase==='Finalizado'){
+      values=list.filter(r=>r.status==='Finalizado').map(getTotalElapsed);
+      label='Finalizado (ciclo total)';
+    }else{
+      values=list
+        .filter(r=>r.status===phase||getPhaseElapsed(r,phase)>0)
+        .map(r=>getPhaseElapsed(r,phase));
+    }
+    return {
+      label,
+      value:avg(values),
+      count:values.length,
+      cls:['orange','', 'green'][index]
+    };
+  });
+  const max=Math.max(1,...data.map(x=>x.value));
+  $('#slaPhaseChart').innerHTML=data.map(x=>\`<div class="bar-row">
+    <div class="bar-label" title="\${escapeHtml(x.label)}">\${escapeHtml(x.label)}</div>
+    <div class="bar-track"><div class="bar-fill \${x.cls||''}" style="width:\${x.value/max*100}%"></div></div>
+    <div class="bar-value"><b>\${formatDuration(x.value)}</b><small>\${x.count} solicitação(ões)</small></div>
+  </div>\`).join('')||'<div class="empty">Sem dados.</div>';
+}
+
+function renderBase(){
+  const q=($('#globalSearch')?.value||'').trim().toLowerCase();const list=requests.filter(r=>!q||[r.code,r.requesterName,r.issuerDepartment,r.issuerAddress,r.recipientDepartment,r.recipientAddress,r.carrierName].join(' ').toLowerCase().includes(q));
+  $('#baseTableBody').innerHTML=list.length?list.map(r=>{const st=slaStatus(r);return \`<tr><td><strong>\${escapeHtml(r.code)}</strong></td><td>\${formatDate(r.createdAt)}</td><td>\${escapeHtml(r.requesterName)}<br><span style="font-size:9px">\${escapeHtml(r.requesterEmail)}</span></td><td>\${escapeHtml(r.issuerDepartment)}<br><span style="font-size:9px">\${escapeHtml(r.issuerCnpj)}</span></td><td>\${escapeHtml(r.recipientDepartment)}<br><span style="font-size:9px">\${escapeHtml(r.recipientCnpj)}</span></td><td>\${escapeHtml(r.freightResponsible)}</td><td>\${r.products.length}</td><td><strong>\${formatMoney(requestTotal(r))}</strong></td><td><span class="mini-badge \${(r.priority||DEFAULT_PRIORITY).toLowerCase()}">\${escapeHtml(r.priority||DEFAULT_PRIORITY)}</span></td><td><span class="status-chip \${PHASE_META[r.status].css}">\${r.status}</span></td><td>\${formatDate(r.deadline)}</td><td><span class="semaphore-badge \${st.cls}">\${semaphoreLabel(st)}</span><br><span style="font-size:9px">\${escapeHtml(st.label)}</span></td><td>\${formatDuration(getTotalElapsed(r))}</td><td><div class="table-actions"><button class="detail-btn" data-base-action="detail" data-id="\${r.id}">Detalhes</button><button class="move-back" data-base-action="edit" data-id="\${r.id}">Editar</button><button class="btn-danger" data-base-action="delete" data-id="\${r.id}">Excluir</button></div></td></tr>\`}).join(''):'<tr><td colspan="14"><div class="empty">Nenhuma solicitação cadastrada.</div></td></tr>';
+  $$('[data-base-action]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.baseAction,id=b.dataset.id;if(a==='detail')openDetail(id);if(a==='edit')editRequest(id);if(a==='delete')deleteRequest(id)}));
+}
+
+function openDetail(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;currentDetailId=id;$('#detailTitle').textContent=\`\${r.code} - \${r.requesterName}\`;$('#detailSubtitle').textContent=\`\${r.status} | Criada em \${formatDate(r.createdAt,true)} | Atualizada em \${formatDate(r.updatedAt,true)}\`;
+  const history=[...(r.history||[])].reverse(),st=slaStatus(r),terminal=r.status==='Finalizado';$('#detailBody').innerHTML=\`
+    <div class="detail-grid"><div class="detail-kv"><small>Status</small><strong>\${escapeHtml(r.status)}</strong></div><div class="detail-kv"><small>Prioridade</small><strong><span class="mini-badge \${(r.priority||DEFAULT_PRIORITY).toLowerCase()}">\${escapeHtml(r.priority||DEFAULT_PRIORITY)}</span><br>\${slaDaysFor(r.priority||DEFAULT_PRIORITY)} dias úteis</strong></div><div class="detail-kv"><small>Semáforo</small><strong><span class="semaphore-badge \${st.cls}">\${semaphoreLabel(st)}</span><br>\${escapeHtml(st.label)}</strong></div><div class="detail-kv"><small>Data limite</small><strong>\${formatDate(r.deadline)}</strong></div><div class="detail-kv"><small>Valor total</small><strong>\${formatMoney(requestTotal(r))}</strong></div><div class="detail-kv"><small>Na fase agora</small><strong>\${terminal?'Encerrado':formatDuration(getCurrentRunElapsed(r))}</strong></div><div class="detail-kv"><small>Acumulado da fase</small><strong>\${formatDuration(getPhaseElapsed(r,r.status))}</strong></div><div class="detail-kv"><small>Tempo total</small><strong>\${formatDuration(getTotalElapsed(r))}</strong></div><div class="detail-kv"><small>Itens</small><strong>\${r.products.length}</strong></div></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="detailEdit">Editar solicitação</button><button class="btn btn-secondary" id="detailDeadline">Alterar data limite</button><button class="btn btn-secondary" id="detailEmail">Enviar e-mail</button><button class="btn btn-danger" id="detailDelete">Excluir</button></div>
+    <div class="detail-section"><div class="detail-section-title">Solicitante e unidades</div><div class="detail-content"><div class="detail-grid" style="margin:0"><div class="detail-kv"><small>Solicitante</small><strong>\${escapeHtml(r.requesterName)}</strong></div><div class="detail-kv"><small>E-mail</small><strong>\${escapeHtml(r.requesterEmail)}</strong></div><div class="detail-kv"><small>Emitente</small><strong>\${escapeHtml(r.issuerCnpj)}<br>\${escapeHtml(r.issuerDepartment)}</strong></div><div class="detail-kv"><small>Destinatário</small><strong>\${escapeHtml(r.recipientCnpj)}<br>\${escapeHtml(r.recipientDepartment)}</strong></div></div><div class="detail-kv" style="margin-top:9px"><small>Endereço de origem / saída</small><strong>\${escapeHtml(r.issuerAddress||r.freightIntegration?.coleta||'-')}</strong></div><div class="detail-kv" style="margin-top:9px"><small>Endereço de destino / entrega</small><strong>\${escapeHtml(r.recipientAddress||r.freightIntegration?.entrega||'-')}</strong></div></div></div>
+    <div class="detail-section"><div class="detail-section-title">Frete</div><div class="detail-content"><div class="detail-grid" style="margin:0"><div class="detail-kv"><small>Responsavel</small><strong>\${escapeHtml(r.freightResponsible)}</strong></div><div class="detail-kv"><small>Transportadora</small><strong>\${escapeHtml(r.carrierName)}</strong></div><div class="detail-kv"><small>CNPJ</small><strong>\${escapeHtml(r.carrierCnpj)}</strong></div><div class="detail-kv"><small>SLA operacional</small><strong>\${escapeHtml(st.txt)}</strong></div></div></div></div>
+    \${renderStageTimes(r)}
+    <div class="detail-section"><div class="detail-section-title">Produtos</div><div class="detail-content table-scroll"><table class="detail-products"><thead><tr><th>#</th><th>Descrição</th><th>Quantidade</th><th>Valor unitário</th><th>NCM</th><th>Total</th></tr></thead><tbody>\${r.products.map((p,i)=>\`<tr><td>\${i+1}</td><td>\${escapeHtml(p.description)}</td><td>\${p.quantity}</td><td>\${formatMoney(p.unitValue)}</td><td>\${escapeHtml(p.ncm)}</td><td>\${formatMoney(sumProduct(p))}</td></tr>\`).join('')}</tbody></table></div></div>
+    <div class="detail-section"><div class="detail-section-title">Controle da tratativa</div><div class="detail-content"><div class="internal-note"><div><label for="detailNote">Observação interna do responsavel</label><textarea id="detailNote" placeholder="Registre pendências, retorno ao solicitante ou informações da emissão.">\${escapeHtml(r.internalNote||'')}</textarea></div><button class="btn btn-primary" id="saveDetailNote">Salvar observação</button></div></div></div>
+    <div class="detail-section"><div class="detail-section-title">Histórico do processo</div><div class="detail-content"><div class="history-list">\${history.map(h=>\`<div class="history-item"><time>\${formatDate(h.at,true)}</time><div>\${escapeHtml(h.text)}</div></div>\`).join('')}</div></div></div>\`;
+  $('#detailModal').classList.add('show');
+  $('#detailEdit').addEventListener('click',()=>editRequest(id));$('#detailDelete').addEventListener('click',()=>deleteRequest(id));$('#detailDeadline').addEventListener('click',()=>{const d=prompt('Nova data limite (AAAA-MM-DD):',r.deadline||'');if(!d)return;if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)){showToast('Data inválida.');return}r.deadline=d;r.updatedAt=nowIso();r.history=r.history||[];r.history.push({at:nowIso(),text:'Data limite alterada para '+formatDate(d)+'.'});saveRequests();renderAll();openDetail(id);showToast('Data limite atualizada.')} );$('#detailEmail').addEventListener('click',()=>{location.href=\`mailto:\${encodeURIComponent(r.requesterEmail)}?subject=\${encodeURIComponent('Nota Fiscal de Simples Remessa - '+r.code)}&body=\${encodeURIComponent('Ola '+r.requesterName+',\\n\\nSegue atualização da solicitação '+r.code+'.\\nStatus: '+r.status+'\\n\\nAtenciosamente,')}\`});
+  $('#saveDetailNote').addEventListener('click',()=>{r.internalNote=$('#detailNote').value.trim();r.updatedAt=nowIso();r.history.push({at:nowIso(),text:'Observação interna atualizada.'});saveRequests();renderAll();showToast('Observação salva.');openDetail(id)});
+}
+function closeDetail(){$('#detailModal').classList.remove('show');currentDetailId=null}
+$('#closeDetail').addEventListener('click',closeDetail);$('#detailModal').addEventListener('click',e=>{if(e.target===$('#detailModal'))closeDetail()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function exportCsv(){
+  const header=['Código','Data','Solicitante','E-mail','CNPJ Emitente','Obra/Departamento Emitente','Endereço de origem','CNPJ Destinatário','Obra/Departamento Destinatário','Endereço de destino','Responsavel Frete','Transportadora','CNPJ Transportadora','Produtos','Valor Total','Prioridade','SLA em dias úteis','Status','Data limite','Semáforo','Tempo Total','Tempos por fase'];
+  const rows=requests.map(r=>[r.code,formatDate(r.createdAt),r.requesterName,r.requesterEmail,r.issuerCnpj,r.issuerDepartment,r.issuerAddress||r.freightIntegration?.coleta||'',r.recipientCnpj,r.recipientDepartment,r.recipientAddress||r.freightIntegration?.entrega||'',r.freightResponsible,r.carrierName,r.carrierCnpj,r.products.map(p=>\`\${p.description} | Qtd \${p.quantity} | NCM \${p.ncm}\`).join(' ; '),requestTotal(r).toFixed(2).replace('.',','),r.priority||DEFAULT_PRIORITY,slaDaysFor(r.priority||DEFAULT_PRIORITY),r.status,formatDate(r.deadline),semaphoreLabel(slaStatus(r))+' - '+slaStatus(r).label,formatDuration(getTotalElapsed(r)),PHASES.map(p=>p+': '+formatDuration(getPhaseElapsed(r,p))).join(' | ')]);
+  downloadFile('\\ufeff'+[header,...rows].map(row=>row.map(csvCell).join(';')).join('\\n'),'solicitações_nota_fiscal_simples_remessa.csv','text/csv;charset=utf-8')
+}
+function downloadFile(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('#exportCsv').addEventListener('click',exportCsv);$('#quickExport')?.addEventListener('click',exportCsv);
+
+function renderAll(){renderKanban();renderDashboard();renderBase()}
+function refreshLiveTimers(){
+  $$('[data-live-timer]').forEach(el=>{const r=requests.find(x=>x.id===el.dataset.timerId);if(!r)return;const type=el.dataset.liveTimer;if(type==='current')el.textContent=r.status==='Finalizado'?'Encerrado':formatDuration(getCurrentRunElapsed(r));if(type==='phase')el.textContent=formatDuration(getPhaseElapsed(r,r.status));if(type==='total')el.textContent=formatDuration(getTotalElapsed(r))});
+}
+setInterval(refreshLiveTimers,1000);
+setInterval(()=>{if($('#view-dashboard').classList.contains('active'))renderDashboard()},30000);
+
+
+window.addEventListener('storage',event=>{if(!event.key||/(frete|fornecedor|contrato|cadastro|frota)/i.test(event.key)){const issuer=formEditorConfig?.fields?.issuerDepartment;const recipient=formEditorConfig?.fields?.recipientDepartment;if(issuer?.manualOptions!==true||recipient?.manualOptions!==true){const options=collectIntegratedWorkCenterOptions();if(issuer?.manualOptions!==true)issuer.options=options;if(recipient?.manualOptions!==true)recipient.options=options;saveFormEditorConfig();applyFormEditorConfig();if($('#view-editor')?.classList.contains('active'))renderFormEditor()}}});
+
+migrateRequests();initializeFormEditor();resetForm();renderAll();
+})();
+<\/script>
+</body>
+</html>
+`;export{e as default};
