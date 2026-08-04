@@ -8,19 +8,26 @@ informação.
 ## Como funciona
 
 - **Tools rodam no cliente.** O botão (`app/src/features/jarvis/JarvisAssistant.tsx`)
-  chama `useJarvisChat`, que conversa com a Edge Function `jarvis-chat` e, quando a
-  Anthropic pede uma ferramenta (`tool_use`), executa a ferramenta correspondente no
+  chama `useJarvisChat`, que conversa com a Edge Function `jarvis-chat` e, quando o
+  modelo pede uma ferramenta (`tool_use`), executa a ferramenta correspondente no
   navegador (`app/src/features/jarvis/tools.ts`) reaproveitando os serviços já
   existentes (`listEntities`, `embeddedSync.ts`, `buildDashboardRows`,
   `buildCriticalInsights`, `buildOrcamentoCriticalAnalysis`). Isso significa que toda
   leitura de dados roda com o Supabase client do próprio usuário logado — RLS e as
   permissões de `app/src/lib/permissions.ts` (`canView`/`canManage`) se aplicam
-  automaticamente, sem nenhuma lógica de acesso duplicada no servidor.
+  automaticamente, sem nenhuma lógica de acesso duplicada no servidor. O protocolo de
+  conversa exposto ao cliente (`text`/`tool_use`/`tool_result`, `stop_reason`) segue o
+  formato da Anthropic Messages API — a Edge Function traduz isso para o formato da
+  Gemini API internamente, então o loop do cliente (`useJarvisChat.ts`) não precisa
+  conhecer o provedor de IA por baixo.
 - **A Edge Function é só um proxy fino.** `supabase/functions/jarvis-chat/index.ts`
   segue exatamente o esqueleto de `create-user/index.ts` (CORS, validação de
-  `Authorization`, checagem de usuário ativo em `profiles`) e repassa a conversa para
-  a API de Mensagens da Anthropic. Ela não tem acesso de service-role e não executa
-  nenhuma ferramenta — só monta o system prompt e faz o relay.
+  `Authorization`, checagem de usuário ativo em `profiles`), converte as mensagens
+  para o formato da Gemini API (`toGeminiContents`/`toGeminiTools`) e repassa a
+  conversa para a API do Gemini (`generativelanguage.googleapis.com`), usando o
+  modelo `gemini-2.0-flash` por padrão (configurável via secret `GEMINI_MODEL`). Ela
+  não tem acesso de service-role e não executa nenhuma ferramenta — só monta o system
+  prompt e faz o relay.
 - **Auditoria leve.** Cada pergunta feita ao JARVIS grava uma linha em
   `public.jarvis_interactions` (migration `025_jarvis_interactions.sql`):
   usuário, módulo, pergunta e quais ferramentas foram usadas. É best-effort — se a
@@ -63,11 +70,24 @@ Para dar suporte completo a um módulo hoje coberto só em nível de indicador:
 
 ## Configuração necessária (feita uma vez por ambiente)
 
+O JARVIS usa a **Gemini API do Google** (via Google AI Studio) em vez da API da
+Anthropic, para não depender de billing pago: a camada gratuita da Gemini API não
+exige cartão de crédito, apenas limites de uso (requisições por minuto/dia) que
+podem ser consultados em https://ai.google.dev/pricing.
+
+1. Gere uma chave gratuita em https://aistudio.google.com/apikey (login com conta
+   Google, sem necessidade de ativar billing).
+2. Configure o secret:
+
 ```
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+supabase secrets set GEMINI_API_KEY=...
 ```
 
 Sem essa secret, a Edge Function responde com um erro claro em português
 ("Função sem variáveis de ambiente obrigatórias.") em vez de falhar silenciosamente
 ou inventar uma resposta — o botão do JARVIS continua visível e utilizável assim que
 a chave for configurada, sem precisar de deploy novo do frontend.
+
+Se a camada gratuita atingir o limite de uso, a Gemini API retorna um erro claro
+(HTTP 429) que a Edge Function repassa ao usuário — o JARVIS nunca trava nem finge
+sucesso.

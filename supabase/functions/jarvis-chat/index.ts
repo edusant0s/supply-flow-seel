@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
 
-const ANTHROPIC_MODEL = "claude-sonnet-5";
-const ANTHROPIC_MAX_TOKENS = 1536;
+const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MAX_TOKENS = 1536;
 const MAX_MESSAGES = 40;
 
 const defaultAllowedOrigins = [
@@ -56,6 +56,11 @@ function jsonResponse(req: Request, body: unknown, status = 200) {
   });
 }
 
+/**
+ * Definicoes de ferramentas no formato "Anthropic-like" (name/description/input_schema)
+ * compartilhado conceitualmente com app/src/features/jarvis/tools.ts. Sao convertidas
+ * para o formato de functionDeclarations da Gemini API em toGeminiTools().
+ */
 const JARVIS_TOOL_DEFINITIONS = [
   {
     name: "get_overview_summary",
@@ -140,16 +145,86 @@ Regras invioláveis:
 6. Nunca revele chaves, tokens ou detalhes de infraestrutura.`;
 }
 
+type ContentBlock =
+  | { type: "text"; text: string }
+  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
+  | { type: "tool_result"; tool_use_id: string; name?: string; content: string };
+
+type JarvisMessage = { role: "user" | "assistant"; content: string | ContentBlock[] };
+
+function toGeminiTools() {
+  return [
+    {
+      functionDeclarations: JARVIS_TOOL_DEFINITIONS.map((tool) => ({
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.input_schema,
+      })),
+    },
+  ];
+}
+
+function safeParseJson(value: string) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return { raw: value };
+  }
+}
+
+function toGeminiContents(messages: JarvisMessage[]) {
+  return messages.map((message) => {
+    const role = message.role === "assistant" ? "model" : "user";
+    if (typeof message.content === "string") {
+      return { role, parts: [{ text: message.content }] };
+    }
+
+    const parts = message.content.map((block) => {
+      if (block.type === "text") return { text: block.text };
+      if (block.type === "tool_use") return { functionCall: { name: block.name, args: block.input || {} } };
+      return { functionResponse: { name: block.name || "", response: { result: safeParseJson(block.content) } } };
+    });
+
+    return { role, parts };
+  });
+}
+
+function fromGeminiResponse(payload: {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string; functionCall?: { name: string; args?: Record<string, unknown> } }> } }>;
+  usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
+}) {
+  const parts = payload.candidates?.[0]?.content?.parts || [];
+  let hasToolUse = false;
+
+  const content: ContentBlock[] = parts.map((part) => {
+    if (part.functionCall) {
+      hasToolUse = true;
+      return { type: "tool_use", id: crypto.randomUUID(), name: part.functionCall.name, input: part.functionCall.args || {} };
+    }
+    return { type: "text", text: part.text || "" };
+  });
+
+  return {
+    content,
+    stop_reason: hasToolUse ? "tool_use" : "end_turn",
+    usage: {
+      input_tokens: payload.usageMetadata?.promptTokenCount ?? 0,
+      output_tokens: payload.usageMetadata?.candidatesTokenCount ?? 0,
+    },
+  };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: getCorsHeaders(req) });
   if (req.method !== "POST") return jsonResponse(req, { error: "Metodo nao permitido." }, 405);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+  const geminiModel = Deno.env.get("GEMINI_MODEL") || DEFAULT_GEMINI_MODEL;
   const authHeader = req.headers.get("Authorization");
 
-  if (!supabaseUrl || !anonKey || !anthropicApiKey) {
+  if (!supabaseUrl || !anonKey || !geminiApiKey) {
     return jsonResponse(req, { error: "Funcao sem variaveis de ambiente obrigatorias." }, 500);
   }
 
@@ -187,7 +262,7 @@ serve(async (req) => {
     return jsonResponse(req, { error: "Corpo da requisicao invalido." }, 400);
   }
 
-  const messages = Array.isArray(body.messages) ? body.messages : [];
+  const messages = Array.isArray(body.messages) ? (body.messages as JarvisMessage[]) : [];
   if (!messages.length) {
     return jsonResponse(req, { error: "Nenhuma mensagem informada." }, 400);
   }
@@ -198,37 +273,34 @@ serve(async (req) => {
   const moduleKey = typeof body.moduleKey === "string" ? body.moduleKey : "";
   const systemPrompt = buildSystemPrompt(moduleKey, callerProfile.nome || "usuario");
 
-  let anthropicResponse: Response;
+  let geminiResponse: Response;
   try {
-    anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicApiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
-        max_tokens: ANTHROPIC_MAX_TOKENS,
-        system: systemPrompt,
-        messages,
-        tools: JARVIS_TOOL_DEFINITIONS,
-      }),
-    });
+    geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey,
+        },
+        body: JSON.stringify({
+          contents: toGeminiContents(messages),
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          tools: toGeminiTools(),
+          generationConfig: { maxOutputTokens: GEMINI_MAX_TOKENS },
+        }),
+      }
+    );
   } catch (err) {
     return jsonResponse(req, { error: `Falha ao contatar o provedor de IA: ${err instanceof Error ? err.message : String(err)}` }, 502);
   }
 
-  const payload = await anthropicResponse.json().catch(() => null);
+  const payload = await geminiResponse.json().catch(() => null);
 
-  if (!anthropicResponse.ok || !payload) {
+  if (!geminiResponse.ok || !payload) {
     const message = (payload as { error?: { message?: string } } | null)?.error?.message || "Falha ao consultar o provedor de IA.";
     return jsonResponse(req, { error: message }, 502);
   }
 
-  return jsonResponse(req, {
-    content: payload.content,
-    stop_reason: payload.stop_reason,
-    usage: payload.usage,
-  });
+  return jsonResponse(req, fromGeminiResponse(payload));
 });

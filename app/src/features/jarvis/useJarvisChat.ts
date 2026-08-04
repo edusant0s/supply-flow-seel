@@ -44,7 +44,7 @@ export function useJarvisChat(moduleKey: string) {
             if (block.type !== "tool_use") continue;
             usedTools.push(block.name);
             const result = await runJarvisTool(block.name as JarvisToolName, block.input);
-            toolResults.push({ type: "tool_result", tool_use_id: block.id, content: JSON.stringify(result) });
+            toolResults.push({ type: "tool_result", tool_use_id: block.id, name: block.name, content: JSON.stringify(result) });
           }
           historyRef.current = [...historyRef.current, { role: "user", content: toolResults }];
         }
