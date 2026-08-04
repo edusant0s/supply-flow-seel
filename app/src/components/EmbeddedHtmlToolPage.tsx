@@ -1960,7 +1960,7 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
     document.querySelectorAll(selector).forEach(function(el) {
       if (el.getAttribute("data-supply-hidden") === "true") return;
       el.setAttribute("data-supply-hidden", "true");
-      el.style.display = "none";
+      el.style.setProperty("display", "none", "important");
     });
   }
 
@@ -2239,6 +2239,9 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       hide(".modal-actions button[onclick*='moveStage'], .modal-actions button[onclick*='resetTimer'], .modal-actions button[onclick*='editDeadline'], .modal-actions button[onclick*='deleteItem']");
       hide(".responsible-actions, .attachment-item button");
       disable(".phase-select, .supplier-detail-phase-selector select, #responsibleNote, #responsibleFiles");
+      document.querySelectorAll(".supplier-flow-card").forEach(function(card) {
+        card.setAttribute("draggable", "false");
+      });
 
       var activeBlocked = ["view-dashboard", "view-import", "view-editor"].some(function(id) {
         var view = document.getElementById(id);

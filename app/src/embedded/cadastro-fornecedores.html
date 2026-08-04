@@ -171,7 +171,7 @@ label{font-size:12px;color:#365166}.grid{gap:15px 16px}input,select,textarea{bor
 </nav>
 <main class="container">
 <section id="view-form" class="panel"><div class="head"><div><h2>Solicitação de Cadastro de Fornecedor</h2><p class="hint">Preencha as informações do fornecedor. A solicitação será enviada para o Kanban com cronômetro, SLA e detalhe completo ao clicar no card.</p></div><div class="pill">SLA: Emergencial 3 dias úteis | Normal 7 dias úteis</div></div><form id="supplierForm"></form><div class="actions"><div><button class="secondary" id="btnDemo">Carregar exemplo</button><button class="secondary" id="btnResetForm">Limpar formulário</button></div><button class="primary" id="btnSaveSupplier">Salvar e enviar para Kanban</button></div></section>
-<section id="view-kanban" class="panel hidden"><div class="head"><div><h2>Kanban de Fornecedores</h2><p class="hint">Controle por fase com SLA, cronômetro por etapa, avanço/retorno de fase e detalhes completos do cadastro.</p></div><div class="pill" id="clockNow">Atualizando...</div></div><div class="toolbar-panel filters-only"><div class="toolbar-copy"><h3>Filtros</h3><p>Filtre as solicitações por obra, nome do fornecedor, tipo de cadastro, tipo de fornecedor e status.</p></div><div class="toolbar-controls"><label>Obra<select id="filterWork"><option value="">Todas</option></select></label><label>Nome do fornecedor<input id="filterSupplierName" placeholder="Digite o nome do fornecedor..."></label><label>Tipo de cadastro<select id="filterPriority"><option value="">Todos</option><option>EMERGENCIAL (3 DIAS)</option><option>NORMAL (7 DIAS)</option></select></label><label>Tipo fornecedor<select id="filterCategory"><option value="">Todos</option></select></label><label>Status<select id="filterStatus"><option value="">Todos</option></select></label></div><input id="jsonImport" type="file" accept="application/json" class="hidden"></div><div class="process-board"><div class="process-head"><div class="process-icon">1</div><div><h3>Fluxo de Cadastro de Fornecedores</h3><p>Fluxo completo da solicitação recebida ao cadastro no SAP, envio para Controladoria ou encerramento.</p></div></div><div class="kanban process1" id="kanban1"></div><div class="kanban process2 hidden" id="kanban2"></div></div></section>
+<section id="view-kanban" class="panel hidden"><div class="head"><div><h2>Kanban de Fornecedores</h2><p class="hint">Controle por fase com SLA, cronômetro por etapa, avanço/retorno de fase e detalhes completos do cadastro.</p></div><div class="pill" id="clockNow">Atualizando...</div></div><div class="toolbar-panel filters-only"><div class="toolbar-copy"><h3>Filtros</h3><p>Filtre as solicitações por obra, nome do fornecedor, tipo de cadastro, tipo de fornecedor e status.</p></div><div class="toolbar-controls"><label>Obra<select id="filterWork"><option value="">Todas</option></select></label><label>Nome do fornecedor<input id="filterSupplierName" placeholder="Digite o nome do fornecedor..."></label><label>Tipo de cadastro<select id="filterPriority"><option value="">Todos</option><option>EMERGENCIAL (3 DIAS)</option><option>NORMAL (7 DIAS)</option></select></label><label>Tipo fornecedor<select id="filterCategory"><option value="">Todos</option></select></label><label>Status<select id="filterStatus"><option value="">Todos</option></select></label></div><input id="jsonImport" type="file" accept="application/json" class="hidden"></div><div class="process-board"><div class="process-head"><div class="process-icon">1</div><div><h3>Fluxo de Cadastro de Fornecedores</h3><p>Fluxo completo da solicitação recebida ao cadastro no SAP, envio para Controladoria ou encerramento.</p></div></div><div class="kanban process1" id="kanban1"></div><div class="kanban process2 hidden" id="kanban2"></div></div><section class="panel supplier-kanban-table-panel"><div class="head"><div><h3>Fornecedores filtrados</h3><p class="hint">Mesma lista do Kanban acima, em formato de tabela.</p></div><div class="pill" id="supplierKanbanTableCount">0 registros</div></div><div class="table-wrap supplier-kanban-table-scroll"><table class="data-table"><thead><tr><th>ID</th><th>Fornecedor</th><th>CNPJ/CPF</th><th>Categoria</th><th>Fase</th><th>Tipo</th><th>Prazo</th><th>Semáforo</th><th>Na fase</th><th>Ações</th></tr></thead><tbody id="supplierKanbanTableRows"></tbody></table></div></section></section>
 <section id="view-dashboard" class="panel hidden"><div class="head"><div><h2>Dashboard Executivo de Fornecedores</h2><p class="hint">Visão consolidada das solicitações, cadastros realizados e itens ainda em aberto no processo.</p></div><div class="pill">Painel automático</div></div><div class="kpi-grid" id="kpis"></div><div class="analytics-grid"><div class="analytics-card"><h3>Status por fase</h3><p>Distribuição atual das solicitações no fluxo.</p><div class="bar-list" id="chartStatus"></div></div><div class="analytics-card"><h3>Fornecedores por tipo</h3><p>Concentração da base entre matriz e filial.</p><div class="bar-list" id="chartCategory"></div></div><div class="analytics-card"><h3>Semáforo de filas</h3><p>Quantidade de solicitações em atraso, em alerta e no prazo, calculadas em dias úteis.</p><div class="bar-list" id="chartSla"></div></div><div class="analytics-card"><h3>Tipo de cadastro</h3><p>Cadastro emergencial ou normal.</p><div class="bar-list" id="chartType"></div></div><div class="analytics-card"><h3>Média de tempo por fase</h3><p>Média acumulada considerando os tempos salvos em cada fase, incluindo retornos.</p><div class="bar-list" id="chartAvgStage"></div></div></div></section>
 <section id="view-base" class="panel hidden"><div class="head"><div><h2>Base Geral de Fornecedores</h2><p class="hint">Lista consolidada com todos os fornecedores cadastrados, filtros e acesso rápido aos detalhes.</p></div><div class="pill" id="baseCount">0 registros</div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Data</th><th>Fornecedor</th><th>CNPJ</th><th>Tipo fornecedor</th><th>Tipo cadastro</th><th>Fase</th><th>SLA</th><th>Ações</th></tr></thead><tbody id="baseRows"></tbody></table></div></section>
 
@@ -383,11 +383,35 @@ function renderBoard(sel,stages,list){
     const avgLabel=avgInfo.stored?'Tempo médio salvo':'Tempo médio dos cards';
     const col=document.createElement('div');
     col.className='col';
+    col.style.setProperty('--phase-accent',stageAccent(stage));
     col.innerHTML=`<div class="col-head"><div class="col-icon">${iconFor(stage)}</div><div><div class="col-title">${escapeHtml(stage)}</div><p class="col-subtitle">${subtitleFor(stage)}</p></div><div class="col-count">${stageItems.length}</div></div><div class="sla-box"><div class="sla-row"><span>Fila</span><strong>🔴 → 🟡 → 🟢</strong></div><div class="sla-row"><span>${avgLabel}</span><strong>${avgInfo.label}</strong></div><div class="timer-row"><span>Total em aberto</span><strong>${stageItems.filter(i=>!['Enviado para Controladoria','Declinado/Encerrado'].includes(i.stage)).length}</strong></div></div>`;
+    col.ondragover=event=>event.preventDefault();
+    col.ondrop=event=>{
+      event.preventDefault();
+      const id=event.dataTransfer.getData('text/plain');
+      if(id&&typeof changeSupplierPhase==='function')changeSupplierPhase(id,stage);
+      col.classList.remove('drag-over');
+    };
+    col.ondragenter=()=>col.classList.add('drag-over');
+    col.ondragleave=()=>col.classList.remove('drag-over');
     if(!stageItems.length){const e=document.createElement('div');e.className='empty-col';e.textContent='Nenhum fornecedor nesta fase';col.appendChild(e)}
     else stageItems.forEach(item=>col.appendChild(cardEl(item)));
     board.appendChild(col);
   }
+  if(typeof renderKanbanTable==='function')renderKanbanTable();
+}
+
+function stageAccent(stage){
+  const map={
+    'Solicitação Recebida':'#1b6d8e',
+    'Enviado ao Fornecedor':'#1b6d8e',
+    'Aguardando Retorno do Fornecedor':'#f5c400',
+    'Análise da Documentação':'#1b6d8e',
+    'Cadastro no SAP':'#1b6d8e',
+    'Enviado para Controladoria':'#059669',
+    'Declinado/Encerrado':'#dc2626'
+  };
+  return map[stage]||'#1b6d8e';
 }
 function sortCards(a,b){const sa=slaStatus(a),sb=slaStatus(b);return (sa.rank-sb.rank)||(deadlineTime(a)-deadlineTime(b))||((isEmergency(a)?0:1)-(isEmergency(b)?0:1))||((a.createdAt||0)-(b.createdAt||0))}
 function cardEl(item){const st=slaStatus(item);const el=document.createElement('div');el.className='card '+st.cls;el.onclick=()=>openDetail(item.id);const respFiles=(item.files||[]).filter(f=>f.field==='responsavelCadastro');const obs=(item.responsibleNote||'').trim();el.innerHTML=`<div class="card-top"><div><div class="card-id">${escapeHtml(item.id)}</div><div class="card-title">${escapeHtml(item.supplierName||'Fornecedor sem nome')}</div></div><div class="priority-pill ${isEmergency(item)?'p1':'p2'}">${isEmergency(item)?'EME':'NOR'}</div></div><div class="card-lines"><div class="card-line"><span class="ic">🏢</span><span>${escapeHtml(item.taxId||'-')}</span></div><div class="card-line"><span class="ic">📦</span><span>${escapeHtml(item.supplierCategory||'-')}</span></div><div class="card-line"><span class="ic">👤</span><span>${escapeHtml(item.contactName||'-')} | ${escapeHtml(item.contactPhone||'-')}</span></div></div><div class="card-desc">${escapeHtml(item.scope||item.notes||'Sem descrição informada.')}</div>${obs?`<div class="card-resp-note"><b>Obs. Responsável</b>${escapeHtml(obs).slice(0,160)}${obs.length>160?'...':''}</div>`:''}<div class="badges"><span class="badge ${isEmergency(item)?'orange':'blue'}">${escapeHtml(item.priority||'NORMAL (7 DIAS)')}</span><span class="badge ${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">${queueSemaphoreLabel(st)}</span><span class="badge ${st.cls==='late'?'red':st.cls==='warn'?'orange':'green'}">${st.label}</span><span class="badge purple">${escapeHtml(item.criticality||'-')}</span>${item.files?.length?`<span class="badge green">${item.files.length} anexo(s)</span>`:''}${respFiles.length?`<span class="badge yellow">${respFiles.length} doc. resp.</span>`:''}${obs?`<span class="badge yellow">Obs.</span>`:''}</div><div class="card-meta"><span>Data limite: <strong>${fmtDate(item.deadline)}</strong></span><span>${st.txt}</span></div><div class="timer"><div class="timer-row"><span>Na fase agora</span><strong>${formatDuration(elapsedInStage(item))}</strong></div><div class="timer-row"><span>Acumulado fase</span><strong>${formatDuration(stageTimeMs(item,item.stage))}</strong></div><div class="timer-row"><span>Total acumulado</span><strong>${formatDuration(totalElapsed(item))}</strong></div></div><div class="stage-actions"><button class="secondary" data-act="back">Voltar</button><button data-act="next">Avançar</button></div>`;el.querySelectorAll('button').forEach(b=>b.onclick=(ev)=>{ev.stopPropagation();moveStage(item.id,b.dataset.act)});return el}
@@ -646,6 +670,26 @@ load();bind();renderAll();
   #view-kanban .card-desc,
   #view-kanban .stage-actions{display:none !important;}
 
+  /* Visual alinhado ao Kanban de Orçamentos: coluna com destaque por fase,
+     chip de status no card, faixa de prazo e feedback de arrastar-e-soltar. */
+  #view-kanban .col{border-top:3px solid var(--phase-accent, #1b6d8e) !important;transition:box-shadow .12s !important;}
+  #view-kanban .col.drag-over{box-shadow:0 0 0 2px var(--phase-accent, #1b6d8e) inset !important;background:#e4f0f6 !important;}
+  #view-kanban .supplier-flow-card{cursor:grab !important;}
+  #view-kanban .supplier-flow-card.dragging{opacity:.45 !important;}
+  #view-kanban .supplier-status-chip-row{margin-top:5px !important;}
+  #view-kanban .supplier-status-chip{display:inline-flex !important;align-items:center !important;max-width:100% !important;min-height:18px !important;padding:2px 7px !important;border-radius:999px !important;font-size:7.5px !important;font-weight:900 !important;text-transform:uppercase !important;letter-spacing:.03em !important;line-height:1.3 !important;white-space:normal !important;background:rgba(11,92,171,.12) !important;color:#0b5cab !important;}
+  #view-kanban .supplier-status-chip--late{background:rgba(220,38,38,.12) !important;color:#dc2626 !important;}
+  #view-kanban .supplier-status-chip--warn{background:rgba(215,155,0,.14) !important;color:#a15c00 !important;}
+  #view-kanban .supplier-status-chip--ok{background:rgba(35,134,95,.14) !important;color:#1c6e4c !important;}
+  #view-kanban .supplier-deadline-strip{display:flex !important;justify-content:space-between !important;align-items:center !important;gap:8px !important;margin-top:8px !important;padding:5px 8px !important;border-radius:9px !important;font-size:9px !important;font-weight:800 !important;background:#eaf3ff !important;color:#0b5cab !important;}
+  #view-kanban .supplier-deadline-strip strong{color:inherit !important;font-size:9px !important;font-weight:900 !important;}
+  #view-kanban .supplier-deadline-strip--late{background:#fff0ef !important;color:#dc2626 !important;}
+  #view-kanban .supplier-deadline-strip--warn{background:#fff7df !important;color:#a15c00 !important;}
+  #view-kanban .supplier-deadline-strip--ok{background:#eaf8f1 !important;color:#1c6e4c !important;}
+  .supplier-kanban-table-panel{margin-top:18px;}
+  .supplier-kanban-table-scroll{max-height:480px;overflow:auto;}
+  .supplier-kanban-table-scroll thead th{position:sticky;top:0;z-index:1;}
+
   /* Edição completa dentro da janela de detalhes */
   .supplier-detail-phase-selector{flex:1 1 100%;display:grid;grid-template-columns:150px minmax(220px,1fr);align-items:center;gap:10px;padding:10px 12px;border:1px solid #d5e2e9;border-radius:12px;background:#f5f9fb;}
   .supplier-detail-phase-selector label{margin:0;color:#0b3553;font-size:11px;font-weight:900;}
@@ -795,11 +839,38 @@ load();bind();renderAll();
     });
   };
 
+  window.renderKanbanTable = function(){
+    const rows=getFilteredItems();
+    const body=document.getElementById('supplierKanbanTableRows');
+    if(!body) return;
+    body.innerHTML=rows.length?rows.map(item=>{
+      const st=slaStatus(item);
+      const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage);
+      return `<tr>
+        <td>${escapeHtml(item.id)}</td>
+        <td>${escapeHtml(item.supplierName||'-')}</td>
+        <td>${escapeHtml(item.taxId||'-')}</td>
+        <td>${escapeHtml(item.supplierCategory||'-')}</td>
+        <td>${escapeHtml(item.stage)}</td>
+        <td>${escapeHtml(item.priority||'-')}</td>
+        <td>${fmtDate(item.deadline)}</td>
+        <td><span class="badge ${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">${st.txt}</span></td>
+        <td>${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</td>
+        <td><button type="button" class="secondary" onclick="openDetail('${escapeAttr(item.id)}')">Ver detalhes</button></td>
+      </tr>`;
+    }).join(''):'<tr><td colspan="10">Nenhum fornecedor encontrado com os filtros atuais.</td></tr>';
+    const count=document.getElementById('supplierKanbanTableCount');
+    if(count) count.textContent=`${rows.length} registro(s)`;
+  };
+
   window.cardEl=function(item){
     const st=slaStatus(item);
     const el=document.createElement('div');
     el.className='card supplier-flow-card '+st.cls;
     el.onclick=()=>openDetail(item.id);
+    el.draggable=true;
+    el.addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain',item.id);el.classList.add('dragging')});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
     const requester=item.requesterName||item.values?.requesterName||item.contactName||'-';
     const phone=item.contactPhone||item.values?.contactPhone||'';
     const work=item.costCenter||item.values?.costCenter||'-';
@@ -813,6 +884,9 @@ load();bind();renderAll();
         <div><div class="card-id">${escapeHtml(item.id)}</div><div class="card-title">${escapeHtml(item.supplierName||'Fornecedor sem nome')}</div></div>
         <div class="priority-pill ${isEmergency(item)?'p1':'p2'}">${isEmergency(item)?'EME':'NOR'}</div>
       </div>
+      <div class="supplier-status-chip-row">
+        <span class="supplier-status-chip supplier-status-chip--${st.cls}">${escapeHtml(item.stage)}</span>
+      </div>
       <div class="card-lines">
         <div class="card-line"><span class="ic">${flowIcon('user')}</span><span><b>Solicitante</b><br>${escapeHtml(requester)}${phone?' • '+escapeHtml(phone):''}</span></div>
         <div class="card-line"><span class="ic">${flowIcon('map')}</span><span><b>Obra / Centro de Custo</b><br>${escapeHtml(work)}</span></div>
@@ -823,7 +897,10 @@ load();bind();renderAll();
         <span class="badge ${st.cls==='late'?'sem-late':st.cls==='warn'?'sem-warn':'sem-ok'}">${queueSemaphoreLabel(st)}</span>
         ${item.files?.length?`<span class="badge green">${item.files.length} anexo(s)</span>`:''}
       </div>
-      <div class="card-meta"><span>Prazo: <strong>${fmtDate(item.deadline)}</strong></span><span>${st.label}</span></div>
+      <div class="supplier-deadline-strip supplier-deadline-strip--${st.cls}">
+        <span>Prazo: ${fmtDate(item.deadline)}</span>
+        <strong>${st.label}</strong>
+      </div>
       <div class="timer">
         <div class="timer-row"><span>Na fase agora</span><strong data-supplier-phase-timer="${escapeAttr(item.id)}">${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</strong></div>
         <div class="timer-row"><span>Acumulado fase</span><strong data-supplier-stage-timer="${escapeAttr(item.id)}">${formatDuration(stageTimeMs(item,item.stage))}</strong></div>
