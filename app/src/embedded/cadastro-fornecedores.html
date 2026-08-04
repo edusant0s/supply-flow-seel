@@ -489,7 +489,7 @@ function supplierRunLegacyImport(){const policy=$('#supplierDuplicatePolicy')?.v
 function bindSupplierLegacyImport(){const input=$('#supplierLegacyFile');if(input&&!input.dataset.bound){input.addEventListener('change',e=>supplierHandleFile(e.target.files?.[0]));input.dataset.bound='1'}const drop=$('#supplierImportDrop');if(drop&&!drop.dataset.bound){['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.add('dragover')}));['dragleave','drop'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.remove('dragover')}));drop.addEventListener('drop',e=>supplierHandleFile(e.dataTransfer?.files?.[0]));drop.dataset.bound='1'}const sheet=$('#supplierImportSheet');if(sheet&&!sheet.dataset.bound){sheet.addEventListener('change',e=>supplierLoadSheet(e.target.value));sheet.dataset.bound='1'}['supplierDefaultStage','supplierDefaultPriority','supplierDefaultCategory','supplierDuplicatePolicy'].forEach(id=>{const el=$('#'+id);if(el&&!el.dataset.bound){el.addEventListener('change',()=>{supplierUpdateSummary();supplierRenderPreview()});el.dataset.bound='1'}});const run=$('#supplierRunImport');if(run&&!run.dataset.bound){run.addEventListener('click',supplierRunLegacyImport);run.dataset.bound='1'}const reset=$('#supplierResetImport');if(reset&&!reset.dataset.bound){reset.addEventListener('click',supplierResetLegacyImport);reset.dataset.bound='1'}const remove=$('#supplierImportRemove');if(remove&&!remove.dataset.bound){remove.addEventListener('click',supplierResetLegacyImport);remove.dataset.bound='1'}renderSupplierMappings()}
 function bindSupplyFlowSearch(){const search=$('#sfGlobalSearch');if(!search||search.dataset.bound)return;search.addEventListener('input',()=>{const filter=$('#filterSupplierName');if(filter)filter.value=search.value;switchTab('kanban');renderKanban();renderBase()});search.dataset.bound='1'}
 
-function bind(){initTabs();bindSupplyFlowSearch();$('#btnLogin').onclick=()=>syncPlatformUser(true);$('#btnSaveLogin').onclick=saveLogin;$('#btnCloseLogin').onclick=closeLogin;$('#loginModal').addEventListener('click',e=>{if(e.target.id==='loginModal')closeLogin()});syncPlatformUser(false);renderUserLogin();$('#btnSaveSupplier').onclick=async e=>{e.preventDefault();const item=await collectForm();if(item)saveSupplier(item)};$('#btnResetForm').onclick=e=>{e.preventDefault();$('#supplierForm').reset();setAutoFields()};$('#btnDemo').onclick=e=>{e.preventDefault();demo()};['filterWork','filterSupplierName','filterPriority','filterCategory','filterStatus'].forEach(id=>{const el=$('#'+id);if(el)el.addEventListener('input',()=>{renderKanban();renderBase()})});if($('#btnExportCsv'))$('#btnExportCsv').onclick=exportCsv;if($('#btnExportJson'))$('#btnExportJson').onclick=exportJson;if($('#btnImportJson'))$('#btnImportJson').onclick=()=>$('#jsonImport').click();if($('#jsonImport'))$('#jsonImport').onchange=e=>e.target.files[0]&&importJsonFile(e.target.files[0]);if($('#btnClearAll'))$('#btnClearAll').onclick=clearAll;$('#closeDetail').onclick=()=>$('#detailModal').classList.remove('show');$('#detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')$('#detailModal').classList.remove('show')});$('#btnNewSection').onclick=addSection;$('#btnNewQuestion').onclick=addQuestion;$('#btnRestoreForm').onclick=()=>{if(confirm('Restaurar formulário padrão?')){schema=JSON.parse(JSON.stringify(defaultSchema));selectedSectionId='sys';saveSchema()}};$('#btnSaveSchema').onclick=saveSchema;$('#btnApplySection').onclick=applySection;$('#btnDeleteSection').onclick=deleteSection;setInterval(()=>{const c=$('#clockNow');if(c)c.textContent=new Date().toLocaleString('pt-BR');if(currentView()==='kanban'||$('#detailModal').classList.contains('show')){renderKanban();const active=document.activeElement;const editing=active&&$('#detailModal').contains(active)&&['INPUT','TEXTAREA','SELECT','BUTTON','A'].includes(active.tagName);if(currentDetailId&&$('#detailModal').classList.contains('show')&&!editing)openDetail(currentDetailId)}},1000)}
+function bind(){initTabs();bindSupplyFlowSearch();$('#btnLogin').onclick=()=>syncPlatformUser(true);$('#btnSaveLogin').onclick=saveLogin;$('#btnCloseLogin').onclick=closeLogin;$('#loginModal').addEventListener('click',e=>{if(e.target.id==='loginModal')closeLogin()});syncPlatformUser(false);renderUserLogin();$('#btnSaveSupplier').onclick=async e=>{e.preventDefault();const item=await collectForm();if(item)saveSupplier(item)};$('#btnResetForm').onclick=e=>{e.preventDefault();$('#supplierForm').reset();setAutoFields()};$('#btnDemo').onclick=e=>{e.preventDefault();demo()};['filterWork','filterSupplierName','filterPriority','filterCategory','filterStatus'].forEach(id=>{const el=$('#'+id);if(el)el.addEventListener('input',()=>{renderKanban();renderBase()})});if($('#btnExportCsv'))$('#btnExportCsv').onclick=exportCsv;if($('#btnExportJson'))$('#btnExportJson').onclick=exportJson;if($('#btnImportJson'))$('#btnImportJson').onclick=()=>$('#jsonImport').click();if($('#jsonImport'))$('#jsonImport').onchange=e=>e.target.files[0]&&importJsonFile(e.target.files[0]);if($('#btnClearAll'))$('#btnClearAll').onclick=clearAll;$('#closeDetail').onclick=()=>$('#detailModal').classList.remove('show');$('#detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')$('#detailModal').classList.remove('show')});$('#btnNewSection').onclick=addSection;$('#btnNewQuestion').onclick=addQuestion;$('#btnRestoreForm').onclick=()=>{if(confirm('Restaurar formulário padrão?')){schema=JSON.parse(JSON.stringify(defaultSchema));selectedSectionId='sys';saveSchema()}};$('#btnSaveSchema').onclick=saveSchema;$('#btnApplySection').onclick=applySection;$('#btnDeleteSection').onclick=deleteSection;setInterval(()=>{const c=$('#clockNow');if(c)c.textContent=new Date().toLocaleString('pt-BR');if(currentView()==='kanban')updateSupplierKanbanTimers();if($('#detailModal').classList.contains('show')){const active=document.activeElement;const editing=active&&$('#detailModal').contains(active)&&['INPUT','TEXTAREA','SELECT','BUTTON','A'].includes(active.tagName);if(currentDetailId&&!editing)openDetail(currentDetailId)}},1000)}
 load();bind();renderAll();
 </script>
 
@@ -773,6 +773,28 @@ load();bind();renderAll();
     });
   };
 
+  // Atualiza somente o texto dos cronometros dos cards, sem recriar o DOM.
+  // Recriar o board a cada segundo (renderKanban) destruia o <select> de fase
+  // sempre que o usuario tentava abrir o dropdown para escolher uma opcao.
+  window.updateSupplierKanbanTimers = function(){
+    if(currentView()!=='kanban') return;
+    const byId=new Map(items.map(record=>[String(record.id),record]));
+    document.querySelectorAll('[data-supplier-phase-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-phase-timer'));
+      if(!item) return;
+      const terminal=['Enviado para Controladoria','Declinado/Encerrado'].includes(item.stage);
+      el.textContent=terminal?'Encerrado':formatDuration(elapsedInStage(item));
+    });
+    document.querySelectorAll('[data-supplier-stage-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-stage-timer'));
+      if(item) el.textContent=formatDuration(stageTimeMs(item,item.stage));
+    });
+    document.querySelectorAll('[data-supplier-total-timer]').forEach(el=>{
+      const item=byId.get(el.getAttribute('data-supplier-total-timer'));
+      if(item) el.textContent=formatDuration(totalElapsed(item));
+    });
+  };
+
   window.cardEl=function(item){
     const st=slaStatus(item);
     const el=document.createElement('div');
@@ -803,9 +825,9 @@ load();bind();renderAll();
       </div>
       <div class="card-meta"><span>Prazo: <strong>${fmtDate(item.deadline)}</strong></span><span>${st.label}</span></div>
       <div class="timer">
-        <div class="timer-row"><span>Na fase agora</span><strong>${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</strong></div>
-        <div class="timer-row"><span>Acumulado fase</span><strong>${formatDuration(stageTimeMs(item,item.stage))}</strong></div>
-        <div class="timer-row"><span>Total acumulado</span><strong>${formatDuration(totalElapsed(item))}</strong></div>
+        <div class="timer-row"><span>Na fase agora</span><strong data-supplier-phase-timer="${escapeAttr(item.id)}">${terminal?'Encerrado':formatDuration(elapsedInStage(item))}</strong></div>
+        <div class="timer-row"><span>Acumulado fase</span><strong data-supplier-stage-timer="${escapeAttr(item.id)}">${formatDuration(stageTimeMs(item,item.stage))}</strong></div>
+        <div class="timer-row"><span>Total acumulado</span><strong data-supplier-total-timer="${escapeAttr(item.id)}">${formatDuration(totalElapsed(item))}</strong></div>
       </div>
       <div class="supplier-phase-selector-wrap">
         <label>Selecionar fase</label>
