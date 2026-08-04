@@ -1,12 +1,22 @@
 import { useMemo, useState } from "react";
-import { Download, Search, ShieldCheck, UploadCloud, UserPlus } from "lucide-react";
+import { Download, KeyRound, Search, ShieldCheck, Trash2, UploadCloud, UserPlus } from "lucide-react";
 import { DataTable } from "../../components/DataTable";
 import { EmptyState, LoadingState } from "../../components/States";
+import { useAuth } from "../../contexts/AuthContext";
 import { headerKey, normalizeText } from "../../lib/format";
 import { defaultCanManage, defaultCanView, permissionModules, roleLabel, roles } from "../../lib/permissions";
 import { readSpreadsheet, type RawRow } from "../../lib/spreadsheet";
 import { useAsyncData } from "../../hooks";
-import { createUser, listObras, listProfiles, listUserObraLinks, setUserObras, updateProfile } from "../../services/admin";
+import {
+  createUser,
+  deleteUser,
+  listObras,
+  listProfiles,
+  listUserObraLinks,
+  resetUserPassword,
+  setUserObras,
+  updateProfile,
+} from "../../services/admin";
 import type { ModuleKey, ModulePermissions, Obra, Profile, UserRole } from "../../types";
 
 type UserFormState = {
@@ -34,10 +44,12 @@ type BulkUserRow = {
 };
 
 export function UsuariosPage() {
+  const { profile: currentProfile } = useAuth();
   const [query, setQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const users = useAsyncData(listProfiles, [], { cacheKey: "profiles" });
   const obras = useAsyncData(listObras, [], { cacheKey: "obras" });
   const userObras = useAsyncData(listUserObraLinks, [], { cacheKey: "user_obras" });
@@ -58,6 +70,32 @@ export function UsuariosPage() {
   function refreshAll() {
     users.refresh();
     userObras.refresh();
+  }
+
+  async function handleResetPassword(item: Profile) {
+    if (!window.confirm(`Redefinir a senha de ${item.nome} para a senha padrao "Senha@123"? O usuario devera trocar no proximo login.`)) return;
+    setBusyUserId(item.id);
+    try {
+      await resetUserPassword(item.id);
+      window.alert(`Senha de ${item.nome} redefinida para "Senha@123".`);
+    } catch (err) {
+      window.alert(getErrorMessage(err, "Falha ao redefinir senha."));
+    } finally {
+      setBusyUserId(null);
+    }
+  }
+
+  async function handleDeleteUser(item: Profile) {
+    if (!window.confirm(`Remover ${item.nome} (${item.email})? Essa acao nao pode ser desfeita.`)) return;
+    setBusyUserId(item.id);
+    try {
+      await deleteUser(item.id);
+      refreshAll();
+    } catch (err) {
+      window.alert(getErrorMessage(err, "Falha ao remover usuario."));
+    } finally {
+      setBusyUserId(null);
+    }
   }
 
   if (users.loading || obras.loading || userObras.loading) return <LoadingState label="Carregando usuarios" />;
@@ -147,6 +185,34 @@ export function UsuariosPage() {
                   <ShieldCheck size={16} />
                   Editar
                 </button>
+              ),
+            },
+            {
+              key: "acoes",
+              label: "Acoes",
+              render: (item) => (
+                <div className="table-action-group">
+                  <button
+                    className="table-action"
+                    type="button"
+                    disabled={busyUserId === item.id}
+                    onClick={() => handleResetPassword(item)}
+                    title="Redefinir senha para Senha@123"
+                  >
+                    <KeyRound size={16} />
+                    Redefinir senha
+                  </button>
+                  <button
+                    className="table-action table-action--danger"
+                    type="button"
+                    disabled={busyUserId === item.id || item.id === currentProfile?.id}
+                    onClick={() => handleDeleteUser(item)}
+                    title={item.id === currentProfile?.id ? "Nao e possivel remover a propria conta" : "Remover usuario"}
+                  >
+                    <Trash2 size={16} />
+                    Remover
+                  </button>
+                </div>
               ),
             },
           ]}

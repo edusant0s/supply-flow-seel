@@ -11,10 +11,13 @@ type ModuleKey =
   | "fretes"
   | "nota_fiscal"
   | "estoque_obras"
+  | "cadastro_materiais"
   | "frota"
   | "fornecedores"
   | "avaliacao_fornecedores"
-  | "importacoes";
+  | "importacoes"
+  | "usuarios"
+  | "settings";
 
 type ModulePermissions = Partial<Record<ModuleKey, { view?: boolean; manage?: boolean }>>;
 
@@ -36,10 +39,13 @@ const allowedModuleKeys: ModuleKey[] = [
   "fretes",
   "nota_fiscal",
   "estoque_obras",
+  "cadastro_materiais",
   "frota",
   "fornecedores",
   "avaliacao_fornecedores",
   "importacoes",
+  "usuarios",
+  "settings",
 ];
 
 const defaultAllowedOrigins = [
@@ -214,16 +220,20 @@ serve(async (req) => {
   });
 
   if (profileUpsertError) {
+    // Sem o profile, o usuario de Auth fica orfao: consegue autenticar mas trava para
+    // sempre em "Perfil nao encontrado". Melhor desfazer a criacao e devolver o erro.
+    await adminClient.auth.admin.deleteUser(created.user.id).catch(() => undefined);
     return jsonResponse(req, { error: profileUpsertError.message }, 400);
   }
 
-  await adminClient.from("user_obras").delete().eq("user_id", created.user.id);
   if (scopedObraIds.length) {
     const { error: obraError } = await adminClient
       .from("user_obras")
       .insert(scopedObraIds.map((obra_id) => ({ user_id: created.user.id, obra_id })));
 
     if (obraError) {
+      await adminClient.from("profiles").delete().eq("id", created.user.id).catch(() => undefined);
+      await adminClient.auth.admin.deleteUser(created.user.id).catch(() => undefined);
       return jsonResponse(req, { error: obraError.message }, 400);
     }
   }

@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function ChangePasswordPage() {
-  const { changePassword, profile } = useAuth();
+  const { changePassword, profile, recoveryMode } = useAuth();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const forced = Boolean(profile?.must_change_password);
+  const forced = Boolean(profile?.must_change_password) || recoveryMode;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();

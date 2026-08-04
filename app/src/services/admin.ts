@@ -58,6 +58,22 @@ export async function createUser(input: {
   password?: string;
   module_permissions?: ModulePermissions | null;
 }) {
+  return callEdgeFunction<{ id: string; temporary_password?: string }>("create-user", input, "Falha ao criar usuario.");
+}
+
+export async function deleteUser(userId: string) {
+  return callEdgeFunction<{ success: true }>("manage-user", { action: "delete", userId }, "Falha ao remover usuario.");
+}
+
+export async function resetUserPassword(userId: string) {
+  return callEdgeFunction<{ success: true; temporary_password: string }>(
+    "manage-user",
+    { action: "reset_password", userId },
+    "Falha ao redefinir senha."
+  );
+}
+
+async function callEdgeFunction<T>(functionName: string, body: unknown, fallbackError: string): Promise<T> {
   const client = requireSupabase();
   if (!supabaseUrl || !supabaseAnonKey) throw new Error("Supabase nao configurado.");
 
@@ -70,7 +86,7 @@ export async function createUser(input: {
   if (!session?.access_token) throw new Error("Sessao expirada. Faca login novamente.");
 
   try {
-    const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/functions/v1/create-user`, {
+    const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/functions/v1/${functionName}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,12 +94,12 @@ export async function createUser(input: {
         Authorization: `Bearer ${session.access_token}`,
         "x-client-info": "supply-flow-seel",
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(body),
     });
 
     const payload = await parseFunctionResponse(response);
-    if (!response.ok) throw new Error(getPayloadError(payload, "Falha ao criar usuario."));
-    return payload as { id: string; temporary_password?: string };
+    if (!response.ok) throw new Error(getPayloadError(payload, fallbackError));
+    return payload as T;
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error("Nao foi possivel conectar a Edge Function. Atualize a pagina e tente novamente.");

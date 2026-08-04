@@ -11,15 +11,17 @@ type AuthContextValue = {
   loading: boolean;
   error: string | null;
   configured: boolean;
+  recoveryMode: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   changePassword: (password: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-const AUTH_PROFILE_TIMEOUT_MS = 15000;
-const AUTH_LOADING_WATCHDOG_MS = AUTH_PROFILE_TIMEOUT_MS + 5000;
+const AUTH_PROFILE_TIMEOUT_MS = 20000;
+const AUTH_LOADING_WATCHDOG_MS = AUTH_PROFILE_TIMEOUT_MS + 15000;
 
 function authErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [obras, setObras] = useState<Obra[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recoveryMode, setRecoveryMode] = useState(false);
   const currentUserIdRef = useRef<string | null>(null);
   const loadedUserIdRef = useRef<string | null>(null);
   const hydrationRunRef = useRef(0);
@@ -79,16 +82,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const hydrateAuth = useCallback(
-    async (nextSession: Session | null, options: { showLoading?: boolean } = {}) => {
-      const runId = ++hydrationRunRef.current;
+    async (nextSession: Session | null, options: { showLoading?: boolean; attempt?: number; runId?: number } = {}) => {
+      const attempt = options.attempt ?? 0;
+      const runId = options.runId ?? ++hydrationRunRef.current;
       const nextUserId = nextSession?.user.id ?? null;
 
       currentUserIdRef.current = nextUserId;
       if (mountedRef.current) {
         setSession(nextSession);
-        setError(null);
+        if (attempt === 0) setError(null);
         if (options.showLoading !== false) setLoading(true);
       }
+
+      let retrying = false;
 
       try {
         const result = await withTimeout(
@@ -106,12 +112,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         if (!mountedRef.current || hydrationRunRef.current !== runId) return;
         console.warn("Falha ao validar usuario e permissoes.", err);
-        loadedUserIdRef.current = null;
-        setProfile(null);
-        setObras([]);
-        setError(authErrorMessage(err));
+
+        // Falhas transitorias (rede instavel, cold start do banco) sao comuns e nao devem
+        // travar o usuario numa tela de erro logo na primeira tentativa: tenta mais uma vez
+        // automaticamente antes de admitir falha.
+        if (attempt < 1) {
+          retrying = true;
+          setTimeout(() => {
+            if (mountedRef.current) void hydrateAuth(nextSession, { showLoading: options.showLoading, attempt: attempt + 1, runId });
+          }, 800);
+        } else {
+          loadedUserIdRef.current = null;
+          setProfile(null);
+          setObras([]);
+          setError(authErrorMessage(err));
+        }
       } finally {
-        if (mountedRef.current && hydrationRunRef.current === runId) setLoading(false);
+        if (!retrying && mountedRef.current && hydrationRunRef.current === runId) setLoading(false);
       }
     },
     [fetchProfile]
@@ -158,6 +175,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const nextUserId = nextSession?.user.id ?? null;
         const sameUser = currentUserIdRef.current === nextUserId;
         const profileAlreadyLoaded = loadedUserIdRef.current === nextUserId;
+
+        if (event === "PASSWORD_RECOVERY") {
+          setRecoveryMode(true);
+        }
 
         if (nextUserId && (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") && sameUser && profileAlreadyLoaded) {
           setSession(nextSession);
@@ -207,6 +228,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       error,
       configured: supabaseConfigured,
+      recoveryMode,
       signIn: async (email, password) => {
         if (!supabase) throw new Error("Supabase não configurado.");
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -215,19 +237,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut: async () => {
         if (!supabase) return;
         loadedUserIdRef.current = null;
+        setRecoveryMode(false);
         await supabase.auth.signOut();
       },
       changePassword: async (password) => {
         if (!supabase) throw new Error("Supabase nao configurado.");
+        // A troca de senha em si (Auth) e a etapa que realmente importa para o usuario
+        // conseguir logar. Limpar o sinalizador must_change_password e best-effort: se
+        // essa segunda etapa falhar, a senha ja foi alterada com sucesso e nao devemos
+        // travar o usuario numa tela de "falha" repetida (ele so seria pedido a trocar
+        // a senha de novo no proximo login, o que e inofensivo).
         const { error: updateError } = await supabase.auth.updateUser({ password });
         if (updateError) throw updateError;
-        const { error: profileError } = await supabase.rpc("mark_own_password_changed");
-        if (profileError) throw profileError;
+
+        try {
+          const { error: profileError } = await supabase.rpc("mark_own_password_changed");
+          if (profileError) throw profileError;
+        } catch (err) {
+          console.warn("Senha alterada, mas falha ao limpar o sinalizador de troca obrigatoria.", err);
+        }
+
+        setRecoveryMode(false);
         await refreshProfile();
+      },
+      requestPasswordReset: async (email) => {
+        if (!supabase) throw new Error("Supabase nao configurado.");
+        const viteBase = import.meta.env.BASE_URL || "/";
+        const redirectTo = `${window.location.origin}${viteBase}alterar-senha`;
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+        if (error) throw error;
       },
       refreshProfile,
     }),
-    [error, loading, obras, profile, refreshProfile, session]
+    [error, loading, obras, profile, recoveryMode, refreshProfile, session]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
