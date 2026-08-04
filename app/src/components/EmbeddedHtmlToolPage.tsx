@@ -2112,6 +2112,9 @@ window.SUPPLY_FLOW_CONTEXT=${safeContext};
       guard("saveFormSpec", "Apenas super_admin pode alterar a estrutura do formulario.");
       guard("renderEditor", "Apenas super_admin pode acessar o editor do formulario.");
       guard("setEditorSection", "Apenas super_admin pode editar secoes do formulario.");
+
+      hide(".contract-delete-btn");
+      guard("deleteContractRequest", "Apenas super_admin pode excluir solicitacoes de contrato.");
     }
 
     if (canManage) return;

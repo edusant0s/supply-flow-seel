@@ -847,6 +847,12 @@ body{
 
 #kanbanView .kanban-shell{
   gap:14px !important;
+  min-width:0 !important;
+}
+
+#kanbanView #kanban,
+#kanbanView .process-block{
+  min-width:0 !important;
 }
 
 #kanbanView .toolbar-panel{
@@ -2722,7 +2728,7 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
   border-bottom:4px solid #facc15 !important;
 }
 #kanbanView .contract-compact-actions{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  grid-template-columns:repeat(auto-fit,minmax(0,1fr)) !important;
 }
 #kanbanView .contract-compact-actions .contract-edit-btn{
   background:var(--card) !important;
@@ -2731,6 +2737,14 @@ html[data-theme="dark"] #kanbanView .sla-row strong{
 }
 #kanbanView .contract-compact-actions .contract-edit-btn:hover{
   background:var(--card) !important;
+}
+#kanbanView .contract-compact-actions .contract-delete-btn{
+  background:var(--card) !important;
+  color:#b42318 !important;
+  border:1px solid #f1b4ae !important;
+}
+#kanbanView .contract-compact-actions .contract-delete-btn:hover{
+  background:#fef2f2 !important;
 }
 .detail-edit-actions{
   display:flex !important;
@@ -4693,6 +4707,7 @@ function renderKanban(){
               <div class="contract-compact-actions" onclick="event.stopPropagation()">
                 <button class="contract-detail-btn secondary" type="button" onclick="event.stopPropagation();openRequestDetails('${r.id}')">Ver detalhes</button>
                 <button class="contract-edit-btn secondary" type="button" onclick="event.stopPropagation();startRequestEdit('${r.id}')">Editar informações</button>
+                <button class="contract-delete-btn secondary" type="button" onclick="event.stopPropagation();deleteContractRequest('${r.id}')">Excluir</button>
               </div>
             </div>`;
           }).join('') : '<div class="empty-col">Nenhuma solicitação nesta fase.</div>'}</div>
@@ -4722,6 +4737,17 @@ function toggleContractRequestError(id,checked,checkbox){
   renderDashboard();
   if(typeof renderReport==='function')renderReport();
   toast(flagged?'Solicitação marcada com erro.':'Marcação de erro removida.');
+}
+
+function deleteContractRequest(id){
+  if(!confirm('Excluir esta solicitação de contrato? Essa ação não pode ser desfeita.'))return;
+  requests=requests.filter(r=>String(r.id)!==String(id));
+  saveRequests();
+  renderStats();
+  renderKanban();
+  renderDashboard();
+  if(typeof renderReport==='function')renderReport();
+  toast('Solicitação excluída.');
 }
 
 function updateContractObservationCounter(textarea){
