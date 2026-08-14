@@ -1,6 +1,3 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
-
 type Role = "super_admin" | "admin_suprimentos" | "admin_orcamentos" | "admin_contratos" | "viewer_global" | "viewer";
 type ModuleKey =
   | "dashboard"
@@ -43,12 +40,19 @@ const allowedModuleKeys: ModuleKey[] = [
 ];
 
 const defaultAllowedOrigins = [
+  "https://supply-flow.seeleng.app",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://supply-flow-seel.vercel.app",
   "https://supply-flow-seel-py97vh9sl-edusant0s-projects.vercel.app",
   "https://edusant0s.github.io",
 ];
+
+class HttpError extends Error {
+  constructor(message: string, readonly status = 500) {
+    super(message);
+  }
+}
 
 function getAllowedOrigins() {
   return (Deno.env.get("ALLOWED_ORIGINS") || defaultAllowedOrigins.join(","))
@@ -93,6 +97,43 @@ function jsonResponse(req: Request, body: unknown, status = 200) {
   });
 }
 
+function supabaseApiUrl(supabaseUrl: string, path: string) {
+  return `${supabaseUrl.replace(/\/$/, "")}${path}`;
+}
+
+function serviceHeaders(serviceRoleKey: string, extra: Record<string, string> = {}) {
+  return {
+    apikey: serviceRoleKey,
+    Authorization: `Bearer ${serviceRoleKey}`,
+    ...extra,
+  };
+}
+
+async function readPayload(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text };
+  }
+}
+
+function getPayloadError(payload: unknown, fallback: string) {
+  if (payload && typeof payload === "object") {
+    const body = payload as { error?: unknown; message?: unknown; details?: unknown; msg?: unknown };
+    return String(body.error || body.message || body.details || body.msg || fallback);
+  }
+  return fallback;
+}
+
+async function expectOk(response: Response, fallback: string, status = 400) {
+  const payload = await readPayload(response);
+  if (!response.ok) throw new HttpError(getPayloadError(payload, fallback), status);
+  return payload;
+}
+
 function randomPassword() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
   return Array.from({ length: 14 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
@@ -114,119 +155,168 @@ function sanitizeModulePermissions(value: unknown): ModulePermissions {
   return sanitized;
 }
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: getCorsHeaders(req) });
-  if (req.method !== "POST") return jsonResponse(req, { error: "Metodo nao permitido." }, 405);
+async function getCallerId(supabaseUrl: string, anonKey: string, authHeader: string) {
+  const payload = await expectOk(
+    await fetch(supabaseApiUrl(supabaseUrl, "/auth/v1/user"), {
+      headers: { apikey: anonKey, Authorization: authHeader },
+    }),
+    "Sessao invalida.",
+    401,
+  );
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const authHeader = req.headers.get("Authorization");
+  const user = (payload as { user?: { id?: string }; id?: string } | null)?.user || payload;
+  const id = (user as { id?: string } | null)?.id;
+  if (!id) throw new HttpError("Sessao invalida.", 401);
+  return id;
+}
 
-  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-    return jsonResponse(req, { error: "Funcao sem variaveis de ambiente obrigatorias." }, 500);
-  }
+async function getCallerProfile(supabaseUrl: string, serviceRoleKey: string, callerId: string) {
+  const payload = await expectOk(
+    await fetch(
+      supabaseApiUrl(
+        supabaseUrl,
+        `/rest/v1/profiles?select=role,ativo&id=eq.${encodeURIComponent(callerId)}&limit=1`,
+      ),
+      { headers: serviceHeaders(serviceRoleKey) },
+    ),
+    "Falha ao validar permissao.",
+    500,
+  );
 
-  if (!authHeader) {
-    return jsonResponse(req, { error: "Sem Authorization header." }, 401);
-  }
+  const profile = Array.isArray(payload) ? payload[0] : null;
+  return profile as { role?: Role; ativo?: boolean } | null;
+}
 
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+Deno.serve(async (req) => {
+  try {
+    if (req.method === "OPTIONS") return new Response("ok", { headers: getCorsHeaders(req) });
+    if (req.method !== "POST") return jsonResponse(req, { error: "Metodo nao permitido." }, 405);
 
-  const {
-    data: { user: caller },
-    error: callerError,
-  } = await userClient.auth.getUser();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const authHeader = req.headers.get("Authorization");
 
-  if (callerError || !caller) {
-    return jsonResponse(req, { error: "Sessao invalida." }, 401);
-  }
-
-  const { data: callerProfile, error: profileError } = await adminClient
-    .from("profiles")
-    .select("role, ativo")
-    .eq("id", caller.id)
-    .maybeSingle();
-
-  if (profileError || !callerProfile?.ativo || callerProfile.role !== "super_admin") {
-    return jsonResponse(req, { error: "Apenas super_admin pode criar usuarios." }, 403);
-  }
-
-  const body = (await req.json()) as {
-    nome?: string;
-    email?: string;
-    role?: Role;
-    ativo?: boolean;
-    obraIds?: string[];
-    password?: string;
-    module_permissions?: unknown;
-  };
-
-  const nome = String(body.nome || "").trim();
-  const email = String(body.email || "").trim().toLowerCase();
-  const role = body.role || "viewer";
-  const ativo = body.ativo ?? true;
-  const obraIds = Array.isArray(body.obraIds) ? body.obraIds.filter((id) => typeof id === "string" && id.length <= 80) : [];
-  const modulePermissions = sanitizeModulePermissions(body.module_permissions);
-  const temporaryPassword = body.password?.trim() || randomPassword();
-
-  if (!nome || !email) {
-    return jsonResponse(req, { error: "Nome e e-mail sao obrigatorios." }, 400);
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return jsonResponse(req, { error: "E-mail invalido." }, 400);
-  }
-
-  if (!allowedRoles.includes(role)) {
-    return jsonResponse(req, { error: "Perfil invalido." }, 400);
-  }
-
-  if (role === "viewer" && !obraIds.length) {
-    return jsonResponse(req, { error: "Viewer precisa estar vinculado a pelo menos uma obra ou usar viewer_global." }, 400);
-  }
-
-  const scopedObraIds = role === "viewer_global" ? [] : obraIds;
-
-  const { data: created, error: createError } = await adminClient.auth.admin.createUser({
-    email,
-    password: temporaryPassword,
-    email_confirm: true,
-    user_metadata: { nome },
-  });
-
-  if (createError || !created.user) {
-    return jsonResponse(req, { error: createError?.message || "Falha ao criar usuario." }, 400);
-  }
-
-  const { error: profileUpsertError } = await adminClient.from("profiles").upsert({
-    id: created.user.id,
-    nome,
-    email,
-    role,
-    ativo,
-    module_permissions: modulePermissions,
-    must_change_password: true,
-    password_changed_at: null,
-  });
-
-  if (profileUpsertError) {
-    return jsonResponse(req, { error: profileUpsertError.message }, 400);
-  }
-
-  await adminClient.from("user_obras").delete().eq("user_id", created.user.id);
-  if (scopedObraIds.length) {
-    const { error: obraError } = await adminClient
-      .from("user_obras")
-      .insert(scopedObraIds.map((obra_id) => ({ user_id: created.user.id, obra_id })));
-
-    if (obraError) {
-      return jsonResponse(req, { error: obraError.message }, 400);
+    if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+      throw new HttpError("Funcao sem variaveis de ambiente obrigatorias.", 500);
     }
-  }
 
-  return jsonResponse(req, { id: created.user.id, temporary_password: temporaryPassword });
+    if (!authHeader) {
+      throw new HttpError("Sem Authorization header.", 401);
+    }
+
+    const callerId = await getCallerId(supabaseUrl, anonKey, authHeader);
+    const callerProfile = await getCallerProfile(supabaseUrl, serviceRoleKey, callerId);
+
+    if (!callerProfile?.ativo || callerProfile.role !== "super_admin") {
+      throw new HttpError("Apenas super_admin pode criar usuarios.", 403);
+    }
+
+    const body = (await req.json()) as {
+      nome?: string;
+      email?: string;
+      role?: Role;
+      ativo?: boolean;
+      obraIds?: string[];
+      password?: string;
+      module_permissions?: unknown;
+    };
+
+    const nome = String(body.nome || "").trim();
+    const email = String(body.email || "").trim().toLowerCase();
+    const role = body.role || "viewer";
+    const ativo = body.ativo ?? true;
+    const obraIds = Array.isArray(body.obraIds)
+      ? body.obraIds.filter((id) => typeof id === "string" && id.length <= 80)
+      : [];
+    const modulePermissions = sanitizeModulePermissions(body.module_permissions);
+    const temporaryPassword = body.password?.trim() || randomPassword();
+
+    if (!nome || !email) {
+      throw new HttpError("Nome e e-mail sao obrigatorios.", 400);
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new HttpError("E-mail invalido.", 400);
+    }
+
+    if (!allowedRoles.includes(role)) {
+      throw new HttpError("Perfil invalido.", 400);
+    }
+
+    if (role === "viewer" && !obraIds.length) {
+      throw new HttpError("Viewer precisa estar vinculado a pelo menos uma obra ou usar viewer_global.", 400);
+    }
+
+    const scopedObraIds = role === "viewer_global" ? [] : obraIds;
+    const createdPayload = await expectOk(
+      await fetch(supabaseApiUrl(supabaseUrl, "/auth/v1/admin/users"), {
+        method: "POST",
+        headers: serviceHeaders(serviceRoleKey, { "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          email,
+          password: temporaryPassword,
+          email_confirm: true,
+          user_metadata: { nome },
+        }),
+      }),
+      "Falha ao criar usuario.",
+      400,
+    );
+
+    const createdUser =
+      (createdPayload as { user?: { id?: string }; id?: string } | null)?.user || (createdPayload as { id?: string });
+    if (!createdUser?.id) {
+      throw new HttpError("Falha ao criar usuario.", 400);
+    }
+
+    await expectOk(
+      await fetch(supabaseApiUrl(supabaseUrl, "/rest/v1/profiles"), {
+        method: "POST",
+        headers: serviceHeaders(serviceRoleKey, {
+          "Content-Type": "application/json",
+          Prefer: "resolution=merge-duplicates",
+        }),
+        body: JSON.stringify({
+          id: createdUser.id,
+          nome,
+          email,
+          role,
+          ativo,
+          module_permissions: modulePermissions,
+          must_change_password: true,
+          password_changed_at: null,
+        }),
+      }),
+      "Falha ao salvar perfil do usuario.",
+      400,
+    );
+
+    await expectOk(
+      await fetch(
+        supabaseApiUrl(supabaseUrl, `/rest/v1/user_obras?user_id=eq.${encodeURIComponent(createdUser.id)}`),
+        { method: "DELETE", headers: serviceHeaders(serviceRoleKey) },
+      ),
+      "Falha ao atualizar obras do usuario.",
+      400,
+    );
+
+    if (scopedObraIds.length) {
+      await expectOk(
+        await fetch(supabaseApiUrl(supabaseUrl, "/rest/v1/user_obras"), {
+          method: "POST",
+          headers: serviceHeaders(serviceRoleKey, { "Content-Type": "application/json" }),
+          body: JSON.stringify(scopedObraIds.map((obra_id) => ({ user_id: createdUser.id, obra_id }))),
+        }),
+        "Falha ao vincular obras do usuario.",
+        400,
+      );
+    }
+
+    return jsonResponse(req, { id: createdUser.id, temporary_password: temporaryPassword });
+  } catch (error) {
+    const status = error instanceof HttpError ? error.status : 500;
+    const message = error instanceof Error ? error.message : "Erro inesperado na Edge Function.";
+    return jsonResponse(req, { error: message }, status);
+  }
 });
